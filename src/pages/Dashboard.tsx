@@ -158,6 +158,13 @@ export default function DashboardPage() {
             </DashboardCard>
           </ScrollReveal>
 
+          {/* Referral Leaderboard */}
+          <ScrollReveal delay={360}>
+            <div className="md:col-span-2 lg:col-span-3">
+              <ReferralLeaderboard />
+            </div>
+          </ScrollReveal>
+
           {/* Impact Lions Invite */}
           <ScrollReveal delay={400}>
             <div className="md:col-span-2 lg:col-span-3 bg-gold-muted border border-gold/20 rounded-xl p-6 flex flex-col md:flex-row items-center gap-6">
