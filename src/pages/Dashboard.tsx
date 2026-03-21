@@ -159,9 +159,12 @@ export default function DashboardPage() {
             </DashboardCard>
           </ScrollReveal>
 
-          {/* Referral Leaderboard */}
+          {/* Referral Leaderboards */}
           <ScrollReveal delay={360} className="md:col-span-2 lg:col-span-3">
-            <ReferralLeaderboard />
+            <div className="grid md:grid-cols-2 gap-5">
+              <ReferralLeaderboard />
+              <LionsReferralLeaderboard />
+            </div>
           </ScrollReveal>
 
           {/* Impact Lions Invite */}
