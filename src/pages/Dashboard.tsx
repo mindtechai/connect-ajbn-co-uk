@@ -7,6 +7,7 @@ import {
 } from "lucide-react";
 import lionsEmblem from "@/assets/lions-emblem.png";
 import { ReferralLeaderboard } from "@/components/dashboard/ReferralLeaderboard";
+import { LionsReferralLeaderboard } from "@/components/dashboard/LionsReferralLeaderboard";
 
 // Mock data
 const memberData = {
