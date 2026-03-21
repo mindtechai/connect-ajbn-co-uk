@@ -6,6 +6,7 @@ import {
   Copy, ArrowRight, LogOut
 } from "lucide-react";
 import lionsEmblem from "@/assets/lions-emblem.png";
+import { ReferralLeaderboard } from "@/components/dashboard/ReferralLeaderboard";
 
 // Mock data
 const memberData = {
@@ -155,6 +156,13 @@ export default function DashboardPage() {
                 ))}
               </div>
             </DashboardCard>
+          </ScrollReveal>
+
+          {/* Referral Leaderboard */}
+          <ScrollReveal delay={360}>
+            <div className="md:col-span-2 lg:col-span-3">
+              <ReferralLeaderboard />
+            </div>
           </ScrollReveal>
 
           {/* Impact Lions Invite */}
