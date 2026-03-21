@@ -128,8 +128,8 @@ export default function DashboardPage() {
           </ScrollReveal>
 
           {/* Upcoming Events */}
-          <ScrollReveal delay={240}>
-            <DashboardCard title="Upcoming Events" icon={CalendarDays} className="md:col-span-2">
+          <ScrollReveal delay={240} className="md:col-span-2">
+            <DashboardCard title="Upcoming Events" icon={CalendarDays}>
               <div className="space-y-3">
                 {upcomingEvents.map((ev) => (
                   <div key={ev.title} className="flex items-center justify-between py-2 border-b last:border-0">
