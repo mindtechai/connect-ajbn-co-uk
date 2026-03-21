@@ -47,7 +47,7 @@ export function ReferralLeaderboard() {
         {leaderboardData.map((member, i) => (
           <ScrollReveal key={member.name} delay={i * 50}>
             <div
-              className={`grid grid-cols-[2rem_1fr_3.5rem_3.5rem] gap-2 items-center rounded-lg px-3 py-2.5 transition-colors ${
+              className={`grid grid-cols-[1.5rem_1fr_2.5rem_2.5rem] gap-2 items-center rounded-lg px-3 py-2.5 transition-colors ${
                 member.isCurrentUser
                   ? "bg-primary/5 border border-primary/15 ring-1 ring-primary/10"
                   : rankStyles[member.rank] || "hover:bg-muted/40"
