@@ -1,18 +1,27 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
+  const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const isLanding = location.pathname === "/";
 
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 60);
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  const showSolid = !isLanding || scrolled;
+
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-colors ${isLanding ? "bg-transparent" : "bg-card shadow-sm"}`}>
+    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${showSolid ? "bg-card shadow-sm" : "bg-transparent"}`}>
       <div className="container mx-auto flex items-center justify-between h-16 px-4 lg:px-8">
         <Link to="/" className="flex items-center gap-2">
-          <span className={`font-display text-xl font-bold ${isLanding ? "text-primary-foreground" : "text-primary"}`}>
+          <span className={`font-display text-xl font-bold transition-colors ${showSolid ? "text-primary" : "text-primary-foreground"}`}>
             AJBN
           </span>
         </Link>
@@ -23,18 +32,18 @@ export function Navbar() {
             <a
               key={item}
               href={`#${item.toLowerCase().replace(" ", "-")}`}
-              className={`text-sm font-medium transition-colors hover:opacity-80 ${isLanding ? "text-primary-foreground/80 hover:text-primary-foreground" : "text-muted-foreground hover:text-foreground"}`}
+              className={`text-sm font-medium transition-colors hover:opacity-80 ${showSolid ? "text-muted-foreground hover:text-foreground" : "text-primary-foreground/80 hover:text-primary-foreground"}`}
             >
               {item}
             </a>
           ))}
           <Link to="/login">
-            <Button variant={isLanding ? "heroOutline" : "outline"} size="sm">
+            <Button variant={showSolid ? "outline" : "heroOutline"} size="sm">
               Sign In
             </Button>
           </Link>
           <Link to="/register">
-            <Button variant={isLanding ? "hero" : "default"} size="sm">
+            <Button variant={showSolid ? "default" : "hero"} size="sm">
               Join AJBN
             </Button>
           </Link>
@@ -42,7 +51,7 @@ export function Navbar() {
 
         {/* Mobile menu toggle */}
         <button
-          className={`md:hidden ${isLanding ? "text-primary-foreground" : "text-foreground"}`}
+          className={`md:hidden ${showSolid ? "text-foreground" : "text-primary-foreground"}`}
           onClick={() => setOpen(!open)}
         >
           {open ? <X size={24} /> : <Menu size={24} />}
