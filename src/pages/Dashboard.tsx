@@ -159,15 +159,13 @@ export default function DashboardPage() {
           </ScrollReveal>
 
           {/* Referral Leaderboard */}
-          <ScrollReveal delay={360}>
-            <div className="md:col-span-2 lg:col-span-3">
-              <ReferralLeaderboard />
-            </div>
+          <ScrollReveal delay={360} className="md:col-span-2 lg:col-span-3">
+            <ReferralLeaderboard />
           </ScrollReveal>
 
           {/* Impact Lions Invite */}
-          <ScrollReveal delay={400}>
-            <div className="md:col-span-2 lg:col-span-3 bg-gold-muted border border-gold/20 rounded-xl p-6 flex flex-col md:flex-row items-center gap-6">
+          <ScrollReveal delay={400} className="md:col-span-2 lg:col-span-3">
+            <div className="bg-gold-muted border border-gold/20 rounded-xl p-6 flex flex-col md:flex-row items-center gap-6">
               <img src={lionsEmblem} alt="Impact Lions" className="w-16 h-16 object-contain" />
               <div className="flex-1 text-center md:text-left">
                 <div className="flex items-center justify-center md:justify-start gap-2 mb-1">
