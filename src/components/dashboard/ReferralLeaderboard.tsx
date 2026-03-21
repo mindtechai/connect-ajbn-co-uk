@@ -36,7 +36,7 @@ export function ReferralLeaderboard() {
       </div>
 
       {/* Column headers */}
-      <div className="grid grid-cols-[2rem_1fr_3.5rem_3.5rem] gap-2 px-3 mb-2">
+      <div className="grid grid-cols-[1.5rem_1fr_2.5rem_2.5rem] gap-2 px-3 mb-2">
         <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">#</span>
         <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Member</span>
         <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider text-center">Refs</span>
@@ -47,7 +47,7 @@ export function ReferralLeaderboard() {
         {leaderboardData.map((member, i) => (
           <ScrollReveal key={member.name} delay={i * 50}>
             <div
-              className={`grid grid-cols-[2rem_1fr_3.5rem_3.5rem] gap-2 items-center rounded-lg px-3 py-2.5 transition-colors ${
+              className={`grid grid-cols-[1.5rem_1fr_2.5rem_2.5rem] gap-2 items-center rounded-lg px-3 py-2.5 transition-colors ${
                 member.isCurrentUser
                   ? "bg-primary/5 border border-primary/15 ring-1 ring-primary/10"
                   : rankStyles[member.rank] || "hover:bg-muted/40"
