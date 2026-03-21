@@ -6,6 +6,7 @@ import {
   Copy, ArrowRight, LogOut
 } from "lucide-react";
 import lionsEmblem from "@/assets/lions-emblem.png";
+import { ReferralLeaderboard } from "@/components/dashboard/ReferralLeaderboard";
 
 // Mock data
 const memberData = {
