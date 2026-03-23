@@ -23,6 +23,11 @@ const App = () => (
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/admin" element={<AdminPage />} />
+          <Route path="/admin/members" element={<AdminPage />} />
+          <Route path="/admin/approvals" element={<AdminPage />} />
+          <Route path="/admin/communications" element={<AdminPage />} />
+          <Route path="/admin/settings" element={<AdminPage />} />
           <Route path="*" element={<NotFound />} />
         </Routes>
       </BrowserRouter>
