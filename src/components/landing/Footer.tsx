@@ -8,7 +8,7 @@ export function Footer() {
           <div>
             <div className="flex items-center gap-2 mb-3">
               <img src={ajbnLogo.url} alt="AJBN" className="h-9 w-9 rounded-md object-cover" />
-              <p className="font-display text-lg font-bold text-primary">AJBN</p>
+              <p className="font-display text-base md:text-lg font-bold text-primary">Asian Jewish Business Network</p>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Asian Jewish Business Network — connecting communities, empowering business across the UK.
