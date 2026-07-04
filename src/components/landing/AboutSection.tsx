@@ -32,6 +32,7 @@ const team = [
       "https://asian-jewish-business-network-cdn.s3.eu-west-2.amazonaws.com/wp-content/uploads/2024/07/26115756/Justin-Cohen.jpg",
     bio:
       "Journalist, news editor and publisher of 17 years, now shaping the direction of a growing media business. A regular commentator on the BBC, Sky, Channel 4 and LBC, with columns in The Times, Independent, Telegraph and Evening Standard.",
+    linkedin: "https://www.linkedin.com/in/justin-cohen-mbe-79678b181/",
   },
   {
     name: "Salil Patankar",
