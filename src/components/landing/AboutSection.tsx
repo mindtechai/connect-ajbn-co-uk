@@ -37,6 +37,13 @@ const team = [
     image: salilPatankar.url,
     bio:
       "AI-Driven CFO & Tax Advisor | Web3 Architect (zeuseaverse.com). Leads capital-connect ecosystems at AJBN, bridging finance, technology and community-driven growth.",
+    skills: [
+      "Tax advisory including corporate tax",
+      "Fundraising",
+      "Networking and B2B matchmaking",
+      "Digital marketing including AI deployment",
+      "Public speaking",
+    ],
   },
 ];
 
@@ -114,41 +121,26 @@ export function AboutSection() {
                       &ldquo;{m.quote}&rdquo;
                     </p>
                   )}
+                  {m.skills && m.skills.length > 0 && (
+                    <div className="mt-4 pt-4 border-t">
+                      <p className="text-xs uppercase tracking-wider text-teal font-medium mb-2">Top skills</p>
+                      <div className="flex flex-wrap gap-2">
+                        {m.skills.map((skill) => (
+                          <span
+                            key={skill}
+                            className="inline-flex items-center rounded-full bg-teal/10 px-2.5 py-1 text-xs font-medium text-teal"
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </ScrollReveal>
           ))}
         </div>
-
-        <ScrollReveal>
-          <div className="mt-20">
-            <p className="text-sm tracking-widest uppercase text-teal font-medium mb-3 text-center">
-              Expertise
-            </p>
-            <h3 className="text-2xl md:text-3xl font-display font-bold text-center mb-12">
-              Top skills
-            </h3>
-            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-              {[
-                "Tax advisory including corporate tax",
-                "Fundraising",
-                "Networking and B2B matchmaking",
-                "Digital marketing including AI deployment",
-                "Public speaking",
-              ].map((skill, i) => (
-                <div
-                  key={skill}
-                  className="bg-card border rounded-lg p-5 flex items-start gap-3 shadow-sm"
-                >
-                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-teal/10 text-teal text-xs font-bold shrink-0">
-                    {i + 1}
-                  </span>
-                  <p className="font-medium text-foreground">{skill}</p>
-                </div>
-              ))}
-            </div>
-          </div>
-        </ScrollReveal>
       </div>
     </section>
   );
