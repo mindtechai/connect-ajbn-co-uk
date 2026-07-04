@@ -1,11 +1,10 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
-import { BrandLink } from "@/components/BrandLink";
+import { AppLayout } from "@/components/AppLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, Download, Loader2, Trophy, HandCoins, HeartHandshake, Clock, CalendarCheck } from "lucide-react";
+import { Download, Loader2, Trophy, HandCoins, HeartHandshake, Clock, CalendarCheck } from "lucide-react";
 
 type Contribution = {
   id: string;
@@ -91,18 +90,9 @@ export default function ESGReportPage() {
   };
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-card sticky top-0 z-40">
-        <div className="container mx-auto px-4 lg:px-8 h-14 flex items-center gap-3">
-          <BrandLink />
-          <span className="text-muted-foreground">/</span>
-          <Link to="/dashboard" className="text-muted-foreground hover:text-foreground flex items-center gap-1.5 text-sm">
-            <ArrowLeft size={14} /> Dashboard
-          </Link>
-        </div>
-      </header>
+    <AppLayout maxWidth="4xl">
 
-      <main className="container mx-auto px-4 lg:px-8 py-8 max-w-4xl">
+      <>
         <div className="flex flex-wrap items-start justify-between gap-3 mb-6">
           <div>
             <h1 className="text-2xl md:text-3xl font-display font-bold">ESG contributions</h1>
@@ -165,8 +155,8 @@ export default function ESGReportPage() {
             </div>
           </>
         )}
-      </main>
-    </div>
+      </>
+    </AppLayout>
   );
 }
 

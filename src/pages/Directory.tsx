@@ -1,13 +1,13 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link } from "react-router-dom";
-import { BrandLink } from "@/components/BrandLink";
+import { AppLayout } from "@/components/AppLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { ArrowLeft, Search, Crown, Loader2, Building2, Mail, Linkedin } from "lucide-react";
+import { Search, Crown, Loader2, Building2, Mail, Linkedin } from "lucide-react";
 
 type Member = {
   id: string;
@@ -61,18 +61,9 @@ export default function DirectoryPage() {
   }), [members, q, industry]);
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-card sticky top-0 z-40">
-        <div className="container mx-auto px-4 lg:px-8 h-14 flex items-center gap-3">
-          <BrandLink />
-          <span className="text-muted-foreground">/</span>
-          <Link to="/dashboard" className="text-muted-foreground hover:text-foreground flex items-center gap-1.5 text-sm">
-            <ArrowLeft size={14} /> Dashboard
-          </Link>
-        </div>
-      </header>
+    <AppLayout maxWidth="6xl">
 
-      <main className="container mx-auto px-4 lg:px-8 py-8 max-w-6xl">
+      <>
         <div className="mb-6">
           <h1 className="text-2xl md:text-3xl font-display font-bold">Member Directory</h1>
           <p className="text-sm text-muted-foreground mt-1">
@@ -143,7 +134,7 @@ export default function DirectoryPage() {
             </div>
           </>
         )}
-      </main>
-    </div>
+      </>
+    </AppLayout>
   );
 }
