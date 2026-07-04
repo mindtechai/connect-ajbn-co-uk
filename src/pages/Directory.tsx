@@ -66,7 +66,7 @@ export default function DirectoryPage() {
         <div className="container mx-auto px-4 lg:px-8 h-14 flex items-center gap-3">
           <BrandLink />
           <span className="text-muted-foreground">/</span>
-           hover:text-foreground flex items-center gap-1.5 text-sm">
+          <Link to="/dashboard" className="text-muted-foreground hover:text-foreground flex items-center gap-1.5 text-sm">
             <ArrowLeft size={14} /> Dashboard
           </Link>
         </div>
