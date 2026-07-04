@@ -27,8 +27,8 @@ export function HeroSection() {
 
           <ScrollReveal delay={80}>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-primary-foreground leading-[1.08] mb-6">
-              Connecting Communities.{" "}
-              <span className="text-gradient-gold">Empowering Business.</span>
+              Empowering Business.{" "}
+              <span className="text-gradient-gold">Connecting Communities.</span>
             </h1>
           </ScrollReveal>
 

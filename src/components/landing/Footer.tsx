@@ -1,4 +1,5 @@
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
+import impactLionsLogo from "@/assets/impact-lions-logo.png.asset.json";
 import { assetUrl } from "@/lib/asset";
 
 export function Footer() {
@@ -7,12 +8,13 @@ export function Footer() {
       <div className="container mx-auto px-4 lg:px-8">
         <div className="grid md:grid-cols-3 gap-8">
           <div>
-            <div className="flex items-center gap-2 mb-3">
-              <img src={assetUrl(ajbnLogo)} alt="AJBN" className="h-9 w-9 rounded-md object-cover" />
-              <p className="font-display text-base md:text-lg font-bold text-primary">Asian Jewish Business Network</p>
+            <div className="flex items-center gap-3 mb-3">
+              <img src={assetUrl(ajbnLogo)} alt="AJBN" className="h-12 w-12 rounded-lg object-cover shadow-md ring-2 ring-gold/30" />
+              <p className="font-display text-lg md:text-xl font-bold text-primary">Asian Jewish Business Network</p>
+              <img src={assetUrl(impactLionsLogo)} alt="AJBN Impact Lions Club" className="h-10 w-10 object-contain" />
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
-              Asian Jewish Business Network — connecting communities, empowering business across the UK.
+              Asian Jewish Business Network — empowering business, connecting communities across the UK.
             </p>
           </div>
           <div>
