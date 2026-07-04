@@ -9,6 +9,7 @@ import lionsEmblem from "@/assets/lions-emblem.png";
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
 import { ReferralLeaderboard } from "@/components/dashboard/ReferralLeaderboard";
 import { LionsReferralLeaderboard } from "@/components/dashboard/LionsReferralLeaderboard";
+import { useAuth } from "@/hooks/useAuth";
 
 // Mock data
 const memberData = {
@@ -18,7 +19,6 @@ const memberData = {
   referralCode: "AJBN-RAJ2024",
   referrals: { total: 3, active: 2, target: 5 },
   profileCompletion: 72,
-  isSuperAdmin: true,
 };
 
 const upcomingEvents = [
@@ -34,6 +34,7 @@ const announcements = [
 
 export default function DashboardPage() {
   const navigate = useNavigate();
+  const { isSuperAdmin, signOut } = useAuth();
 
   return (
     <div className="min-h-screen bg-background">
@@ -45,7 +46,7 @@ export default function DashboardPage() {
             <span className="font-display text-lg font-bold text-primary">AJBN</span>
           </Link>
           <div className="flex items-center gap-3">
-            {memberData.isSuperAdmin && (
+            {isSuperAdmin && (
               <Link to="/admin">
                 <Button variant="outline" size="sm" className="gap-1.5">
                   <Shield size={14} />
@@ -58,7 +59,7 @@ export default function DashboardPage() {
               <span className="absolute -top-1 -right-1 w-2 h-2 bg-destructive rounded-full" />
             </button>
             <button
-              onClick={() => navigate("/login")}
+              onClick={async () => { await signOut(); navigate("/login"); }}
               className="text-muted-foreground hover:text-foreground"
             >
               <LogOut size={18} />
