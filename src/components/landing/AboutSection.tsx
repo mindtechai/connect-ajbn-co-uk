@@ -12,6 +12,7 @@ const team = [
     bio:
       "Over 25 years in sales — 15 in media sales, 15+ in exhibition sales and events, and 12 in senior and project management. Now runs his own consultancy.",
     quote: "Be who you want to be, do what you want to do, and succeed in what you're good at.",
+    linkedin: "https://www.linkedin.com/in/russell-bahar-/",
   },
   {
     name: "Bianca Weber",
