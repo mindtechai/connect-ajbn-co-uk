@@ -8,6 +8,7 @@ import { CalendarDays, MapPin, Users, Loader2, Crown, Trophy, QrCode } from "luc
 import { toast } from "@/hooks/use-toast";
 import { EventQRCode } from "@/components/EventQRCode";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type EventRow = {
   id: string;
@@ -39,6 +40,7 @@ export default function EventsPage() {
   const [rsvps, setRsvps] = useState<Record<string, Rsvp>>({});
   const [attendeeCounts, setAttendeeCounts] = useState<Record<string, number>>({});
   const [loading, setLoading] = useState(true);
+  const [filter, setFilter] = useState<"all" | "networking" | "fundraising">("all");
 
   const load = async () => {
     if (!user) return;
@@ -125,15 +127,29 @@ export default function EventsPage() {
           </div>
         </div>
 
-        {loading ? (
+        <Tabs value={filter} onValueChange={(v) => setFilter(v as typeof filter)} className="mb-4">
+          <TabsList className="grid grid-cols-3 w-full sm:w-auto">
+            <TabsTrigger value="all">All</TabsTrigger>
+            <TabsTrigger value="networking" className="gap-1"><Users size={12} /> Networking</TabsTrigger>
+            <TabsTrigger value="fundraising" className="gap-1"><Crown size={12} /> Impact Lions</TabsTrigger>
+          </TabsList>
+        </Tabs>
+
+        {(() => {
+          const visible = events.filter((e) =>
+            filter === "all" ? true : filter === "fundraising" ? e.kind === "fundraising" : e.kind !== "fundraising"
+          );
+          return loading ? (
           <div className="py-16 flex justify-center"><Loader2 className="animate-spin text-muted-foreground" /></div>
-        ) : events.length === 0 ? (
+          ) : visible.length === 0 ? (
           <div className="bg-card border rounded-xl p-12 text-center">
-            <p className="text-sm text-muted-foreground">No upcoming events. Check back soon.</p>
+              <p className="text-sm text-muted-foreground">
+                {filter === "all" ? "No upcoming events. Check back soon." : `No upcoming ${filter === "fundraising" ? "Impact Lions" : "networking"} events. Check back soon.`}
+              </p>
           </div>
-        ) : (
+          ) : (
           <div className="space-y-4">
-            {events.map((e) => {
+            {visible.map((e) => {
               const my = rsvps[e.id];
               const going = attendeeCounts[e.id] ?? 0;
               const pct = e.fundraising_target && Number(e.fundraising_target) > 0
@@ -210,7 +226,8 @@ export default function EventsPage() {
               );
             })}
           </div>
-        )}
+          );
+        })()}
       </>
     </AppLayout>
   );
