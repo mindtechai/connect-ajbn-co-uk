@@ -1,16 +1,17 @@
 import { ScrollReveal } from "@/components/ScrollReveal";
-import { Trophy, TrendingUp, Crown, Award } from "lucide-react";
+import { Trophy, TrendingUp, Crown, Award, Loader2 } from "lucide-react";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
-const leaderboardData = [
-  { rank: 1, name: "Priya Lieberman", referrals: 12, qualified: 9, badge: "Super Connector" },
-  { rank: 2, name: "Arjun Goldberg", referrals: 10, qualified: 8, badge: "Super Connector" },
-  { rank: 3, name: "Samir Cohen", referrals: 8, qualified: 6, badge: "Top Referrer" },
-  { rank: 4, name: "Anita Rosen", referrals: 7, qualified: 5, badge: null },
-  { rank: 5, name: "Vikram Levy", referrals: 6, qualified: 5, badge: null },
-  { rank: 6, name: "Raj Goldstein", referrals: 3, qualified: 2, badge: null, isCurrentUser: true },
-  { rank: 7, name: "Neha Friedman", referrals: 3, qualified: 2, badge: null },
-  { rank: 8, name: "Deepak Stern", referrals: 2, qualified: 1, badge: null },
-];
+type Row = {
+  user_id: string;
+  first_name: string | null;
+  last_name: string | null;
+  company: string | null;
+  referral_count: number;
+  is_lion: boolean;
+};
 
 const rankStyles: Record<number, string> = {
   1: "bg-gold-muted border-gold/30",
@@ -25,6 +26,18 @@ const rankIcons: Record<number, React.ReactNode> = {
 };
 
 export function ReferralLeaderboard() {
+  const { user } = useAuth();
+  const [rows, setRows] = useState<Row[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.rpc("referral_leaderboard", { _limit: 10 });
+      setRows((data ?? []) as Row[]);
+      setLoading(false);
+    })();
+  }, []);
+
   return (
     <div className="bg-card rounded-xl border p-5 shadow-sm">
       <div className="flex items-center justify-between mb-5">
@@ -32,64 +45,53 @@ export function ReferralLeaderboard() {
           <TrendingUp size={16} className="text-muted-foreground" />
           <h3 className="text-sm font-semibold">Referral Leaderboard</h3>
         </div>
-        <span className="text-xs text-muted-foreground">This year</span>
+        <span className="text-xs text-muted-foreground">All time</span>
       </div>
 
       {/* Column headers */}
-      <div className="grid grid-cols-[1.5rem_1fr_2.5rem_2.5rem] gap-2 px-3 mb-2">
+      <div className="grid grid-cols-[1.5rem_1fr_3rem] gap-2 px-3 mb-2">
         <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">#</span>
         <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider">Member</span>
         <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider text-center">Refs</span>
-        <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider text-center">Joined</span>
       </div>
 
-      <div className="space-y-1.5">
-        {leaderboardData.map((member, i) => (
-          <ScrollReveal key={member.name} delay={i * 50}>
-            <div
-              className={`grid grid-cols-[1.5rem_1fr_2.5rem_2.5rem] gap-2 items-center rounded-lg px-3 py-2.5 transition-colors ${
-                member.isCurrentUser
-                  ? "bg-primary/5 border border-primary/15 ring-1 ring-primary/10"
-                  : rankStyles[member.rank] || "hover:bg-muted/40"
-              } ${rankStyles[member.rank] ? "border" : ""}`}
-            >
-              {/* Rank */}
-              <div className="flex items-center justify-center">
-                {rankIcons[member.rank] || (
-                  <span className="text-xs text-muted-foreground font-medium tabular-nums">
-                    {member.rank}
-                  </span>
-                )}
-              </div>
-
-              {/* Name + badge */}
-              <div className="min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <span className={`text-sm truncate ${member.isCurrentUser ? "font-semibold text-primary" : "font-medium"}`}>
-                    {member.name}
-                    {member.isCurrentUser && (
-                      <span className="text-[10px] text-primary/60 ml-1">(you)</span>
-                    )}
-                  </span>
+      {loading ? (
+        <div className="py-8 flex justify-center"><Loader2 size={16} className="animate-spin text-muted-foreground" /></div>
+      ) : rows.length === 0 ? (
+        <p className="py-8 text-center text-xs text-muted-foreground">No referrals recorded yet — share your code to appear here.</p>
+      ) : (
+        <div className="space-y-1.5">
+          {rows.map((m, i) => {
+            const rank = i + 1;
+            const name = [m.first_name, m.last_name].filter(Boolean).join(" ") || "Member";
+            const isMe = user?.id === m.user_id;
+            return (
+              <ScrollReveal key={m.user_id} delay={i * 40}>
+                <div
+                  className={`grid grid-cols-[1.5rem_1fr_3rem] gap-2 items-center rounded-lg px-3 py-2.5 transition-colors ${
+                    isMe
+                      ? "bg-primary/5 border border-primary/15 ring-1 ring-primary/10"
+                      : rankStyles[rank] || "hover:bg-muted/40"
+                  } ${rankStyles[rank] ? "border" : ""}`}
+                >
+                  <div className="flex items-center justify-center">
+                    {rankIcons[rank] || <span className="text-xs text-muted-foreground font-medium tabular-nums">{rank}</span>}
+                  </div>
+                  <div className="min-w-0">
+                    <span className={`text-sm truncate ${isMe ? "font-semibold text-primary" : "font-medium"}`}>
+                      {name}{isMe && <span className="text-[10px] text-primary/60 ml-1">(you)</span>}
+                    </span>
+                    {m.company && <p className="text-[10px] text-muted-foreground truncate">{m.company}</p>}
+                  </div>
+                  <div className="text-center">
+                    <span className="text-sm font-bold tabular-nums">{m.referral_count}</span>
+                  </div>
                 </div>
-                {member.badge && (
-                  <span className="text-[10px] text-gold font-medium">{member.badge}</span>
-                )}
-              </div>
-
-              {/* Referrals sent */}
-              <div className="text-center">
-                <span className="text-sm font-bold tabular-nums">{member.referrals}</span>
-              </div>
-
-              {/* Qualified (became members) */}
-              <div className="text-center">
-                <span className="text-sm font-bold tabular-nums text-teal">{member.qualified}</span>
-              </div>
-            </div>
-          </ScrollReveal>
-        ))}
-      </div>
+              </ScrollReveal>
+            );
+          })}
+        </div>
+      )}
 
       {/* Incentive reminder */}
       <div className="mt-4 pt-4 border-t">
