@@ -1,9 +1,11 @@
 import { Link, useNavigate } from "react-router-dom";
+import { useEffect, useState } from "react";
+import { formatDistanceToNow } from "date-fns";
 import { Button } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import {
   Users, CalendarDays, Award, Link2, Bell, Crown,
-  Copy, ArrowRight, LogOut, Shield, Settings
+  Copy, ArrowRight, LogOut, Shield, Settings, User
 } from "lucide-react";
 import lionsEmblem from "@/assets/lions-emblem.png";
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
@@ -11,16 +13,8 @@ import { ReferralLeaderboard } from "@/components/dashboard/ReferralLeaderboard"
 import { LionsReferralLeaderboard } from "@/components/dashboard/LionsReferralLeaderboard";
 import { useAuth } from "@/hooks/useAuth";
 import { NotificationsBell } from "@/components/NotificationsBell";
-
-// Mock data
-const memberData = {
-  name: "Raj Goldstein",
-  memberSince: "Jan 2024",
-  validUntil: "Jan 2027",
-  referralCode: "AJBN-RAJ2024",
-  referrals: { total: 3, active: 2, target: 5 },
-  profileCompletion: 72,
-};
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 const upcomingEvents = [
   { title: "Q1 Networking Dinner", date: "28 Mar 2026", type: "networking" },
@@ -28,14 +22,39 @@ const upcomingEvents = [
   { title: "Annual Flagship Event", date: "19 Oct 2026", type: "networking" },
 ];
 
-const announcements = [
-  { text: "New mentorship programme launching in April — register your interest.", date: "2 days ago" },
-  { text: "Annual Flagship Event early bird tickets available.", date: "1 week ago" },
-];
+type Announcement = { id: string; title: string; body: string; priority: string; published_at: string; pinned: boolean };
 
 export default function DashboardPage() {
   const navigate = useNavigate();
-  const { isSuperAdmin, signOut } = useAuth();
+  const { user, isSuperAdmin, signOut } = useAuth();
+  const [profile, setProfile] = useState<any | null>(null);
+  const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [referralCount, setReferralCount] = useState(0);
+
+  useEffect(() => {
+    if (!user) return;
+    (async () => {
+      const [{ data: p }, { data: ann }, { count }] = await Promise.all([
+        supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
+        supabase.from("announcements").select("id,title,body,priority,published_at,pinned").order("pinned", { ascending: false }).order("published_at", { ascending: false }).limit(5),
+        supabase.from("profiles").select("*", { count: "exact", head: true }).eq("referred_by_code", (await supabase.from("profiles").select("referral_code").eq("id", user.id).maybeSingle()).data?.referral_code ?? "__none__"),
+      ]);
+      setProfile(p);
+      setAnnouncements(ann ?? []);
+      setReferralCount(count ?? 0);
+    })();
+  }, [user]);
+
+  const firstName = profile?.first_name || user?.user_metadata?.first_name || (user?.email ?? "").split("@")[0];
+  const memberSince = user?.created_at ? new Date(user.created_at).toLocaleDateString("en-GB", { month: "short", year: "numeric" }) : "—";
+  const referralCode = profile?.referral_code ?? "—";
+  const completion = calcCompletion(profile);
+
+  const copyReferral = () => {
+    if (!referralCode || referralCode === "—") return;
+    navigator.clipboard.writeText(referralCode);
+    toast({ title: "Referral code copied", description: referralCode });
+  };
 
   return (
     <div className="min-h-screen bg-background">
@@ -56,6 +75,14 @@ export default function DashboardPage() {
               </Link>
             )}
             <NotificationsBell />
+            <Link
+              to="/settings/profile"
+              className="text-muted-foreground hover:text-foreground"
+              aria-label="Profile"
+              title="Profile"
+            >
+              <User size={18} />
+            </Link>
             <Link
               to="/settings/notifications"
               className="text-muted-foreground hover:text-foreground"
@@ -79,10 +106,10 @@ export default function DashboardPage() {
         <ScrollReveal>
           <div className="mb-8">
             <h1 className="text-2xl md:text-3xl font-display font-bold mb-1">
-              Welcome back, {memberData.name.split(" ")[0]}
+              Welcome back, {firstName}
             </h1>
             <p className="text-muted-foreground text-sm">
-              Member since {memberData.memberSince} · Valid until {memberData.validUntil}
+              Member since {memberSince}
             </p>
           </div>
         </ScrollReveal>
@@ -94,17 +121,19 @@ export default function DashboardPage() {
               <div className="space-y-3">
                 <div className="flex justify-between text-sm">
                   <span className="text-muted-foreground">Progress</span>
-                  <span className="font-semibold">{memberData.profileCompletion}%</span>
+                  <span className="font-semibold">{completion}%</span>
                 </div>
                 <div className="h-2 bg-muted rounded-full overflow-hidden">
                   <div
                     className="h-full bg-navy-gradient rounded-full transition-all"
-                    style={{ width: `${memberData.profileCompletion}%` }}
+                    style={{ width: `${completion}%` }}
                   />
                 </div>
-                <Button variant="ghost" size="sm" className="text-xs mt-1">
-                  Complete Profile <ArrowRight size={14} />
-                </Button>
+                <Link to="/settings/profile">
+                  <Button variant="ghost" size="sm" className="text-xs mt-1">
+                    Complete Profile <ArrowRight size={14} />
+                  </Button>
+                </Link>
               </div>
             </DashboardCard>
           </ScrollReveal>
@@ -115,20 +144,16 @@ export default function DashboardPage() {
               <div className="space-y-3">
                 <div className="flex gap-4">
                   <div>
-                    <p className="text-2xl font-bold tabular-nums">{memberData.referrals.active}</p>
-                    <p className="text-xs text-muted-foreground">Active</p>
-                  </div>
-                  <div>
-                    <p className="text-2xl font-bold tabular-nums">{memberData.referrals.total}</p>
-                    <p className="text-xs text-muted-foreground">Total</p>
+                    <p className="text-2xl font-bold tabular-nums">{referralCount}</p>
+                    <p className="text-xs text-muted-foreground">Signed up with your code</p>
                   </div>
                 </div>
                 <p className="text-xs text-muted-foreground">
-                  Refer {memberData.referrals.target - memberData.referrals.active} more for free membership
+                  Refer 5 members to earn a free renewal.
                 </p>
                 <div className="flex items-center gap-2 bg-muted rounded-md px-3 py-2">
-                  <code className="text-xs flex-1 truncate">{memberData.referralCode}</code>
-                  <button className="text-muted-foreground hover:text-foreground shrink-0">
+                  <code className="text-xs flex-1 truncate">{referralCode}</code>
+                  <button onClick={copyReferral} className="text-muted-foreground hover:text-foreground shrink-0">
                     <Copy size={14} />
                   </button>
                 </div>
@@ -169,10 +194,16 @@ export default function DashboardPage() {
           <ScrollReveal delay={320}>
             <DashboardCard title="Announcements" icon={Bell}>
               <div className="space-y-3">
-                {announcements.map((a, i) => (
-                  <div key={i} className="pb-3 border-b last:border-0">
-                    <p className="text-sm">{a.text}</p>
-                    <p className="text-xs text-muted-foreground mt-1">{a.date}</p>
+                {announcements.length === 0 && (
+                  <p className="text-xs text-muted-foreground">No announcements right now.</p>
+                )}
+                {announcements.map((a) => (
+                  <div key={a.id} className="pb-3 border-b last:border-0">
+                    <p className="text-sm font-medium">{a.title}</p>
+                    <p className="text-xs text-muted-foreground line-clamp-2 mt-0.5">{a.body}</p>
+                    <p className="text-[10px] text-muted-foreground/70 mt-1">
+                      {formatDistanceToNow(new Date(a.published_at), { addSuffix: true })}
+                    </p>
                   </div>
                 ))}
               </div>
