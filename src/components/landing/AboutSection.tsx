@@ -103,7 +103,11 @@ export function AboutSection() {
                 </div>
                 <div className="p-5 flex-1 flex flex-col">
                   <p className="font-display text-lg font-semibold">{m.name}</p>
-                  <p className="text-xs uppercase tracking-wider text-teal font-medium mb-3">{m.role}</p>
+                  <p className="text-xs uppercase tracking-wider text-teal font-medium mb-1">{m.role}</p>
+                  {m.pronouns && (
+                    <p className="text-xs text-muted-foreground/80 mb-3">{m.pronouns}</p>
+                  )}
+                  {!m.pronouns && <div className="mb-3" />}
                   <p className="text-sm text-muted-foreground leading-relaxed">{m.bio}</p>
                   {m.quote && (
                     <p className="mt-4 pt-4 border-t text-sm italic text-foreground/80">
