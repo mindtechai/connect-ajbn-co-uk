@@ -83,10 +83,11 @@ export function MemberApprovals() {
 
   const approve = async (m: Applicant, asLion = false) => {
     // Add ajbn_member (and optional impact_lion), remove prospective role
-    await supabase.from("user_roles").insert([
+    const rows: { user_id: string; role: "ajbn_member" | "impact_lion" }[] = [
       { user_id: m.id, role: "ajbn_member" },
-      ...(asLion ? [{ user_id: m.id, role: "impact_lion" }] : []),
-    ]);
+    ];
+    if (asLion) rows.push({ user_id: m.id, role: "impact_lion" });
+    await supabase.from("user_roles").insert(rows);
     await supabase.from("user_roles").delete().eq("user_id", m.id).eq("role", "prospective_member");
     toast({ title: "Member approved", description: `${m.first_name ?? "Member"} is now an active AJBN member${asLion ? " + Impact Lion" : ""}.` });
     load();
