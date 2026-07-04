@@ -548,6 +548,15 @@ export type Database = {
         }
         Returns: boolean
       }
+      public_member_directory: {
+        Args: never
+        Returns: {
+          company: string
+          has_lion: boolean
+          industry: string
+          member_count: number
+        }[]
+      }
       referral_code_exists: { Args: { _code: string }; Returns: boolean }
       referral_leaderboard: {
         Args: { _limit?: number }
