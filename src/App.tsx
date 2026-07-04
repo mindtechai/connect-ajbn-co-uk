@@ -14,6 +14,9 @@ import UnsubscribePage from "./pages/Unsubscribe.tsx";
 import ForgotPasswordPage from "./pages/ForgotPassword.tsx";
 import ResetPasswordPage from "./pages/ResetPassword.tsx";
 import ProfilePage from "./pages/Profile.tsx";
+import DirectoryPage from "./pages/Directory.tsx";
+import EventsPage from "./pages/Events.tsx";
+import ESGReportPage from "./pages/ESGReport.tsx";
 import { AuthProvider } from "@/hooks/useAuth";
 import { RequireSuperAdmin } from "@/components/RequireSuperAdmin";
 import { RequireAuth } from "@/components/RequireAuth";
@@ -36,12 +39,17 @@ const App = () => (
           <Route path="/dashboard" element={<RequireAuth><DashboardPage /></RequireAuth>} />
           <Route path="/settings/notifications" element={<RequireAuth><NotificationPreferencesPage /></RequireAuth>} />
           <Route path="/settings/profile" element={<RequireAuth><ProfilePage /></RequireAuth>} />
+          <Route path="/directory" element={<RequireAuth><DirectoryPage /></RequireAuth>} />
+          <Route path="/events" element={<RequireAuth><EventsPage /></RequireAuth>} />
+          <Route path="/esg" element={<RequireAuth><ESGReportPage /></RequireAuth>} />
           <Route path="/unsubscribe" element={<UnsubscribePage />} />
           <Route path="/admin" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
           <Route path="/admin/members" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
           <Route path="/admin/approvals" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
           <Route path="/admin/communications" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
           <Route path="/admin/bulk-actions" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
+          <Route path="/admin/events" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
+          <Route path="/admin/esg" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
           <Route path="/admin/settings" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
