@@ -54,6 +54,7 @@ export function BulkActionsPanel() {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [priority, setPriority] = useState("info");
+  const [category, setCategory] = useState<"announcements" | "events" | "renewals" | "lions" | "general">("general");
   const [channelEmail, setChannelEmail] = useState(true);
   const [channelInApp, setChannelInApp] = useState(true);
   const [pinToDashboard, setPinToDashboard] = useState(false);
@@ -115,7 +116,7 @@ export function BulkActionsPanel() {
     setSending(true);
     try {
       const { data, error } = await supabase.functions.invoke("send-bulk-message", {
-        body: { subject: title, body, segments: selected, channels },
+        body: { subject: title, body, segments: selected, channels, category },
       });
       if (error) throw error;
       if (data?.error) throw new Error(typeof data.error === "string" ? data.error : "Send failed");
@@ -247,6 +248,23 @@ export function BulkActionsPanel() {
 
             {/* Channels (email tab only) */}
             <TabsContent value="email" className="m-0 space-y-3">
+              <div className="space-y-2">
+                <label className="text-sm font-medium">Category</label>
+                <Select value={category} onValueChange={(v) => setCategory(v as any)}>
+                  <SelectTrigger><SelectValue /></SelectTrigger>
+                  <SelectContent>
+                    <SelectItem value="announcements">Announcements</SelectItem>
+                    <SelectItem value="events">Events &amp; RSVPs</SelectItem>
+                    <SelectItem value="renewals">Membership &amp; renewals</SelectItem>
+                    <SelectItem value="lions">Impact Lions</SelectItem>
+                    <SelectItem value="general">General</SelectItem>
+                  </SelectContent>
+                </Select>
+                <p className="text-xs text-muted-foreground">
+                  Recipients who disabled this category won't receive the message on the corresponding channel.
+                </p>
+              </div>
+
               <label className="text-sm font-medium">Delivery channels</label>
               <div className="flex gap-2">
                 <button

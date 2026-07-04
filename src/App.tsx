@@ -9,6 +9,8 @@ import RegisterPage from "./pages/Register.tsx";
 import DashboardPage from "./pages/Dashboard.tsx";
 import AdminPage from "./pages/Admin.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import NotificationPreferencesPage from "./pages/NotificationPreferences.tsx";
+import UnsubscribePage from "./pages/Unsubscribe.tsx";
 import { AuthProvider } from "@/hooks/useAuth";
 import { RequireSuperAdmin } from "@/components/RequireSuperAdmin";
 
@@ -26,6 +28,8 @@ const App = () => (
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
+          <Route path="/settings/notifications" element={<NotificationPreferencesPage />} />
+          <Route path="/unsubscribe" element={<UnsubscribePage />} />
           <Route path="/admin" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
           <Route path="/admin/members" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
           <Route path="/admin/approvals" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />

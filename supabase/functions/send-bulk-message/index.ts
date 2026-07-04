@@ -7,6 +7,7 @@ const BodySchema = z.object({
   body: z.string().trim().min(1).max(10000),
   segments: z.array(z.enum(["ajbn", "lions", "prospective", "expired", "board"])).min(1),
   channels: z.array(z.enum(["email", "in_app"])).min(1),
+  category: z.enum(["announcements", "events", "renewals", "lions", "general"]).default("general"),
 });
 
 const SEGMENT_TO_ROLES: Record<string, string[]> = {
@@ -47,7 +48,7 @@ Deno.serve(async (req) => {
     if (!parsed.success) {
       return json({ error: parsed.error.flatten() }, 400);
     }
-    const { subject, body, segments, channels } = parsed.data;
+    const { subject, body, segments, channels, category } = parsed.data;
 
     // Resolve recipients
     const roleSet = new Set<string>();
@@ -68,6 +69,30 @@ Deno.serve(async (req) => {
       recipients = (profs ?? []).filter((p) => p.email);
     }
 
+    // Preferences: per recipient, per channel (default: enabled)
+    const { data: prefs } = await admin
+      .from("notification_preferences")
+      .select("user_id, email_enabled, inapp_enabled")
+      .eq("category", category)
+      .in("user_id", recipientIds.length ? recipientIds : ["00000000-0000-0000-0000-000000000000"]);
+    const prefMap = new Map<string, { email: boolean; inapp: boolean }>();
+    for (const p of prefs ?? []) {
+      prefMap.set(p.user_id, { email: p.email_enabled, inapp: p.inapp_enabled });
+    }
+    const allows = (uid: string, ch: "email" | "inapp") => {
+      const p = prefMap.get(uid);
+      return p ? (ch === "email" ? p.email : p.inapp) : true;
+    };
+
+    // Unsubscribe tokens
+    const { data: tokens } = await admin
+      .from("unsubscribe_tokens")
+      .select("user_id, token")
+      .in("user_id", recipientIds.length ? recipientIds : ["00000000-0000-0000-0000-000000000000"]);
+    const tokenMap = new Map<string, string>();
+    for (const t of tokens ?? []) tokenMap.set(t.user_id, t.token);
+    const origin = req.headers.get("origin") ?? req.headers.get("referer")?.replace(/\/$/, "") ?? "";
+
     // Create bulk_messages row
     const { data: msg, error: msgErr } = await admin.from("bulk_messages").insert({
       created_by: userData.user.id,
@@ -87,7 +112,7 @@ Deno.serve(async (req) => {
         .replaceAll("{first_name}", r.first_name ?? "")
         .replaceAll("{last_name}", r.last_name ?? "");
 
-      if (channels.includes("in_app")) {
+      if (channels.includes("in_app") && allows(r.id, "inapp")) {
         notifRows.push({
           user_id: r.id,
           bulk_message_id: bulkId,
@@ -103,9 +128,19 @@ Deno.serve(async (req) => {
           status: "sent",
           sent_at: new Date().toISOString(),
         });
+      } else if (channels.includes("in_app")) {
+        deliveryRows.push({
+          bulk_message_id: bulkId,
+          recipient_user_id: r.id,
+          recipient_email: r.email,
+          recipient_name: [r.first_name, r.last_name].filter(Boolean).join(" ") || null,
+          channel: "in_app",
+          status: "suppressed",
+          error: `Recipient disabled in-app for '${category}'`,
+        });
       }
 
-      if (channels.includes("email")) {
+      if (channels.includes("email") && allows(r.id, "email")) {
         deliveryRows.push({
           bulk_message_id: bulkId,
           recipient_user_id: r.id,
@@ -113,6 +148,16 @@ Deno.serve(async (req) => {
           recipient_name: [r.first_name, r.last_name].filter(Boolean).join(" ") || null,
           channel: "email",
           status: "queued",
+        });
+      } else if (channels.includes("email")) {
+        deliveryRows.push({
+          bulk_message_id: bulkId,
+          recipient_user_id: r.id,
+          recipient_email: r.email,
+          recipient_name: [r.first_name, r.last_name].filter(Boolean).join(" ") || null,
+          channel: "email",
+          status: "suppressed",
+          error: `Recipient unsubscribed from '${category}' email`,
         });
       }
     }
@@ -126,10 +171,14 @@ Deno.serve(async (req) => {
     let emailFailed = 0;
     let emailErrorNote: string | null = null;
 
-    if (channels.includes("email") && recipients.length > 0) {
+    const emailRecipients = recipients.filter((r) => allows(r.id, "email"));
+    if (channels.includes("email") && emailRecipients.length > 0) {
       // Try the Lovable-managed send-transactional-email function
       try {
-        for (const r of recipients) {
+        for (const r of emailRecipients) {
+          const unsubUrl = origin && tokenMap.get(r.id)
+            ? `${origin}/unsubscribe?token=${tokenMap.get(r.id)}&category=${category}`
+            : "";
           const { error: sendErr } = await admin.functions.invoke("send-transactional-email", {
             body: {
               templateName: "bulk-message",
@@ -141,6 +190,8 @@ Deno.serve(async (req) => {
                   .replaceAll("{first_name}", r.first_name ?? "")
                   .replaceAll("{last_name}", r.last_name ?? ""),
                 first_name: r.first_name ?? "",
+                unsubscribe_url: unsubUrl,
+                category,
               },
             },
           });
