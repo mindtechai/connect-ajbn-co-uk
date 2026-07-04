@@ -3,7 +3,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import {
   Users, CalendarDays, Award, Link2, Bell, Crown,
-  Copy, ArrowRight, LogOut, Shield
+  Copy, ArrowRight, LogOut, Shield, Settings
 } from "lucide-react";
 import lionsEmblem from "@/assets/lions-emblem.png";
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
@@ -56,6 +56,14 @@ export default function DashboardPage() {
               </Link>
             )}
             <NotificationsBell />
+            <Link
+              to="/settings/notifications"
+              className="text-muted-foreground hover:text-foreground"
+              aria-label="Notification preferences"
+              title="Notification preferences"
+            >
+              <Settings size={18} />
+            </Link>
             <button
               onClick={async () => { await signOut(); navigate("/login"); }}
               className="text-muted-foreground hover:text-foreground"
