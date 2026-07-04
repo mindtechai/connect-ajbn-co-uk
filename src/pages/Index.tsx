@@ -5,6 +5,7 @@ import { FeaturesSection } from "@/components/landing/FeaturesSection";
 import { MembersShowcase } from "@/components/landing/MembersShowcase";
 import { EventsSection } from "@/components/landing/EventsSection";
 import { ImpactLionsSection } from "@/components/landing/ImpactLionsSection";
+import { ReferralRewardsSection } from "@/components/landing/ReferralRewardsSection";
 import { StatsSection } from "@/components/landing/StatsSection";
 import { CTASection } from "@/components/landing/CTASection";
 import { Footer } from "@/components/landing/Footer";
@@ -20,6 +21,7 @@ const Index = () => {
       <MembersShowcase />
       <EventsSection />
       <ImpactLionsSection />
+      <ReferralRewardsSection />
       <CTASection />
       <Footer />
     </div>
