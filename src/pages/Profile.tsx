@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { ArrowLeft, Loader2, Copy } from "lucide-react";
+import { ArrowLeft, Loader2, Copy, Upload } from "lucide-react";
 
 export default function ProfilePage() {
   const { user, loading: authLoading } = useAuth();
@@ -17,8 +17,9 @@ export default function ProfilePage() {
   const [form, setForm] = useState({
     first_name: "", last_name: "", company: "", title: "",
     industry: "", phone: "", linkedin: "", bio: "", email: "",
-    referral_code: "",
+    referral_code: "", avatar_url: "",
   });
+  const [uploading, setUploading] = useState(false);
 
   useEffect(() => {
     if (authLoading) return;
@@ -37,11 +38,27 @@ export default function ProfilePage() {
           bio: (data as any).bio ?? "",
           email: data.email ?? user.email ?? "",
           referral_code: (data as any).referral_code ?? "",
+          avatar_url: (data as any).avatar_url ?? "",
         });
       }
       setLoading(false);
     })();
   }, [user, authLoading, navigate]);
+
+  const uploadAvatar = async (file: File) => {
+    if (!user) return;
+    setUploading(true);
+    const ext = file.name.split(".").pop() || "jpg";
+    const path = `${user.id}/avatar.${ext}`;
+    const { error } = await supabase.storage.from("avatars").upload(path, file, { upsert: true, contentType: file.type });
+    if (error) { setUploading(false); toast({ title: "Upload failed", description: error.message, variant: "destructive" }); return; }
+    const { data: signed } = await supabase.storage.from("avatars").createSignedUrl(path, 60 * 60 * 24 * 365);
+    const url = signed?.signedUrl ?? "";
+    await supabase.from("profiles").update({ avatar_url: url } as any).eq("id", user.id);
+    setForm((p) => ({ ...p, avatar_url: url }));
+    setUploading(false);
+    toast({ title: "Avatar updated" });
+  };
 
   const save = async () => {
     if (!user) return;
@@ -83,6 +100,20 @@ export default function ProfilePage() {
         <p className="text-sm text-muted-foreground mb-6">Kept private within the AJBN member network.</p>
 
         <div className="bg-card border rounded-xl p-6 shadow-sm space-y-5">
+          <div className="flex items-center gap-4 pb-4 border-b">
+            <div className="h-16 w-16 rounded-full bg-muted overflow-hidden flex items-center justify-center text-lg font-semibold text-muted-foreground">
+              {form.avatar_url ? <img src={form.avatar_url} alt="" className="h-full w-full object-cover" /> : (form.first_name[0] ?? "?")}
+            </div>
+            <div>
+              <label className="inline-flex items-center gap-1.5 text-sm font-medium cursor-pointer text-primary hover:underline">
+                <Upload size={14} />
+                {uploading ? "Uploading…" : "Upload photo"}
+                <input type="file" accept="image/*" hidden disabled={uploading}
+                  onChange={(e) => e.target.files?.[0] && uploadAvatar(e.target.files[0])} />
+              </label>
+              <p className="text-xs text-muted-foreground">JPG / PNG, max 5MB.</p>
+            </div>
+          </div>
           <div className="grid grid-cols-2 gap-3">
             <div className="space-y-2"><Label>First name</Label><Input value={form.first_name} onChange={set("first_name")} /></div>
             <div className="space-y-2"><Label>Last name</Label><Input value={form.last_name} onChange={set("last_name")} /></div>

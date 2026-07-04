@@ -14,6 +14,36 @@ export type Database = {
   }
   public: {
     Tables: {
+      admin_audit_log: {
+        Row: {
+          action: string
+          actor_id: string
+          created_at: string
+          details: Json
+          id: string
+          target_id: string | null
+          target_type: string | null
+        }
+        Insert: {
+          action: string
+          actor_id: string
+          created_at?: string
+          details?: Json
+          id?: string
+          target_id?: string | null
+          target_type?: string | null
+        }
+        Update: {
+          action?: string
+          actor_id?: string
+          created_at?: string
+          details?: Json
+          id?: string
+          target_id?: string | null
+          target_type?: string | null
+        }
+        Relationships: []
+      }
       announcements: {
         Row: {
           body: string
@@ -138,6 +168,9 @@ export type Database = {
       }
       event_rsvps: {
         Row: {
+          checked_in_at: string | null
+          checked_in_by: string | null
+          checkin_token: string
           created_at: string
           event_id: string
           guests: number
@@ -148,6 +181,9 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          checked_in_at?: string | null
+          checked_in_by?: string | null
+          checkin_token?: string
           created_at?: string
           event_id: string
           guests?: number
@@ -158,6 +194,9 @@ export type Database = {
           user_id: string
         }
         Update: {
+          checked_in_at?: string | null
+          checked_in_by?: string | null
+          checkin_token?: string
           created_at?: string
           event_id?: string
           guests?: number
@@ -228,6 +267,42 @@ export type Database = {
           starts_at?: string
           title?: string
           updated_at?: string
+        }
+        Relationships: []
+      }
+      lion_applications: {
+        Row: {
+          created_at: string
+          id: string
+          motivation: string
+          review_notes: string | null
+          reviewed_at: string | null
+          reviewed_by: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          motivation: string
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          motivation?: string
+          review_notes?: string | null
+          reviewed_at?: string | null
+          reviewed_by?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
         }
         Relationships: []
       }
@@ -453,6 +528,15 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      checkin_rsvp: {
+        Args: { _token: string }
+        Returns: {
+          already_checked: boolean
+          event_title: string
+          member_name: string
+          rsvp_id: string
+        }[]
+      }
       generate_referral_code: {
         Args: { _first: string; _last: string }
         Returns: string
@@ -464,6 +548,7 @@ export type Database = {
         }
         Returns: boolean
       }
+      referral_code_exists: { Args: { _code: string }; Returns: boolean }
       referral_leaderboard: {
         Args: { _limit?: number }
         Returns: {

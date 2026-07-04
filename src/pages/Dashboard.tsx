@@ -114,7 +114,7 @@ export default function DashboardPage() {
 
         {/* Quick nav */}
         <ScrollReveal>
-          <div className="grid sm:grid-cols-3 gap-3 mb-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
             <Link to="/directory" className="bg-card border rounded-xl p-4 shadow-sm hover:border-primary/40 transition-colors flex items-center gap-3">
               <div className="rounded-lg bg-primary/10 w-10 h-10 grid place-items-center"><BookUser size={18} className="text-primary" /></div>
               <div><p className="text-sm font-semibold">Member Directory</p><p className="text-xs text-muted-foreground">Search & filter by industry</p></div>
@@ -126,6 +126,10 @@ export default function DashboardPage() {
             <Link to="/esg" className="bg-card border rounded-xl p-4 shadow-sm hover:border-primary/40 transition-colors flex items-center gap-3">
               <div className="rounded-lg bg-gold/10 w-10 h-10 grid place-items-center"><HeartHandshake size={18} className="text-gold" /></div>
               <div><p className="text-sm font-semibold">ESG Report</p><p className="text-xs text-muted-foreground">Your social-impact summary</p></div>
+            </Link>
+            <Link to="/lions" className="bg-card border rounded-xl p-4 shadow-sm hover:border-gold/40 transition-colors flex items-center gap-3">
+              <div className="rounded-lg bg-gold/10 w-10 h-10 grid place-items-center"><Crown size={18} className="text-gold" /></div>
+              <div><p className="text-sm font-semibold">Impact Lions</p><p className="text-xs text-muted-foreground">Join the charitable arm</p></div>
             </Link>
           </div>
         </ScrollReveal>

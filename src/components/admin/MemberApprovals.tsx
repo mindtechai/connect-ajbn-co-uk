@@ -89,12 +89,28 @@ export function MemberApprovals() {
     if (asLion) rows.push({ user_id: m.id, role: "impact_lion" });
     await supabase.from("user_roles").insert(rows);
     await supabase.from("user_roles").delete().eq("user_id", m.id).eq("role", "prospective_member");
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      await supabase.from("admin_audit_log").insert({
+        actor_id: user.id, action: asLion ? "approve_member_lion" : "approve_member",
+        target_type: "user", target_id: m.id,
+        details: { email: m.email, name: `${m.first_name ?? ""} ${m.last_name ?? ""}`.trim() },
+      });
+    }
     toast({ title: "Member approved", description: `${m.first_name ?? "Member"} is now an active AJBN member${asLion ? " + Impact Lion" : ""}.` });
     load();
   };
 
   const reject = async (m: Applicant) => {
     await supabase.from("user_roles").delete().eq("user_id", m.id).eq("role", "prospective_member");
+    const { data: { user } } = await supabase.auth.getUser();
+    if (user) {
+      await supabase.from("admin_audit_log").insert({
+        actor_id: user.id, action: "reject_member",
+        target_type: "user", target_id: m.id,
+        details: { email: m.email },
+      });
+    }
     toast({ title: "Application declined", description: `${m.first_name ?? "Applicant"} has been declined.`, variant: "destructive" });
     load();
   };

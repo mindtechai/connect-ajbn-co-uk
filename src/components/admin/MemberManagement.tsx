@@ -95,9 +95,11 @@ export function MemberManagement() {
   const toggleLion = async (m: Member) => {
     if (m.roles.includes("impact_lion")) {
       await supabase.from("user_roles").delete().eq("user_id", m.id).eq("role", "impact_lion");
+      await logAudit("remove_lion", m);
       toast({ title: "Removed from Impact Lions" });
     } else {
       await supabase.from("user_roles").insert({ user_id: m.id, role: "impact_lion" });
+      await logAudit("add_lion", m);
       toast({ title: "Added to Impact Lions" });
     }
     load();
@@ -105,8 +107,18 @@ export function MemberManagement() {
 
   const suspend = async (m: Member) => {
     await supabase.from("user_roles").delete().eq("user_id", m.id).in("role", ["ajbn_member", "impact_lion"]);
+    await logAudit("suspend_member", m);
     toast({ title: "Access suspended", description: `${m.first_name ?? "Member"} moved to prospective.` });
     load();
+  };
+
+  const logAudit = async (action: string, m: Member) => {
+    const { data: { user } } = await supabase.auth.getUser();
+    if (!user) return;
+    await supabase.from("admin_audit_log").insert({
+      actor_id: user.id, action, target_type: "user", target_id: m.id,
+      details: { email: m.email, name: `${m.first_name ?? ""} ${m.last_name ?? ""}`.trim() },
+    });
   };
 
   if (loading) {

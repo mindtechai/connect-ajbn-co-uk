@@ -23,6 +23,15 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    const code = referral.trim().toUpperCase();
+    if (code) {
+      const { data: valid, error: rpcErr } = await supabase.rpc("referral_code_exists", { _code: code });
+      if (rpcErr || !valid) {
+        setLoading(false);
+        toast({ title: "Invalid referral code", description: "That code doesn't match any AJBN member. Leave blank if you don't have one.", variant: "destructive" });
+        return;
+      }
+    }
     const { error } = await supabase.auth.signUp({
       email,
       password,
@@ -32,7 +41,7 @@ export default function RegisterPage() {
           first_name: firstName,
           last_name: lastName,
           company,
-          referred_by_code: referral.trim() || undefined,
+          referred_by_code: code || undefined,
         },
       },
     });
