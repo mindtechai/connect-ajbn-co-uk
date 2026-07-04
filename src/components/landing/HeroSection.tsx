@@ -2,6 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import heroImage from "@/assets/hero-networking.jpg";
+import { ArrowRight } from "lucide-react";
 
 export function HeroSection() {
   return (
@@ -50,10 +51,29 @@ export function HeroSection() {
                   Learn More
                 </Button>
               </a>
+              <Link to="/referral-rewards">
+                <Button variant="heroOutline" size="xl">
+                  Members Referral Rewards
+                  <ArrowRight className="ml-2" size={18} />
+                </Button>
+              </Link>
             </div>
           </ScrollReveal>
         </div>
       </div>
+
+      {/* Vertical right-side tag — desktop only */}
+      <Link
+        to="/referral-rewards"
+        aria-label="Members Referral Rewards"
+        className="hidden lg:flex absolute right-6 xl:right-10 top-1/2 -translate-y-1/2 z-20 items-center gap-3 rotate-90 origin-right group"
+      >
+        <span className="h-px w-10 bg-gold/70 group-hover:w-14 transition-all" />
+        <span className="text-xs xl:text-sm tracking-[0.32em] uppercase font-semibold text-gold whitespace-nowrap">
+          Members Referral Rewards
+        </span>
+        <ArrowRight size={14} className="text-gold" />
+      </Link>
 
       {/* Bottom fade */}
       <div className="absolute bottom-0 left-0 right-0 h-24 bg-gradient-to-t from-background to-transparent" />

@@ -65,6 +65,12 @@ export function Navbar() {
               {item}
             </a>
           ))}
+          <Link
+            to="/referral-rewards"
+            className={`text-sm font-medium transition-colors hover:opacity-80 ${showSolid ? "text-muted-foreground hover:text-foreground" : "text-primary-foreground/80 hover:text-primary-foreground"}`}
+          >
+            Referral Rewards
+          </Link>
           <Link to="/login">
             <Button variant={showSolid ? "outline" : "heroOutline"} size="sm">
               Sign In
@@ -99,6 +105,13 @@ export function Navbar() {
               {item}
             </a>
           ))}
+          <Link
+            to="/referral-rewards"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground py-2"
+            onClick={() => setOpen(false)}
+          >
+            Referral Rewards
+          </Link>
           <Link to="/login" onClick={() => setOpen(false)}>
             <Button variant="outline" size="sm" className="w-full">Sign In</Button>
           </Link>
