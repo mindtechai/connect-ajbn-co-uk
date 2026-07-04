@@ -1,4 +1,5 @@
 import { ScrollReveal } from "@/components/ScrollReveal";
+import { Linkedin } from "lucide-react";
 import salilPatankar from "@/assets/salil-patankar.jpg.asset.json";
 
 const team = [
@@ -44,6 +45,7 @@ const team = [
       "Digital marketing including AI deployment",
       "Public speaking",
     ],
+    linkedin: "https://www.linkedin.com/in/salil-patankar-94892a367/",
   },
 ];
 
@@ -135,6 +137,18 @@ export function AboutSection() {
                         ))}
                       </div>
                     </div>
+                  )}
+                  {m.linkedin && (
+                    <a
+                      href={m.linkedin}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      className="mt-4 inline-flex items-center gap-2 text-sm font-medium text-teal hover:text-teal/80 transition-colors"
+                      aria-label={`${m.name} LinkedIn profile`}
+                    >
+                      <Linkedin className="w-4 h-4" />
+                      LinkedIn
+                    </a>
                   )}
                 </div>
               </div>
