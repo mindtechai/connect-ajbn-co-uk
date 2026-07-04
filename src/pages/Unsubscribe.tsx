@@ -118,5 +118,6 @@ export default function UnsubscribePage() {
         )}
       </div>
     </div>
+    </div>
   );
 }
