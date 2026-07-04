@@ -3,6 +3,7 @@ import { Link, useSearchParams } from "react-router-dom";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, XCircle, Loader2, Mail, Undo2 } from "lucide-react";
+import { BrandLink } from "@/components/BrandLink";
 
 const CATEGORY_LABELS: Record<string, string> = {
   announcements: "Announcements",
@@ -53,7 +54,13 @@ export default function UnsubscribePage() {
   const catLabel = category ? (CATEGORY_LABELS[category] ?? category) : "all email";
 
   return (
-    <div className="min-h-screen grid place-items-center bg-background px-4">
+    <div className="min-h-screen bg-background">
+      <header className="border-b bg-card">
+        <div className="container mx-auto px-4 lg:px-8 h-14 flex items-center">
+          <BrandLink />
+        </div>
+      </header>
+      <div className="grid place-items-center px-4 py-12">
       <div className="max-w-md w-full bg-card border rounded-2xl shadow-sm p-8 text-center space-y-4">
         {state === "validating" && (
           <>
