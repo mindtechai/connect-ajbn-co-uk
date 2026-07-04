@@ -1,10 +1,15 @@
+import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
+
 export function Footer() {
   return (
     <footer className="py-12 bg-card border-t">
       <div className="container mx-auto px-4 lg:px-8">
         <div className="grid md:grid-cols-3 gap-8">
           <div>
-            <p className="font-display text-lg font-bold text-primary mb-2">AJBN</p>
+            <div className="flex items-center gap-2 mb-3">
+              <img src={ajbnLogo.url} alt="AJBN" className="h-9 w-9 rounded-md object-cover" />
+              <p className="font-display text-lg font-bold text-primary">AJBN</p>
+            </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Asian Jewish Business Network — connecting communities, empowering business across the UK.
             </p>

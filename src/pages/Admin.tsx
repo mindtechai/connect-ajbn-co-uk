@@ -1,6 +1,6 @@
-import { useState } from "react";
-import { Link, useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import { Bell, LogOut, Shield } from "lucide-react";
+import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { AdminMobileNav } from "@/components/admin/AdminMobileNav";
 import { AnalyticsOverview } from "@/components/admin/AnalyticsOverview";
@@ -38,7 +38,8 @@ export default function AdminPage() {
         <header className="bg-card border-b sticky top-0 z-40">
           <div className="px-4 lg:px-8 h-14 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <Shield size={16} className="text-primary" />
+              <img src={ajbnLogo.url} alt="AJBN" className="h-8 w-8 rounded-md object-cover" />
+              <Shield size={14} className="text-primary" />
               <span className="font-display text-sm font-bold text-primary">AJBN Admin</span>
             </div>
             <div className="flex items-center gap-3">
