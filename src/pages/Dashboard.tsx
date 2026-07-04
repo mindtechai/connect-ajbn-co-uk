@@ -5,7 +5,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import {
   Users, CalendarDays, Award, Link2, Bell, Crown,
-  Copy, ArrowRight, LogOut, Shield, Settings, User
+  Copy, ArrowRight, LogOut, Shield, Settings, User, BookUser, HeartHandshake
 } from "lucide-react";
 import lionsEmblem from "@/assets/lions-emblem.png";
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
@@ -16,31 +16,29 @@ import { NotificationsBell } from "@/components/NotificationsBell";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 
-const upcomingEvents = [
-  { title: "Q1 Networking Dinner", date: "28 Mar 2026", type: "networking" },
-  { title: "FinTech Roundtable", date: "14 Apr 2026", type: "networking" },
-  { title: "Annual Flagship Event", date: "19 Oct 2026", type: "networking" },
-];
-
 type Announcement = { id: string; title: string; body: string; priority: string; published_at: string; pinned: boolean };
+type UpcomingEvent = { id: string; title: string; starts_at: string; location: string | null };
 
 export default function DashboardPage() {
   const navigate = useNavigate();
   const { user, isSuperAdmin, signOut } = useAuth();
   const [profile, setProfile] = useState<any | null>(null);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
+  const [upcomingEvents, setUpcomingEvents] = useState<UpcomingEvent[]>([]);
   const [referralCount, setReferralCount] = useState(0);
 
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const [{ data: p }, { data: ann }, { count }] = await Promise.all([
+      const [{ data: p }, { data: ann }, { data: ev }, { count }] = await Promise.all([
         supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
         supabase.from("announcements").select("id,title,body,priority,published_at,pinned").order("pinned", { ascending: false }).order("published_at", { ascending: false }).limit(5),
+        supabase.from("events").select("id,title,starts_at,location").gte("starts_at", new Date().toISOString()).order("starts_at", { ascending: true }).limit(4),
         supabase.from("profiles").select("*", { count: "exact", head: true }).eq("referred_by_code", (await supabase.from("profiles").select("referral_code").eq("id", user.id).maybeSingle()).data?.referral_code ?? "__none__"),
       ]);
       setProfile(p);
       setAnnouncements(ann ?? []);
+      setUpcomingEvents((ev ?? []) as UpcomingEvent[]);
       setReferralCount(count ?? 0);
     })();
   }, [user]);
@@ -114,6 +112,24 @@ export default function DashboardPage() {
           </div>
         </ScrollReveal>
 
+        {/* Quick nav */}
+        <ScrollReveal>
+          <div className="grid sm:grid-cols-3 gap-3 mb-6">
+            <Link to="/directory" className="bg-card border rounded-xl p-4 shadow-sm hover:border-primary/40 transition-colors flex items-center gap-3">
+              <div className="rounded-lg bg-primary/10 w-10 h-10 grid place-items-center"><BookUser size={18} className="text-primary" /></div>
+              <div><p className="text-sm font-semibold">Member Directory</p><p className="text-xs text-muted-foreground">Search & filter by industry</p></div>
+            </Link>
+            <Link to="/events" className="bg-card border rounded-xl p-4 shadow-sm hover:border-primary/40 transition-colors flex items-center gap-3">
+              <div className="rounded-lg bg-teal/10 w-10 h-10 grid place-items-center"><CalendarDays size={18} className="text-teal" /></div>
+              <div><p className="text-sm font-semibold">Events</p><p className="text-xs text-muted-foreground">RSVP to upcoming events</p></div>
+            </Link>
+            <Link to="/esg" className="bg-card border rounded-xl p-4 shadow-sm hover:border-primary/40 transition-colors flex items-center gap-3">
+              <div className="rounded-lg bg-gold/10 w-10 h-10 grid place-items-center"><HeartHandshake size={18} className="text-gold" /></div>
+              <div><p className="text-sm font-semibold">ESG Report</p><p className="text-xs text-muted-foreground">Your social-impact summary</p></div>
+            </Link>
+          </div>
+        </ScrollReveal>
+
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-5">
           {/* Profile completion */}
           <ScrollReveal delay={0}>
@@ -177,13 +193,19 @@ export default function DashboardPage() {
           <ScrollReveal delay={240} className="md:col-span-2">
             <DashboardCard title="Upcoming Events" icon={CalendarDays}>
               <div className="space-y-3">
+                {upcomingEvents.length === 0 && (
+                  <p className="text-xs text-muted-foreground">No upcoming events yet.</p>
+                )}
                 {upcomingEvents.map((ev) => (
-                  <div key={ev.title} className="flex items-center justify-between py-2 border-b last:border-0">
+                  <div key={ev.id} className="flex items-center justify-between py-2 border-b last:border-0">
                     <div>
                       <p className="text-sm font-medium">{ev.title}</p>
-                      <p className="text-xs text-muted-foreground">{ev.date}</p>
+                      <p className="text-xs text-muted-foreground">
+                        {new Date(ev.starts_at).toLocaleString("en-GB", { day: "numeric", month: "short", year: "numeric", hour: "2-digit", minute: "2-digit" })}
+                        {ev.location && ` · ${ev.location}`}
+                      </p>
                     </div>
-                    <Button variant="outline" size="sm">RSVP</Button>
+                    <Link to="/events"><Button variant="outline" size="sm">RSVP</Button></Link>
                   </div>
                 ))}
               </div>
