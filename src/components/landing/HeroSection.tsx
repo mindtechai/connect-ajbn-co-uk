@@ -20,20 +20,20 @@ export function HeroSection() {
       <div className="container mx-auto px-4 lg:px-8 relative z-10 pt-24 pb-16">
         <div className="max-w-2xl">
           <ScrollReveal>
-            <p className="text-primary-foreground/70 font-body text-sm md:text-base tracking-widest uppercase mb-4">
+            <p className="text-primary-foreground/70 font-body text-xs md:text-sm tracking-[0.2em] uppercase leading-relaxed mb-4 md:mb-5 max-w-xl">
               Fostering business ties between the Asian and Jewish communities
             </p>
           </ScrollReveal>
 
           <ScrollReveal delay={80}>
-            <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-primary-foreground leading-[1.08] mb-6">
+            <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-primary-foreground leading-[1.05] mb-6 md:mb-7">
               Empowering Business.{" "}
               <span className="text-gradient-gold">Connecting Communities.</span>
             </h1>
           </ScrollReveal>
 
           <ScrollReveal delay={160}>
-            <p className="text-primary-foreground/70 text-lg md:text-xl leading-relaxed mb-10 max-w-lg">
+            <p className="text-primary-foreground/70 text-lg md:text-xl leading-relaxed mb-8 md:mb-10 max-w-lg">
               The UK's only network dedicated to strengthening professional ties between Asian and Jewish business communities.
             </p>
           </ScrollReveal>
