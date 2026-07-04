@@ -4,8 +4,10 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { ArrowLeft, CalendarDays, MapPin, Users, Loader2, Crown, Trophy } from "lucide-react";
+import { ArrowLeft, CalendarDays, MapPin, Users, Loader2, Crown, Trophy, QrCode } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
+import { EventQRCode } from "@/components/EventQRCode";
+import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 
 type EventRow = {
   id: string;
@@ -21,7 +23,7 @@ type EventRow = {
   cover_image_url: string | null;
 };
 
-type Rsvp = { event_id: string; status: string; guests: number };
+type Rsvp = { event_id: string; status: string; guests: number; checkin_token?: string | null };
 
 const KIND_STYLE: Record<string, string> = {
   networking: "bg-teal/10 text-teal border-teal/20",
@@ -43,7 +45,7 @@ export default function EventsPage() {
     setLoading(true);
     const [{ data: ev }, { data: mine }, { data: allRsvps }] = await Promise.all([
       supabase.from("events").select("*").gte("starts_at", new Date().toISOString()).order("starts_at", { ascending: true }),
-      supabase.from("event_rsvps").select("event_id, status, guests").eq("user_id", user.id),
+      supabase.from("event_rsvps").select("event_id, status, guests, checkin_token").eq("user_id", user.id),
       supabase.from("event_rsvps").select("event_id, status, guests"),
     ]);
     setEvents((ev ?? []) as EventRow[]);
@@ -154,6 +156,20 @@ export default function EventsPage() {
                       <Button size="sm" variant={my?.status === "declined" ? "default" : "outline"} onClick={() => rsvp(e.id, "declined")}>
                         Can't attend
                       </Button>
+                      {my?.status === "going" && my.checkin_token && (
+                        <Dialog>
+                          <DialogTrigger asChild>
+                            <Button size="sm" variant="ghost" className="ml-auto"><QrCode size={14} /> My QR</Button>
+                          </DialogTrigger>
+                          <DialogContent className="max-w-xs">
+                            <DialogHeader><DialogTitle>Check-in QR</DialogTitle></DialogHeader>
+                            <div className="flex flex-col items-center gap-2 p-2">
+                              <EventQRCode token={my.checkin_token} />
+                              <p className="text-xs text-muted-foreground text-center">Show at the door for {e.title}.</p>
+                            </div>
+                          </DialogContent>
+                        </Dialog>
+                      )}
                     </div>
                   </div>
                 </div>
