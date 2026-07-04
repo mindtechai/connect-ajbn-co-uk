@@ -45,7 +45,7 @@ export function AppLayout({
       <header className="border-b bg-card sticky top-0 z-40" role="banner">
         <nav
           aria-label="Primary"
-          className="container mx-auto px-4 lg:px-8 h-14 flex items-center gap-3"
+          className="container mx-auto px-4 lg:px-8 h-20 flex items-center gap-3"
         >
           <BrandLink />
           {back && (
