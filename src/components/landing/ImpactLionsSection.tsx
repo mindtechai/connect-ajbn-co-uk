@@ -2,6 +2,7 @@ import { ScrollReveal } from "@/components/ScrollReveal";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
 import impactLionsLogo from "@/assets/impact-lions-logo.png.asset.json";
+import { assetUrl } from "@/lib/asset";
 import { Heart, BarChart3, Trophy } from "lucide-react";
 
 const benefits = [
@@ -19,7 +20,7 @@ export function ImpactLionsSection() {
             <div className="flex justify-center lg:justify-start">
               <div className="relative">
                 <img
-                  src={impactLionsLogo.url}
+                  src={assetUrl(impactLionsLogo)}
                   alt="AJBN Impact Lions Club"
                   className="w-64 h-64 md:w-80 md:h-80 object-contain drop-shadow-xl"
                 />

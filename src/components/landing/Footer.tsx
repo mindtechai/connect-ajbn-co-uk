@@ -1,4 +1,5 @@
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
+import { assetUrl } from "@/lib/asset";
 
 export function Footer() {
   return (
@@ -7,7 +8,7 @@ export function Footer() {
         <div className="grid md:grid-cols-3 gap-8">
           <div>
             <div className="flex items-center gap-2 mb-3">
-              <img src={ajbnLogo.url} alt="AJBN" className="h-9 w-9 rounded-md object-cover" />
+              <img src={assetUrl(ajbnLogo)} alt="AJBN" className="h-9 w-9 rounded-md object-cover" />
               <p className="font-display text-base md:text-lg font-bold text-primary">Asian Jewish Business Network</p>
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">

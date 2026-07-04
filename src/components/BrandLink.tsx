@@ -1,5 +1,6 @@
 import { Link } from "react-router-dom";
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
+import { assetUrl } from "@/lib/asset";
 
 export function BrandLink({ full = false }: { full?: boolean }) {
   const label = "Asian Jewish Business Network";
@@ -11,7 +12,7 @@ export function BrandLink({ full = false }: { full?: boolean }) {
     >
       {/* Logo is decorative; the link's accessible name is provided by aria-label + visible text. */}
       <img
-        src={ajbnLogo.url}
+        src={assetUrl(ajbnLogo)}
         alt=""
         aria-hidden="true"
         className="h-8 w-8 rounded-md object-cover shadow-sm"
