@@ -105,6 +105,13 @@ export function Navbar() {
               {item}
             </a>
           ))}
+          <Link
+            to="/referral-rewards"
+            className="text-sm font-medium text-muted-foreground hover:text-foreground py-2"
+            onClick={() => setOpen(false)}
+          >
+            Referral Rewards
+          </Link>
           <Link to="/login" onClick={() => setOpen(false)}>
             <Button variant="outline" size="sm" className="w-full">Sign In</Button>
           </Link>
