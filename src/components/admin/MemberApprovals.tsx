@@ -1,144 +1,151 @@
-import { useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import {
-  Table, TableHeader, TableRow, TableHead, TableBody, TableCell
-} from "@/components/ui/table";
-import {
-  Select, SelectContent, SelectItem, SelectTrigger, SelectValue
-} from "@/components/ui/select";
-import { Check, X, Search, Eye, Crown } from "lucide-react";
+import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
+import { Check, X, Search, Loader2, Crown } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+import { supabase } from "@/integrations/supabase/client";
 
-interface PendingMember {
+type Applicant = {
   id: string;
-  name: string;
-  email: string;
-  company: string;
-  industry: string;
-  referredBy: string | null;
-  appliedDate: string;
-  lionsInterest: boolean;
-}
-
-const mockPending: PendingMember[] = [
-  { id: "1", name: "Sarah Chen", email: "sarah@techco.com", company: "TechCo Ltd", industry: "Technology", referredBy: "Raj Goldstein", appliedDate: "18 Mar 2026", lionsInterest: true },
-  { id: "2", name: "David Levy", email: "david@fingroup.com", company: "FinGroup", industry: "Finance", referredBy: "Miriam Patel", appliedDate: "17 Mar 2026", lionsInterest: false },
-  { id: "3", name: "Anika Shah", email: "anika@legalcorp.co.uk", company: "LegalCorp", industry: "Legal", referredBy: null, appliedDate: "16 Mar 2026", lionsInterest: true },
-  { id: "4", name: "James Rothberg", email: "james@propdev.com", company: "PropDev", industry: "Real Estate", referredBy: "Raj Goldstein", appliedDate: "15 Mar 2026", lionsInterest: false },
-  { id: "5", name: "Priya Weinstein", email: "priya@healthplus.co.uk", company: "HealthPlus", industry: "Healthcare", referredBy: null, appliedDate: "14 Mar 2026", lionsInterest: true },
-  { id: "6", name: "Michael Tang", email: "michael@mediaco.com", company: "MediaCo", industry: "Media", referredBy: "David Levy", appliedDate: "14 Mar 2026", lionsInterest: false },
-];
+  first_name: string | null;
+  last_name: string | null;
+  email: string | null;
+  company: string | null;
+  industry: string | null;
+  referred_by_code: string | null;
+  created_at: string;
+};
 
 export function MemberApprovals() {
-  const [pending, setPending] = useState(mockPending);
+  const [rows, setRows] = useState<Applicant[]>([]);
+  const [referrerNames, setReferrerNames] = useState<Record<string, string>>({});
+  const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
   const { toast } = useToast();
 
-  const filtered = pending.filter((m) => {
-    const matchesSearch =
-      m.name.toLowerCase().includes(search.toLowerCase()) ||
-      m.company.toLowerCase().includes(search.toLowerCase());
-    const matchesFilter =
-      filter === "all" ||
-      (filter === "referred" && m.referredBy) ||
-      (filter === "direct" && !m.referredBy) ||
-      (filter === "lions" && m.lionsInterest);
-    return matchesSearch && matchesFilter;
-  });
+  const load = async () => {
+    setLoading(true);
+    // Prospective = users whose ONLY role is prospective_member
+    const { data: roles } = await supabase.from("user_roles").select("user_id, role");
+    const byUser = new Map<string, string[]>();
+    for (const r of (roles ?? []) as any[]) {
+      const a = byUser.get(r.user_id) ?? [];
+      a.push(r.role);
+      byUser.set(r.user_id, a);
+    }
+    const prospectiveIds = Array.from(byUser.entries())
+      .filter(([, list]) => list.length === 1 && list[0] === "prospective_member")
+      .map(([id]) => id);
 
-  const handleApprove = (id: string) => {
-    const member = pending.find((m) => m.id === id);
-    setPending((prev) => prev.filter((m) => m.id !== id));
-    toast({
-      title: "Member Approved",
-      description: `${member?.name} has been approved and will receive a welcome email.`,
-    });
+    if (prospectiveIds.length === 0) {
+      setRows([]); setReferrerNames({}); setLoading(false); return;
+    }
+    const { data: profs } = await supabase
+      .from("profiles")
+      .select("id, first_name, last_name, email, company, industry, referred_by_code, created_at")
+      .in("id", prospectiveIds)
+      .order("created_at", { ascending: false });
+
+    const list = (profs ?? []) as Applicant[];
+    setRows(list);
+
+    const codes = Array.from(new Set(list.map((a) => a.referred_by_code).filter(Boolean))) as string[];
+    if (codes.length > 0) {
+      const { data: refs } = await supabase
+        .from("profiles").select("referral_code, first_name, last_name")
+        .in("referral_code", codes);
+      const map: Record<string, string> = {};
+      for (const r of (refs ?? []) as any[]) {
+        map[r.referral_code] = [r.first_name, r.last_name].filter(Boolean).join(" ") || r.referral_code;
+      }
+      setReferrerNames(map);
+    } else {
+      setReferrerNames({});
+    }
+    setLoading(false);
   };
 
-  const handleReject = (id: string) => {
-    const member = pending.find((m) => m.id === id);
-    setPending((prev) => prev.filter((m) => m.id !== id));
-    toast({
-      title: "Application Declined",
-      description: `${member?.name}'s application has been declined.`,
-      variant: "destructive",
-    });
+  useEffect(() => { load(); }, []);
+
+  const filtered = useMemo(() => rows.filter((m) => {
+    const name = `${m.first_name ?? ""} ${m.last_name ?? ""}`.trim().toLowerCase();
+    const q = search.toLowerCase();
+    const okSearch = !q || name.includes(q) || (m.company ?? "").toLowerCase().includes(q) || (m.email ?? "").toLowerCase().includes(q);
+    const okFilter = filter === "all"
+      || (filter === "referred" && m.referred_by_code)
+      || (filter === "direct" && !m.referred_by_code);
+    return okSearch && okFilter;
+  }), [rows, search, filter]);
+
+  const approve = async (m: Applicant, asLion = false) => {
+    // Add ajbn_member (and optional impact_lion), remove prospective role
+    const rows: { user_id: string; role: "ajbn_member" | "impact_lion" }[] = [
+      { user_id: m.id, role: "ajbn_member" },
+    ];
+    if (asLion) rows.push({ user_id: m.id, role: "impact_lion" });
+    await supabase.from("user_roles").insert(rows);
+    await supabase.from("user_roles").delete().eq("user_id", m.id).eq("role", "prospective_member");
+    toast({ title: "Member approved", description: `${m.first_name ?? "Member"} is now an active AJBN member${asLion ? " + Impact Lion" : ""}.` });
+    load();
   };
+
+  const reject = async (m: Applicant) => {
+    await supabase.from("user_roles").delete().eq("user_id", m.id).eq("role", "prospective_member");
+    toast({ title: "Application declined", description: `${m.first_name ?? "Applicant"} has been declined.`, variant: "destructive" });
+    load();
+  };
+
+  if (loading) return <div className="py-16 flex justify-center"><Loader2 className="animate-spin text-muted-foreground" /></div>;
 
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-display font-bold">Pending Approvals</h1>
-        <p className="text-sm text-muted-foreground">
-          {pending.length} application{pending.length !== 1 && "s"} awaiting review
-        </p>
+        <p className="text-sm text-muted-foreground">{rows.length} application{rows.length !== 1 && "s"} awaiting review</p>
       </div>
 
-      {/* Filters */}
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <Input
-            placeholder="Search by name or company…"
-            value={search}
-            onChange={(e) => setSearch(e.target.value)}
-            className="pl-9"
-          />
+          <Input placeholder="Search by name, email or company…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
         </div>
         <Select value={filter} onValueChange={setFilter}>
-          <SelectTrigger className="w-full sm:w-44">
-            <SelectValue placeholder="Filter" />
-          </SelectTrigger>
+          <SelectTrigger className="w-full sm:w-44"><SelectValue /></SelectTrigger>
           <SelectContent>
             <SelectItem value="all">All Applications</SelectItem>
             <SelectItem value="referred">Referred Only</SelectItem>
             <SelectItem value="direct">Direct Only</SelectItem>
-            <SelectItem value="lions">Lions Interest</SelectItem>
           </SelectContent>
         </Select>
       </div>
 
-      {/* Mobile cards */}
       <div className="md:hidden space-y-3">
         {filtered.map((m) => (
           <div key={m.id} className="bg-card rounded-xl border p-4 shadow-sm space-y-3">
-            <div className="flex items-start justify-between">
-              <div>
-                <div className="flex items-center gap-2">
-                  <p className="font-semibold text-sm">{m.name}</p>
-                  {m.lionsInterest && <Crown size={14} className="text-gold" />}
-                </div>
-                <p className="text-xs text-muted-foreground">{m.company} · {m.industry}</p>
-                <p className="text-xs text-muted-foreground">{m.email}</p>
-              </div>
-              <Badge variant="outline" className="text-xs shrink-0">
-                {m.appliedDate}
-              </Badge>
+            <div>
+              <p className="font-semibold text-sm">{m.first_name} {m.last_name}</p>
+              <p className="text-xs text-muted-foreground">{[m.company, m.industry].filter(Boolean).join(" · ")}</p>
+              <p className="text-xs text-muted-foreground">{m.email}</p>
             </div>
-            {m.referredBy && (
-              <p className="text-xs text-muted-foreground">
-                Referred by <span className="font-medium text-foreground">{m.referredBy}</span>
-              </p>
+            {m.referred_by_code && (
+              <p className="text-xs text-muted-foreground">Referred by <span className="font-medium text-foreground">{referrerNames[m.referred_by_code] ?? m.referred_by_code}</span></p>
             )}
             <div className="flex gap-2">
-              <Button size="sm" className="flex-1" onClick={() => handleApprove(m.id)}>
-                <Check size={14} /> Approve
-              </Button>
-              <Button size="sm" variant="outline" onClick={() => handleReject(m.id)}>
-                <X size={14} />
-              </Button>
-              <Button size="sm" variant="ghost">
-                <Eye size={14} />
-              </Button>
+              <Button size="sm" className="flex-1" onClick={() => approve(m)}><Check size={14} /> Approve</Button>
+              <Button size="sm" variant="outline" onClick={() => approve(m, true)}><Crown size={14} className="text-gold" /></Button>
+              <Button size="sm" variant="outline" onClick={() => reject(m)}><X size={14} /></Button>
             </div>
           </div>
         ))}
+        {filtered.length === 0 && (
+          <p className="text-center text-sm text-muted-foreground py-8">No pending applications.</p>
+        )}
       </div>
 
-      {/* Desktop table */}
       <div className="hidden md:block bg-card rounded-xl border shadow-sm">
         <Table>
           <TableHeader>
@@ -148,7 +155,6 @@ export function MemberApprovals() {
               <TableHead>Industry</TableHead>
               <TableHead>Referred By</TableHead>
               <TableHead>Applied</TableHead>
-              <TableHead>Lions</TableHead>
               <TableHead className="text-right">Actions</TableHead>
             </TableRow>
           </TableHeader>
@@ -156,44 +162,31 @@ export function MemberApprovals() {
             {filtered.map((m) => (
               <TableRow key={m.id}>
                 <TableCell>
-                  <div>
-                    <p className="font-medium text-sm">{m.name}</p>
-                    <p className="text-xs text-muted-foreground">{m.email}</p>
-                  </div>
+                  <p className="font-medium text-sm">{m.first_name} {m.last_name}</p>
+                  <p className="text-xs text-muted-foreground">{m.email}</p>
                 </TableCell>
-                <TableCell className="text-sm">{m.company}</TableCell>
-                <TableCell className="text-sm">{m.industry}</TableCell>
+                <TableCell className="text-sm">{m.company ?? "—"}</TableCell>
+                <TableCell className="text-sm">{m.industry ?? "—"}</TableCell>
                 <TableCell className="text-sm">
-                  {m.referredBy ? (
-                    <Badge variant="secondary" className="text-xs">{m.referredBy}</Badge>
-                  ) : (
-                    <span className="text-muted-foreground text-xs">Direct</span>
-                  )}
+                  {m.referred_by_code ? (
+                    <Badge variant="secondary" className="text-xs">{referrerNames[m.referred_by_code] ?? m.referred_by_code}</Badge>
+                  ) : <span className="text-muted-foreground text-xs">Direct</span>}
                 </TableCell>
-                <TableCell className="text-sm text-muted-foreground">{m.appliedDate}</TableCell>
-                <TableCell>
-                  {m.lionsInterest && <Crown size={14} className="text-gold" />}
-                </TableCell>
+                <TableCell className="text-sm text-muted-foreground">{new Date(m.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</TableCell>
                 <TableCell>
                   <div className="flex justify-end gap-1">
-                    <Button size="sm" onClick={() => handleApprove(m.id)}>
-                      <Check size={14} /> Approve
+                    <Button size="sm" onClick={() => approve(m)}><Check size={14} /> Approve</Button>
+                    <Button size="sm" variant="outline" onClick={() => approve(m, true)} title="Approve + Impact Lion">
+                      <Crown size={14} className="text-gold" />
                     </Button>
-                    <Button size="sm" variant="outline" onClick={() => handleReject(m.id)}>
-                      <X size={14} />
-                    </Button>
-                    <Button size="sm" variant="ghost">
-                      <Eye size={14} />
-                    </Button>
+                    <Button size="sm" variant="outline" onClick={() => reject(m)}><X size={14} /></Button>
                   </div>
                 </TableCell>
               </TableRow>
             ))}
             {filtered.length === 0 && (
               <TableRow>
-                <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
-                  No pending applications match your filters.
-                </TableCell>
+                <TableCell colSpan={6} className="text-center py-8 text-muted-foreground text-sm">No pending applications.</TableCell>
               </TableRow>
             )}
           </TableBody>
