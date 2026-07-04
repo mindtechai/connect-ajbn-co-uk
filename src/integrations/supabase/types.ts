@@ -14,6 +14,130 @@ export type Database = {
   }
   public: {
     Tables: {
+      bulk_messages: {
+        Row: {
+          body: string
+          channels: string[]
+          created_at: string
+          created_by: string
+          id: string
+          recipient_count: number
+          segments: string[]
+          subject: string
+        }
+        Insert: {
+          body: string
+          channels?: string[]
+          created_at?: string
+          created_by: string
+          id?: string
+          recipient_count?: number
+          segments?: string[]
+          subject: string
+        }
+        Update: {
+          body?: string
+          channels?: string[]
+          created_at?: string
+          created_by?: string
+          id?: string
+          recipient_count?: number
+          segments?: string[]
+          subject?: string
+        }
+        Relationships: []
+      }
+      message_deliveries: {
+        Row: {
+          bulk_message_id: string
+          channel: Database["public"]["Enums"]["delivery_channel"]
+          created_at: string
+          error: string | null
+          id: string
+          opened_at: string | null
+          provider_id: string | null
+          recipient_email: string
+          recipient_name: string | null
+          recipient_user_id: string | null
+          sent_at: string | null
+          status: Database["public"]["Enums"]["delivery_status"]
+        }
+        Insert: {
+          bulk_message_id: string
+          channel: Database["public"]["Enums"]["delivery_channel"]
+          created_at?: string
+          error?: string | null
+          id?: string
+          opened_at?: string | null
+          provider_id?: string | null
+          recipient_email: string
+          recipient_name?: string | null
+          recipient_user_id?: string | null
+          sent_at?: string | null
+          status?: Database["public"]["Enums"]["delivery_status"]
+        }
+        Update: {
+          bulk_message_id?: string
+          channel?: Database["public"]["Enums"]["delivery_channel"]
+          created_at?: string
+          error?: string | null
+          id?: string
+          opened_at?: string | null
+          provider_id?: string | null
+          recipient_email?: string
+          recipient_name?: string | null
+          recipient_user_id?: string | null
+          sent_at?: string | null
+          status?: Database["public"]["Enums"]["delivery_status"]
+        }
+        Relationships: [
+          {
+            foreignKeyName: "message_deliveries_bulk_message_id_fkey"
+            columns: ["bulk_message_id"]
+            isOneToOne: false
+            referencedRelation: "bulk_messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      notifications: {
+        Row: {
+          body: string
+          bulk_message_id: string | null
+          created_at: string
+          id: string
+          read_at: string | null
+          title: string
+          user_id: string
+        }
+        Insert: {
+          body: string
+          bulk_message_id?: string | null
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          title: string
+          user_id: string
+        }
+        Update: {
+          body?: string
+          bulk_message_id?: string | null
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          title?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "notifications_bulk_message_id_fkey"
+            columns: ["bulk_message_id"]
+            isOneToOne: false
+            referencedRelation: "bulk_messages"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           company: string | null
@@ -84,6 +208,8 @@ export type Database = {
         | "ajbn_member"
         | "impact_lion"
         | "prospective_member"
+      delivery_channel: "email" | "in_app"
+      delivery_status: "queued" | "sent" | "failed" | "skipped"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -217,6 +343,8 @@ export const Constants = {
         "impact_lion",
         "prospective_member",
       ],
+      delivery_channel: ["email", "in_app"],
+      delivery_status: ["queued", "sent", "failed", "skipped"],
     },
   },
 } as const
