@@ -35,7 +35,7 @@ export function Navbar() {
               <span className="sm:hidden">AJBN</span>
             </span>
           </Link>
-          <Link to="/lions" aria-label="Impact Lions Club page">
+          <Link to="/#impact-lions" aria-label="AJBN Impact Lions Club section">
             <img
               src={assetUrl(impactLionsLogo)}
               alt="AJBN Impact Lions Club logo"
