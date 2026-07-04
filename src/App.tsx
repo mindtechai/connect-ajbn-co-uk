@@ -18,6 +18,7 @@ import DirectoryPage from "./pages/Directory.tsx";
 import EventsPage from "./pages/Events.tsx";
 import ESGReportPage from "./pages/ESGReport.tsx";
 import LionApplicationPage from "./pages/LionApplication.tsx";
+import ReferralRewardsPage from "./pages/ReferralRewards.tsx";
 import { AuthProvider } from "@/hooks/useAuth";
 import { RequireSuperAdmin } from "@/components/RequireSuperAdmin";
 import { RequireAuth } from "@/components/RequireAuth";
@@ -44,6 +45,7 @@ const App = () => (
           <Route path="/events" element={<RequireAuth><EventsPage /></RequireAuth>} />
           <Route path="/esg" element={<RequireAuth><ESGReportPage /></RequireAuth>} />
           <Route path="/lions" element={<RequireAuth><LionApplicationPage /></RequireAuth>} />
+          <Route path="/referral-rewards" element={<ReferralRewardsPage />} />
           <Route path="/unsubscribe" element={<UnsubscribePage />} />
           <Route path="/admin" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
           <Route path="/admin/members" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
