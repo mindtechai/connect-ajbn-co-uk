@@ -23,20 +23,21 @@ export function Navbar() {
   return (
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${showSolid ? "bg-card shadow-sm" : "bg-transparent"}`}>
       <div className="container mx-auto flex items-center justify-between h-20 px-4 lg:px-8">
-        <Link to="/" className="flex items-center gap-3">
+        <Link to="/" className="flex items-center gap-2 sm:gap-3 min-w-0">
           <img
             src={assetUrl(ajbnLogo)}
             alt="Asian Jewish Business Network"
-            className="h-12 w-12 md:h-14 md:w-14 rounded-lg object-cover shadow-md ring-2 ring-gold/30"
+            className="h-11 w-11 md:h-12 md:w-12 lg:h-14 lg:w-14 rounded-lg object-cover shadow-md ring-2 ring-gold/30 shrink-0"
           />
-          <span className={`font-display font-bold tracking-tight transition-colors hidden sm:inline ${showSolid ? "text-primary" : "text-primary-foreground"} text-base md:text-lg lg:text-xl`}>
-            Asian Jewish Business Network
+          <span className={`font-display font-bold tracking-tight transition-colors truncate ${showSolid ? "text-primary" : "text-primary-foreground"} text-sm sm:text-base lg:text-lg xl:text-xl`}>
+            <span className="hidden sm:inline">Asian Jewish Business Network</span>
+            <span className="sm:hidden">AJBN</span>
           </span>
           <img
             src={assetUrl(impactLionsLogo)}
             alt="AJBN Impact Lions Club"
             title="AJBN Impact Lions Club"
-            className="hidden md:block h-12 w-12 md:h-14 md:w-14 object-contain"
+            className="h-10 w-10 md:h-12 md:w-12 lg:h-14 lg:w-14 object-contain shrink-0"
           />
         </Link>
 
