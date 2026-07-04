@@ -26,7 +26,7 @@ const features = [
 
 export function FeaturesSection() {
   return (
-    <section id="about" className="py-24 bg-background">
+    <section id="why-join" className="py-24 bg-background">
       <div className="container mx-auto px-4 lg:px-8">
         <ScrollReveal>
           <p className="text-sm tracking-widest uppercase text-teal font-medium mb-3 text-center">
