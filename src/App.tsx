@@ -11,8 +11,12 @@ import AdminPage from "./pages/Admin.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import NotificationPreferencesPage from "./pages/NotificationPreferences.tsx";
 import UnsubscribePage from "./pages/Unsubscribe.tsx";
+import ForgotPasswordPage from "./pages/ForgotPassword.tsx";
+import ResetPasswordPage from "./pages/ResetPassword.tsx";
+import ProfilePage from "./pages/Profile.tsx";
 import { AuthProvider } from "@/hooks/useAuth";
 import { RequireSuperAdmin } from "@/components/RequireSuperAdmin";
+import { RequireAuth } from "@/components/RequireAuth";
 
 const queryClient = new QueryClient();
 
@@ -27,8 +31,11 @@ const App = () => (
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
-          <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/settings/notifications" element={<NotificationPreferencesPage />} />
+          <Route path="/forgot-password" element={<ForgotPasswordPage />} />
+          <Route path="/reset-password" element={<ResetPasswordPage />} />
+          <Route path="/dashboard" element={<RequireAuth><DashboardPage /></RequireAuth>} />
+          <Route path="/settings/notifications" element={<RequireAuth><NotificationPreferencesPage /></RequireAuth>} />
+          <Route path="/settings/profile" element={<RequireAuth><ProfilePage /></RequireAuth>} />
           <Route path="/unsubscribe" element={<UnsubscribePage />} />
           <Route path="/admin" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
           <Route path="/admin/members" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
