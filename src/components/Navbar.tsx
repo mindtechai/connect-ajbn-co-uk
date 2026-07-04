@@ -24,7 +24,17 @@ export function Navbar() {
     <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${showSolid ? "bg-card shadow-sm" : "bg-transparent"}`}>
       <div className="container mx-auto flex items-center justify-between h-20 px-4 lg:px-8">
         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
-          <Link to="/" className="flex items-center gap-2 sm:gap-3 min-w-0">
+          <Link
+            to="/"
+            className="flex items-center gap-2 sm:gap-3 min-w-0"
+            onClick={(e) => {
+              if (location.pathname === "/") {
+                e.preventDefault();
+                window.history.replaceState(null, "", "/");
+                window.scrollTo({ top: 0, behavior: "smooth" });
+              }
+            }}
+          >
             <img
               src={assetUrl(ajbnLogo)}
               alt="Asian Jewish Business Network logo"
