@@ -86,6 +86,151 @@ export type Database = {
         }
         Relationships: []
       }
+      esg_contributions: {
+        Row: {
+          amount: number
+          created_at: string
+          currency: string
+          event_id: string | null
+          hours: number | null
+          id: string
+          kind: string
+          notes: string | null
+          occurred_at: string
+          recorded_by: string | null
+          user_id: string
+        }
+        Insert: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          event_id?: string | null
+          hours?: number | null
+          id?: string
+          kind: string
+          notes?: string | null
+          occurred_at?: string
+          recorded_by?: string | null
+          user_id: string
+        }
+        Update: {
+          amount?: number
+          created_at?: string
+          currency?: string
+          event_id?: string | null
+          hours?: number | null
+          id?: string
+          kind?: string
+          notes?: string | null
+          occurred_at?: string
+          recorded_by?: string | null
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "esg_contributions_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      event_rsvps: {
+        Row: {
+          created_at: string
+          event_id: string
+          guests: number
+          id: string
+          notes: string | null
+          status: string
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          event_id: string
+          guests?: number
+          id?: string
+          notes?: string | null
+          status?: string
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          event_id?: string
+          guests?: number
+          id?: string
+          notes?: string | null
+          status?: string
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "event_rsvps_event_id_fkey"
+            columns: ["event_id"]
+            isOneToOne: false
+            referencedRelation: "events"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      events: {
+        Row: {
+          capacity: number | null
+          cover_image_url: string | null
+          created_at: string
+          created_by: string
+          description: string | null
+          ends_at: string | null
+          fundraising_raised: number
+          fundraising_target: number | null
+          id: string
+          kind: string
+          location: string | null
+          segments: string[]
+          starts_at: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          capacity?: number | null
+          cover_image_url?: string | null
+          created_at?: string
+          created_by: string
+          description?: string | null
+          ends_at?: string | null
+          fundraising_raised?: number
+          fundraising_target?: number | null
+          id?: string
+          kind?: string
+          location?: string | null
+          segments?: string[]
+          starts_at: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          capacity?: number | null
+          cover_image_url?: string | null
+          created_at?: string
+          created_by?: string
+          description?: string | null
+          ends_at?: string | null
+          fundraising_raised?: number
+          fundraising_target?: number | null
+          id?: string
+          kind?: string
+          location?: string | null
+          segments?: string[]
+          starts_at?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       message_deliveries: {
         Row: {
           bulk_message_id: string
@@ -318,6 +463,17 @@ export type Database = {
           _user_id: string
         }
         Returns: boolean
+      }
+      referral_leaderboard: {
+        Args: { _limit?: number }
+        Returns: {
+          company: string
+          first_name: string
+          is_lion: boolean
+          last_name: string
+          referral_count: number
+          user_id: string
+        }[]
       }
     }
     Enums: {
