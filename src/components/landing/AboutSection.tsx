@@ -1,4 +1,5 @@
 import { ScrollReveal } from "@/components/ScrollReveal";
+import salilPatankar from "@/assets/salil-patankar.jpg";
 
 const team = [
   {
