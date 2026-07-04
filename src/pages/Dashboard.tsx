@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import {
-  Users, CalendarDays, Award, Link2, Bell, Crown,
+  Users, CalendarDays, Award, Link2, Crown,
   Copy, ArrowRight, LogOut, Shield
 } from "lucide-react";
 import lionsEmblem from "@/assets/lions-emblem.png";
@@ -10,6 +10,7 @@ import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
 import { ReferralLeaderboard } from "@/components/dashboard/ReferralLeaderboard";
 import { LionsReferralLeaderboard } from "@/components/dashboard/LionsReferralLeaderboard";
 import { useAuth } from "@/hooks/useAuth";
+import { NotificationsBell } from "@/components/NotificationsBell";
 
 // Mock data
 const memberData = {
@@ -54,10 +55,7 @@ export default function DashboardPage() {
                 </Button>
               </Link>
             )}
-            <button className="relative text-muted-foreground hover:text-foreground">
-              <Bell size={18} />
-              <span className="absolute -top-1 -right-1 w-2 h-2 bg-destructive rounded-full" />
-            </button>
+            <NotificationsBell />
             <button
               onClick={async () => { await signOut(); navigate("/login"); }}
               className="text-muted-foreground hover:text-foreground"
