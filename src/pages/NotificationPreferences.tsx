@@ -1,12 +1,12 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { BrandLink } from "@/components/BrandLink";
+import { useNavigate } from "react-router-dom";
+import { AppLayout } from "@/components/AppLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Switch } from "@/components/ui/switch";
 import { Button } from "@/components/ui/button";
 import { useToast } from "@/hooks/use-toast";
-import { ArrowLeft, Bell, Mail, Loader2, ShieldAlert } from "lucide-react";
+import { Bell, Mail, Loader2, ShieldAlert } from "lucide-react";
 
 type Cat = "announcements" | "events" | "renewals" | "lions" | "general";
 
@@ -93,18 +93,9 @@ export default function NotificationPreferencesPage() {
   }
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-card sticky top-0 z-40">
-        <div className="container mx-auto px-4 lg:px-8 h-14 flex items-center gap-3">
-          <BrandLink />
-          <span className="text-muted-foreground">/</span>
-          <Link to="/dashboard" className="text-muted-foreground hover:text-foreground flex items-center gap-1.5 text-sm">
-            <ArrowLeft size={14} /> Dashboard
-          </Link>
-        </div>
-      </header>
+    <AppLayout maxWidth="3xl">
 
-      <main className="container mx-auto px-4 lg:px-8 py-8 max-w-3xl">
+      <>
         <div className="mb-6">
           <h1 className="text-2xl md:text-3xl font-display font-bold">Notification preferences</h1>
           <p className="text-sm text-muted-foreground mt-1">
@@ -156,7 +147,7 @@ export default function NotificationPreferencesPage() {
         <p className="text-xs text-muted-foreground mt-6">
           You will always receive legally required account emails (verification, security alerts) regardless of these settings.
         </p>
-      </main>
-    </div>
+      </>
+    </AppLayout>
   );
 }

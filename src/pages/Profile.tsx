@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
-import { BrandLink } from "@/components/BrandLink";
+import { AppLayout } from "@/components/AppLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { Input } from "@/components/ui/input";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
-import { ArrowLeft, Loader2, Copy, Upload } from "lucide-react";
+import { Loader2, Copy, Upload } from "lucide-react";
 
 export default function ProfilePage() {
   const { user, loading: authLoading } = useAuth();
@@ -87,18 +87,9 @@ export default function ProfilePage() {
     setForm((p) => ({ ...p, [k]: e.target.value }));
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-card sticky top-0 z-40">
-        <div className="container mx-auto px-4 lg:px-8 h-14 flex items-center gap-3">
-          <BrandLink />
-          <span className="text-muted-foreground">/</span>
-          <Link to="/dashboard" className="text-muted-foreground hover:text-foreground flex items-center gap-1.5 text-sm">
-            <ArrowLeft size={14} /> Dashboard
-          </Link>
-        </div>
-      </header>
+    <AppLayout maxWidth="2xl">
 
-      <main className="container mx-auto px-4 lg:px-8 py-8 max-w-2xl">
+      <>
         <h1 className="text-2xl md:text-3xl font-display font-bold mb-1">Your profile</h1>
         <p className="text-sm text-muted-foreground mb-6">Kept private within the AJBN member network.</p>
 
@@ -156,7 +147,7 @@ export default function ProfilePage() {
             </Button>
           </div>
         </div>
-      </main>
-    </div>
+      </>
+    </AppLayout>
   );
 }

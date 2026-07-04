@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import { BrandLink } from "@/components/BrandLink";
+import { useNavigate } from "react-router-dom";
+import { AppLayout } from "@/components/AppLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
@@ -8,7 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
-import { ArrowLeft, Crown, Loader2 } from "lucide-react";
+import { Crown, Loader2 } from "lucide-react";
 
 type App = { status: "pending" | "approved" | "rejected"; motivation: string; review_notes: string | null; created_at: string };
 
@@ -53,17 +53,8 @@ export default function LionApplicationPage() {
   if (loading) return <div className="min-h-screen grid place-items-center"><Loader2 className="animate-spin text-muted-foreground" /></div>;
 
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-card sticky top-0 z-40">
-        <div className="container mx-auto px-4 lg:px-8 h-14 flex items-center gap-3">
-          <BrandLink />
-          <span className="text-muted-foreground">/</span>
-          <Link to="/dashboard" className="text-muted-foreground hover:text-foreground flex items-center gap-1.5 text-sm">
-            <ArrowLeft size={14} /> Dashboard
-          </Link>
-        </div>
-      </header>
-      <main className="container mx-auto px-4 lg:px-8 py-8 max-w-2xl">
+    <AppLayout maxWidth="2xl">
+      <>
         <div className="flex items-center gap-2 mb-1">
           <Crown className="text-gold" size={22} />
           <h1 className="text-2xl md:text-3xl font-display font-bold">Impact Lions Club</h1>
@@ -114,7 +105,7 @@ export default function LionApplicationPage() {
             )}
           </div>
         )}
-      </main>
-    </div>
+      </>
+    </AppLayout>
   );
 }
