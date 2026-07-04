@@ -11,6 +11,17 @@ export default defineConfig(({ mode }) => ({
     hmr: {
       overlay: false,
     },
+    // In production, Lovable's edge serves `/__l5e/assets-v1/*` from its CDN.
+    // The local Vite dev server has no such route, so asset pointer URLs 404
+    // (and get rewritten to the SPA fallback HTML). Proxy those requests to
+    // the published deployment so uploaded assets render correctly in dev.
+    proxy: {
+      "/__l5e": {
+        target: "https://impact-connect-guild.lovable.app",
+        changeOrigin: true,
+        secure: true,
+      },
+    },
   },
   plugins: [react(), mode === "development" && componentTagger()].filter(Boolean),
   resolve: {
