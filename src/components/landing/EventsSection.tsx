@@ -1,0 +1,144 @@
+import { useMemo, useState } from "react";
+import { CalendarDays, MapPin, Users, Crown, Trophy, ArrowRight } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
+import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { ScrollReveal } from "@/components/ScrollReveal";
+
+type EventItem = {
+  id: string;
+  kind: "networking" | "fundraising";
+  title: string;
+  date: string; // ISO
+  timeLabel: string;
+  location: string;
+  description: string;
+  price?: string;
+  ctaLabel: string;
+  ctaHref: string;
+  highlights?: string[];
+};
+
+const EVENTS: EventItem[] = [
+  {
+    id: "flagship-2026-10-19",
+    kind: "networking",
+    title: "AJBN Flagship Networking Day",
+    date: "2026-10-19T10:00:00Z",
+    timeLabel: "10:00 AM – 4:00 PM",
+    location: "London Marriott Hotel, 128 King Henry's Rd, London NW3 3BY",
+    description:
+      "The UK's only platform dedicated to fostering commercial ties between the Asian and Jewish business communities. Senior leaders across Finance, Property, Banking, Law, Technology and Business Services meet for collaboration and knowledge exchange.",
+    price: "£60 + VAT",
+    ctaLabel: "Buy tickets",
+    ctaHref: "https://www.ajbn.co.uk/buy-tickets/",
+    highlights: [
+      "50+ high-value exhibitors",
+      "Hundreds of senior professionals",
+      "Unmatched networking opportunities",
+      "Sponsorship, stands & brand exposure available",
+    ],
+  },
+];
+
+type Filter = "all" | "networking" | "fundraising";
+
+export function EventsSection() {
+  const [filter, setFilter] = useState<Filter>("all");
+
+  const visible = useMemo(() => {
+    const list = filter === "all" ? EVENTS : EVENTS.filter((e) => e.kind === filter);
+    return [...list].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+  }, [filter]);
+
+  return (
+    <section id="events" className="py-20 bg-gradient-to-b from-background to-muted/30">
+      <div className="container mx-auto px-4 max-w-5xl">
+        <ScrollReveal>
+          <div className="text-center mb-10">
+            <Badge variant="outline" className="mb-3">Upcoming Events</Badge>
+            <h2 className="text-3xl md:text-4xl font-display font-bold text-primary">Events &amp; Networking</h2>
+            <p className="text-muted-foreground mt-3 max-w-2xl mx-auto">
+              Flagship networking days, curated roundtables and Impact Lions fundraisers — sorted by soonest first.
+            </p>
+          </div>
+        </ScrollReveal>
+
+        <div className="flex justify-center mb-8">
+          <Tabs value={filter} onValueChange={(v) => setFilter(v as Filter)}>
+            <TabsList>
+              <TabsTrigger value="all">All</TabsTrigger>
+              <TabsTrigger value="networking" className="gap-1"><Users size={12} /> Networking</TabsTrigger>
+              <TabsTrigger value="fundraising" className="gap-1"><Crown size={12} /> Impact Lions</TabsTrigger>
+            </TabsList>
+          </Tabs>
+        </div>
+
+        {visible.length === 0 ? (
+          <div className="bg-card border rounded-xl p-12 text-center">
+            <p className="text-sm text-muted-foreground">
+              No upcoming {filter === "fundraising" ? "Impact Lions" : filter === "networking" ? "networking" : ""} events. Check back soon.
+            </p>
+          </div>
+        ) : (
+          <div className="grid gap-5">
+            {visible.map((e) => {
+              const d = new Date(e.date);
+              return (
+                <ScrollReveal key={e.id}>
+                  <article className="bg-card border border-border/60 rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                    <div className="p-6 md:p-8 grid md:grid-cols-[auto,1fr,auto] gap-6 items-start">
+                      <div className="flex md:flex-col items-center md:items-start gap-3 md:gap-1 md:min-w-[96px]">
+                        <div className="text-xs uppercase tracking-wide text-muted-foreground">
+                          {d.toLocaleString("en-GB", { month: "short" })}
+                        </div>
+                        <div className="text-4xl md:text-5xl font-display font-bold text-primary leading-none">
+                          {d.getUTCDate()}
+                        </div>
+                        <div className="text-xs text-muted-foreground">{d.getUTCFullYear()}</div>
+                      </div>
+
+                      <div className="space-y-3">
+                        <div className="flex flex-wrap items-center gap-2">
+                          <Badge className={e.kind === "fundraising"
+                            ? "bg-gold/10 text-gold border-gold/30"
+                            : "bg-teal/10 text-teal border-teal/20"}>
+                            {e.kind === "fundraising" ? <><Crown size={10} className="mr-1" /> Impact Lions</> : <><Users size={10} className="mr-1" /> Networking</>}
+                          </Badge>
+                          {e.price && <Badge variant="outline" className="text-xs">{e.price}</Badge>}
+                        </div>
+                        <h3 className="text-xl md:text-2xl font-display font-semibold">{e.title}</h3>
+                        <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                          <span className="flex items-center gap-1"><CalendarDays size={12} /> {e.timeLabel}</span>
+                          <span className="flex items-center gap-1"><MapPin size={12} /> {e.location}</span>
+                        </div>
+                        <p className="text-sm text-muted-foreground">{e.description}</p>
+                        {e.highlights && (
+                          <ul className="grid sm:grid-cols-2 gap-1.5 text-xs pt-1">
+                            {e.highlights.map((h) => (
+                              <li key={h} className="flex items-start gap-1.5">
+                                <Trophy size={12} className="text-gold mt-0.5 shrink-0" /> <span>{h}</span>
+                              </li>
+                            ))}
+                          </ul>
+                        )}
+                      </div>
+
+                      <div className="md:pt-1">
+                        <Button asChild size="sm">
+                          <a href={e.ctaHref} target="_blank" rel="noopener noreferrer">
+                            {e.ctaLabel} <ArrowRight size={14} className="ml-1" />
+                          </a>
+                        </Button>
+                      </div>
+                    </div>
+                  </article>
+                </ScrollReveal>
+              );
+            })}
+          </div>
+        )}
+      </div>
+    </section>
+  );
+}

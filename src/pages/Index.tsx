@@ -3,6 +3,7 @@ import { HeroSection } from "@/components/landing/HeroSection";
 import { AboutSection } from "@/components/landing/AboutSection";
 import { FeaturesSection } from "@/components/landing/FeaturesSection";
 import { MembersShowcase } from "@/components/landing/MembersShowcase";
+import { EventsSection } from "@/components/landing/EventsSection";
 import { ImpactLionsSection } from "@/components/landing/ImpactLionsSection";
 import { StatsSection } from "@/components/landing/StatsSection";
 import { CTASection } from "@/components/landing/CTASection";
@@ -17,6 +18,7 @@ const Index = () => {
       <AboutSection />
       <FeaturesSection />
       <MembersShowcase />
+      <EventsSection />
       <ImpactLionsSection />
       <CTASection />
       <Footer />
