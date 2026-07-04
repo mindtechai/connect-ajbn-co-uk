@@ -8,10 +8,10 @@ export function Footer() {
       <div className="container mx-auto px-4 lg:px-8">
         <div className="grid md:grid-cols-3 gap-8">
           <div>
-            <div className="flex items-center gap-3 mb-3">
-              <img src={assetUrl(ajbnLogo)} alt="AJBN" className="h-12 w-12 rounded-lg object-cover shadow-md ring-2 ring-gold/30" />
-              <p className="font-display text-lg md:text-xl font-bold text-primary">Asian Jewish Business Network</p>
-              <img src={assetUrl(impactLionsLogo)} alt="AJBN Impact Lions Club" className="h-12 w-12 object-contain" />
+            <div className="flex items-center flex-wrap gap-3 mb-3">
+              <img src={assetUrl(ajbnLogo)} alt="AJBN" className="h-12 w-12 md:h-14 md:w-14 rounded-lg object-cover shadow-md ring-2 ring-gold/30 shrink-0" />
+              <p className="font-display text-base sm:text-lg md:text-xl font-bold text-primary">Asian Jewish Business Network</p>
+              <img src={assetUrl(impactLionsLogo)} alt="AJBN Impact Lions Club" className="h-12 w-12 md:h-14 md:w-14 object-contain shrink-0" />
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Asian Jewish Business Network — empowering business, connecting communities across the UK.
