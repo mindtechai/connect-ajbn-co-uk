@@ -4,6 +4,7 @@ import salilPatankar from "@/assets/salil-patankar.jpg";
 const team = [
   {
     name: "Russell Bahar",
+    pronouns: "",
     role: "Director & Co-founder",
     image:
       "https://asian-jewish-business-network-cdn.s3.eu-west-2.amazonaws.com/wp-content/uploads/2024/07/26115709/1.jpg",
@@ -13,6 +14,7 @@ const team = [
   },
   {
     name: "Bianca Weber",
+    pronouns: "",
     role: "Director",
     image:
       "https://asian-jewish-business-network-cdn.s3.eu-west-2.amazonaws.com/wp-content/uploads/2024/07/26115733/1698403774634.jpg",
@@ -21,11 +23,20 @@ const team = [
   },
   {
     name: "Justin Cohen",
+    pronouns: "",
     role: "Co-founder",
     image:
       "https://asian-jewish-business-network-cdn.s3.eu-west-2.amazonaws.com/wp-content/uploads/2024/07/26115756/Justin-Cohen.jpg",
     bio:
       "Journalist, news editor and publisher of 17 years, now shaping the direction of a growing media business. A regular commentator on the BBC, Sky, Channel 4 and LBC, with columns in The Times, Independent, Telegraph and Evening Standard.",
+  },
+  {
+    name: "Salil Patankar",
+    pronouns: "He/Him",
+    role: "Head of Capital Connect Ecosystems @AJBN",
+    image: salilPatankar,
+    bio:
+      "AI-Driven CFO & Tax Advisor | Web3 Architect (zeuseaverse.com). Leads capital-connect ecosystems at AJBN, bridging finance, technology and community-driven growth.",
   },
 ];
 
