@@ -35,13 +35,13 @@ export function Navbar() {
               <span className="sm:hidden">AJBN</span>
             </span>
           </Link>
-          <Link to="/#impact-lions" aria-label="AJBN Impact Lions Club section">
+          <a href="/#impact-lions" aria-label="AJBN Impact Lions Club section">
             <img
               src={assetUrl(impactLionsLogo)}
               alt="AJBN Impact Lions Club logo"
               className="h-12 w-12 md:h-14 md:w-14 lg:h-16 lg:w-16 object-contain shrink-0 hover:opacity-80 transition-opacity"
             />
-          </Link>
+          </a>
         </div>
 
         {/* Desktop nav */}
