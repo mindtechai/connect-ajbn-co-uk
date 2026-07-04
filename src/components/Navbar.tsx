@@ -27,8 +27,8 @@ export function Navbar() {
             alt="Asian Jewish Business Network"
             className="h-9 w-9 rounded-md object-cover shadow-sm"
           />
-          <span className={`font-display text-lg font-bold tracking-tight transition-colors hidden sm:inline ${showSolid ? "text-primary" : "text-primary-foreground"}`}>
-            AJBN
+          <span className={`font-display font-bold tracking-tight transition-colors hidden sm:inline ${showSolid ? "text-primary" : "text-primary-foreground"} text-sm md:text-base lg:text-lg`}>
+            Asian Jewish Business Network
           </span>
         </Link>
 
