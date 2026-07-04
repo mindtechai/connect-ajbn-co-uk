@@ -263,3 +263,10 @@ function DashboardCard({
     </div>
   );
 }
+
+function calcCompletion(p: any | null): number {
+  if (!p) return 0;
+  const fields = ["first_name", "last_name", "company", "title", "industry", "phone", "linkedin", "bio"];
+  const filled = fields.filter((f) => p[f] && String(p[f]).trim().length > 0).length;
+  return Math.round((filled / fields.length) * 100);
+}
