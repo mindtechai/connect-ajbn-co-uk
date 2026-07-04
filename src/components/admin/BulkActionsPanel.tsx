@@ -14,6 +14,11 @@ import {
 } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
+import { supabase } from "@/integrations/supabase/client";
+import {
+  Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription
+} from "@/components/ui/dialog";
+import { CheckCircle2, XCircle, Loader2 } from "lucide-react";
 
 type SegmentKey = "ajbn" | "lions" | "prospective" | "expired" | "board";
 
@@ -54,6 +59,12 @@ export function BulkActionsPanel() {
   const [pinToDashboard, setPinToDashboard] = useState(false);
   const [schedule, setSchedule] = useState(false);
   const [scheduleDate, setScheduleDate] = useState("");
+  const [sending, setSending] = useState(false);
+  const [result, setResult] = useState<null | {
+    bulkId: string;
+    deliveries: any[];
+    note?: string | null;
+  }>(null);
   const { toast } = useToast();
 
   const toggleSegment = (k: SegmentKey) =>
@@ -72,7 +83,7 @@ export function BulkActionsPanel() {
     toast({ title: "Template applied", description: t.label });
   };
 
-  const handleSend = () => {
+  const handleSend = async () => {
     if (!title.trim() || !body.trim()) {
       toast({ title: "Missing fields", description: "Add a title and message.", variant: "destructive" });
       return;
@@ -81,19 +92,55 @@ export function BulkActionsPanel() {
       toast({ title: "No segments selected", description: "Pick at least one audience segment.", variant: "destructive" });
       return;
     }
-    if (tab === "email" && !channelEmail && !channelInApp) {
+
+    // Announcement mode = kept as UI-only for now
+    if (tab === "announcement") {
+      toast({
+        title: schedule ? "Announcement scheduled" : "Announcement published",
+        description: `${selected.length} segment${selected.length !== 1 ? "s" : ""}${schedule ? " · " + scheduleDate : ""}.`,
+      });
+      setTitle(""); setBody(""); setSchedule(false); setScheduleDate("");
+      return;
+    }
+
+    // Targeted message mode: actually send
+    const channels: string[] = [];
+    if (channelEmail) channels.push("email");
+    if (channelInApp) channels.push("in_app");
+    if (channels.length === 0) {
       toast({ title: "No channel", description: "Enable at least one delivery channel.", variant: "destructive" });
       return;
     }
 
-    toast({
-      title: tab === "announcement"
-        ? (schedule ? "Announcement scheduled" : "Announcement published")
-        : (schedule ? "Communication scheduled" : "Communication sent"),
-      description: `${recipientCount} recipient${recipientCount !== 1 ? "s" : ""} across ${selected.length} segment${selected.length !== 1 ? "s" : ""}${schedule ? " · " + scheduleDate : ""}.`,
-    });
+    setSending(true);
+    try {
+      const { data, error } = await supabase.functions.invoke("send-bulk-message", {
+        body: { subject: title, body, segments: selected, channels },
+      });
+      if (error) throw error;
+      if (data?.error) throw new Error(typeof data.error === "string" ? data.error : "Send failed");
 
-    setTitle(""); setBody(""); setSchedule(false); setScheduleDate("");
+      const { data: deliveries } = await supabase
+        .from("message_deliveries")
+        .select("*")
+        .eq("bulk_message_id", data.bulk_message_id)
+        .order("created_at", { ascending: true });
+
+      setResult({
+        bulkId: data.bulk_message_id,
+        deliveries: deliveries ?? [],
+        note: data.note,
+      });
+      toast({
+        title: "Message sent",
+        description: `${data.recipients} recipient${data.recipients !== 1 ? "s" : ""} · ${data.in_app_sent} in-app · ${data.email_sent} email${data.email_failed ? " · " + data.email_failed + " failed" : ""}.`,
+      });
+      setTitle(""); setBody("");
+    } catch (e: any) {
+      toast({ title: "Send failed", description: e.message ?? String(e), variant: "destructive" });
+    } finally {
+      setSending(false);
+    }
   };
 
   return (
@@ -284,11 +331,11 @@ export function BulkActionsPanel() {
               <Button variant="outline" onClick={() => { setTitle(""); setBody(""); }}>
                 <Trash2 size={14} /> Clear
               </Button>
-              <Button onClick={handleSend} className="gap-1.5">
-                {schedule ? <Clock size={14} /> : <Send size={14} />}
+              <Button onClick={handleSend} className="gap-1.5" disabled={sending}>
+                {sending ? <Loader2 size={14} className="animate-spin" /> : schedule ? <Clock size={14} /> : <Send size={14} />}
                 {tab === "announcement"
                   ? (schedule ? "Schedule announcement" : "Publish announcement")
-                  : (schedule ? "Schedule send" : "Send now")}
+                  : sending ? "Sending…" : (schedule ? "Schedule send" : "Send now")}
               </Button>
             </div>
           </div>
@@ -354,6 +401,64 @@ export function BulkActionsPanel() {
           </div>
         </div>
       </Tabs>
+
+      {/* Delivery status dialog */}
+      <Dialog open={!!result} onOpenChange={(o) => !o && setResult(null)}>
+        <DialogContent className="max-w-2xl max-h-[80vh] overflow-hidden flex flex-col">
+          <DialogHeader>
+            <DialogTitle>Delivery status</DialogTitle>
+            <DialogDescription>
+              Per-recipient delivery results for this message.
+              {result?.note && (
+                <span className="block mt-2 text-xs text-destructive">{result.note}</span>
+              )}
+            </DialogDescription>
+          </DialogHeader>
+          <div className="overflow-y-auto -mx-6 px-6">
+            <table className="w-full text-sm">
+              <thead className="text-xs text-muted-foreground border-b">
+                <tr className="text-left">
+                  <th className="py-2 pr-2">Recipient</th>
+                  <th className="py-2 pr-2">Channel</th>
+                  <th className="py-2 pr-2">Status</th>
+                  <th className="py-2">Sent at</th>
+                </tr>
+              </thead>
+              <tbody>
+                {(result?.deliveries ?? []).map((d) => (
+                  <tr key={d.id} className="border-b last:border-0">
+                    <td className="py-2 pr-2">
+                      <div className="font-medium leading-tight">{d.recipient_name || "—"}</div>
+                      <div className="text-xs text-muted-foreground">{d.recipient_email}</div>
+                    </td>
+                    <td className="py-2 pr-2 text-xs uppercase tracking-wide">{d.channel === "in_app" ? "In-app" : "Email"}</td>
+                    <td className="py-2 pr-2">
+                      <span className={cn(
+                        "inline-flex items-center gap-1 text-xs font-medium",
+                        d.status === "sent" && "text-teal",
+                        d.status === "failed" && "text-destructive",
+                        d.status === "queued" && "text-muted-foreground",
+                      )}>
+                        {d.status === "sent" && <CheckCircle2 size={12} />}
+                        {d.status === "failed" && <XCircle size={12} />}
+                        {d.status === "queued" && <Clock size={12} />}
+                        {d.status}
+                      </span>
+                      {d.error && <div className="text-[10px] text-destructive mt-0.5 line-clamp-2">{d.error}</div>}
+                    </td>
+                    <td className="py-2 text-xs text-muted-foreground">
+                      {d.sent_at ? new Date(d.sent_at).toLocaleTimeString() : "—"}
+                    </td>
+                  </tr>
+                ))}
+                {(!result?.deliveries || result.deliveries.length === 0) && (
+                  <tr><td colSpan={4} className="py-6 text-center text-sm text-muted-foreground">No deliveries recorded.</td></tr>
+                )}
+              </tbody>
+            </table>
+          </div>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
