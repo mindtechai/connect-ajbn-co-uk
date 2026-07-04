@@ -2,7 +2,7 @@ import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import {
-  Users, CalendarDays, Award, Link2, Crown,
+  Users, CalendarDays, Award, Link2, Bell, Crown,
   Copy, ArrowRight, LogOut, Shield
 } from "lucide-react";
 import lionsEmblem from "@/assets/lions-emblem.png";
