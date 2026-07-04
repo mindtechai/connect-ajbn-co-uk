@@ -37,6 +37,13 @@ const team = [
     image: salilPatankar.url,
     bio:
       "AI-Driven CFO & Tax Advisor | Web3 Architect (zeuseaverse.com). Leads capital-connect ecosystems at AJBN, bridging finance, technology and community-driven growth.",
+    skills: [
+      "Tax advisory including corporate tax",
+      "Fundraising",
+      "Networking and B2B matchmaking",
+      "Digital marketing including AI deployment",
+      "Public speaking",
+    ],
   },
 ];
 
