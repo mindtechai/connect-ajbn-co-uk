@@ -67,7 +67,7 @@ export default function DirectoryPage() {
         <div className="mb-6">
           <h1 className="text-2xl md:text-3xl font-display font-bold">Member Directory</h1>
           <p className="text-sm text-muted-foreground mt-1">
-            Browse the AJBN community. Only active members can see other members.
+            Browse the AJBN community. Only active corporate members can see other members.
           </p>
         </div>
 
