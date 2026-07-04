@@ -30,6 +30,7 @@ const App = () => (
           <Route path="/admin/members" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
           <Route path="/admin/approvals" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
           <Route path="/admin/communications" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
+          <Route path="/admin/bulk-actions" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
           <Route path="/admin/settings" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
