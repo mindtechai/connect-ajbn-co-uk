@@ -34,7 +34,7 @@ const team = [
     name: "Salil Patankar",
     pronouns: "He/Him",
     role: "Head of Capital Connect Ecosystems @AJBN",
-    image: salilPatankar,
+    image: salilPatankar.url,
     bio:
       "AI-Driven CFO & Tax Advisor | Web3 Architect (zeuseaverse.com). Leads capital-connect ecosystems at AJBN, bridging finance, technology and community-driven growth.",
   },
