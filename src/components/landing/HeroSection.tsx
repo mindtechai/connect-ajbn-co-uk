@@ -20,8 +20,8 @@ export function HeroSection() {
       <div className="container mx-auto px-4 lg:px-8 relative z-10 pt-24 pb-16">
         <div className="max-w-2xl">
           <ScrollReveal>
-            <p className="text-primary-foreground/60 font-body text-sm tracking-widest uppercase mb-4">
-              Asian Jewish Business Network
+            <p className="text-primary-foreground/70 font-body text-sm md:text-base tracking-widest uppercase mb-4">
+              Fostering business ties between the Asian and Jewish communities
             </p>
           </ScrollReveal>
 
