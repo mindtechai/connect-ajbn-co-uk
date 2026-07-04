@@ -45,6 +45,7 @@ const team = [
       "Digital marketing including AI deployment",
       "Public speaking",
     ],
+    linkedin: "https://www.linkedin.com/in/salil-patankar-94892a367/",
   },
 ];
 
