@@ -166,9 +166,9 @@ export default function DashboardPage() {
             <DashboardCard title="Renewal Status" icon={CalendarDays}>
               <div className="space-y-3">
                 <p className="text-sm text-muted-foreground">
-                  Your membership expires on <span className="font-medium text-foreground">{memberData.validUntil}</span>
+                  Renewals and billing will appear here once your membership is active.
                 </p>
-                <Button size="sm" className="w-full">Renew Membership</Button>
+                <Button size="sm" className="w-full" disabled>Renew Membership</Button>
               </div>
             </DashboardCard>
           </ScrollReveal>
