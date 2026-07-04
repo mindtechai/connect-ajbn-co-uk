@@ -1,4 +1,5 @@
 import { ScrollReveal } from "@/components/ScrollReveal";
+import { Linkedin } from "lucide-react";
 import salilPatankar from "@/assets/salil-patankar.jpg.asset.json";
 
 const team = [
