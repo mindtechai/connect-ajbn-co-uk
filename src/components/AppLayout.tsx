@@ -33,25 +33,45 @@ export function AppLayout({
   mainClassName = "container mx-auto px-4 lg:px-8 py-8",
 }: AppLayoutProps) {
   return (
-    <div className="min-h-screen bg-background">
-      <header className="border-b bg-card sticky top-0 z-40">
-        <div className="container mx-auto px-4 lg:px-8 h-14 flex items-center gap-3">
+    <div className="min-h-dvh bg-background">
+      {/* Skip link: appears on keyboard focus, jumps past the header */}
+      <a
+        href="#main-content"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[60] focus:rounded-md focus:bg-primary focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-primary-foreground focus:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+      >
+        Skip to main content
+      </a>
+
+      <header className="border-b bg-card sticky top-0 z-40" role="banner">
+        <nav
+          aria-label="Primary"
+          className="container mx-auto px-4 lg:px-8 h-14 flex items-center gap-3"
+        >
           <BrandLink />
           {back && (
             <>
-              <span className="text-muted-foreground" aria-hidden="true">/</span>
+              <span className="text-muted-foreground/70" aria-hidden="true">/</span>
               <Link
                 to={back.to}
-                className="text-muted-foreground hover:text-foreground flex items-center gap-1.5 text-sm"
+                aria-label={`Back to ${back.label}`}
+                className="text-foreground/80 hover:text-foreground focus-visible:text-foreground flex items-center gap-1.5 text-sm font-medium rounded-md px-1 -mx-1 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card min-h-11 min-w-11 sm:min-h-0 sm:min-w-0"
               >
-                <ArrowLeft size={14} /> {back.label}
+                <ArrowLeft size={14} aria-hidden="true" focusable="false" />
+                <span>{back.label}</span>
               </Link>
             </>
           )}
           {headerRight && <div className="ml-auto flex items-center gap-2">{headerRight}</div>}
-        </div>
+        </nav>
       </header>
-      <main className={`${mainClassName} ${MAX_W[maxWidth]}`}>{children}</main>
+
+      <main
+        id="main-content"
+        tabIndex={-1}
+        className={`${mainClassName} ${MAX_W[maxWidth]} focus:outline-none`}
+      >
+        {children}
+      </main>
     </div>
   );
 }
