@@ -24,11 +24,6 @@ export default function UnsubscribePage() {
     (async () => {
       if (!token) { setState("invalid"); return; }
       try {
-        const { data, error } = await supabase.functions.invoke("handle-unsubscribe", {
-          method: "GET" as any,
-          body: undefined,
-        });
-        // supabase-js can't do GET with query; call directly:
         const url = `${(import.meta as any).env.VITE_SUPABASE_URL}/functions/v1/handle-unsubscribe?token=${encodeURIComponent(token)}`;
         const res = await fetch(url, { headers: { apikey: (import.meta as any).env.VITE_SUPABASE_PUBLISHABLE_KEY ?? "" } });
         const json = await res.json();
