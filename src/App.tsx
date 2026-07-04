@@ -9,6 +9,8 @@ import RegisterPage from "./pages/Register.tsx";
 import DashboardPage from "./pages/Dashboard.tsx";
 import AdminPage from "./pages/Admin.tsx";
 import NotFound from "./pages/NotFound.tsx";
+import { AuthProvider } from "@/hooks/useAuth";
+import { RequireSuperAdmin } from "@/components/RequireSuperAdmin";
 
 const queryClient = new QueryClient();
 
@@ -18,18 +20,20 @@ const App = () => (
       <Toaster />
       <Sonner />
       <BrowserRouter>
+        <AuthProvider>
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<LoginPage />} />
           <Route path="/register" element={<RegisterPage />} />
           <Route path="/dashboard" element={<DashboardPage />} />
-          <Route path="/admin" element={<AdminPage />} />
-          <Route path="/admin/members" element={<AdminPage />} />
-          <Route path="/admin/approvals" element={<AdminPage />} />
-          <Route path="/admin/communications" element={<AdminPage />} />
-          <Route path="/admin/settings" element={<AdminPage />} />
+          <Route path="/admin" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
+          <Route path="/admin/members" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
+          <Route path="/admin/approvals" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
+          <Route path="/admin/communications" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
+          <Route path="/admin/settings" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
