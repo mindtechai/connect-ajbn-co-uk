@@ -1,12 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
-import { Users, BarChart3, Mail, UserCheck, Settings } from "lucide-react";
+import { BarChart3, UserCheck, Mail, Zap, Settings } from "lucide-react";
 import { cn } from "@/lib/utils";
 
 const navItems = [
   { label: "Overview", icon: BarChart3, path: "/admin" },
-  { label: "Members", icon: Users, path: "/admin/members" },
   { label: "Approvals", icon: UserCheck, path: "/admin/approvals" },
   { label: "Comms", icon: Mail, path: "/admin/communications" },
+  { label: "Bulk", icon: Zap, path: "/admin/bulk-actions" },
   { label: "Settings", icon: Settings, path: "/admin/settings" },
 ];
 

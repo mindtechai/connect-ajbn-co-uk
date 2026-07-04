@@ -7,6 +7,7 @@ import { AnalyticsOverview } from "@/components/admin/AnalyticsOverview";
 import { MemberApprovals } from "@/components/admin/MemberApprovals";
 import { MemberManagement } from "@/components/admin/MemberManagement";
 import { BulkCommunications } from "@/components/admin/BulkCommunications";
+import { BulkActionsPanel } from "@/components/admin/BulkActionsPanel";
 
 function AdminSettingsPlaceholder() {
   return (
@@ -25,6 +26,7 @@ export default function AdminPage() {
     if (location.pathname === "/admin/members") return <MemberManagement />;
     if (location.pathname === "/admin/approvals") return <MemberApprovals />;
     if (location.pathname === "/admin/communications") return <BulkCommunications />;
+    if (location.pathname === "/admin/bulk-actions") return <BulkActionsPanel />;
     if (location.pathname === "/admin/settings") return <AdminSettingsPlaceholder />;
     return <AnalyticsOverview />;
   };
