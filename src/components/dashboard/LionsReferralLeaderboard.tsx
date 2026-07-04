@@ -1,15 +1,18 @@
 import { ScrollReveal } from "@/components/ScrollReveal";
-import { Crown, Award } from "lucide-react";
+import { Crown, Award, Loader2 } from "lucide-react";
 import lionsBadge from "@/assets/lions-badge.png";
+import { useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/useAuth";
 
-const lionsLeaderboardData = [
-  { rank: 1, name: "Samir Cohen", recruited: 5, credit: 250, badge: "Impact Leader" },
-  { rank: 2, name: "Priya Lieberman", recruited: 4, credit: 200, badge: "Impact Leader" },
-  { rank: 3, name: "Arjun Goldberg", recruited: 3, credit: 150, badge: "Charity Champion" },
-  { rank: 4, name: "Anita Rosen", recruited: 2, credit: 100, badge: null },
-  { rank: 5, name: "Vikram Levy", recruited: 1, credit: 50, badge: null },
-  { rank: 6, name: "Raj Goldstein", recruited: 0, credit: 0, badge: null, isCurrentUser: true },
-];
+type Row = {
+  user_id: string;
+  first_name: string | null;
+  last_name: string | null;
+  company: string | null;
+  referral_count: number;
+  is_lion: boolean;
+};
 
 const rankStyles: Record<number, string> = {
   1: "bg-gold-muted border-gold/30 border",
@@ -24,6 +27,18 @@ const rankIcons: Record<number, React.ReactNode> = {
 };
 
 export function LionsReferralLeaderboard() {
+  const { user } = useAuth();
+  const [rows, setRows] = useState<Row[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase.rpc("referral_leaderboard", { _limit: 30 });
+      setRows(((data ?? []) as Row[]).filter((r) => r.is_lion).slice(0, 10));
+      setLoading(false);
+    })();
+  }, []);
+
   return (
     <div className="bg-card rounded-xl border border-gold/20 p-5 shadow-sm">
       {/* Header with Lions badge */}
@@ -46,55 +61,47 @@ export function LionsReferralLeaderboard() {
         <span className="text-[10px] text-muted-foreground font-medium uppercase tracking-wider text-center">Credit</span>
       </div>
 
-      <div className="space-y-1.5">
-        {lionsLeaderboardData.map((member, i) => (
-          <ScrollReveal key={member.name} delay={i * 50}>
-            <div
-              className={`grid grid-cols-[1.5rem_1fr_3rem_3.5rem] gap-2 items-center rounded-lg px-3 py-2.5 transition-colors ${
-                member.isCurrentUser
-                  ? "bg-gold/5 border border-gold/20 ring-1 ring-gold/10"
-                  : rankStyles[member.rank] || "hover:bg-muted/40"
-              }`}
-            >
-              {/* Rank */}
-              <div className="flex items-center justify-center">
-                {rankIcons[member.rank] || (
-                  <span className="text-xs text-muted-foreground font-medium tabular-nums">
-                    {member.rank}
-                  </span>
-                )}
-              </div>
-
-              {/* Name + badge */}
-              <div className="min-w-0">
-                <div className="flex items-center gap-1.5">
-                  <span className={`text-sm ${member.isCurrentUser ? "font-semibold text-gold" : "font-medium"}`}>
-                    {member.name}
-                    {member.isCurrentUser && (
-                      <span className="text-[10px] text-gold/60 ml-1">(you)</span>
-                    )}
-                  </span>
+      {loading ? (
+        <div className="py-8 flex justify-center"><Loader2 size={16} className="animate-spin text-muted-foreground" /></div>
+      ) : rows.length === 0 ? (
+        <p className="py-8 text-center text-xs text-muted-foreground">No Lions referrals recorded yet.</p>
+      ) : (
+        <div className="space-y-1.5">
+          {rows.map((m, i) => {
+            const rank = i + 1;
+            const name = [m.first_name, m.last_name].filter(Boolean).join(" ") || "Lion";
+            const isMe = user?.id === m.user_id;
+            const credit = Math.min(Number(m.referral_count) * 50, 250);
+            return (
+              <ScrollReveal key={m.user_id} delay={i * 40}>
+                <div
+                  className={`grid grid-cols-[1.5rem_1fr_3rem_3.5rem] gap-2 items-center rounded-lg px-3 py-2.5 transition-colors ${
+                    isMe
+                      ? "bg-gold/5 border border-gold/20 ring-1 ring-gold/10"
+                      : rankStyles[rank] || "hover:bg-muted/40"
+                  }`}
+                >
+                  <div className="flex items-center justify-center">
+                    {rankIcons[rank] || <span className="text-xs text-muted-foreground font-medium tabular-nums">{rank}</span>}
+                  </div>
+                  <div className="min-w-0">
+                    <span className={`text-sm ${isMe ? "font-semibold text-gold" : "font-medium"}`}>
+                      {name}{isMe && <span className="text-[10px] text-gold/60 ml-1">(you)</span>}
+                    </span>
+                    {m.company && <p className="text-[10px] text-muted-foreground truncate">{m.company}</p>}
+                  </div>
+                  <div className="text-center">
+                    <span className="text-sm font-bold tabular-nums">{m.referral_count}</span>
+                  </div>
+                  <div className="text-center">
+                    <span className="text-sm font-bold tabular-nums text-gold">£{credit}</span>
+                  </div>
                 </div>
-                {member.badge && (
-                  <span className="text-[10px] text-gold font-medium">{member.badge}</span>
-                )}
-              </div>
-
-              {/* Lions recruited */}
-              <div className="text-center">
-                <span className="text-sm font-bold tabular-nums">{member.recruited}</span>
-              </div>
-
-              {/* Credit earned */}
-              <div className="text-center">
-                <span className="text-sm font-bold tabular-nums text-gold">
-                  £{member.credit}
-                </span>
-              </div>
-            </div>
-          </ScrollReveal>
-        ))}
-      </div>
+              </ScrollReveal>
+            );
+          })}
+        </div>
+      )}
 
       {/* Incentive reminder */}
       <div className="mt-4 pt-4 border-t border-gold/10">
