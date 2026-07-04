@@ -94,13 +94,31 @@ export function BulkActionsPanel() {
       return;
     }
 
-    // Announcement mode = kept as UI-only for now
+    // Announcement mode: persist to announcements table
     if (tab === "announcement") {
-      toast({
-        title: schedule ? "Announcement scheduled" : "Announcement published",
-        description: `${selected.length} segment${selected.length !== 1 ? "s" : ""}${schedule ? " · " + scheduleDate : ""}.`,
-      });
-      setTitle(""); setBody(""); setSchedule(false); setScheduleDate("");
+      setSending(true);
+      try {
+        const { data: userRes } = await supabase.auth.getUser();
+        if (!userRes.user) throw new Error("Not signed in");
+        const publishedAt = schedule && scheduleDate ? new Date(scheduleDate).toISOString() : new Date().toISOString();
+        const { error } = await supabase.from("announcements").insert({
+          title, body, priority,
+          segments: selected,
+          pinned: pinToDashboard,
+          created_by: userRes.user.id,
+          published_at: publishedAt,
+        });
+        if (error) throw error;
+        toast({
+          title: schedule ? "Announcement scheduled" : "Announcement published",
+          description: `${selected.length} segment${selected.length !== 1 ? "s" : ""}${schedule ? " · " + scheduleDate : ""}.`,
+        });
+        setTitle(""); setBody(""); setSchedule(false); setScheduleDate(""); setPinToDashboard(false);
+      } catch (e: any) {
+        toast({ title: "Publish failed", description: e.message ?? String(e), variant: "destructive" });
+      } finally {
+        setSending(false);
+      }
       return;
     }
 
