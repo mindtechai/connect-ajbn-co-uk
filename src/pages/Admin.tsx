@@ -6,17 +6,8 @@ import { AdminMobileNav } from "@/components/admin/AdminMobileNav";
 import { AnalyticsOverview } from "@/components/admin/AnalyticsOverview";
 import { MemberApprovals } from "@/components/admin/MemberApprovals";
 import { MemberManagement } from "@/components/admin/MemberManagement";
-import { BulkCommunications } from "@/components/admin/BulkCommunications";
 import { BulkActionsPanel } from "@/components/admin/BulkActionsPanel";
-
-function AdminSettingsPlaceholder() {
-  return (
-    <div className="space-y-4">
-      <h1 className="text-2xl font-display font-bold">Settings</h1>
-      <p className="text-muted-foreground">Admin settings coming soon.</p>
-    </div>
-  );
-}
+import { AdminSettings } from "@/components/admin/AdminSettings";
 
 export default function AdminPage() {
   const navigate = useNavigate();
@@ -25,9 +16,9 @@ export default function AdminPage() {
   const getContent = () => {
     if (location.pathname === "/admin/members") return <MemberManagement />;
     if (location.pathname === "/admin/approvals") return <MemberApprovals />;
-    if (location.pathname === "/admin/communications") return <BulkCommunications />;
+    if (location.pathname === "/admin/communications") return <BulkActionsPanel />;
     if (location.pathname === "/admin/bulk-actions") return <BulkActionsPanel />;
-    if (location.pathname === "/admin/settings") return <AdminSettingsPlaceholder />;
+    if (location.pathname === "/admin/settings") return <AdminSettings />;
     return <AnalyticsOverview />;
   };
 
