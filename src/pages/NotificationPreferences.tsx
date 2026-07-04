@@ -1,5 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { BrandLink } from "@/components/BrandLink";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Switch } from "@/components/ui/switch";
@@ -95,6 +96,8 @@ export default function NotificationPreferencesPage() {
     <div className="min-h-screen bg-background">
       <header className="border-b bg-card sticky top-0 z-40">
         <div className="container mx-auto px-4 lg:px-8 h-14 flex items-center gap-3">
+          <BrandLink />
+          <span className="text-muted-foreground">/</span>
           <Link to="/dashboard" className="text-muted-foreground hover:text-foreground flex items-center gap-1.5 text-sm">
             <ArrowLeft size={14} /> Dashboard
           </Link>
