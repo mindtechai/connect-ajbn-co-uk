@@ -7,6 +7,7 @@ import { Eye, EyeOff } from "lucide-react";
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -15,6 +16,7 @@ export default function RegisterPage() {
   const [email, setEmail] = useState("");
   const [company, setCompany] = useState("");
   const [password, setPassword] = useState("");
+  const [referral, setReferral] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -26,7 +28,12 @@ export default function RegisterPage() {
       password,
       options: {
         emailRedirectTo: `${window.location.origin}/dashboard`,
-        data: { first_name: firstName, last_name: lastName, company },
+        data: {
+          first_name: firstName,
+          last_name: lastName,
+          company,
+          referred_by_code: referral.trim() || undefined,
+        },
       },
     });
     setLoading(false);
@@ -100,11 +107,18 @@ export default function RegisterPage() {
 
             <div className="space-y-2">
               <Label htmlFor="referral">Referral Code (optional)</Label>
-              <Input id="referral" placeholder="Enter code from referring member" />
+              <Input id="referral" placeholder="Enter code from referring member" value={referral} onChange={(e) => setReferral(e.target.value)} />
             </div>
 
             <Button className="w-full" size="lg" disabled={loading}>{loading ? "Submitting…" : "Submit Application"}</Button>
           </form>
+
+          <div className="my-4 flex items-center gap-3">
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-xs text-muted-foreground">or</span>
+            <div className="h-px flex-1 bg-border" />
+          </div>
+          <GoogleSignInButton />
 
           <p className="text-sm text-muted-foreground text-center mt-6">
             Already a member?{" "}

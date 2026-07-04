@@ -14,6 +14,45 @@ export type Database = {
   }
   public: {
     Tables: {
+      announcements: {
+        Row: {
+          body: string
+          created_at: string
+          created_by: string
+          expires_at: string | null
+          id: string
+          pinned: boolean
+          priority: string
+          published_at: string
+          segments: string[]
+          title: string
+        }
+        Insert: {
+          body: string
+          created_at?: string
+          created_by: string
+          expires_at?: string | null
+          id?: string
+          pinned?: boolean
+          priority?: string
+          published_at?: string
+          segments?: string[]
+          title: string
+        }
+        Update: {
+          body?: string
+          created_at?: string
+          created_by?: string
+          expires_at?: string | null
+          id?: string
+          pinned?: boolean
+          priority?: string
+          published_at?: string
+          segments?: string[]
+          title?: string
+        }
+        Relationships: []
+      }
       bulk_messages: {
         Row: {
           body: string
@@ -170,30 +209,54 @@ export type Database = {
       }
       profiles: {
         Row: {
+          avatar_url: string | null
+          bio: string | null
           company: string | null
           created_at: string
           email: string | null
           first_name: string | null
           id: string
+          industry: string | null
           last_name: string | null
+          linkedin: string | null
+          phone: string | null
+          referral_code: string | null
+          referred_by_code: string | null
+          title: string | null
           updated_at: string
         }
         Insert: {
+          avatar_url?: string | null
+          bio?: string | null
           company?: string | null
           created_at?: string
           email?: string | null
           first_name?: string | null
           id: string
+          industry?: string | null
           last_name?: string | null
+          linkedin?: string | null
+          phone?: string | null
+          referral_code?: string | null
+          referred_by_code?: string | null
+          title?: string | null
           updated_at?: string
         }
         Update: {
+          avatar_url?: string | null
+          bio?: string | null
           company?: string | null
           created_at?: string
           email?: string | null
           first_name?: string | null
           id?: string
+          industry?: string | null
           last_name?: string | null
+          linkedin?: string | null
+          phone?: string | null
+          referral_code?: string | null
+          referred_by_code?: string | null
+          title?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -245,6 +308,10 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      generate_referral_code: {
+        Args: { _first: string; _last: string }
+        Returns: string
+      }
       has_role: {
         Args: {
           _role: Database["public"]["Enums"]["app_role"]
