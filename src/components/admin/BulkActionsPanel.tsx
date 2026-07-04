@@ -54,6 +54,7 @@ export function BulkActionsPanel() {
   const [title, setTitle] = useState("");
   const [body, setBody] = useState("");
   const [priority, setPriority] = useState("info");
+  const [category, setCategory] = useState<"announcements" | "events" | "renewals" | "lions" | "general">("general");
   const [channelEmail, setChannelEmail] = useState(true);
   const [channelInApp, setChannelInApp] = useState(true);
   const [pinToDashboard, setPinToDashboard] = useState(false);
@@ -115,7 +116,7 @@ export function BulkActionsPanel() {
     setSending(true);
     try {
       const { data, error } = await supabase.functions.invoke("send-bulk-message", {
-        body: { subject: title, body, segments: selected, channels },
+        body: { subject: title, body, segments: selected, channels, category },
       });
       if (error) throw error;
       if (data?.error) throw new Error(typeof data.error === "string" ? data.error : "Send failed");
