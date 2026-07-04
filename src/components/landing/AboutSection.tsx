@@ -121,6 +121,21 @@ export function AboutSection() {
                       &ldquo;{m.quote}&rdquo;
                     </p>
                   )}
+                  {m.skills && m.skills.length > 0 && (
+                    <div className="mt-4 pt-4 border-t">
+                      <p className="text-xs uppercase tracking-wider text-teal font-medium mb-2">Top skills</p>
+                      <div className="flex flex-wrap gap-2">
+                        {m.skills.map((skill) => (
+                          <span
+                            key={skill}
+                            className="inline-flex items-center rounded-full bg-teal/10 px-2.5 py-1 text-xs font-medium text-teal"
+                          >
+                            {skill}
+                          </span>
+                        ))}
+                      </div>
+                    </div>
+                  )}
                 </div>
               </div>
             </ScrollReveal>
