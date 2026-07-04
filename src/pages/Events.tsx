@@ -84,6 +84,47 @@ export default function EventsPage() {
           <p className="text-sm text-muted-foreground mt-1">Networking dinners, roundtables, and Impact Lions fundraisers.</p>
         </div>
 
+        {/* Flagship event highlight */}
+        <div className="mb-8 bg-gradient-to-br from-primary/10 via-teal/5 to-gold/10 border border-primary/20 rounded-2xl overflow-hidden shadow-sm">
+          <div className="p-6 md:p-8 space-y-4">
+            <div className="flex items-center gap-2">
+              <Badge className="bg-primary/10 text-primary border-primary/20">
+                <Crown size={10} className="mr-1" /> Flagship Event
+              </Badge>
+              <Badge variant="outline" className="text-xs">Tickets on sale</Badge>
+            </div>
+            <div>
+              <h2 className="text-xl md:text-2xl font-display font-bold">AJBN Flagship Networking Day</h2>
+              <p className="text-sm text-muted-foreground mt-2">
+                The Asian-Jewish Business Network is the UK's only platform dedicated to fostering commercial
+                ties between the Asian and Jewish business communities. Join senior leaders from Finance,
+                Property, Banking, Law, Technology, and Business Services for a day of collaboration,
+                knowledge exchange, and mutual growth.
+              </p>
+            </div>
+            <div className="grid sm:grid-cols-2 gap-3 text-sm">
+              <div className="flex items-center gap-2"><CalendarDays size={14} className="text-primary" /> 19th October 2026 · 10AM – 4PM</div>
+              <div className="flex items-center gap-2"><MapPin size={14} className="text-primary" /> London Marriott Hotel, 128 King Henry's Rd, London NW3 3BY</div>
+              <div className="flex items-center gap-2"><Users size={14} className="text-primary" /> 50+ high-value exhibitors</div>
+              <div className="flex items-center gap-2"><Trophy size={14} className="text-gold" /> Hundreds of senior professionals</div>
+            </div>
+            <div className="pt-3 border-t border-border/50 flex flex-wrap items-center justify-between gap-3">
+              <div>
+                <div className="text-lg font-display font-semibold">£60 <span className="text-xs text-muted-foreground font-normal">+ VAT per ticket</span></div>
+                <div className="text-xs text-muted-foreground">Sponsorship, stands &amp; brand exposure available</div>
+              </div>
+              <div className="flex flex-wrap gap-2">
+                <Button asChild size="sm">
+                  <a href="https://www.ajbn.co.uk/buy-tickets/" target="_blank" rel="noopener noreferrer">Buy tickets</a>
+                </Button>
+                <Button asChild size="sm" variant="outline">
+                  <a href="mailto:Russell@springadconsultancy.co.uk,Bianca@springadconsultancy.co.uk?subject=AJBN%20Exhibitor%20Enquiry">Exhibit with us</a>
+                </Button>
+              </div>
+            </div>
+          </div>
+        </div>
+
         {loading ? (
           <div className="py-16 flex justify-center"><Loader2 className="animate-spin text-muted-foreground" /></div>
         ) : events.length === 0 ? (
