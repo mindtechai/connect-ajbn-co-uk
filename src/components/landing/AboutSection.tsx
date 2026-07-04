@@ -22,6 +22,7 @@ const team = [
       "https://asian-jewish-business-network-cdn.s3.eu-west-2.amazonaws.com/wp-content/uploads/2024/07/26115733/1698403774634.jpg",
     bio:
       "A commercially driven senior business professional with a 20-year career spanning events and exhibitions, fundraising, publishing and media. Skilled in advertising, sales, fundraising and event management.",
+    linkedin: "https://www.linkedin.com/in/bianca-weber-/",
   },
   {
     name: "Justin Cohen",
