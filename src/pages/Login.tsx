@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useSearchParams } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -7,6 +7,7 @@ import { Eye, EyeOff } from "lucide-react";
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -14,6 +15,8 @@ export default function LoginPage() {
   const [password, setPassword] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
+  const [params] = useSearchParams();
+  const next = params.get("next") || "/dashboard";
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,7 +27,7 @@ export default function LoginPage() {
       toast({ title: "Sign in failed", description: error.message, variant: "destructive" });
       return;
     }
-    navigate("/dashboard");
+    navigate(next);
   };
 
   return (
@@ -59,7 +62,7 @@ export default function LoginPage() {
             <div className="space-y-2">
               <div className="flex justify-between items-center">
                 <Label htmlFor="password">Password</Label>
-                <a href="#" className="text-xs text-primary hover:underline">Forgot password?</a>
+                <Link to="/forgot-password" className="text-xs text-primary hover:underline">Forgot password?</Link>
               </div>
               <div className="relative">
                 <Input id="password" type={showPassword ? "text" : "password"} placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
@@ -75,6 +78,13 @@ export default function LoginPage() {
 
             <Button className="w-full" size="lg" disabled={loading}>{loading ? "Signing in…" : "Sign In"}</Button>
           </form>
+
+          <div className="my-4 flex items-center gap-3">
+            <div className="h-px flex-1 bg-border" />
+            <span className="text-xs text-muted-foreground">or</span>
+            <div className="h-px flex-1 bg-border" />
+          </div>
+          <GoogleSignInButton next={next} />
 
           <p className="text-sm text-muted-foreground text-center mt-6">
             Not a member?{" "}
