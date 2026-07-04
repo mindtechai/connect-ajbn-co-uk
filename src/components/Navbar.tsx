@@ -26,8 +26,8 @@ export function Navbar() {
         <Link to="/" className="flex items-center gap-2 sm:gap-3 min-w-0">
           <img
             src={assetUrl(ajbnLogo)}
-            alt="Asian Jewish Business Network"
-            className="h-11 w-11 md:h-12 md:w-12 lg:h-14 lg:w-14 rounded-lg object-cover shadow-md ring-2 ring-gold/30 shrink-0"
+            alt="Asian Jewish Business Network logo"
+            className={`h-11 w-11 md:h-12 md:w-12 lg:h-14 lg:w-14 rounded-lg object-cover shadow-md ring-2 shrink-0 ${showSolid ? "ring-gold/60" : "ring-gold/80"}`}
           />
           <span className={`font-display font-bold tracking-tight transition-colors truncate ${showSolid ? "text-primary" : "text-primary-foreground"} text-sm sm:text-base lg:text-lg xl:text-xl`}>
             <span className="hidden sm:inline">Asian Jewish Business Network</span>
@@ -35,8 +35,7 @@ export function Navbar() {
           </span>
           <img
             src={assetUrl(impactLionsLogo)}
-            alt="AJBN Impact Lions Club"
-            title="AJBN Impact Lions Club"
+            alt="AJBN Impact Lions Club logo"
             className="h-10 w-10 md:h-12 md:w-12 lg:h-14 lg:w-14 object-contain shrink-0"
           />
         </Link>

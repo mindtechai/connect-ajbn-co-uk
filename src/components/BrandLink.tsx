@@ -16,7 +16,7 @@ export function BrandLink({ full = false }: { full?: boolean }) {
         src={assetUrl(ajbnLogo)}
         alt=""
         aria-hidden="true"
-        className="h-10 w-10 sm:h-12 sm:w-12 lg:h-14 lg:w-14 rounded-lg object-cover shadow-md ring-2 ring-gold/30 shrink-0"
+        className="h-10 w-10 sm:h-12 sm:w-12 lg:h-14 lg:w-14 rounded-lg object-cover shadow-md ring-2 ring-gold/60 shrink-0"
       />
       <span className="font-display text-base sm:text-lg lg:text-xl font-bold text-primary whitespace-nowrap">
         {full ? label : "AJBN"}
@@ -25,7 +25,6 @@ export function BrandLink({ full = false }: { full?: boolean }) {
         src={assetUrl(impactLionsLogo)}
         alt=""
         aria-hidden="true"
-        title="AJBN Impact Lions Club"
         className="h-10 w-10 sm:h-12 sm:w-12 lg:h-14 lg:w-14 object-contain shrink-0"
       />
     </Link>
