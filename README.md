@@ -17,7 +17,41 @@ Two super-admin emails are hard-coded in the `handle_new_user` and `grant_super_
 
 Any user signing up (or verifying) with one of those emails is automatically promoted to `super_admin`. To add more, edit both trigger functions via a new migration.
 
-### 2. Deploying
+### 2. Local development setup
+
+1. Copy the environment example and fill in the variables from Cloud Settings:
+
+   ```bash
+   cp .env.example .env
+   ```
+
+2. Required variables:
+
+   | Variable | Purpose |
+   |----------|---------|
+   | `VITE_SUPABASE_URL` | Lovable Cloud project URL |
+   | `VITE_SUPABASE_PUBLISHABLE_KEY` | Lovable Cloud anon key |
+   | `VITE_ASSET_BASE_URL` | Base origin for image assets (see below) |
+
+3. Install dependencies and run:
+
+   ```bash
+   npm install
+   npm run dev
+   ```
+
+### 3. Asset base URL (`VITE_ASSET_BASE_URL`)
+
+The app resolves image assets through a pointer system. By default (`VITE_ASSET_BASE_URL` unset), asset pointers are requested same-origin, which works in the published Lovable preview. For local Vite development, set the base URL to the published app origin so images resolve cleanly:
+
+```bash
+# .env
+VITE_ASSET_BASE_URL=https://impact-connect-guild.lovable.app
+```
+
+Leave it empty to keep same-origin resolution, or point it at any CDN/origin that serves the assets under the same paths.
+
+### 4. Deploying
 
 - **Frontend**: click **Publish** (or **Update** on subsequent deploys). Frontend changes only go live after clicking update.
 - **Backend** (edge functions, DB migrations): deploy automatically — no action needed.
