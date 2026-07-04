@@ -79,9 +79,9 @@ export default function RegisterPage() {
               <img src={assetUrl(ajbnLogo)} alt="AJBN" className="h-10 w-10 rounded-md object-cover" />
               <span className="font-display text-2xl font-bold text-primary">AJBN</span>
             </Link>
-            <a href="/#impact-lions" aria-label="AJBN Impact Lions Club section">
+            <Link to="/lions" aria-label="Impact Lions Club page">
               <img src={assetUrl(impactLionsLogo)} alt="AJBN Impact Lions Club logo" className="h-12 w-12 object-contain hover:opacity-80 transition-opacity" />
-            </a>
+            </Link>
           </div>
           <p className="text-muted-foreground text-sm mb-8">Apply for membership</p>
 
