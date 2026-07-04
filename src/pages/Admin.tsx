@@ -8,6 +8,8 @@ import { MemberApprovals } from "@/components/admin/MemberApprovals";
 import { MemberManagement } from "@/components/admin/MemberManagement";
 import { BulkActionsPanel } from "@/components/admin/BulkActionsPanel";
 import { AdminSettings } from "@/components/admin/AdminSettings";
+import { EventsManagement } from "@/components/admin/EventsManagement";
+import { ESGManagement } from "@/components/admin/ESGManagement";
 import { useAuth } from "@/hooks/useAuth";
 import { NotificationsBell } from "@/components/NotificationsBell";
 
@@ -21,6 +23,8 @@ export default function AdminPage() {
     if (location.pathname === "/admin/approvals") return <MemberApprovals />;
     if (location.pathname === "/admin/communications") return <BulkActionsPanel />;
     if (location.pathname === "/admin/bulk-actions") return <BulkActionsPanel />;
+    if (location.pathname === "/admin/events") return <EventsManagement />;
+    if (location.pathname === "/admin/esg") return <ESGManagement />;
     if (location.pathname === "/admin/settings") return <AdminSettings />;
     return <AnalyticsOverview />;
   };
