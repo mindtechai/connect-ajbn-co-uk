@@ -10,6 +10,9 @@ import { BulkActionsPanel } from "@/components/admin/BulkActionsPanel";
 import { AdminSettings } from "@/components/admin/AdminSettings";
 import { EventsManagement } from "@/components/admin/EventsManagement";
 import { ESGManagement } from "@/components/admin/ESGManagement";
+import { LionApplications } from "@/components/admin/LionApplications";
+import { AuditLog } from "@/components/admin/AuditLog";
+import { EventCheckIn } from "@/components/admin/EventCheckIn";
 import { useAuth } from "@/hooks/useAuth";
 import { NotificationsBell } from "@/components/NotificationsBell";
 
@@ -24,7 +27,10 @@ export default function AdminPage() {
     if (location.pathname === "/admin/communications") return <BulkActionsPanel />;
     if (location.pathname === "/admin/bulk-actions") return <BulkActionsPanel />;
     if (location.pathname === "/admin/events") return <EventsManagement />;
+    if (location.pathname === "/admin/checkin") return <EventCheckIn />;
     if (location.pathname === "/admin/esg") return <ESGManagement />;
+    if (location.pathname === "/admin/lions") return <LionApplications />;
+    if (location.pathname === "/admin/audit") return <AuditLog />;
     if (location.pathname === "/admin/settings") return <AdminSettings />;
     return <AnalyticsOverview />;
   };
