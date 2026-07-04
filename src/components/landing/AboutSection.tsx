@@ -119,6 +119,36 @@ export function AboutSection() {
             </ScrollReveal>
           ))}
         </div>
+
+        <ScrollReveal>
+          <div className="mt-20">
+            <p className="text-sm tracking-widest uppercase text-teal font-medium mb-3 text-center">
+              Expertise
+            </p>
+            <h3 className="text-2xl md:text-3xl font-display font-bold text-center mb-12">
+              Top skills
+            </h3>
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              {[
+                "Tax advisory including corporate tax",
+                "Fundraising",
+                "Networking and B2B matchmaking",
+                "Digital marketing including AI deployment",
+                "Public speaking",
+              ].map((skill, i) => (
+                <div
+                  key={skill}
+                  className="bg-card border rounded-lg p-5 flex items-start gap-3 shadow-sm"
+                >
+                  <span className="inline-flex items-center justify-center w-6 h-6 rounded-full bg-teal/10 text-teal text-xs font-bold shrink-0">
+                    {i + 1}
+                  </span>
+                  <p className="font-medium text-foreground">{skill}</p>
+                </div>
+              ))}
+            </div>
+          </div>
+        </ScrollReveal>
       </div>
     </section>
   );
