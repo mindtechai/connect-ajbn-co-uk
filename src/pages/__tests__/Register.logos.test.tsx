@@ -41,8 +41,13 @@ describe("Shared Navbar logos", () => {
     expect(lionsLink).toHaveAttribute("href", "/lions");
   });
 
-  it("Navbar AJBN logo links to /", () => {
-    // Reuse: find any link whose href is exactly '/'
+  it("Navbar AJBN logo links to /", async () => {
+    const { Navbar } = await import("@/components/Navbar");
+    render(
+      <MemoryRouter initialEntries={["/register"]}>
+        <Navbar />
+      </MemoryRouter>
+    );
     const links = screen.getAllByRole("link");
     const home = links.find((l) => l.getAttribute("href") === "/");
     expect(home).toBeTruthy();
