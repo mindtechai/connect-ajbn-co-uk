@@ -11,10 +11,11 @@ export default defineConfig(({ mode }) => ({
     hmr: {
       overlay: false,
     },
-    // In production, Lovable's edge serves `/__l5e/assets-v1/*` from its CDN.
-    // The local Vite dev server has no such route, so asset pointer URLs 404
-    // (and get rewritten to the SPA fallback HTML). Proxy those requests to
-    // the published deployment so uploaded assets render correctly in dev.
+    // In production, Lovable's edge serves `/__l5e/assets-v1/*`. Locally,
+    // Vite has no such route, so pointer URLs would 404 (and fall through to
+    // the SPA HTML). This proxy is the *default same-origin fallback* for
+    // dev — apps that set VITE_ASSET_BASE_URL to an absolute origin bypass it
+    // entirely (see src/lib/asset.ts).
     proxy: {
       "/__l5e": {
         target: "https://impact-connect-guild.lovable.app",
