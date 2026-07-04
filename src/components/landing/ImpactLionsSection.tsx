@@ -1,7 +1,7 @@
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import lionsEmblem from "@/assets/lions-emblem.png";
+import impactLionsLogo from "@/assets/impact-lions-logo.png.asset.json";
 import { Heart, BarChart3, Trophy } from "lucide-react";
 
 const benefits = [
@@ -18,15 +18,12 @@ export function ImpactLionsSection() {
           <ScrollReveal direction="left">
             <div className="flex justify-center lg:justify-start">
               <div className="relative">
-                <div className="w-64 h-64 md:w-80 md:h-80 rounded-full bg-gold-muted flex items-center justify-center">
-                  <img
-                    src={lionsEmblem}
-                    alt="Impact Lions Club emblem"
-                    className="w-40 h-40 md:w-52 md:h-52 object-contain"
-                  />
-                </div>
-                {/* Decorative ring */}
-                <div className="absolute inset-0 -m-3 rounded-full border-2 border-gold/20" />
+                <img
+                  src={impactLionsLogo.url}
+                  alt="AJBN Impact Lions Club"
+                  className="w-64 h-64 md:w-80 md:h-80 object-contain drop-shadow-xl"
+                />
+                <div className="absolute inset-0 -m-3 rounded-full border-2 border-gold/15" />
               </div>
             </div>
           </ScrollReveal>

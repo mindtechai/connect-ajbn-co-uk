@@ -4,6 +4,7 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
+import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -26,8 +27,9 @@ export default function RegisterPage() {
       {/* Right panel */}
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-sm">
-          <Link to="/" className="font-display text-2xl font-bold text-primary block mb-1">
-            AJBN
+          <Link to="/" className="flex items-center gap-2 mb-2">
+            <img src={ajbnLogo.url} alt="AJBN" className="h-10 w-10 rounded-md object-cover" />
+            <span className="font-display text-2xl font-bold text-primary">AJBN</span>
           </Link>
           <p className="text-muted-foreground text-sm mb-8">Apply for membership</p>
 

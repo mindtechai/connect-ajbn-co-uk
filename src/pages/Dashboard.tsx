@@ -3,9 +3,10 @@ import { Button } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import {
   Users, CalendarDays, Award, Link2, Bell, Crown,
-  Copy, ArrowRight, LogOut
+  Copy, ArrowRight, LogOut, Shield
 } from "lucide-react";
 import lionsEmblem from "@/assets/lions-emblem.png";
+import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
 import { ReferralLeaderboard } from "@/components/dashboard/ReferralLeaderboard";
 import { LionsReferralLeaderboard } from "@/components/dashboard/LionsReferralLeaderboard";
 
@@ -17,6 +18,7 @@ const memberData = {
   referralCode: "AJBN-RAJ2024",
   referrals: { total: 3, active: 2, target: 5 },
   profileCompletion: 72,
+  isSuperAdmin: true,
 };
 
 const upcomingEvents = [
@@ -38,8 +40,19 @@ export default function DashboardPage() {
       {/* Top bar */}
       <header className="bg-card border-b sticky top-0 z-40">
         <div className="container mx-auto px-4 lg:px-8 h-14 flex items-center justify-between">
-          <Link to="/" className="font-display text-lg font-bold text-primary">AJBN</Link>
+          <Link to="/" className="flex items-center gap-2">
+            <img src={ajbnLogo.url} alt="AJBN" className="h-8 w-8 rounded-md object-cover" />
+            <span className="font-display text-lg font-bold text-primary">AJBN</span>
+          </Link>
           <div className="flex items-center gap-3">
+            {memberData.isSuperAdmin && (
+              <Link to="/admin">
+                <Button variant="outline" size="sm" className="gap-1.5">
+                  <Shield size={14} />
+                  <span className="hidden sm:inline">Admin Panel</span>
+                </Button>
+              </Link>
+            )}
             <button className="relative text-muted-foreground hover:text-foreground">
               <Bell size={18} />
               <span className="absolute -top-1 -right-1 w-2 h-2 bg-destructive rounded-full" />
