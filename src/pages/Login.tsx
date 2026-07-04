@@ -1,13 +1,31 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "@/hooks/use-toast";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+  const [loading, setLoading] = useState(false);
+  const navigate = useNavigate();
+
+  const handleSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    setLoading(false);
+    if (error) {
+      toast({ title: "Sign in failed", description: error.message, variant: "destructive" });
+      return;
+    }
+    navigate("/dashboard");
+  };
 
   return (
     <div className="min-h-screen flex">
@@ -32,10 +50,10 @@ export default function LoginPage() {
           </Link>
           <p className="text-muted-foreground text-sm mb-8">Sign in to your member account</p>
 
-          <form className="space-y-5" onSubmit={(e) => e.preventDefault()}>
+          <form className="space-y-5" onSubmit={handleSubmit}>
             <div className="space-y-2">
               <Label htmlFor="email">Email</Label>
-              <Input id="email" type="email" placeholder="you@example.com" />
+              <Input id="email" type="email" placeholder="you@example.com" value={email} onChange={(e) => setEmail(e.target.value)} required />
             </div>
 
             <div className="space-y-2">
@@ -44,7 +62,7 @@ export default function LoginPage() {
                 <a href="#" className="text-xs text-primary hover:underline">Forgot password?</a>
               </div>
               <div className="relative">
-                <Input id="password" type={showPassword ? "text" : "password"} placeholder="••••••••" />
+                <Input id="password" type={showPassword ? "text" : "password"} placeholder="••••••••" value={password} onChange={(e) => setPassword(e.target.value)} required />
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
@@ -55,7 +73,7 @@ export default function LoginPage() {
               </div>
             </div>
 
-            <Button className="w-full" size="lg">Sign In</Button>
+            <Button className="w-full" size="lg" disabled={loading}>{loading ? "Signing in…" : "Sign In"}</Button>
           </form>
 
           <p className="text-sm text-muted-foreground text-center mt-6">
