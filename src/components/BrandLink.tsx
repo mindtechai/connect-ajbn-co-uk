@@ -26,7 +26,7 @@ export function BrandLink({ full = false }: { full?: boolean }) {
         alt=""
         aria-hidden="true"
         title="AJBN Impact Lions Club"
-        className="hidden sm:block h-9 w-9 object-contain opacity-90"
+        className="hidden sm:block h-11 w-11 sm:h-12 sm:w-12 object-contain"
       />
     </Link>
   );

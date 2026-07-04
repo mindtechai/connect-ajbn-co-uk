@@ -11,7 +11,7 @@ export function Footer() {
             <div className="flex items-center gap-3 mb-3">
               <img src={assetUrl(ajbnLogo)} alt="AJBN" className="h-12 w-12 rounded-lg object-cover shadow-md ring-2 ring-gold/30" />
               <p className="font-display text-lg md:text-xl font-bold text-primary">Asian Jewish Business Network</p>
-              <img src={assetUrl(impactLionsLogo)} alt="AJBN Impact Lions Club" className="h-10 w-10 object-contain" />
+              <img src={assetUrl(impactLionsLogo)} alt="AJBN Impact Lions Club" className="h-12 w-12 object-contain" />
             </div>
             <p className="text-sm text-muted-foreground leading-relaxed">
               Asian Jewish Business Network — empowering business, connecting communities across the UK.

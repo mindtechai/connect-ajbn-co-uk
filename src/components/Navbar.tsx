@@ -36,7 +36,7 @@ export function Navbar() {
             src={assetUrl(impactLionsLogo)}
             alt="AJBN Impact Lions Club"
             title="AJBN Impact Lions Club"
-            className="hidden md:block h-10 w-10 object-contain opacity-90"
+            className="hidden md:block h-12 w-12 md:h-14 md:w-14 object-contain"
           />
         </Link>
 
