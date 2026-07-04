@@ -9,6 +9,7 @@ import {
 } from "lucide-react";
 import lionsEmblem from "@/assets/lions-emblem.png";
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
+import { assetUrl } from "@/lib/asset";
 import { ReferralLeaderboard } from "@/components/dashboard/ReferralLeaderboard";
 import { LionsReferralLeaderboard } from "@/components/dashboard/LionsReferralLeaderboard";
 import { useAuth } from "@/hooks/useAuth";
@@ -60,7 +61,7 @@ export default function DashboardPage() {
       <header className="bg-card border-b sticky top-0 z-40">
         <div className="container mx-auto px-4 lg:px-8 h-14 flex items-center justify-between">
           <Link to="/" className="flex items-center gap-2">
-            <img src={ajbnLogo.url} alt="AJBN" className="h-8 w-8 rounded-md object-cover" />
+            <img src={assetUrl(ajbnLogo)} alt="AJBN" className="h-8 w-8 rounded-md object-cover" />
             <span className="font-display text-lg font-bold text-primary">AJBN</span>
           </Link>
           <div className="flex items-center gap-3">

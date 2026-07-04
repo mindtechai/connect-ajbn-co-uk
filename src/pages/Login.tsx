@@ -5,6 +5,7 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Eye, EyeOff } from "lucide-react";
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
+import { assetUrl } from "@/lib/asset";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { GoogleSignInButton } from "@/components/GoogleSignInButton";
@@ -48,7 +49,7 @@ export default function LoginPage() {
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-sm">
           <Link to="/" className="flex items-center gap-2 mb-2">
-            <img src={ajbnLogo.url} alt="AJBN" className="h-10 w-10 rounded-md object-cover" />
+            <img src={assetUrl(ajbnLogo)} alt="AJBN" className="h-10 w-10 rounded-md object-cover" />
             <span className="font-display text-2xl font-bold text-primary">AJBN</span>
           </Link>
           <p className="text-muted-foreground text-sm mb-8">Sign in to your member account</p>

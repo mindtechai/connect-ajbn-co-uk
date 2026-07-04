@@ -3,6 +3,7 @@ import { Button } from "@/components/ui/button";
 import { Menu, X } from "lucide-react";
 import { useState, useEffect } from "react";
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
+import { assetUrl } from "@/lib/asset";
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
@@ -23,7 +24,7 @@ export function Navbar() {
       <div className="container mx-auto flex items-center justify-between h-16 px-4 lg:px-8">
         <Link to="/" className="flex items-center gap-2">
           <img
-            src={ajbnLogo.url}
+            src={assetUrl(ajbnLogo)}
             alt="Asian Jewish Business Network"
             className="h-9 w-9 rounded-md object-cover shadow-sm"
           />
