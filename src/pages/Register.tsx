@@ -75,10 +75,10 @@ export default function RegisterPage() {
       <div className="flex-1 flex items-center justify-center p-6">
         <div className="w-full max-w-sm">
           <div className="flex items-center justify-between gap-4 mb-3">
-            <Link to="/" className="flex items-center gap-3 min-w-0">
+            <Link to="/" aria-label="AJBN home">
               <img src={assetUrl(ajbnLogo)} alt="AJBN" className="h-12 w-12 sm:h-14 sm:w-14 rounded-md object-cover shrink-0" />
-              <span className="font-display text-2xl sm:text-3xl font-bold text-primary">AJBN</span>
             </Link>
+            <span className="font-display text-2xl sm:text-3xl font-bold text-primary flex-1 text-center">AJBN</span>
             <Link to="/lions" aria-label="Impact Lions Club page" className="shrink-0">
               <img src={assetUrl(impactLionsLogo)} alt="AJBN Impact Lions Club logo" className="h-14 w-14 sm:h-16 sm:w-16 object-contain hover:opacity-80 transition-opacity" />
             </Link>
