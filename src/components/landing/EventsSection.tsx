@@ -283,12 +283,36 @@ export function EventsSection() {
                     <Dialog open={openDialogId === e.id} onOpenChange={(open) => !open && closeDialog()}>
                       <DialogContent className="sm:max-w-md">
                         <DialogHeader>
-                          <DialogTitle>Register your interest</DialogTitle>
+                          <DialogTitle>
+                            {isRegistered ? "You're registered!" : "Register your interest"}
+                          </DialogTitle>
                           <DialogDescription>
                             {e.title} — {d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" })}
                           </DialogDescription>
                         </DialogHeader>
 
+                        {isRegistered ? (
+                          <div className="space-y-4 text-sm">
+                            <div className="flex items-start gap-3 rounded-lg border border-teal/30 bg-teal/5 p-4">
+                              <CheckCircle2 className="text-teal mt-0.5 shrink-0" size={20} />
+                              <div className="space-y-1">
+                                <p className="font-medium text-foreground">
+                                  Thanks — your interest is confirmed.
+                                </p>
+                                <p className="text-muted-foreground">
+                                  We've saved your spot for {e.title} and notified the organisers.
+                                  {user?.email && (
+                                    <> A confirmation email is on its way to <span className="font-medium text-foreground">{user.email}</span>.</>
+                                  )}
+                                </p>
+                              </div>
+                            </div>
+                            <div className="flex flex-wrap gap-x-4 gap-y-1 text-muted-foreground">
+                              <span className="flex items-center gap-1"><CalendarDays size={14} /> {e.timeLabel}</span>
+                              <span className="flex items-center gap-1"><MapPin size={14} /> {e.location}</span>
+                            </div>
+                          </div>
+                        ) : (
                         <div className="space-y-3 text-sm">
                           <div className="flex flex-wrap gap-x-4 gap-y-1 text-muted-foreground">
                             <span className="flex items-center gap-1"><CalendarDays size={14} /> {e.timeLabel}</span>
@@ -306,9 +330,14 @@ export function EventsSection() {
                             </p>
                           )}
                         </div>
+                        )}
 
                         <DialogFooter>
-                          {user ? (
+                          {isRegistered ? (
+                            <Button onClick={closeDialog} variant="outline" className="w-full sm:w-auto">
+                              Close
+                            </Button>
+                          ) : user ? (
                             <Button onClick={() => handleRegister(e)} disabled={registering} className="w-full sm:w-auto">
                               {registering ? "Registering…" : "Confirm registration"}
                             </Button>
