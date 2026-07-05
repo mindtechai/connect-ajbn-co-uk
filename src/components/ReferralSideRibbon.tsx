@@ -52,9 +52,9 @@ export function ReferralSideRibbon() {
     <Link
       to="/referral-rewards"
       aria-label="Membership Referral Rewards"
-      className="hidden md:flex fixed top-24 right-0 z-40 items-center gap-2 rounded-l-lg bg-gold text-primary px-3 py-4 shadow-lg hover:bg-gold/90 transition-colors [writing-mode:vertical-rl] font-semibold text-xs tracking-[0.25em] uppercase"
+      className="flex fixed right-0 z-40 items-center gap-1.5 rounded-l-lg bg-gold text-primary shadow-lg hover:bg-gold/90 transition-colors [writing-mode:vertical-rl] font-semibold uppercase top-20 md:top-24 px-1.5 py-2 md:px-3 md:py-4 text-[10px] md:text-xs tracking-[0.15em] md:tracking-[0.25em]"
     >
-      <Gift size={14} className="-rotate-90" />
+      <Gift className="-rotate-90 h-3 w-3 md:h-3.5 md:w-3.5" />
       Membership Referral Rewards
     </Link>
   );
