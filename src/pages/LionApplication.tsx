@@ -23,7 +23,7 @@ export default function LionApplicationPage() {
 
   useEffect(() => {
     if (authLoading) return;
-    if (!user) { navigate("/login"); return; }
+    if (!user) { navigate("/login?next=/lions/apply"); return; }
     (async () => {
       const [{ data: app }, { data: role }] = await Promise.all([
         supabase.from("lion_applications").select("status, motivation, review_notes, created_at").eq("user_id", user.id).maybeSingle(),
