@@ -1,3 +1,4 @@
+import { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { Gift } from "lucide-react";
 
@@ -7,14 +8,40 @@ import { Gift } from "lucide-react";
  */
 export function ReferralSideRibbon() {
   const { pathname } = useLocation();
-  // Hide on the homepage (already has a built-in vertical label),
-  // on the page it points to, and inside the admin console.
-  if (
-    pathname === "/" ||
-    pathname.startsWith("/referral-rewards") ||
-    pathname.startsWith("/admin")
-  )
+  const isHome = pathname === "/";
+  const [homeVisible, setHomeVisible] = useState(false);
+
+  // On the homepage, only show the ribbon while the About or Events
+  // sections are on screen. On other pages, show it always.
+  useEffect(() => {
+    if (!isHome) return;
+    const ids = ["about", "events"];
+    const els = ids
+      .map((id) => document.getElementById(id))
+      .filter((el): el is HTMLElement => el !== null);
+    if (els.length === 0) return;
+
+    const visible = new Set<string>();
+    const io = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((e) => {
+          if (e.isIntersecting) visible.add(e.target.id);
+          else visible.delete(e.target.id);
+        });
+        setHomeVisible(visible.size > 0);
+      },
+      { threshold: 0.15 }
+    );
+    els.forEach((el) => io.observe(el));
+    return () => io.disconnect();
+  }, [isHome, pathname]);
+
+  // Always hide on the target page and inside the admin console.
+  if (pathname.startsWith("/referral-rewards") || pathname.startsWith("/admin")) {
     return null;
+  }
+  // On the homepage, only render when About/Events sections are in view.
+  if (isHome && !homeVisible) return null;
 
   return (
     <Link
