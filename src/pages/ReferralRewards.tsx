@@ -343,6 +343,26 @@ export default function ReferralRewardsPage() {
         </div>
       </section>
 
+      {user && (
+        <section className="py-20 bg-background">
+          <div className="container mx-auto px-4 lg:px-8">
+            <div className="max-w-3xl mb-10">
+              <p className="text-sm tracking-widest uppercase text-gold font-semibold mb-3">
+                Members only · Free
+              </p>
+              <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
+                Member-to-member introductions
+              </h2>
+              <p className="text-muted-foreground leading-relaxed">
+                Ask for a direct introduction to another AJBN member — no success fee, no
+                qualifying step. Submit the request below and track its status here.
+              </p>
+            </div>
+            <MemberIntroRequests />
+          </div>
+        </section>
+      )}
+
       <Footer />
     </div>
   );
