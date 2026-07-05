@@ -128,7 +128,7 @@ export default function DashboardPage() {
               <div className="rounded-lg bg-gold/10 w-10 h-10 grid place-items-center"><HeartHandshake size={18} className="text-gold" /></div>
               <div><p className="text-sm font-semibold">ESG Report</p><p className="text-xs text-muted-foreground">Your social-impact summary</p></div>
             </Link>
-            <Link to="/lions" className="bg-card border rounded-xl p-4 shadow-sm hover:border-gold/40 transition-colors flex items-center gap-3">
+            <Link to="/lions/apply" className="bg-card border rounded-xl p-4 shadow-sm hover:border-gold/40 transition-colors flex items-center gap-3">
               <div className="rounded-lg bg-gold/10 w-10 h-10 grid place-items-center"><Crown size={18} className="text-gold" /></div>
               <div><p className="text-sm font-semibold">Impact Lions</p><p className="text-xs text-muted-foreground">Join the charitable arm</p></div>
             </Link>
