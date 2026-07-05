@@ -4,6 +4,7 @@ import { Footer } from "@/components/landing/Footer";
 import { Button } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { useAuth } from "@/hooks/useAuth";
+import { MemberIntroRequests } from "@/components/referral/MemberIntroRequests";
 import {
   Handshake,
   Users,
