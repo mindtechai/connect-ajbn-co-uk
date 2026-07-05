@@ -30,7 +30,12 @@ export function ReferralSideRibbon() {
         });
         setHomeVisible(visible.size > 0);
       },
-      { threshold: 0.15 }
+      {
+        // Only count a section as "in view" when it crosses the viewport's
+        // middle band, so the ribbon truly hides between sections.
+        rootMargin: "-35% 0px -35% 0px",
+        threshold: 0,
+      }
     );
     els.forEach((el) => io.observe(el));
     return () => io.disconnect();
