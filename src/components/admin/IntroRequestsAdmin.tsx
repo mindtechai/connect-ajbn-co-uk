@@ -10,6 +10,8 @@ import {
 import { toast } from "@/hooks/use-toast";
 import { Loader2, CheckCircle2 } from "lucide-react";
 
+type Status = "pending" | "in_review" | "accepted" | "declined" | "completed" | "cancelled";
+
 type Row = {
   id: string;
   requester_id: string;
@@ -17,13 +19,14 @@ type Row = {
   target_company: string | null;
   target_email: string | null;
   reason: string;
-  status: "pending" | "in_review" | "accepted" | "declined" | "completed" | "cancelled";
+  status: Status;
   admin_notes: string | null;
   outcome_notes: string | null;
   completed_at: string | null;
   created_at: string;
-  requester?: { first_name: string | null; last_name: string | null; email: string | null } | null;
 };
+
+type Requester = { first_name: string | null; last_name: string | null; email: string | null };
 
 const statusStyles: Record<Row["status"], string> = {
   pending: "bg-muted text-foreground",
@@ -36,31 +39,40 @@ const statusStyles: Record<Row["status"], string> = {
 
 export function IntroRequestsAdmin() {
   const [rows, setRows] = useState<Row[]>([]);
+  const [requesters, setRequesters] = useState<Record<string, Requester>>({});
   const [loading, setLoading] = useState(true);
 
   const load = async () => {
     setLoading(true);
     const { data, error } = await supabase
       .from("member_intro_requests")
-      .select("*, requester:profiles!member_intro_requests_requester_id_fkey(first_name,last_name,email)")
+      .select("*")
       .order("created_at", { ascending: false });
     if (error) {
-      // Fallback without the join if FK alias mismatch
-      const { data: d2, error: e2 } = await supabase
-        .from("member_intro_requests")
-        .select("*")
-        .order("created_at", { ascending: false });
-      if (e2) toast({ title: "Failed to load", description: e2.message, variant: "destructive" });
-      setRows((d2 ?? []) as Row[]);
-    } else {
-      setRows((data ?? []) as Row[]);
+      toast({ title: "Failed to load", description: error.message, variant: "destructive" });
+      setLoading(false);
+      return;
+    }
+    const list = (data ?? []) as Row[];
+    setRows(list);
+    const ids = Array.from(new Set(list.map((r) => r.requester_id)));
+    if (ids.length) {
+      const { data: profs } = await supabase
+        .from("profiles")
+        .select("id, first_name, last_name, email")
+        .in("id", ids);
+      const map: Record<string, Requester> = {};
+      (profs ?? []).forEach((p: any) => {
+        map[p.id] = { first_name: p.first_name, last_name: p.last_name, email: p.email };
+      });
+      setRequesters(map);
     }
     setLoading(false);
   };
 
   useEffect(() => { load(); }, []);
 
-  const setStatus = async (id: string, status: Row["status"], patch: Partial<Row> = {}) => {
+  const setStatus = async (id: string, status: Status, patch: Record<string, unknown> = {}) => {
     const { error } = await supabase
       .from("member_intro_requests")
       .update({ status, ...patch })
@@ -90,7 +102,7 @@ export function IntroRequestsAdmin() {
       ) : (
         <div className="grid gap-4">
           {rows.map((r) => (
-            <IntroRow key={r.id} row={r} onStatus={setStatus} />
+            <IntroRow key={r.id} row={r} requester={requesters[r.requester_id]} onStatus={setStatus} />
           ))}
         </div>
       )}
@@ -100,17 +112,19 @@ export function IntroRequestsAdmin() {
 
 function IntroRow({
   row,
+  requester,
   onStatus,
 }: {
   row: Row;
-  onStatus: (id: string, status: Row["status"], patch?: Partial<Row>) => Promise<void>;
+  requester?: Requester;
+  onStatus: (id: string, status: Status, patch?: Record<string, unknown>) => Promise<void>;
 }) {
   const [openComplete, setOpenComplete] = useState(false);
   const [outcome, setOutcome] = useState(row.outcome_notes ?? "");
   const [saving, setSaving] = useState(false);
 
-  const requesterName = row.requester
-    ? `${row.requester.first_name ?? ""} ${row.requester.last_name ?? ""}`.trim() || row.requester.email
+  const requesterName = requester
+    ? `${requester.first_name ?? ""} ${requester.last_name ?? ""}`.trim() || requester.email
     : row.requester_id.slice(0, 8);
 
   const complete = async () => {
