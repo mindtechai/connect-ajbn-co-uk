@@ -91,7 +91,10 @@ Deno.serve(async (req) => {
       .in("user_id", recipientIds.length ? recipientIds : ["00000000-0000-0000-0000-000000000000"]);
     const tokenMap = new Map<string, string>();
     for (const t of tokens ?? []) tokenMap.set(t.user_id, t.token);
-    const origin = req.headers.get("origin") ?? req.headers.get("referer")?.replace(/\/$/, "") ?? "";
+    // Use a server-configured app URL — never trust the request Origin/Referer
+    // header, since an admin with a custom HTTP client could point unsubscribe
+    // links at an attacker-controlled domain.
+    const origin = (Deno.env.get("APP_URL") ?? "https://ajbnconnect.lovable.app").replace(/\/$/, "");
 
     // Create bulk_messages row
     const { data: msg, error: msgErr } = await admin.from("bulk_messages").insert({
