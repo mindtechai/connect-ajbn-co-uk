@@ -151,8 +151,9 @@ export default function ReferralRewardsPage() {
               Capital Connect — qualified leads via Salil
             </h2>
             <p className="text-muted-foreground leading-relaxed">
-              AJBN is, at its core, an internal engine for members to exchange qualified
-              capital opportunities. Salil sits at the centre of that flow.
+              Members are free to make direct connections with fellow members at any time.
+              Capital Connect is the route for deals you want Salil to qualify, match and
+              route. On completion, a success fee applies for qualified introductions.
             </p>
           </div>
 
