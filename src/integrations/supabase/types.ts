@@ -306,6 +306,45 @@ export type Database = {
         }
         Relationships: []
       }
+      member_intro_requests: {
+        Row: {
+          admin_notes: string | null
+          created_at: string
+          id: string
+          reason: string
+          requester_id: string
+          status: string
+          target_company: string | null
+          target_email: string | null
+          target_name: string
+          updated_at: string
+        }
+        Insert: {
+          admin_notes?: string | null
+          created_at?: string
+          id?: string
+          reason: string
+          requester_id?: string
+          status?: string
+          target_company?: string | null
+          target_email?: string | null
+          target_name: string
+          updated_at?: string
+        }
+        Update: {
+          admin_notes?: string | null
+          created_at?: string
+          id?: string
+          reason?: string
+          requester_id?: string
+          status?: string
+          target_company?: string | null
+          target_email?: string | null
+          target_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       message_deliveries: {
         Row: {
           bulk_message_id: string
