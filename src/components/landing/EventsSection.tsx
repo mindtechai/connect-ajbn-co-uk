@@ -1,9 +1,21 @@
-import { useMemo, useState } from "react";
-import { CalendarDays, MapPin, Users, Crown, Trophy, ArrowRight } from "lucide-react";
+import { useMemo, useState, useCallback } from "react";
+import { CalendarDays, MapPin, Users, Crown, Trophy, ArrowRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollReveal } from "@/components/ScrollReveal";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
+import { Link } from "react-router-dom";
+import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
+import { toast } from "sonner";
 
 type EventItem = {
   id: string;
@@ -59,15 +71,108 @@ const EVENTS: EventItem[] = [
   },
 ];
 
+const REGISTER_EVENT_ID = "members-evening-2026-07-09";
+const ORGANISER_EMAIL = "info@ajbn.co.uk";
+
 type Filter = "all" | "networking" | "fundraising";
 
 export function EventsSection() {
   const [filter, setFilter] = useState<Filter>("all");
+  const { user, session } = useAuth();
+  const [openDialogId, setOpenDialogId] = useState<string | null>(null);
+  const [registering, setRegistering] = useState(false);
+  const [registeredIds, setRegisteredIds] = useState<Set<string>>(new Set());
 
   const visible = useMemo(() => {
     const list = filter === "all" ? EVENTS : EVENTS.filter((e) => e.kind === filter);
     return [...list].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
   }, [filter]);
+
+  const openDialog = useCallback((id: string) => setOpenDialogId(id), []);
+  const closeDialog = useCallback(() => setOpenDialogId(null), []);
+
+  const handleRegister = useCallback(
+    async (event: EventItem) => {
+      if (!user || !session) return;
+      setRegistering(true);
+      try {
+        // Store the interest in the database.
+        const { error: insertError } = await supabase.from("event_interests").insert({
+          user_id: user.id,
+          event_id: event.id,
+          event_title: event.title,
+        });
+
+        if (insertError) {
+          // Unique violation is treated as "already registered".
+          if (insertError.code === "23505") {
+            toast("You're already registered for this event.");
+          } else {
+            throw insertError;
+          }
+        } else {
+          toast.success("You're registered for AJBN Members' Evening!");
+        }
+
+        setRegisteredIds((prev) => new Set(prev).add(event.id));
+
+        // Send confirmation and organiser notification emails via the existing
+        // transactional email Edge Function (if email infrastructure is set up).
+        const profile = await supabase
+          .from("profiles")
+          .select("first_name,last_name,company")
+          .eq("id", user.id)
+          .single();
+
+        const userEmail = user.email;
+        const firstName = profile.data?.first_name ?? "";
+        const lastName = profile.data?.last_name ?? "";
+        const company = profile.data?.company ?? "";
+        const fullName = `${firstName} ${lastName}`.trim() || userEmail;
+
+        const baseData = {
+          eventTitle: event.title,
+          eventDate: new Date(event.date).toLocaleDateString("en-GB", {
+            weekday: "long",
+            day: "numeric",
+            month: "long",
+            year: "numeric",
+          }),
+          eventTime: event.timeLabel,
+          eventLocation: event.location,
+          fullName,
+          company,
+          registrantEmail: userEmail,
+        };
+
+        if (userEmail) {
+          await supabase.functions.invoke("send-transactional-email", {
+            body: {
+              templateName: "member-event-confirmation",
+              recipientEmail: userEmail,
+              idempotencyKey: `member-event-confirm-${event.id}-${user.id}`,
+              templateData: baseData,
+            },
+          });
+        }
+
+        await supabase.functions.invoke("send-transactional-email", {
+          body: {
+            templateName: "member-event-notification",
+            recipientEmail: ORGANISER_EMAIL,
+            idempotencyKey: `member-event-notify-${event.id}-${user.id}`,
+            templateData: baseData,
+          },
+        });
+      } catch (err) {
+        console.error("Registration failed", err);
+        toast.error("Registration failed. Please try again or contact us.");
+      } finally {
+        setRegistering(false);
+      }
+    },
+    [user, session]
+  );
 
   return (
     <section id="events" className="py-20 bg-gradient-to-b from-background to-muted/30">
@@ -102,6 +207,8 @@ export function EventsSection() {
           <div className="grid gap-5">
             {visible.map((e) => {
               const d = new Date(e.date);
+              const isRegistered = registeredIds.has(e.id);
+              const isInterestDialog = e.id === REGISTER_EVENT_ID;
               return (
                 <ScrollReveal key={e.id}>
                   <article className="bg-card border border-border/60 rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
@@ -143,14 +250,72 @@ export function EventsSection() {
                       </div>
 
                       <div className="md:pt-1">
-                        <Button asChild size="sm">
-                          <a href={e.ctaHref} target="_blank" rel="noopener noreferrer">
-                            {e.ctaLabel} <ArrowRight size={14} className="ml-1" />
-                          </a>
-                        </Button>
+                        {isInterestDialog ? (
+                          <Button
+                            size="sm"
+                            onClick={() => openDialog(e.id)}
+                            disabled={isRegistered}
+                            variant={isRegistered ? "outline" : "default"}
+                          >
+                            {isRegistered ? (
+                              <><CheckCircle2 size={14} className="mr-1" /> Registered</>
+                            ) : (
+                              <>{e.ctaLabel} <ArrowRight size={14} className="ml-1" /></>
+                            )}
+                          </Button>
+                        ) : (
+                          <Button asChild size="sm">
+                            <a href={e.ctaHref} target="_blank" rel="noopener noreferrer">
+                              {e.ctaLabel} <ArrowRight size={14} className="ml-1" />
+                            </a>
+                          </Button>
+                        )}
                       </div>
                     </div>
                   </article>
+
+                  {isInterestDialog && (
+                    <Dialog open={openDialogId === e.id} onOpenChange={(open) => !open && closeDialog()}>
+                      <DialogContent className="sm:max-w-md">
+                        <DialogHeader>
+                          <DialogTitle>Register your interest</DialogTitle>
+                          <DialogDescription>
+                            {e.title} — {d.toLocaleDateString("en-GB", { weekday: "long", day: "numeric", month: "long" })}
+                          </DialogDescription>
+                        </DialogHeader>
+
+                        <div className="space-y-3 text-sm">
+                          <div className="flex flex-wrap gap-x-4 gap-y-1 text-muted-foreground">
+                            <span className="flex items-center gap-1"><CalendarDays size={14} /> {e.timeLabel}</span>
+                            <span className="flex items-center gap-1"><MapPin size={14} /> {e.location}</span>
+                          </div>
+                          <p className="text-muted-foreground">{e.description}</p>
+
+                          {user ? (
+                            <p className="text-muted-foreground">
+                              We will send a confirmation email to {user.email} and notify the organisers.
+                            </p>
+                          ) : (
+                            <p className="text-muted-foreground">
+                              Sign in to register your interest and receive a confirmation email.
+                            </p>
+                          )}
+                        </div>
+
+                        <DialogFooter>
+                          {user ? (
+                            <Button onClick={() => handleRegister(e)} disabled={registering} className="w-full sm:w-auto">
+                              {registering ? "Registering…" : "Confirm registration"}
+                            </Button>
+                          ) : (
+                            <Link to="/login" className="w-full sm:w-auto">
+                              <Button className="w-full">Sign in to register</Button>
+                            </Link>
+                          )}
+                        </DialogFooter>
+                      </DialogContent>
+                    </Dialog>
+                  )}
                 </ScrollReveal>
               );
             })}
