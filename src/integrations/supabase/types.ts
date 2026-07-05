@@ -166,6 +166,30 @@ export type Database = {
           },
         ]
       }
+      event_interests: {
+        Row: {
+          event_id: string
+          event_title: string | null
+          id: string
+          interested_at: string
+          user_id: string
+        }
+        Insert: {
+          event_id: string
+          event_title?: string | null
+          id?: string
+          interested_at?: string
+          user_id: string
+        }
+        Update: {
+          event_id?: string
+          event_title?: string | null
+          id?: string
+          interested_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       event_rsvps: {
         Row: {
           checked_in_at: string | null
