@@ -1,17 +1,17 @@
-## Fixes to the Membership Referral Rewards ribbon
+## Amendments
 
-**File:** `src/components/ReferralSideRibbon.tsx`
+1. **Correct the AJBN Members' Evening date**
+   - File: `src/components/landing/EventsSection.tsx`
+   - Change the event ID and ISO date from `2026-07-10` to `2026-07-09`.
+   - Keep the time label `6:30 PM – 9:00 PM` and all other details unchanged.
 
-1. **Text direction** — Currently the ribbon uses `[writing-mode:vertical-rl] rotate-180`, which makes the text read bottom-to-top. Change to `[writing-mode:vertical-rl]` only (drop the `rotate-180`) so it reads **top-to-bottom** on the right edge. Adjust the small `Gift` icon rotation to match the new orientation.
+2. **Reposition the mobile Membership Referral Rewards tab**
+   - File: `src/components/ReferralSideRibbon.tsx`
+   - Current mobile compact tab sits at `top-20` (flush with the bottom of the fixed `h-20` navbar), with `z-40`, risking overlap with the header, top-mounted toasts (`z-100`), and any floating UI.
+   - Change mobile positioning to clear the header and toast zones, e.g. `top-28` on small screens while keeping desktop `md:top-24` unchanged.
+   - Preserve the compact vertical/horizontal tab styling (`writing-mode`, reduced font, Gift icon, `rounded-l-lg`).
+   - Ensure the ribbon still shows only when the About or Events sections are in view on the homepage and remains hidden on Hero, Impact Lions, `/referral-rewards`, and `/admin`.
 
-2. **Hide on homepage** — The homepage (`/`) already shows a vertical "Membership Referral Rewards" label built into the layout. Extend the existing hide rule so the ribbon does not render when `pathname === "/"` (in addition to the current `/referral-rewards` and `/admin` skips).
-
-3. **Link target** — Confirm the `<Link to="/referral-rewards">` destination is unchanged and correctly routes to the Membership Referral Rewards page (the App route already exists).
-
-## Verification
-
-- Load `/` → no ribbon on the right (only the built-in vertical text).
-- Load `/dashboard`, `/events`, `/lions`, `/directory` → ribbon visible on top-right, text reads top-to-bottom.
-- Load `/referral-rewards` and `/admin/*` → no ribbon.
-- Click the ribbon on any page it appears → navigates to `/referral-rewards`.
-- Run the type check to confirm no build errors.
+3. **Verify**
+   - Typecheck the project.
+   - Run Playwright checks on mobile (390px) and tablet to confirm the tab appears on About/Events, hides elsewhere, and does not visually sit on top of the navbar, toasts, or floating buttons.

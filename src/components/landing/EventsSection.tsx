@@ -21,10 +21,10 @@ type EventItem = {
 
 const EVENTS: EventItem[] = [
   {
-    id: "members-evening-2026-07-10",
+    id: "members-evening-2026-07-09",
     kind: "networking",
     title: "AJBN Members' Evening",
-    date: "2026-07-10T17:30:00Z",
+    date: "2026-07-09T17:30:00Z",
     timeLabel: "6:30 PM – 9:00 PM",
     location: "Vyman House, 104 College Rd, Harrow, HA1 1BQ",
     description:
