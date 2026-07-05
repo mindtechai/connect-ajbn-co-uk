@@ -73,11 +73,11 @@ const tiers = [
       "Priority Capital Connect routing",
       "Reserved stand at cost at the annual flagship event held in October every year with a free half a page advert in the annual magazine",
     ],
-    featured: true,
   },
   {
     name: "Chair's Circle",
     range: "6+ referrals / year",
+    featured: true,
     perks: [
       "Full renewal covered once threshold hit",
       "Complimentary Impact Lions add-on",
