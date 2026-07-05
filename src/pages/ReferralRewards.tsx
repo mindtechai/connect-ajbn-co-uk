@@ -70,7 +70,7 @@ const tiers = [
     perks: [
       "25% renewal credit per approved referral",
       "Priority Capital Connect routing",
-      "Reserved seat at flagship dinners",
+      "Reserved stand at cost at the annual flagship event held in October every year with a free half a page advert in the annual magazine",
     ],
     featured: true,
   },
@@ -80,7 +80,8 @@ const tiers = [
     perks: [
       "Full renewal covered once threshold hit",
       "Complimentary Impact Lions add-on",
-      "Named on the annual Chair's Circle honour roll",
+      "Free reserved stand at the annual flagship event held in October with full page advert in the annual magazine published in the year of 5+ referrals completed",
+      "50% discount to become the lead sponsor for the new year — normal price £6,000 + VAT reduced to £3,000",
     ],
   },
 ];
