@@ -56,14 +56,18 @@ export function Navbar() {
 
         {/* Desktop nav */}
         <div className="hidden md:flex items-center gap-6">
-          {["About", "Events", "Impact Lions"].map((item) => (
-            <a
-              key={item}
-              href={`#${item.toLowerCase().replace(" ", "-")}`}
+          {[
+            { label: "About", to: "/#about" },
+            { label: "Events", to: "/#events" },
+            { label: "Impact Lions", to: "/lions" },
+          ].map((item) => (
+            <Link
+              key={item.label}
+              to={item.to}
               className={`text-sm font-medium transition-colors hover:opacity-80 ${showSolid ? "text-muted-foreground hover:text-foreground" : "text-primary-foreground/80 hover:text-primary-foreground"}`}
             >
-              {item}
-            </a>
+              {item.label}
+            </Link>
           ))}
           <Link
             to="/referral-rewards"
@@ -95,15 +99,19 @@ export function Navbar() {
       {/* Mobile menu */}
       {open && (
         <div className="md:hidden bg-card border-t shadow-lg p-4 flex flex-col gap-3">
-          {["About", "Events", "Impact Lions"].map((item) => (
-            <a
-              key={item}
-              href={`#${item.toLowerCase().replace(" ", "-")}`}
+          {[
+            { label: "About", to: "/#about" },
+            { label: "Events", to: "/#events" },
+            { label: "Impact Lions", to: "/lions" },
+          ].map((item) => (
+            <Link
+              key={item.label}
+              to={item.to}
               className="text-sm font-medium text-muted-foreground hover:text-foreground py-2"
               onClick={() => setOpen(false)}
             >
-              {item}
-            </a>
+              {item.label}
+            </Link>
           ))}
           <Link
             to="/referral-rewards"
