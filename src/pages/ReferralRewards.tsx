@@ -19,9 +19,9 @@ import {
 const capitalConnectSteps = [
   {
     icon: Target,
-    title: "Salil qualifies the lead",
+    title: "Members ask Salil to qualify a lead",
     body:
-      "Every opportunity introduced into AJBN is vetted by Salil for fit, capital readiness and reputational alignment before it reaches members.",
+      "Members are free to connect directly with each other. When you want a lead formally qualified and routed, approach Salil with the opportunity brief. If the deal closes, a success fee is charged for the qualified introduction.",
   },
   {
     icon: Handshake,
