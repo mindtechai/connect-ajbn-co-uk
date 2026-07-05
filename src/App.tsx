@@ -23,6 +23,7 @@ import ReferralRewardsPage from "./pages/ReferralRewards.tsx";
 import { AuthProvider } from "@/hooks/useAuth";
 import { RequireSuperAdmin } from "@/components/RequireSuperAdmin";
 import { RequireAuth } from "@/components/RequireAuth";
+import { ReferralSideRibbon } from "@/components/ReferralSideRibbon";
 
 const queryClient = new QueryClient();
 
@@ -33,6 +34,7 @@ const App = () => (
       <Sonner />
       <BrowserRouter>
         <AuthProvider>
+        <ReferralSideRibbon />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<LoginPage />} />
