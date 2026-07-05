@@ -19,9 +19,9 @@ import {
 const capitalConnectSteps = [
   {
     icon: Target,
-    title: "Salil qualifies the lead",
+    title: "Members ask Salil to qualify a lead",
     body:
-      "Every opportunity introduced into AJBN is vetted by Salil for fit, capital readiness and reputational alignment before it reaches members.",
+      "Members are free to connect directly with each other. When you want a lead formally qualified and routed, approach Salil with the opportunity brief. If the deal closes, a success fee is charged for the qualified introduction.",
   },
   {
     icon: Handshake,
@@ -110,6 +110,8 @@ export default function ReferralRewardsPage() {
               <p className="text-primary-foreground/75 text-lg md:text-xl leading-relaxed max-w-2xl">
                 Two ways AJBN rewards you for growing the network: passing qualified deals
                 through Capital Connect, and introducing the next generation of members.
+                Members are always free to connect directly with one another; Capital Connect
+                is there when you want a lead qualified and routed through Salil.
               </p>
             </ScrollReveal>
             <ScrollReveal delay={240}>
@@ -149,8 +151,9 @@ export default function ReferralRewardsPage() {
               Capital Connect — qualified leads via Salil
             </h2>
             <p className="text-muted-foreground leading-relaxed">
-              AJBN is, at its core, an internal engine for members to exchange qualified
-              capital opportunities. Salil sits at the centre of that flow.
+              Members are free to make direct connections with fellow members at any time.
+              Capital Connect is the route for deals you want Salil to qualify, match and
+              route. On completion, a success fee applies for qualified introductions.
             </p>
           </div>
 
