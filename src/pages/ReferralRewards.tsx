@@ -81,8 +81,8 @@ const tiers = [
     perks: [
       "Full renewal covered once threshold hit",
       "Complimentary Impact Lions add-on",
-      "Free reserved stand at the annual flagship event held in October with full page advert in the annual magazine published in the year of 5+ referrals completed",
-      "50% discount to become the lead sponsor for the new year — normal price £6,000 + VAT reduced to £3,000",
+      "free reserved stand at the annual flagship event held in october with full page advert in the annual magazine",
+      "Opportunity to become lead sponsor for the year at no cost, normally priced at £6000+vat",
     ],
   },
 ];
