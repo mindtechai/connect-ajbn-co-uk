@@ -1,4 +1,4 @@
-import { useMemo, useState, useCallback } from "react";
+import { useMemo, useState, useCallback, useEffect } from "react";
 import { CalendarDays, MapPin, Users, Crown, Trophy, ArrowRight, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
@@ -82,6 +82,33 @@ export function EventsSection() {
   const [openDialogId, setOpenDialogId] = useState<string | null>(null);
   const [registering, setRegistering] = useState(false);
   const [registeredIds, setRegisteredIds] = useState<Set<string>>(new Set());
+  const [loadingRegistrations, setLoadingRegistrations] = useState(false);
+
+  // Load which events this user has already registered interest in, so the
+  // button reflects the true state after a reload and duplicates are blocked
+  // client-side before we even hit the database.
+  useEffect(() => {
+    let cancelled = false;
+    if (!user) {
+      setRegisteredIds(new Set());
+      return;
+    }
+    setLoadingRegistrations(true);
+    (async () => {
+      const { data, error } = await supabase
+        .from("event_interests")
+        .select("event_id")
+        .eq("user_id", user.id);
+      if (cancelled) return;
+      if (!error && data) {
+        setRegisteredIds(new Set(data.map((r) => r.event_id)));
+      }
+      setLoadingRegistrations(false);
+    })();
+    return () => {
+      cancelled = true;
+    };
+  }, [user]);
 
   const visible = useMemo(() => {
     const list = filter === "all" ? EVENTS : EVENTS.filter((e) => e.kind === filter);
@@ -94,6 +121,10 @@ export function EventsSection() {
   const handleRegister = useCallback(
     async (event: EventItem) => {
       if (!user || !session) return;
+      if (registeredIds.has(event.id)) {
+        toast("You've already registered for this event.");
+        return;
+      }
       setRegistering(true);
       try {
         // Store the interest in the database.
@@ -106,7 +137,9 @@ export function EventsSection() {
         if (insertError) {
           // Unique violation is treated as "already registered".
           if (insertError.code === "23505") {
-            toast("You're already registered for this event.");
+            toast("You've already registered for this event with this account.");
+            setRegisteredIds((prev) => new Set(prev).add(event.id));
+            return;
           } else {
             throw insertError;
           }
@@ -176,7 +209,7 @@ export function EventsSection() {
         setRegistering(false);
       }
     },
-    [user, session]
+    [user, session, registeredIds]
   );
 
   return (
@@ -259,7 +292,7 @@ export function EventsSection() {
                           <Button
                             size="sm"
                             onClick={() => openDialog(e.id)}
-                            disabled={isRegistered}
+                            disabled={loadingRegistrations}
                             variant={isRegistered ? "outline" : "default"}
                           >
                             {isRegistered ? (
