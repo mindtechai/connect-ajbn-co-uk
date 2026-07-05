@@ -1,7 +1,7 @@
 import { Link, useLocation } from "react-router-dom";
 import {
   Users, BarChart3, Mail, Shield, ChevronLeft,
-  UserCheck, Settings, Home, Zap, CalendarDays, HeartHandshake, Crown, QrCode, ScrollText
+  UserCheck, Settings, Home, Zap, CalendarDays, HeartHandshake, Crown, QrCode, ScrollText, Handshake
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -11,6 +11,7 @@ const navItems = [
   { label: "Members", icon: Users, path: "/admin/members" },
   { label: "Approvals", icon: UserCheck, path: "/admin/approvals" },
   { label: "Lion Applications", icon: Crown, path: "/admin/lions" },
+  { label: "Intro Requests", icon: Handshake, path: "/admin/intros" },
   { label: "Events", icon: CalendarDays, path: "/admin/events" },
   { label: "Check-in", icon: QrCode, path: "/admin/checkin" },
   { label: "ESG", icon: HeartHandshake, path: "/admin/esg" },

@@ -309,8 +309,10 @@ export type Database = {
       member_intro_requests: {
         Row: {
           admin_notes: string | null
+          completed_at: string | null
           created_at: string
           id: string
+          outcome_notes: string | null
           reason: string
           requester_id: string
           status: string
@@ -321,8 +323,10 @@ export type Database = {
         }
         Insert: {
           admin_notes?: string | null
+          completed_at?: string | null
           created_at?: string
           id?: string
+          outcome_notes?: string | null
           reason: string
           requester_id?: string
           status?: string
@@ -333,8 +337,10 @@ export type Database = {
         }
         Update: {
           admin_notes?: string | null
+          completed_at?: string | null
           created_at?: string
           id?: string
+          outcome_notes?: string | null
           reason?: string
           requester_id?: string
           status?: string

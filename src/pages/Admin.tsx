@@ -14,6 +14,7 @@ import { ESGManagement } from "@/components/admin/ESGManagement";
 import { LionApplications } from "@/components/admin/LionApplications";
 import { AuditLog } from "@/components/admin/AuditLog";
 import { EventCheckIn } from "@/components/admin/EventCheckIn";
+import { IntroRequestsAdmin } from "@/components/admin/IntroRequestsAdmin";
 import { useAuth } from "@/hooks/useAuth";
 import { NotificationsBell } from "@/components/NotificationsBell";
 
@@ -31,6 +32,7 @@ export default function AdminPage() {
     if (location.pathname === "/admin/checkin") return <EventCheckIn />;
     if (location.pathname === "/admin/esg") return <ESGManagement />;
     if (location.pathname === "/admin/lions") return <LionApplications />;
+    if (location.pathname === "/admin/intros") return <IntroRequestsAdmin />;
     if (location.pathname === "/admin/audit") return <AuditLog />;
     if (location.pathname === "/admin/settings") return <AdminSettings />;
     return <AnalyticsOverview />;
