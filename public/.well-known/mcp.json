@@ -1,0 +1,37 @@
+{
+  "$schema": "https://modelcontextprotocol.io/schemas/manifest.json",
+  "name": "ajbn-connect",
+  "display_name": "AJBN Connect",
+  "description": "Read-only access to the Asian-Jewish Business Network (AJBN) public business directory and upcoming events. Designed for external AI agents (ChatGPT, Claude, Make.com, Zuplo) using the Model Context Protocol.",
+  "version": "1.0.0",
+  "contact": { "name": "AJBN", "url": "https://connect.ajbn.co.uk" },
+  "openapi_url": "https://connect.ajbn.co.uk/openapi.json",
+  "auth": {
+    "type": "none",
+    "notes": "Anonymous access is allowed for read-only endpoints. Callers may optionally send an X-Agent-Key header to identify themselves for rate-limit attribution. Rate limit: 30 requests per minute per caller."
+  },
+  "tools": [
+    {
+      "name": "list_public_member_directory",
+      "description": "List AJBN member businesses (aggregated by company + industry). Optional filters: industry, q (business-name search).",
+      "http": {
+        "method": "GET",
+        "url": "https://dwupmpddwyujxhacrims.supabase.co/functions/v1/agent-api/directory"
+      }
+    },
+    {
+      "name": "list_upcoming_events",
+      "description": "List the next upcoming AJBN and Impact Lions events.",
+      "http": {
+        "method": "GET",
+        "url": "https://dwupmpddwyujxhacrims.supabase.co/functions/v1/agent-api/events"
+      }
+    }
+  ],
+  "integration_notes": {
+    "chatgpt_custom_gpt": "In the GPT builder, click 'Add actions' and import the schema from https://connect.ajbn.co.uk/openapi.json. Set authentication to 'None'.",
+    "claude": "Use the openapi_url above as an MCP tool descriptor, or wrap it with a small MCP proxy (e.g. mcp-openapi-proxy).",
+    "zuplo": "Create a new API in Zuplo, import OpenAPI from https://connect.ajbn.co.uk/openapi.json, and add an API-key policy in front if you want to layer additional auth.",
+    "make_com": "Use the 'HTTP > Make an OAuth 2.0 request' or plain 'HTTP > Make a request' module. No auth headers required; base URL is https://dwupmpddwyujxhacrims.supabase.co/functions/v1/agent-api."
+  }
+}
