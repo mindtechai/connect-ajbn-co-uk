@@ -34,7 +34,7 @@ export function AppLayout({
   mainClassName = "container mx-auto px-4 lg:px-8 py-8",
 }: AppLayoutProps) {
   return (
-    <div className="min-h-dvh bg-background">
+    <div className="min-h-dvh bg-background flex flex-col">
       {/* Skip link: appears on keyboard focus, jumps past the header */}
       <a
         href="#main-content"
