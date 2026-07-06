@@ -1,6 +1,7 @@
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
 import impactLionsLogo from "@/assets/impact-lions-logo.png.asset.json";
 import { assetUrl } from "@/lib/asset";
+import { DeveloperCredit } from "@/components/DeveloperCredit";
 
 export function Footer() {
   return (
@@ -37,6 +38,7 @@ export function Footer() {
           <p className="text-xs text-muted-foreground">
             © {new Date().getFullYear()} Asian Jewish Business Network. All rights reserved.
           </p>
+          <DeveloperCredit className="mt-2" />
         </div>
       </div>
     </footer>
