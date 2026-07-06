@@ -44,6 +44,33 @@ export type Database = {
         }
         Relationships: []
       }
+      agent_api_rate_limit: {
+        Row: {
+          caller_key: string
+          created_at: string
+          id: string
+          request_count: number
+          updated_at: string
+          window_start: string
+        }
+        Insert: {
+          caller_key: string
+          created_at?: string
+          id?: string
+          request_count?: number
+          updated_at?: string
+          window_start?: string
+        }
+        Update: {
+          caller_key?: string
+          created_at?: string
+          id?: string
+          request_count?: number
+          updated_at?: string
+          window_start?: string
+        }
+        Relationships: []
+      }
       announcements: {
         Row: {
           body: string
