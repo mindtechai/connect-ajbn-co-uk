@@ -12,6 +12,7 @@ import {
   Preview,
   Text,
 } from 'npm:@react-email/components@0.0.22'
+import { EmailHeader } from './EmailHeader.tsx'
 
 interface MagicLinkEmailProps {
   siteName: string
@@ -27,6 +28,7 @@ export const MagicLinkEmail = ({
     <Preview>Your login link for {siteName}</Preview>
     <Body style={main}>
       <Container style={container}>
+        <EmailHeader />
         <Heading style={h1}>Your login link</Heading>
         <Text style={text}>
           Click the button below to log in to {siteName}. This link will expire
@@ -46,25 +48,27 @@ export const MagicLinkEmail = ({
 export default MagicLinkEmail
 
 const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
-const container = { padding: '20px 25px' }
+const container = { padding: '0 0 30px', maxWidth: '600px' }
 const h1 = {
   fontSize: '22px',
   fontWeight: 'bold' as const,
-  color: '#000000',
-  margin: '0 0 20px',
+  color: '#0a1e3f',
+  margin: '0 25px 20px',
 }
 const text = {
   fontSize: '14px',
-  color: '#55575d',
+  color: '#3f4a5c',
   lineHeight: '1.5',
-  margin: '0 0 25px',
+  margin: '0 25px 25px',
 }
 const button = {
-  backgroundColor: '#000000',
+  backgroundColor: '#0a1e3f',
   color: '#ffffff',
   fontSize: '14px',
+  fontWeight: 'bold' as const,
   borderRadius: '8px',
-  padding: '12px 20px',
+  padding: '14px 24px',
   textDecoration: 'none',
+  margin: '0 25px',
 }
-const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
+const footer = { fontSize: '12px', color: '#7a869a', margin: '30px 25px 0' }
