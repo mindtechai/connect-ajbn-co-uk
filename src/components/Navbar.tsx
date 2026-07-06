@@ -40,7 +40,7 @@ export function Navbar() {
               alt="Asian Jewish Business Network logo"
               className={`h-11 w-11 md:h-12 md:w-12 lg:h-14 lg:w-14 rounded-lg object-cover shadow-md ring-2 shrink-0 ${showSolid ? "ring-gold/60" : "ring-gold/80"}`}
             />
-            <span className={`font-display font-bold tracking-tight transition-colors truncate ${showSolid ? "text-primary" : "text-primary-foreground"} text-sm sm:text-base lg:text-lg xl:text-xl`}>
+            <span className={`font-display font-bold tracking-tight transition-colors truncate ${showSolid ? "text-primary" : "text-primary-foreground"} text-sm sm:text-base lg:text-lg xl:text-xl hidden md:block`}>
               <span className="hidden sm:inline">Asian Jewish Business Network</span>
               <span className="sm:hidden">AJBN</span>
             </span>
