@@ -21,8 +21,8 @@ export function Navbar() {
   const showSolid = !isLanding || scrolled;
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${showSolid ? "bg-card shadow-sm" : "bg-transparent"}`}>
-      <div className="container mx-auto flex items-center justify-between h-20 px-4 lg:px-8">
+    <nav className={`fixed top-0 left-0 right-0 z-50 pt-[env(safe-area-inset-top)] transition-all duration-300 ${showSolid ? "bg-card shadow-sm" : "bg-transparent"}`}>
+      <div className="container mx-auto flex justify-between items-center h-20 px-4 lg:px-8">
         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           <Link
             to="/"
