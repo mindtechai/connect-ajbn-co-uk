@@ -1,0 +1,158 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "AJBN Connect Agent API",
+    "version": "1.0.0",
+    "description": "Public, read-only API exposing the AJBN (Asian-Jewish Business Network) member directory and upcoming events for external AI agents (ChatGPT, Claude, Make.com, Zuplo, etc.). Only non-sensitive business data is exposed. No personal emails, phone numbers, or private messages are ever returned. Access is anonymous but rate-limited to 30 requests per minute per caller (IP + optional X-Agent-Key).",
+    "contact": { "name": "AJBN", "url": "https://connect.ajbn.co.uk" },
+    "license": { "name": "Proprietary — AJBN" }
+  },
+  "servers": [
+    { "url": "https://dwupmpddwyujxhacrims.supabase.co/functions/v1/agent-api", "description": "Production" }
+  ],
+  "components": {
+    "securitySchemes": {
+      "AgentKey": {
+        "type": "apiKey",
+        "in": "header",
+        "name": "X-Agent-Key",
+        "description": "Optional agent identifier used to attribute rate-limit usage. Any non-empty string is accepted; no signup required for read-only access."
+      }
+    },
+    "schemas": {
+      "Business": {
+        "type": "object",
+        "properties": {
+          "business_name":       { "type": "string", "example": "Acme Holdings Ltd" },
+          "industry_sector":     { "type": "string", "example": "Finance" },
+          "london_region":       { "type": ["string", "null"], "example": null, "description": "Reserved for future use; currently null." },
+          "website":             { "type": ["string", "null"], "example": null, "description": "Reserved for future use; currently null." },
+          "member_count":        { "type": "integer", "example": 3 },
+          "impact_lion_member":  { "type": "boolean", "example": true, "description": "True if any member of this business is part of the Impact Lions Club." },
+          "public_profile_url":  { "type": "string", "format": "uri", "example": "https://connect.ajbn.co.uk/directory?company=Acme%20Holdings%20Ltd" }
+        }
+      },
+      "Event": {
+        "type": "object",
+        "properties": {
+          "id":              { "type": "string", "format": "uuid" },
+          "title":           { "type": "string", "example": "AJBN Flagship Networking Day" },
+          "description":     { "type": ["string", "null"] },
+          "starts_at":       { "type": "string", "format": "date-time" },
+          "ends_at":         { "type": ["string", "null"], "format": "date-time" },
+          "location":        { "type": ["string", "null"], "example": "London Marriott Hotel, NW3 3BY" },
+          "kind":            { "type": "string", "enum": ["networking", "fundraising", "flagship", "roundtable", "other"] },
+          "capacity":        { "type": ["integer", "null"] },
+          "cover_image_url": { "type": ["string", "null"], "format": "uri" },
+          "public_url":      { "type": "string", "format": "uri", "example": "https://connect.ajbn.co.uk/events" }
+        }
+      },
+      "Error": {
+        "type": "object",
+        "properties": { "error": { "type": "string" } }
+      }
+    }
+  },
+  "security": [{ "AgentKey": [] }, {}],
+  "paths": {
+    "/": {
+      "get": {
+        "operationId": "getServiceIndex",
+        "summary": "Service index",
+        "description": "Returns a summary of available endpoints and rate limits.",
+        "responses": {
+          "200": {
+            "description": "Service metadata",
+            "content": { "application/json": { "example": {
+              "service": "AJBN Connect Agent API",
+              "version": "1.0.0",
+              "endpoints": [
+                { "path": "/directory", "description": "Public business directory grouped by company + industry." },
+                { "path": "/events", "description": "Upcoming public events." }
+              ],
+              "rate_limit_per_minute": 30
+            } } }
+          }
+        }
+      }
+    },
+    "/directory": {
+      "get": {
+        "operationId": "listPublicMemberDirectory",
+        "summary": "List the public business directory",
+        "description": "Returns a machine-readable list of AJBN member businesses. Only aggregated, non-sensitive fields are included: business name, industry sector, member count, and a public profile URL. Supports filtering by industry sector and free-text search on the business name.",
+        "parameters": [
+          {
+            "name": "industry", "in": "query", "required": false,
+            "description": "Filter to businesses in a specific industry sector (case-insensitive exact match). Example: 'Finance', 'Property', 'Law', 'Technology'.",
+            "schema": { "type": "string" }
+          },
+          {
+            "name": "q", "in": "query", "required": false,
+            "description": "Free-text substring search over business name (case-insensitive).",
+            "schema": { "type": "string" }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Directory results",
+            "content": { "application/json": { "example": {
+              "count": 2,
+              "businesses": [
+                {
+                  "business_name": "Acme Holdings Ltd",
+                  "industry_sector": "Finance",
+                  "london_region": null,
+                  "website": null,
+                  "member_count": 3,
+                  "impact_lion_member": true,
+                  "public_profile_url": "https://connect.ajbn.co.uk/directory?company=Acme%20Holdings%20Ltd"
+                },
+                {
+                  "business_name": "Beacon Law LLP",
+                  "industry_sector": "Law",
+                  "london_region": null,
+                  "website": null,
+                  "member_count": 1,
+                  "impact_lion_member": false,
+                  "public_profile_url": "https://connect.ajbn.co.uk/directory?company=Beacon%20Law%20LLP"
+                }
+              ]
+            } } }
+          },
+          "429": { "description": "Rate limit exceeded (30 req/min).", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+        }
+      }
+    },
+    "/events": {
+      "get": {
+        "operationId": "listUpcomingEvents",
+        "summary": "List upcoming public events",
+        "description": "Returns the next 50 upcoming AJBN and Impact Lions events, ordered by start time ascending. Only public event metadata is included; RSVP lists and attendee identities are never exposed.",
+        "responses": {
+          "200": {
+            "description": "Upcoming events",
+            "content": { "application/json": { "example": {
+              "count": 1,
+              "events": [
+                {
+                  "id": "0f2a1c34-9b5e-4b7a-8b2d-1c9d5a6f7e42",
+                  "title": "AJBN Flagship Networking Day",
+                  "description": "The UK's only platform dedicated to fostering commercial ties between Asian and Jewish business communities.",
+                  "starts_at": "2026-10-19T10:00:00Z",
+                  "ends_at": "2026-10-19T16:00:00Z",
+                  "location": "London Marriott Hotel, 128 King Henry's Rd, London NW3 3BY",
+                  "kind": "flagship",
+                  "capacity": null,
+                  "cover_image_url": null,
+                  "public_url": "https://connect.ajbn.co.uk/events"
+                }
+              ]
+            } } }
+          },
+          "429": { "description": "Rate limit exceeded.", "content": { "application/json": { "schema": { "$ref": "#/components/schemas/Error" } } } }
+        }
+      }
+    }
+  }
+}
