@@ -11,6 +11,7 @@ import AdminPage from "./pages/Admin.tsx";
 import NotFound from "./pages/NotFound.tsx";
 import NotificationPreferencesPage from "./pages/NotificationPreferences.tsx";
 import UnsubscribePage from "./pages/Unsubscribe.tsx";
+import EmailUnsubscribePage from "./pages/EmailUnsubscribe.tsx";
 import ForgotPasswordPage from "./pages/ForgotPassword.tsx";
 import ResetPasswordPage from "./pages/ResetPassword.tsx";
 import ProfilePage from "./pages/Profile.tsx";
@@ -51,6 +52,7 @@ const App = () => (
           <Route path="/lions/apply" element={<RequireAuth><LionApplicationPage /></RequireAuth>} />
           <Route path="/referral-rewards" element={<ReferralRewardsPage />} />
           <Route path="/unsubscribe" element={<UnsubscribePage />} />
+          <Route path="/email-unsubscribe" element={<EmailUnsubscribePage />} />
           <Route path="/admin" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
           <Route path="/admin/members" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
           <Route path="/admin/approvals" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
