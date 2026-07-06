@@ -1,6 +1,7 @@
 import { Shield, Bell, Mail, ExternalLink, Users } from "lucide-react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { SendTestEmailCard } from "./SendTestEmailCard";
 
 export function AdminSettings() {
   return (
@@ -38,6 +39,8 @@ export function AdminSettings() {
           <Button variant="outline" size="sm" className="gap-1.5">Open Bulk Actions <ExternalLink size={12} /></Button>
         </Link>
       </div>
+
+      <SendTestEmailCard />
 
       <div className="bg-card border rounded-xl p-5 shadow-sm space-y-3">
         <div className="flex items-center gap-2">
