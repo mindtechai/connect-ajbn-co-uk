@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Crown, Loader2, Building2, Mail, Linkedin } from "lucide-react";
+import { Search, Crown, Loader2, Building2, Linkedin } from "lucide-react";
 
 type Member = {
   id: string;
@@ -17,7 +17,6 @@ type Member = {
   title: string | null;
   industry: string | null;
   bio: string | null;
-  email: string | null;
   linkedin: string | null;
   is_lion: boolean;
 };
@@ -34,14 +33,8 @@ export default function DirectoryPage() {
   useEffect(() => {
     if (authLoading || !user) return;
     (async () => {
-      const [{ data: profs }, { data: memberRoles }] = await Promise.all([
-        supabase.from("profiles")
-          .select("id, first_name, last_name, company, title, industry, bio, email, linkedin")
-          .order("last_name", { ascending: true }),
-        supabase.from("user_roles").select("user_id, role"),
-      ]);
-      const lionSet = new Set(((memberRoles ?? []) as any[]).filter((r) => r.role === "impact_lion").map((r) => r.user_id));
-      setMembers(((profs ?? []) as any[]).map((p) => ({ ...p, is_lion: lionSet.has(p.id) })));
+      const { data } = await (supabase as any).rpc("member_directory_list");
+      setMembers((data ?? []) as Member[]);
       setLoading(false);
     })();
   }, [user, authLoading]);
@@ -115,12 +108,7 @@ export default function DirectoryPage() {
                   {m.industry && <Badge variant="outline" className="text-[10px]">{m.industry}</Badge>}
                   {m.bio && <p className="text-xs text-muted-foreground line-clamp-3 pt-1">{m.bio}</p>}
                   <div className="flex gap-2 pt-2 border-t">
-                    {m.email && (
-                      <a href={`mailto:${m.email}`} className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1">
-                        <Mail size={12} /> Email
-                      </a>
-                    )}
-                    {m.linkedin && (
+                    {m.linkedin && /^https?:\/\//i.test(m.linkedin) && (
                       <a href={m.linkedin} target="_blank" rel="noreferrer" className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1">
                         <Linkedin size={12} /> LinkedIn
                       </a>
