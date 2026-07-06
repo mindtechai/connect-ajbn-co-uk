@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { BrandLink } from "@/components/BrandLink";
+import { DeveloperCredit } from "@/components/DeveloperCredit";
 
 type MaxWidth = "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl" | "6xl" | "7xl" | "full";
 
@@ -72,6 +73,12 @@ export function AppLayout({
       >
         {children}
       </main>
+
+      <footer className="border-t bg-card mt-auto">
+        <div className="container mx-auto px-4 lg:px-8 py-4">
+          <DeveloperCredit />
+        </div>
+      </footer>
     </div>
   );
 }
