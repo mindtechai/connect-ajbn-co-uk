@@ -89,8 +89,9 @@ export function Navbar() {
 
         {/* Mobile menu toggle */}
         <button
-          className={`md:hidden ${showSolid ? "text-foreground" : "text-primary-foreground"}`}
+          className={`md:hidden min-w-[44px] min-h-[44px] flex items-center justify-center ${showSolid ? "text-foreground" : "text-primary-foreground"}`}
           onClick={() => setOpen(!open)}
+          aria-label="Toggle navigation menu"
         >
           {open ? <X size={24} /> : <Menu size={24} />}
         </button>
