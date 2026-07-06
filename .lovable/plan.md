@@ -1,60 +1,33 @@
 ## Goal
-Replace the AJBN Members' Evening mailto link with a one-click confirmation dialog that shows an on-screen success message and optionally sends both a registrant confirmation email and an organiser notification email.
+Add the uploaded AJBN banner to the top of every email the app sends — starting with the signup verification email — so all communications share one standardised branded header.
 
-## Plan
+## Steps
 
-### 1. UI: interest-registration dialog
+1. **Set up sender domain** (prerequisite)
+   - No sender domain is currently configured, so no branded email (auth or app) can be sent yet.
+   - Open the email setup dialog so you can configure a sender subdomain (e.g. `notify.ajbn.co.uk`) and add the DNS records. This is a one-time step.
 
-**File:** `src/components/landing/EventsSection.tsx`
+2. **Host the banner on the CDN**
+   - Upload `banner-ajbnconnect_email_confmtn.-2.png` as a Lovable Asset so it has a stable public URL usable inside emails (email clients can't load `src/assets` imports).
 
-- Keep the existing "Register your interest" button label, but make it open a dialog instead of opening the mailto client.
-- Use a shadcn `Dialog` (or `AlertDialog`) for the confirmation:
-  - Title: *Register your interest — AJBN Members' Evening*
-  - Show event date, time and location.
-  - **If the user is signed in:** show a short note: *We will send a confirmation email to your account email and notify the organisers.* One-click **Confirm registration** button.
-  - **If the user is not signed in:** explain *Sign in to register your interest and receive a confirmation email.* Provide a **Sign in** button.
-- After confirming, show an inline success message in the dialog (e.g. *You're registered — see you on 9 July!*), then auto-close after a short delay.
-- Use `toast` from `sonner` (already rendered in `App.tsx`) for an on-screen confirmation as well.
+3. **Scaffold branded auth email templates**
+   - Generate the six auth templates (signup confirmation, magic link, password recovery, invite, email change, reauthentication) plus the `auth-email-hook` edge function.
+   - Add the banner `<Img>` at the top of every template, styled to full container width with proper alt text.
+   - Apply AJBN brand colours (navy/teal, gold accents) to buttons, headings, and links so the template matches the app.
+   - Deploy `auth-email-hook`.
 
-### 2. Backend: store the registration (optional but recommended)
+4. **Standardise the banner across app (transactional) emails**
+   - Create a shared `EmailHeader` component in `supabase/functions/_shared/transactional-email-templates/` that renders the banner.
+   - Update every existing transactional template (e.g. `bulk-message` used by `send-bulk-message`) to import and render `EmailHeader` at the top.
+   - Any future templates added to the registry will use the same header component.
+   - Redeploy `send-transactional-email`.
 
-- Add a lightweight `event_interests` table or reuse `event_rsvps` if appropriate, with RLS policies so signed-in users can insert their own interest and admins can view all.
-- If we keep it purely email-based, this step can be skipped; storing it is better for record-keeping and avoids duplicate registrations.
-- Decision: **store** a row per user+event with an `interested_at` timestamp and unique constraint, then trigger emails from the client or from an edge function.
+5. **Verify**
+   - Preview the signup confirmation template from Cloud → Emails.
+   - Trigger a test signup once DNS verifies and confirm the banner renders in the inbox.
 
-### 3. Email infrastructure (required for the optional emails)
-
-Current state: no email domain or custom domain is configured.
-
-- **User action required:** set up an email sender domain via the email setup dialog.
-- Once a domain is configured, run `email_domain--setup_email_infra` to create queues, RPC wrappers, and the shared `process-email-queue` function.
-- Run `email_domain--scaffold_transactional_email` to create the `send-transactional-email` edge function and sample templates.
-
-### 4. Email templates
-
-Create two templates in `supabase/functions/_shared/transactional-email-templates/`:
-
-- `member-event-confirmation.tsx` — sent to the registrant:
-  - Subject: *You're registered for AJBN Members' Evening*
-  - Event details and a note about the organisers being in touch.
-- `member-event-notification.tsx` — sent to `info@ajbn.co.uk`:
-  - Subject: *New interest: AJBN Members' Evening*
-  - Registrant name, email, and event details.
-
-Register both templates in the transactional email registry.
-
-### 5. Wiring
-
-- From the frontend, after the user confirms, insert the interest record (if storing) and then call `supabase.functions.invoke('send-transactional-email', ...)` once for each recipient.
-- Use `idempotencyKey` derived from the event id + user id to prevent duplicate emails.
-- Handle loading/error states in the dialog.
-
-### 6. Edge Function deployment
-
-After editing or creating any templates/functions, deploy the affected Edge Functions so the latest code is served.
-
-### 7. Verify
-
-- Typecheck the project.
-- Run a Playwright test on the Events section to confirm the dialog opens, the success message appears, and the button state updates.
-- If a domain is configured, test the email sends via the send log; otherwise note that emails will activate once DNS verification completes.
+## Notes
+- Email `<Body>` background stays white; the banner sits inside the container so it looks like a header strip.
+- The banner is a single image (contains logos + contact block). No text overlay needed in code.
+- Unsubscribe footer is appended automatically by the platform — not added to templates.
+- No app/business logic changes; this is purely email presentation.
