@@ -1,6 +1,7 @@
 import { Link } from "react-router-dom";
 import { ArrowLeft } from "lucide-react";
 import { BrandLink } from "@/components/BrandLink";
+import { DeveloperCredit } from "@/components/DeveloperCredit";
 
 type MaxWidth = "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl" | "6xl" | "7xl" | "full";
 
@@ -33,7 +34,7 @@ export function AppLayout({
   mainClassName = "container mx-auto px-4 lg:px-8 py-8",
 }: AppLayoutProps) {
   return (
-    <div className="min-h-dvh bg-background">
+    <div className="min-h-dvh bg-background flex flex-col">
       {/* Skip link: appears on keyboard focus, jumps past the header */}
       <a
         href="#main-content"
@@ -72,6 +73,12 @@ export function AppLayout({
       >
         {children}
       </main>
+
+      <footer className="border-t bg-card mt-auto">
+        <div className="container mx-auto px-4 lg:px-8 py-4">
+          <DeveloperCredit />
+        </div>
+      </footer>
     </div>
   );
 }
