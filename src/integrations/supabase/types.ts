@@ -737,6 +737,20 @@ export type Database = {
         }
         Returns: boolean
       }
+      member_directory_list: {
+        Args: never
+        Returns: {
+          bio: string
+          company: string
+          first_name: string
+          id: string
+          industry: string
+          is_lion: boolean
+          last_name: string
+          linkedin: string
+          title: string
+        }[]
+      }
       move_to_dlq: {
         Args: {
           dlq_name: string

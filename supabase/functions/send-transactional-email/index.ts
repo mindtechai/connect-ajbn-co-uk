@@ -25,9 +25,24 @@ function generateToken(): string {
     .join('')
 }
 
-// Auth note: this function uses verify_jwt = true in config.toml, so Supabase's
-// gateway validates the caller's JWT (anon or service_role) before the request
-// reaches this code. No in-function auth check is needed.
+// Auth note: verify_jwt = true in config.toml only requires *any* valid Supabase
+// JWT — including the public anon key. Without an in-function role/identity
+// check, this endpoint could be abused as an open email relay. We therefore
+// require the caller to be either:
+//   (a) service_role (internal edge-to-edge / cron), OR
+//   (b) an authenticated user AND the recipient is either the template's
+//       fixed `to`, the caller's own email, or the caller is a super_admin.
+function decodeJwt(token: string): Record<string, any> | null {
+  try {
+    const [, payload] = token.split('.')
+    if (!payload) return null
+    const padded = payload.replace(/-/g, '+').replace(/_/g, '/')
+    const b64 = padded + '='.repeat((4 - (padded.length % 4)) % 4)
+    return JSON.parse(atob(b64))
+  } catch {
+    return null
+  }
+}
 
 Deno.serve(async (req) => {
   // Handle CORS preflight
@@ -46,6 +61,22 @@ Deno.serve(async (req) => {
         status: 500,
         headers: { ...corsHeaders, 'Content-Type': 'application/json' },
       }
+    )
+  }
+
+  // ---- Caller authorization ----
+  const authHeader = req.headers.get('Authorization') ?? ''
+  const bearer = authHeader.toLowerCase().startsWith('bearer ')
+    ? authHeader.slice(7).trim()
+    : ''
+  const claims = bearer ? decodeJwt(bearer) : null
+  const callerRole = claims?.role as string | undefined
+  const isServiceRole = callerRole === 'service_role'
+
+  if (!bearer || !claims) {
+    return new Response(
+      JSON.stringify({ error: 'Unauthorized' }),
+      { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
     )
   }
 
@@ -119,6 +150,57 @@ Deno.serve(async (req) => {
 
   // Create Supabase client with service role (bypasses RLS)
   const supabase = createClient(supabaseUrl, supabaseServiceKey)
+
+  // Enforce recipient authorization for non-service-role callers.
+  // Service role (internal edge functions / cron) may send to any address.
+  // Authenticated users may only trigger sends to:
+  //   * a template-defined fixed `to`, OR
+  //   * their own account email, OR
+  //   * any address if they are a super_admin.
+  if (!isServiceRole) {
+    const callerUserId = claims?.sub as string | undefined
+    if (!callerUserId) {
+      return new Response(
+        JSON.stringify({ error: 'Unauthorized' }),
+        { status: 401, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+
+    const resolvedEffective =
+      typeof template.to === 'function'
+        ? (template.to as (d: any) => string)(templateData)
+        : (template.to as string | undefined)
+    const isTemplateFixedTo =
+      !!resolvedEffective &&
+      resolvedEffective.toLowerCase() === effectiveRecipient.toLowerCase()
+
+    let allowed = isTemplateFixedTo
+    if (!allowed) {
+      const { data: adminUser } = await supabase.auth.admin.getUserById(callerUserId)
+      const callerEmail = adminUser?.user?.email?.toLowerCase()
+      if (callerEmail && callerEmail === effectiveRecipient.toLowerCase()) {
+        allowed = true
+      }
+      if (!allowed) {
+        const { data: isSuper } = await supabase.rpc('has_role', {
+          _user_id: callerUserId,
+          _role: 'super_admin',
+        })
+        if (isSuper === true) allowed = true
+      }
+    }
+
+    if (!allowed) {
+      console.warn('send-transactional-email: recipient not allowed for caller', {
+        callerUserId,
+        templateName,
+      })
+      return new Response(
+        JSON.stringify({ error: 'Forbidden: recipient not allowed for this caller' }),
+        { status: 403, headers: { ...corsHeaders, 'Content-Type': 'application/json' } }
+      )
+    }
+  }
 
   // 2. Check suppression list (fail-closed: if we can't verify, don't send)
   const { data: suppressed, error: suppressionError } = await supabase
