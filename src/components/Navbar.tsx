@@ -21,8 +21,8 @@ export function Navbar() {
   const showSolid = !isLanding || scrolled;
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 transition-all duration-300 ${showSolid ? "bg-card shadow-sm" : "bg-transparent"}`}>
-      <div className="container mx-auto flex items-center justify-between h-20 px-4 lg:px-8">
+    <nav className={`fixed top-0 left-0 right-0 z-50 pt-[env(safe-area-inset-top)] transition-all duration-300 ${showSolid ? "bg-card shadow-sm" : "bg-transparent"}`}>
+      <div className="container mx-auto flex justify-between items-center h-20 px-4 lg:px-8">
         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           <Link
             to="/"
@@ -40,7 +40,7 @@ export function Navbar() {
               alt="Asian Jewish Business Network logo"
               className={`h-11 w-11 md:h-12 md:w-12 lg:h-14 lg:w-14 rounded-lg object-cover shadow-md ring-2 shrink-0 ${showSolid ? "ring-gold/60" : "ring-gold/80"}`}
             />
-            <span className={`font-display font-bold tracking-tight transition-colors truncate ${showSolid ? "text-primary" : "text-primary-foreground"} text-sm sm:text-base lg:text-lg xl:text-xl`}>
+            <span className={`font-display font-bold tracking-tight transition-colors truncate ${showSolid ? "text-primary" : "text-primary-foreground"} text-sm sm:text-base lg:text-lg xl:text-xl hidden md:block`}>
               <span className="hidden sm:inline">Asian Jewish Business Network</span>
               <span className="sm:hidden">AJBN</span>
             </span>
@@ -89,8 +89,9 @@ export function Navbar() {
 
         {/* Mobile menu toggle */}
         <button
-          className={`md:hidden ${showSolid ? "text-foreground" : "text-primary-foreground"}`}
+          className={`md:hidden min-w-[44px] min-h-[44px] flex items-center justify-center ${showSolid ? "text-foreground" : "text-primary-foreground"}`}
           onClick={() => setOpen(!open)}
+          aria-label="Toggle navigation menu"
         >
           {open ? <X size={24} /> : <Menu size={24} />}
         </button>
