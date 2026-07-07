@@ -397,6 +397,20 @@ export function EventsSection() {
             })}
           </div>
         )}
+
+        <Dialog open={accessDenied} onOpenChange={setAccessDenied}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Access Denied</DialogTitle>
+              <DialogDescription>
+                This event is strictly reserved for verified AJBN members. Uninvited third-party registrations are prohibited.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button onClick={() => setAccessDenied(false)} variant="outline" className="w-full sm:w-auto">Close</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </section>
   );
