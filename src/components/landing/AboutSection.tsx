@@ -84,8 +84,7 @@ export function AboutSection() {
               <p className="text-muted-foreground leading-relaxed">
                 Founded in 2019, AJBN is the only network of its kind in the UK, promoting
                 business relationships between these two vibrant communities. What started as
-                a small initiative has grown into a face-to-face members club — including the
-                London Members Club and the Women Inspired Members Club — alongside our
+                a small initiative has grown into a face-to-face members club, alongside our
                 annual flagship networking event, which attracts over 600 attendees.
               </p>
             </div>
