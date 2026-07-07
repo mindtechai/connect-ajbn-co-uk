@@ -22,7 +22,7 @@ export function HeroSection() {
         <div className="max-w-2xl">
           <ScrollReveal>
             <p className="text-primary-foreground/70 font-body text-xs md:text-sm tracking-[0.2em] uppercase leading-relaxed mb-4 md:mb-5 max-w-xl">
-              Fostering business ties between the Asian and Jewish communities
+              The UK's only network dedicated to strengthening professional ties between Asian and Jewish business communities.
             </p>
           </ScrollReveal>
 
@@ -31,12 +31,6 @@ export function HeroSection() {
               Empowering Business.{" "}
               <span className="text-gradient-gold">Connecting Communities.</span>
             </h1>
-          </ScrollReveal>
-
-          <ScrollReveal delay={160}>
-            <p className="text-primary-foreground/70 text-lg md:text-xl leading-relaxed mb-8 md:mb-10 max-w-lg">
-              The UK's only network dedicated to strengthening professional ties between Asian and Jewish business communities.
-            </p>
           </ScrollReveal>
 
           <ScrollReveal delay={240}>

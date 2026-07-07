@@ -78,9 +78,14 @@ type Filter = "all" | "networking" | "fundraising";
 
 export function EventsSection() {
   const [filter, setFilter] = useState<Filter>("all");
-  const { user, session } = useAuth();
+  const { user, session, roles } = useAuth();
+  const isVerifiedMember =
+    roles.includes("ajbn_member") ||
+    roles.includes("impact_lion") ||
+    roles.includes("super_admin");
   const [openDialogId, setOpenDialogId] = useState<string | null>(null);
   const [registering, setRegistering] = useState(false);
+  const [accessDenied, setAccessDenied] = useState(false);
   const [registeredIds, setRegisteredIds] = useState<Set<string>>(new Set());
   const [loadingRegistrations, setLoadingRegistrations] = useState(false);
 
@@ -121,6 +126,10 @@ export function EventsSection() {
   const handleRegister = useCallback(
     async (event: EventItem) => {
       if (!user || !session) return;
+      if (!isVerifiedMember) {
+        setAccessDenied(true);
+        return;
+      }
       if (registeredIds.has(event.id)) {
         toast("You've already registered for this event.");
         return;
@@ -209,7 +218,7 @@ export function EventsSection() {
         setRegistering(false);
       }
     },
-    [user, session, registeredIds]
+    [user, session, registeredIds, isVerifiedMember]
   );
 
   return (
@@ -388,6 +397,20 @@ export function EventsSection() {
             })}
           </div>
         )}
+
+        <Dialog open={accessDenied} onOpenChange={setAccessDenied}>
+          <DialogContent className="sm:max-w-md">
+            <DialogHeader>
+              <DialogTitle>Access Denied</DialogTitle>
+              <DialogDescription>
+                This event is strictly reserved for verified AJBN members. Uninvited third-party registrations are prohibited.
+              </DialogDescription>
+            </DialogHeader>
+            <DialogFooter>
+              <Button onClick={() => setAccessDenied(false)} variant="outline" className="w-full sm:w-auto">Close</Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
       </div>
     </section>
   );

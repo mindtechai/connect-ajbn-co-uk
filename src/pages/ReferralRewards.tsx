@@ -69,9 +69,9 @@ const tiers = [
     name: "Ambassador",
     range: "3–5 referrals / year",
     perks: [
-      "25% renewal credit per approved referral",
+      "20% renewal credit per approved referral",
       "Priority Capital Connect routing",
-      "Reserved stand at cost at the annual flagship event held in October every year with a free half a page advert in the annual magazine",
+      "20% discount off the rate-card, on the Stand at the Annual Flagship event held in October, with a free half a page advert in the annual magazine",
     ],
   },
   {
@@ -81,8 +81,8 @@ const tiers = [
     perks: [
       "Full renewal covered once threshold hit",
       "Complimentary Impact Lions add-on",
-      "free reserved stand at the annual flagship event held in october with full page advert in the annual magazine",
-      "Opportunity to become lead sponsor for the year at no cost, normally priced at £6000+vat",
+      "25% discount off the rate-card, on the Stand at the Annual Flagship event held in October, with a FREE FULL PAGE advert in the annual magazine.",
+      "Opportunity to become lead sponsor for the year at 50% DISCOUNT off the rate-card.",
     ],
   },
 ];
