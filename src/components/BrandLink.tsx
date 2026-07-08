@@ -30,7 +30,7 @@ export function BrandLink({ full = false }: { full?: boolean }) {
         <img
           src={assetUrl(impactLionsLogo)}
           alt="AJBN Impact Lions Club"
-          className="h-10 w-10 sm:h-12 sm:w-12 lg:h-14 lg:w-14 object-contain shrink-0 hover:opacity-80 transition-opacity"
+          className="h-14 w-14 sm:h-16 sm:w-16 lg:h-20 lg:w-20 object-contain shrink-0 hover:opacity-80 transition-opacity"
         />
       </Link>
     </div>
