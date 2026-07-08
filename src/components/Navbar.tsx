@@ -75,14 +75,12 @@ export function Navbar() {
           >
             Referral Rewards
           </Link>
-          <a
-            href="https://www.ajbn.co.uk/sponsors-partners/"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            to="/sponsors-partners"
             className={`text-sm font-medium transition-colors hover:opacity-80 ${showSolid ? "text-muted-foreground hover:text-foreground" : "text-primary-foreground/80 hover:text-primary-foreground"}`}
           >
             Sponsors & Partners
-          </a>
+          </Link>
           <Link to="/login">
             <Button variant={showSolid ? "outline" : "heroOutline"} size="sm">
               Sign In
@@ -129,15 +127,13 @@ export function Navbar() {
           >
             Referral Rewards
           </Link>
-          <a
-            href="https://www.ajbn.co.uk/sponsors-partners/"
-            target="_blank"
-            rel="noopener noreferrer"
+          <Link
+            to="/sponsors-partners"
             className="text-sm font-medium text-muted-foreground hover:text-foreground py-2"
             onClick={() => setOpen(false)}
           >
             Sponsors & Partners
-          </a>
+          </Link>
           <Link to="/login" onClick={() => setOpen(false)}>
             <Button variant="outline" size="sm" className="w-full">Sign In</Button>
           </Link>
