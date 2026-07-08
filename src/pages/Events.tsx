@@ -8,6 +8,7 @@ import { CalendarDays, MapPin, Users, Loader2, Crown, Trophy, QrCode } from "luc
 import { toast } from "@/hooks/use-toast";
 import { EventQRCode } from "@/components/EventQRCode";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
+import { Link } from "react-router-dom";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 
 type EventRow = {
@@ -117,7 +118,7 @@ export default function EventsPage() {
               </div>
               <div className="flex flex-wrap gap-2">
                 <Button asChild size="sm">
-                  <a href="https://www.ajbn.co.uk/buy-tickets/" target="_blank" rel="noopener noreferrer">Buy tickets</a>
+                  <Link to="/tickets/flagship">Buy tickets</Link>
                 </Button>
                 <Button asChild size="sm" variant="outline">
                   <a href="mailto:Russell@springadconsultancy.co.uk,Bianca@springadconsultancy.co.uk?subject=AJBN%20Exhibitor%20Enquiry">Exhibit with us</a>
