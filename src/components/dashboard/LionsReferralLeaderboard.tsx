@@ -4,6 +4,7 @@ import lionsBadge from "@/assets/lions-badge.png";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
+import { MemberDepositButton } from '@/components/mesh/MemberDepositButton';
 
 type Row = {
   user_id: string;
@@ -50,7 +51,18 @@ export function LionsReferralLeaderboard() {
             <p className="text-[10px] text-muted-foreground">£50 credit per recruit</p>
           </div>
         </div>
-        <span className="text-xs text-muted-foreground">This year</span>
+        <div className="flex items-center gap-3">
+          <MemberDepositButton 
+            userId={user?.id}
+            onSuccess={() => {
+              console.log('Deposit successful!');
+            }}
+            onError={(error) => {
+              console.error('Deposit failed:', error);
+            }}
+          />
+          <span className="text-xs text-muted-foreground">This year</span>
+        </div>
       </div>
 
       {/* Column headers */}
