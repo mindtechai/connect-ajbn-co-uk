@@ -60,7 +60,7 @@ const EVENTS: EventItem[] = [
       "The UK's only platform dedicated to fostering commercial ties between the Asian and Jewish business communities. Senior leaders across Finance, Property, Banking, Law, Technology and Business Services meet for collaboration and knowledge exchange.",
     price: "£60 + VAT",
     ctaLabel: "Buy tickets",
-    ctaHref: "https://www.ajbn.co.uk/buy-tickets/",
+    ctaHref: "/tickets/flagship",
     highlights: [
       "50+ high-value exhibitors",
       "Hundreds of senior professionals",
@@ -311,9 +311,15 @@ export function EventsSection() {
                           </Button>
                         ) : (
                           <Button asChild size="sm">
-                            <a href={e.ctaHref} target="_blank" rel="noopener noreferrer">
-                              {e.ctaLabel} <ArrowRight size={14} className="ml-1" />
-                            </a>
+                            {e.ctaHref.startsWith("/") ? (
+                              <Link to={e.ctaHref}>
+                                {e.ctaLabel} <ArrowRight size={14} className="ml-1" />
+                              </Link>
+                            ) : (
+                              <a href={e.ctaHref} target="_blank" rel="noopener noreferrer">
+                                {e.ctaLabel} <ArrowRight size={14} className="ml-1" />
+                              </a>
+                            )}
                           </Button>
                         )}
                       </div>

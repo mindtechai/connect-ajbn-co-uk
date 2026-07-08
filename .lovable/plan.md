@@ -1,26 +1,50 @@
-## 1. Events section — update Members' Evening
-`src/components/landing/EventsSection.tsx`: replace the AJBN Members' Evening `description` with:
-> "6:30 PM – 9:00 PM | Vyman House, 104 College Rd, Harrow, HA1 1BQ. Hosted by Vyman Solicitors on their fabulous terrace. Join us for an enjoyable evening of networking, drinks, and delicious food, all in the company of fellow AJBN members."
+## Goal
 
-Remove the `"Open to members & guests"` highlight so no "and guests" wording remains.
+Make the Impact Lions logo visually match the AJBN logo's footprint across every shared layout, and fix the missing in-app landing page for the "Buy tickets" CTA on the AJBN Flagship Networking Day event.
 
-## 2. Members showcase — replace curated list
-`src/components/landing/MembersShowcase.tsx`: fully replace the `CURATED` array with the master list, applying:
+## Findings from exploration
 
-- **Barnett Waddingham removed** (per your instruction).
-- Deduplicated and sorted A–Z by company name.
-- `industry` populated from your verified mapping (blank string when no mapping was supplied).
-- Every entry uses `member_count: 1, has_lion: false`.
+- Impact Lions logo lives in three shared components (`Navbar`, `BrandLink`, `Footer`) plus `Register.tsx`, and as hero art on `Lions.tsx` and `ImpactLionsSection.tsx`.
+- The Impact Lions PNG has internal padding, so at equal pixel dimensions it visually reads smaller than the square AJBN JPG. To match footprint, its box needs to be roughly 30–40% larger than AJBN's.
+- There is currently no in-app ticketing page. Both `EventsSection.tsx` and `Events.tsx` link "Buy tickets" straight out to `https://www.ajbn.co.uk/buy-tickets/`, which is why users never see AJBN branding on that view.
 
-Final ordered companies (133 total):
+## Changes
 
-AccountingPreneur, ActionCoach, ADBH Advisory Limited, Affinity Group Financial Services Limited, Alexander Lawson, Ali Legal, Allica Bank, Ash Verma Consulting Ltd., Atom CTO, ATZ Finance, Azure Wealth, B2Bfinance.com, BDO, Begbies Traynor, Benjamin Stevens Estate Agents, Berenblut IT Training & Consultancy, Bhardwaj Insolvency Practitioners, Bika Construction Ltd, BKL, Blake Morgan, Bridge Insurance Brokers Limited, Clear Insurance Management, Clegg Gifford, Clitheroe Shah Consultancy Services, Cooper Parry, Coots & Boots, Core Financial Paraplanning Limited, Crestcom - Greater London, Crispy Dog Productions, Crown Fire Systems Ltd, Custodia, Desaga Recruitment, Devonshires Solicitors, DKLM, DNS Accountants Ltd, DOHR, Dooa Captial, Edwin Coe, Enlight Group, Eureka Capital Allowances, Expedium, Finawis Advisors, First Financial, Five Star Estates, FRP Advisory Trading Limited, Full Power Utilities, Funnel Automation, Gardner's Trees, GB Bank, Genesis Advisory Services (UK) Ltd, Gravita, Gryphon Property Partners, Hammered, Hartsbourne Country Club, Heath Crawford, Hodge Jones & Allen, Housing Enterprise Solutions Ltd, HSBC, Inegral Advice Ltd, Inflow Finance, Inspired Lending, Investec, JLP Productions, JSL Actuarial Ltd, Jury O'Shea, Kallis, Landlord Property Exchange, Laurence Grant, LDN Finance, LETSiNVEST, London Credit, Lubbock Fine, Machins Solicitors, Make A Point, Manak Solicitors, Maris Interiors, Metrus Property Advisors, MGI Holdings, Mizrahi Tefahot Bank Ltd, Morphosis Venture Capital, Mortimer Street Capital, MT Finance, Navigate Business Recovery Ltd, Nishma Shah, Nyman Libson Paul, Omnia Housing Ltd, Oracle Solicitors, Orwins, Phillip Shaw, Pinnacle Global Group, Plumbing on Demand, Point 2 Surveyors, Prideview Group, Q Asset Management, Quastels, Red Rock Mortgages Ltd, Reim Capital, Rosenblatt Law, Roundtree Real Estate, RWK Goodman, RYSE Finance Ltd, Saul Gerrard Surveyors, SBI UK Ltd, Seddons GSC, Seduolo, Shawbrook Bank, Sherrards Solicitors, Singletree Accountants, Sirius Finance, SJC Finance, Sobell Rhodes, Spector Constant & Williams, Squire Patton Boggs, Sterling Property Assets, Sterlingworth Surveyors Ltd, Technica Solutions, The Dot HQ, The TMS Group (Taylor Mac Solutions Ltd), Together, Tradelend, Treacle Factory, Utility Warehouse, VEA, Velvet Home Inventories, Virgin Money, VS Management, VWV, Vyman Solicitors, WealthInvest Group, Wellbeing Living Ltd, Whitehall Capital, Winkworth Hendon & Kingsbury, Wow Merchandise, Xanda.
+### 1. Enlarge the Impact Lions logo (shared layouts)
 
-## 3. Chat / messaging — untouched
-No files under messaging, chat, notifications, routing, PWA, service worker, manifest, auth, or database will be modified. After the two edits I'll run the typecheck/build to confirm nothing else broke.
+Bump the Tailwind size classes so the visible logo mass matches AJBN. Keep `object-contain`, square width/height, and `shrink-0` to preserve aspect ratio and prevent nav breakage. Existing links and handlers are untouched.
 
-## Files touched
-- `src/components/landing/EventsSection.tsx`
-- `src/components/landing/MembersShowcase.tsx`
+- `src/components/Navbar.tsx` — Impact Lions img: `h-16 w-16 md:h-[4.5rem] md:w-[4.5rem] lg:h-20 lg:w-20`
+- `src/components/BrandLink.tsx` — `h-14 w-14 sm:h-16 sm:w-16 lg:h-20 lg:w-20`
+- `src/components/landing/Footer.tsx` — `h-16 w-16 md:h-20 md:w-20`
+- `src/pages/Register.tsx` — bump Impact Lions img to match AJBN card sizing
 
-Please switch to Build mode to apply.
+Do not touch hero-scale usage in `Lions.tsx` and `ImpactLionsSection.tsx` (those are already large intentionally).
+
+### 2. New in-app Flagship ticketing page
+
+Create `src/pages/BuyTicketsFlagship.tsx`:
+
+- Header block containing **both logos side-by-side at the enlarged size**.
+  - AJBN logo → `Link to="/"` (back to landing).
+  - Impact Lions logo → `Link to="/lions"` (its dedicated section/page), preserving the existing global behavior.
+  - Each logo wrapped in a `Link` with `aria-label` describing the destination.
+- Event summary (date, venue, description) sourced from the flagship entry already defined in `EventsSection.tsx`.
+- Primary CTA button "Buy tickets on ajbn.co.uk" opening `https://www.ajbn.co.uk/buy-tickets/` in a new tab (keeps the real purchase flow intact).
+- Secondary "Back to events" link to `/#events`.
+
+### 3. Route + CTA rewiring
+
+- `src/App.tsx`: register `<Route path="/tickets/flagship" element={<BuyTicketsFlagship />} />` (public — no auth wall, matches current external link behavior).
+- `src/components/landing/EventsSection.tsx`: change the flagship event's `ctaHref` to `/tickets/flagship` and render it via `<Link>` (internal) instead of `<a target="_blank">`.
+- `src/pages/Events.tsx`: change the flagship "Buy tickets" `<a>` to a `<Link to="/tickets/flagship">`.
+
+### 4. Guardrails honored
+
+- Aspect ratio: square Tailwind boxes + `object-contain`, no stretching.
+- Layout: Navbar height (`h-20`) already accommodates a 5rem logo; `shrink-0` prevents flex overflow; button spacing unchanged.
+- Existing Impact Lions link routing (`/lions`) is preserved everywhere except the new ticketing page, where the requirement itself specifies the same `/lions` target.
+
+## Out of scope
+
+No database, API, or auth changes. External purchase URL remains the source of truth for actual ticket sales.
