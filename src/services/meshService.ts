@@ -11,6 +11,9 @@ export class MeshService {
       theme: 'system',
       language: 'system',
       displayFiatCurrency: 'USD',
+      onIntegrationConnected: (payload) => {
+        console.log('Mesh integration connected:', payload);
+      },
     });
   }
 
