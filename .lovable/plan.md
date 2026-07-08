@@ -1,47 +1,26 @@
-# Admin Test Email Sender
+## 1. Events section — update Members' Evening
+`src/components/landing/EventsSection.tsx`: replace the AJBN Members' Evening `description` with:
+> "6:30 PM – 9:00 PM | Vyman House, 104 College Rd, Harrow, HA1 1BQ. Hosted by Vyman Solicitors on their fabulous terrace. Join us for an enjoyable evening of networking, drinks, and delicious food, all in the company of fellow AJBN members."
 
-Add a secure admin-only tool that lets a super admin send a real test copy of any auth or transactional email template to any email address, so branding/copy can be verified end-to-end in an inbox.
+Remove the `"Open to members & guests"` highlight so no "and guests" wording remains.
 
-## User experience
+## 2. Members showcase — replace curated list
+`src/components/landing/MembersShowcase.tsx`: fully replace the `CURATED` array with the master list, applying:
 
-New card in **Admin → Settings** (`src/components/admin/AdminSettings.tsx`) titled **"Send test email"**:
+- **Barnett Waddingham removed** (per your instruction).
+- Deduplicated and sorted A–Z by company name.
+- `industry` populated from your verified mapping (blank string when no mapping was supplied).
+- Every entry uses `member_count: 1, has_lion: false`.
 
-- Dropdown: template (grouped **Auth** / **Transactional**), listing all 6 auth templates (signup, magic-link, recovery, invite, email-change, reauthentication) and all registered transactional templates (currently `bulk-message`, plus any added later — pulled dynamically).
-- Text input: recipient email (validated with zod, defaults to the logged-in admin's email).
-- Button: **Send test**. Shows toast on success/failure and displays the message id returned.
-- Small helper text: "Uses placeholder preview data. Sent via the live email pipeline (queue + domain)."
+Final ordered companies (133 total):
 
-## Backend
+AccountingPreneur, ActionCoach, ADBH Advisory Limited, Affinity Group Financial Services Limited, Alexander Lawson, Ali Legal, Allica Bank, Ash Verma Consulting Ltd., Atom CTO, ATZ Finance, Azure Wealth, B2Bfinance.com, BDO, Begbies Traynor, Benjamin Stevens Estate Agents, Berenblut IT Training & Consultancy, Bhardwaj Insolvency Practitioners, Bika Construction Ltd, BKL, Blake Morgan, Bridge Insurance Brokers Limited, Clear Insurance Management, Clegg Gifford, Clitheroe Shah Consultancy Services, Cooper Parry, Coots & Boots, Core Financial Paraplanning Limited, Crestcom - Greater London, Crispy Dog Productions, Crown Fire Systems Ltd, Custodia, Desaga Recruitment, Devonshires Solicitors, DKLM, DNS Accountants Ltd, DOHR, Dooa Captial, Edwin Coe, Enlight Group, Eureka Capital Allowances, Expedium, Finawis Advisors, First Financial, Five Star Estates, FRP Advisory Trading Limited, Full Power Utilities, Funnel Automation, Gardner's Trees, GB Bank, Genesis Advisory Services (UK) Ltd, Gravita, Gryphon Property Partners, Hammered, Hartsbourne Country Club, Heath Crawford, Hodge Jones & Allen, Housing Enterprise Solutions Ltd, HSBC, Inegral Advice Ltd, Inflow Finance, Inspired Lending, Investec, JLP Productions, JSL Actuarial Ltd, Jury O'Shea, Kallis, Landlord Property Exchange, Laurence Grant, LDN Finance, LETSiNVEST, London Credit, Lubbock Fine, Machins Solicitors, Make A Point, Manak Solicitors, Maris Interiors, Metrus Property Advisors, MGI Holdings, Mizrahi Tefahot Bank Ltd, Morphosis Venture Capital, Mortimer Street Capital, MT Finance, Navigate Business Recovery Ltd, Nishma Shah, Nyman Libson Paul, Omnia Housing Ltd, Oracle Solicitors, Orwins, Phillip Shaw, Pinnacle Global Group, Plumbing on Demand, Point 2 Surveyors, Prideview Group, Q Asset Management, Quastels, Red Rock Mortgages Ltd, Reim Capital, Rosenblatt Law, Roundtree Real Estate, RWK Goodman, RYSE Finance Ltd, Saul Gerrard Surveyors, SBI UK Ltd, Seddons GSC, Seduolo, Shawbrook Bank, Sherrards Solicitors, Singletree Accountants, Sirius Finance, SJC Finance, Sobell Rhodes, Spector Constant & Williams, Squire Patton Boggs, Sterling Property Assets, Sterlingworth Surveyors Ltd, Technica Solutions, The Dot HQ, The TMS Group (Taylor Mac Solutions Ltd), Together, Tradelend, Treacle Factory, Utility Warehouse, VEA, Velvet Home Inventories, Virgin Money, VS Management, VWV, Vyman Solicitors, WealthInvest Group, Wellbeing Living Ltd, Whitehall Capital, Winkworth Hendon & Kingsbury, Wow Merchandise, Xanda.
 
-New edge function `supabase/functions/send-test-email/index.ts` (`verify_jwt = true`):
-
-1. Reads caller JWT, uses service-role client to check `has_role(auth.uid(),'super_admin')` — 403 otherwise.
-2. Validates body with zod: `{ templateName: string, recipientEmail: string().email(), kind: 'auth' | 'transactional' }`.
-3. For `transactional`: renders from `_shared/transactional-email-templates/registry.ts` using the template's `previewData`, then enqueues via `enqueue_email` on `transactional_emails` — same payload shape as `send-transactional-email` (subject, html, text, from, sender_domain, unsubscribe token, idempotency `test-<uuid>`). Bypasses the suppression check (test sends should always go through) but still logs to `email_send_log` with `template_name = 'test:<name>'`.
-4. For `auth`: renders the matching template from `_shared/email-templates/` with sensible placeholder props (`siteName`, `confirmationUrl='https://connect.ajbn.co.uk/test-link'`, `token='123456'`, `email`/`newEmail`) and enqueues on `auth_emails` with the same payload shape the auth hook uses.
-5. Returns `{ success, messageId }`.
-
-Config: add `[functions.send-test-email] verify_jwt = true` block to `supabase/config.toml`.
-
-Deploy: `send-test-email` after creation.
-
-## Security
-
-- Route is gated at three layers: client-side `RequireSuperAdmin` on the settings view, JWT verification by gateway, and in-function `has_role` check using service role — no client-supplied role trust.
-- Rate limit: reject if the caller has enqueued >20 test emails in the last hour (query `email_send_log` where `template_name LIKE 'test:%' AND recipient_email=... AND created_at > now()-interval '1 hour'` via service role).
-- Audit: insert a row into `audit_log` (existing table used by `AuditLog.tsx`) with action `email.test_send`, actor = auth.uid(), metadata = `{ templateName, recipientEmail }`.
-- Recipient validated with zod `.email().max(254)`; templateName restricted to a hard-coded allow-list built from the two registries.
+## 3. Chat / messaging — untouched
+No files under messaging, chat, notifications, routing, PWA, service worker, manifest, auth, or database will be modified. After the two edits I'll run the typecheck/build to confirm nothing else broke.
 
 ## Files touched
+- `src/components/landing/EventsSection.tsx`
+- `src/components/landing/MembersShowcase.tsx`
 
-- **new** `supabase/functions/send-test-email/index.ts`
-- **new** `supabase/functions/send-test-email/deno.json` (React JSX config)
-- **edit** `supabase/config.toml` (add function block)
-- **edit** `src/components/admin/AdminSettings.tsx` (add "Send test email" card + form)
-- **new** `src/components/admin/SendTestEmailCard.tsx` (self-contained form component)
-
-## Out of scope
-
-- No changes to existing templates, queue, cron, or domain config.
-- No new UI outside the admin settings page.
-- No bulk/multi-recipient test send.
+Please switch to Build mode to apply.
