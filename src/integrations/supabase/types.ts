@@ -143,6 +143,39 @@ export type Database = {
         }
         Relationships: []
       }
+      conversations: {
+        Row: {
+          created_at: string
+          id: string
+          last_message_at: string | null
+          last_read_a: string | null
+          last_read_b: string | null
+          updated_at: string
+          user_a: string
+          user_b: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          last_message_at?: string | null
+          last_read_a?: string | null
+          last_read_b?: string | null
+          updated_at?: string
+          user_a: string
+          user_b: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          last_message_at?: string | null
+          last_read_a?: string | null
+          last_read_b?: string | null
+          updated_at?: string
+          user_a?: string
+          user_b?: string
+        }
+        Relationships: []
+      }
       email_send_log: {
         Row: {
           created_at: string
@@ -542,6 +575,65 @@ export type Database = {
           },
         ]
       }
+      messages: {
+        Row: {
+          body: string
+          conversation_id: string
+          created_at: string
+          id: string
+          read_at: string | null
+          sender_id: string
+        }
+        Insert: {
+          body: string
+          conversation_id: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          sender_id: string
+        }
+        Update: {
+          body?: string
+          conversation_id?: string
+          created_at?: string
+          id?: string
+          read_at?: string | null
+          sender_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "messages_conversation_id_fkey"
+            columns: ["conversation_id"]
+            isOneToOne: false
+            referencedRelation: "conversations"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      messaging_profiles: {
+        Row: {
+          activated_at: string
+          created_at: string
+          is_active: boolean
+          updated_at: string
+          user_id: string
+        }
+        Insert: {
+          activated_at?: string
+          created_at?: string
+          is_active?: boolean
+          updated_at?: string
+          user_id: string
+        }
+        Update: {
+          activated_at?: string
+          created_at?: string
+          is_active?: boolean
+          updated_at?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
       notification_preferences: {
         Row: {
           category: string
@@ -765,6 +857,7 @@ export type Database = {
       [_ in never]: never
     }
     Functions: {
+      activate_messaging: { Args: never; Returns: undefined }
       checkin_rsvp: {
         Args: { _token: string }
         Returns: {
@@ -794,6 +887,12 @@ export type Database = {
         }
         Returns: boolean
       }
+      is_approved_member: { Args: { _uid: string }; Returns: boolean }
+      is_messaging_active: { Args: { _uid: string }; Returns: boolean }
+      mark_conversation_read: {
+        Args: { _conversation: string }
+        Returns: undefined
+      }
       member_directory_list: {
         Args: never
         Returns: {
@@ -803,9 +902,23 @@ export type Database = {
           id: string
           industry: string
           is_lion: boolean
+          is_messaging_active: boolean
           last_name: string
           linkedin: string
           title: string
+        }[]
+      }
+      messaging_inbox: {
+        Args: never
+        Returns: {
+          conversation_id: string
+          last_message_at: string
+          last_message_body: string
+          other_company: string
+          other_first_name: string
+          other_last_name: string
+          other_user_id: string
+          unread_count: number
         }[]
       }
       move_to_dlq: {
@@ -846,6 +959,7 @@ export type Database = {
           user_id: string
         }[]
       }
+      start_or_get_conversation: { Args: { _other: string }; Returns: string }
     }
     Enums: {
       app_role:

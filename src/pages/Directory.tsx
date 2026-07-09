@@ -7,7 +7,12 @@ import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Crown, Loader2, Building2, Linkedin } from "lucide-react";
+import { Search, Crown, Loader2, Building2, Linkedin, Send } from "lucide-react";
+import { useNavigate } from "react-router-dom";
+import { useMessagingProfile } from "@/hooks/useMessagingProfile";
+import { ActivateMessagingDialog } from "@/components/messaging/ActivateMessagingDialog";
+import { toast } from "sonner";
+import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 
 type Member = {
   id: string;
@@ -19,14 +24,18 @@ type Member = {
   bio: string | null;
   linkedin: string | null;
   is_lion: boolean;
+  is_messaging_active: boolean;
 };
 
 export default function DirectoryPage() {
   const { user, roles, loading: authLoading } = useAuth();
+  const navigate = useNavigate();
+  const { isActive: myMessagingActive, activate } = useMessagingProfile();
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [industry, setIndustry] = useState("all");
+  const [pendingRecipient, setPendingRecipient] = useState<Member | null>(null);
 
   const canAccess = roles.includes("ajbn_member") || roles.includes("impact_lion") || roles.includes("super_admin");
 
@@ -52,6 +61,20 @@ export default function DirectoryPage() {
     const okInd = industry === "all" || m.industry === industry;
     return okQ && okInd;
   }), [members, q, industry]);
+
+  const openChatWith = async (m: Member) => {
+    if (!m.is_messaging_active) {
+      toast.info(`${m.first_name ?? "This member"} hasn't enabled messaging yet.`);
+      return;
+    }
+    if (!myMessagingActive) {
+      setPendingRecipient(m);
+      return;
+    }
+    const { data, error } = await (supabase as any).rpc("start_or_get_conversation", { _other: m.id });
+    if (error) { toast.error(error.message); return; }
+    navigate(`/messages/${data}`);
+  };
 
   return (
     <AppLayout maxWidth="6xl">
@@ -108,6 +131,26 @@ export default function DirectoryPage() {
                   {m.industry && <Badge variant="outline" className="text-[10px]">{m.industry}</Badge>}
                   {m.bio && <p className="text-xs text-muted-foreground line-clamp-3 pt-1">{m.bio}</p>}
                   <div className="flex gap-2 pt-2 border-t">
+                    {m.id !== user?.id && (
+                      m.is_messaging_active ? (
+                        <button
+                          onClick={() => openChatWith(m)}
+                          className="text-xs text-primary hover:text-primary/80 flex items-center gap-1 font-medium"
+                          aria-label={`Send message to ${m.first_name ?? "member"}`}
+                        >
+                          <Send size={12} /> Send Message
+                        </button>
+                      ) : (
+                        <Tooltip>
+                          <TooltipTrigger asChild>
+                            <span className="text-xs text-muted-foreground/60 flex items-center gap-1 cursor-not-allowed">
+                              <Send size={12} /> Message
+                            </span>
+                          </TooltipTrigger>
+                          <TooltipContent>This member hasn't enabled messaging yet.</TooltipContent>
+                        </Tooltip>
+                      )
+                    )}
                     {m.linkedin && /^https?:\/\//i.test(m.linkedin) && (
                       <a href={m.linkedin} target="_blank" rel="noreferrer" className="text-xs text-muted-foreground hover:text-primary flex items-center gap-1">
                         <Linkedin size={12} /> LinkedIn
@@ -123,6 +166,14 @@ export default function DirectoryPage() {
           </>
         )}
       </>
+
+      <ActivateMessagingDialog
+        open={!!pendingRecipient}
+        onOpenChange={(v) => { if (!v) setPendingRecipient(null); }}
+        recipientName={pendingRecipient ? `${pendingRecipient.first_name ?? ""} ${pendingRecipient.last_name ?? ""}`.trim() : undefined}
+        recipientId={pendingRecipient?.id}
+        activate={activate}
+      />
     </AppLayout>
   );
 }

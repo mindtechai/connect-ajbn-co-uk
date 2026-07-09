@@ -16,6 +16,8 @@ import { useAuth } from "@/hooks/useAuth";
 import { NotificationsBell } from "@/components/NotificationsBell";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
+import { MessagingOnboardingCard } from "@/components/dashboard/MessagingOnboardingCard";
+import { MessageCircle } from "lucide-react";
 
 type Announcement = { id: string; title: string; body: string; priority: string; published_at: string; pinned: boolean };
 type UpcomingEvent = { id: string; title: string; starts_at: string; location: string | null };
@@ -101,6 +103,10 @@ export default function DashboardPage() {
       </header>
 
       <main className="container mx-auto px-4 lg:px-8 py-8 max-w-5xl">
+        <ScrollReveal>
+          <MessagingOnboardingCard />
+        </ScrollReveal>
+
         {/* Welcome */}
         <ScrollReveal>
           <div className="mb-8">
@@ -119,6 +125,10 @@ export default function DashboardPage() {
             <Link to="/directory" className="bg-card border rounded-xl p-4 shadow-sm hover:border-primary/40 transition-colors flex items-center gap-3">
               <div className="rounded-lg bg-primary/10 w-10 h-10 grid place-items-center"><BookUser size={18} className="text-primary" /></div>
               <div><p className="text-sm font-semibold">Member Directory</p><p className="text-xs text-muted-foreground">Search & filter by industry</p></div>
+            </Link>
+            <Link to="/messages" className="bg-card border rounded-xl p-4 shadow-sm hover:border-teal/40 transition-colors flex items-center gap-3">
+              <div className="rounded-lg bg-teal/10 w-10 h-10 grid place-items-center"><MessageCircle size={18} className="text-teal" /></div>
+              <div><p className="text-sm font-semibold">Messages</p><p className="text-xs text-muted-foreground">Chat privately with members</p></div>
             </Link>
             <Link to="/events" className="bg-card border rounded-xl p-4 shadow-sm hover:border-primary/40 transition-colors flex items-center gap-3">
               <div className="rounded-lg bg-teal/10 w-10 h-10 grid place-items-center"><CalendarDays size={18} className="text-teal" /></div>

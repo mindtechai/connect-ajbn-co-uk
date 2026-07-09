@@ -23,6 +23,8 @@ import LionsPage from "./pages/Lions.tsx";
 import ReferralRewardsPage from "./pages/ReferralRewards.tsx";
 import SponsorsPartnersPage from "./pages/SponsorsPartners.tsx";
 import BuyTicketsFlagshipPage from "./pages/BuyTicketsFlagship.tsx";
+import MessagesPage from "./pages/Messages.tsx";
+import MessageThreadPage from "./pages/MessageThread.tsx";
 import { AuthProvider } from "@/hooks/useAuth";
 import { RequireSuperAdmin } from "@/components/RequireSuperAdmin";
 import { RequireAuth } from "@/components/RequireAuth";
@@ -48,6 +50,8 @@ const App = () => (
           <Route path="/settings/notifications" element={<RequireAuth><NotificationPreferencesPage /></RequireAuth>} />
           <Route path="/settings/profile" element={<RequireAuth><ProfilePage /></RequireAuth>} />
           <Route path="/directory" element={<RequireAuth><DirectoryPage /></RequireAuth>} />
+          <Route path="/messages" element={<RequireAuth><MessagesPage /></RequireAuth>} />
+          <Route path="/messages/:conversationId" element={<RequireAuth><MessageThreadPage /></RequireAuth>} />
           <Route path="/events" element={<RequireAuth><EventsPage /></RequireAuth>} />
           <Route path="/esg" element={<RequireAuth><ESGReportPage /></RequireAuth>} />
           <Route path="/lions" element={<LionsPage />} />
