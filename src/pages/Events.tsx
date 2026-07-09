@@ -44,6 +44,7 @@ const KIND_STYLE: Record<string, string> = {
 const PLACEHOLDER_EVENTS = [
   {
     id: "autumn-showcase-2026-09",
+    kind: "networking",
     title: "AJBN Members Only Autumn Showcase",
     subtitle: "Bimonthly Members-Only Meetup",
     dateLabel: "September 2026",
@@ -55,6 +56,7 @@ const PLACEHOLDER_EVENTS = [
   },
   {
     id: "winter-gala-2026-12",
+    kind: "networking",
     title: "AJBN Members-Only Meetup",
     subtitle: "High-Value Peer-to-Peer Engagement",
     dateLabel: "December 2026",
