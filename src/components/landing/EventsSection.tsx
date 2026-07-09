@@ -488,5 +488,6 @@ export function EventsSection() {
         </Dialog>
       </div>
     </section>
+    </TooltipProvider>
   );
 }
