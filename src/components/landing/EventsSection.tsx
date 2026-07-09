@@ -5,6 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -19,9 +25,11 @@ import { toast } from "sonner";
 
 type EventItem = {
   id: string;
-  kind: "networking" | "fundraising";
+  kind: "networking" | "fundraising" | "coming_soon";
   title: string;
+  subtitle?: string;
   date: string; // ISO
+  dateLabel?: string;
   timeLabel: string;
   location: string;
   description: string;
@@ -29,6 +37,7 @@ type EventItem = {
   ctaLabel: string;
   ctaHref: string;
   highlights?: string[];
+  isPlaceholder?: boolean;
 };
 
 const EVENTS: EventItem[] = [
