@@ -62,6 +62,7 @@ const App = () => (
           <Route path="/sponsors-partners" element={<SponsorsPartnersPage />} />
           <Route path="/tickets/flagship" element={<BuyTicketsFlagshipPage />} />
           <Route path="/privacy" element={<PrivacyPage />} />
+          <Route path="/contact" element={<ContactPage />} />
           <Route path="/unsubscribe" element={<UnsubscribePage />} />
           <Route path="/email-unsubscribe" element={<EmailUnsubscribePage />} />
           <Route path="/admin" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
