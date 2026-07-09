@@ -5,6 +5,12 @@ import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
+import {
   Dialog,
   DialogContent,
   DialogDescription,
@@ -19,9 +25,11 @@ import { toast } from "sonner";
 
 type EventItem = {
   id: string;
-  kind: "networking" | "fundraising";
+  kind: "networking" | "fundraising" | "coming_soon";
   title: string;
+  subtitle?: string;
   date: string; // ISO
+  dateLabel?: string;
   timeLabel: string;
   location: string;
   description: string;
@@ -29,6 +37,7 @@ type EventItem = {
   ctaLabel: string;
   ctaHref: string;
   highlights?: string[];
+  isPlaceholder?: boolean;
 };
 
 const EVENTS: EventItem[] = [
@@ -67,6 +76,38 @@ const EVENTS: EventItem[] = [
       "Unmatched networking opportunities",
       "Sponsorship, stands & brand exposure available",
     ],
+  },
+  {
+    id: "autumn-showcase-2026-09",
+    kind: "coming_soon",
+    title: "AJBN Members Only Autumn Showcase",
+    subtitle: "Bimonthly Members-Only Meetup",
+    date: "2026-09-18T18:00:00Z",
+    dateLabel: "September 2026",
+    timeLabel: "To Be Announced",
+    location: "To be confirmed",
+    description:
+      "An exclusive, high-value networking and capital connection evening for registered members. Full details, venue, and guest speaker reveal coming soon.",
+    ctaLabel: "Keep Me Updated",
+    ctaHref: "#",
+    isPlaceholder: true,
+    highlights: ["High-Value Peer-to-Peer Engagement"],
+  },
+  {
+    id: "winter-gala-2026-12",
+    kind: "coming_soon",
+    title: "AJBN Annual Winter Gala & Networking",
+    subtitle: "Bimonthly Members-Only Meetup",
+    date: "2026-12-10T18:00:00Z",
+    dateLabel: "December 2026",
+    timeLabel: "To Be Announced",
+    location: "To be confirmed",
+    description:
+      "Our premier end-of-year gathering celebrating our business community, property updates, and member achievements. Full venue details and registration opening shortly.",
+    ctaLabel: "Keep Me Updated",
+    ctaHref: "#",
+    isPlaceholder: true,
+    highlights: ["High-Value Peer-to-Peer Engagement"],
   },
 ];
 
@@ -221,7 +262,8 @@ export function EventsSection() {
   );
 
   return (
-    <section id="events" className="py-20 bg-gradient-to-b from-background to-muted/30">
+    <TooltipProvider delayDuration={0}>
+      <section id="events" className="py-20 bg-gradient-to-b from-background to-muted/30">
       <div className="container mx-auto px-4 max-w-5xl">
         <ScrollReveal>
           <div className="text-center mb-10">
@@ -260,25 +302,40 @@ export function EventsSection() {
                   <article className="bg-card border border-border/60 rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
                     <div className="p-6 md:p-8 grid md:grid-cols-[auto,1fr,auto] gap-6 items-start">
                       <div className="flex md:flex-col items-center md:items-start gap-3 md:gap-1 md:min-w-[96px]">
-                        <div className="text-xs uppercase tracking-wide text-muted-foreground">
-                          {d.toLocaleString("en-GB", { month: "short" })}
-                        </div>
-                        <div className="text-4xl md:text-5xl font-display font-bold text-primary leading-none">
-                          {d.getUTCDate()}
-                        </div>
-                        <div className="text-xs text-muted-foreground">{d.getUTCFullYear()}</div>
+                        {e.isPlaceholder ? (
+                          <>
+                            <div className="text-xs uppercase tracking-wide text-gold font-medium">{e.dateLabel}</div>
+                            <div className="text-4xl md:text-5xl font-display font-bold text-gold leading-none">TBA</div>
+                            <div className="text-xs text-muted-foreground">Coming soon</div>
+                          </>
+                        ) : (
+                          <>
+                            <div className="text-xs uppercase tracking-wide text-muted-foreground">
+                              {d.toLocaleString("en-GB", { month: "short" })}
+                            </div>
+                            <div className="text-4xl md:text-5xl font-display font-bold text-primary leading-none">
+                              {d.getUTCDate()}
+                            </div>
+                            <div className="text-xs text-muted-foreground">{d.getUTCFullYear()}</div>
+                          </>
+                        )}
                       </div>
 
                       <div className="space-y-3">
                         <div className="flex flex-wrap items-center gap-2">
                           <Badge className={e.kind === "fundraising"
                             ? "bg-gold/10 text-gold border-gold/30"
+                            : e.kind === "coming_soon"
+                            ? "bg-gold/10 text-gold border-gold/30"
                             : "bg-teal/10 text-teal border-teal/20"}>
-                            {e.kind === "fundraising" ? <><Crown size={10} className="mr-1" /> Impact Lions</> : <><Users size={10} className="mr-1" /> Networking</>}
+                            {e.kind === "fundraising" ? <><Crown size={10} className="mr-1" /> Impact Lions</>
+                              : e.kind === "coming_soon" ? <><Crown size={10} className="mr-1" /> Coming Soon / TBA</>
+                              : <><Users size={10} className="mr-1" /> Networking</>}
                           </Badge>
                           {e.price && <Badge variant="outline" className="text-xs">{e.price}</Badge>}
                         </div>
                         <h3 className="text-xl md:text-2xl font-display font-semibold">{e.title}</h3>
+                        {e.subtitle && <p className="text-xs text-gold font-medium">{e.subtitle}</p>}
                         <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
                           <span className="flex items-center gap-1"><CalendarDays size={12} /> {e.timeLabel}</span>
                           <span className="flex items-center gap-1"><MapPin size={12} /> {e.location}</span>
@@ -296,7 +353,20 @@ export function EventsSection() {
                       </div>
 
                       <div className="md:pt-1">
-                        {isInterestDialog ? (
+                        {e.isPlaceholder ? (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="inline-block">
+                                <Button size="sm" disabled variant="goldOutline">
+                                  {e.ctaLabel}
+                                </Button>
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent side="top">
+                              <p>Details releasing soon!</p>
+                            </TooltipContent>
+                          </Tooltip>
+                        ) : isInterestDialog ? (
                           <Button
                             size="sm"
                             onClick={() => openDialog(e.id)}
@@ -418,5 +488,6 @@ export function EventsSection() {
         </Dialog>
       </div>
     </section>
+    </TooltipProvider>
   );
 }
