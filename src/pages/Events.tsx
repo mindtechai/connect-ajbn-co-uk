@@ -193,6 +193,15 @@ export default function EventsPage() {
                       <span className="flex items-center gap-1"><CalendarDays size={12} /> {p.timeLabel}</span>
                       <span className="flex items-center gap-1"><MapPin size={12} /> {p.location}</span>
                     </div>
+                    {p.highlights && (
+                      <ul className="grid sm:grid-cols-2 gap-1.5 text-xs pt-1">
+                        {p.highlights.map((h) => (
+                          <li key={h} className="flex items-start gap-1.5">
+                            <Trophy size={12} className="text-gold mt-0.5 shrink-0" /> <span>{h}</span>
+                          </li>
+                        ))}
+                      </ul>
+                    )}
                     <p className="text-sm text-muted-foreground">{p.description}</p>
                   </div>
                   <div className="md:pt-1">
