@@ -79,7 +79,7 @@ const EVENTS: EventItem[] = [
   },
   {
     id: "autumn-showcase-2026-09",
-    kind: "coming_soon",
+    kind: "networking",
     title: "AJBN Members Only Autumn Showcase",
     subtitle: "Bimonthly Members-Only Meetup",
     date: "2026-09-18T18:00:00Z",
@@ -95,7 +95,7 @@ const EVENTS: EventItem[] = [
   },
   {
     id: "winter-gala-2026-12",
-    kind: "coming_soon",
+    kind: "networking",
     title: "AJBN Members-Only Meetup",
     subtitle: "High-Value Peer-to-Peer Engagement",
     date: "2026-12-10T18:00:00Z",
@@ -323,13 +323,13 @@ export function EventsSection() {
 
                       <div className="space-y-3">
                         <div className="flex flex-wrap items-center gap-2">
-                          <Badge className={e.kind === "fundraising"
+                          <Badge className={e.isPlaceholder
                             ? "bg-gold/10 text-gold border-gold/30"
-                            : e.kind === "coming_soon"
+                            : e.kind === "fundraising"
                             ? "bg-gold/10 text-gold border-gold/30"
                             : "bg-teal/10 text-teal border-teal/20"}>
-                            {e.kind === "fundraising" ? <><Crown size={10} className="mr-1" /> Impact Lions</>
-                              : e.kind === "coming_soon" ? <><Crown size={10} className="mr-1" /> Coming Soon / TBA</>
+                            {e.isPlaceholder ? <><Crown size={10} className="mr-1" /> Coming Soon / TBA</>
+                              : e.kind === "fundraising" ? <><Crown size={10} className="mr-1" /> Impact Lions</>
                               : <><Users size={10} className="mr-1" /> Networking</>}
                           </Badge>
                           {e.price && <Badge variant="outline" className="text-xs">{e.price}</Badge>}

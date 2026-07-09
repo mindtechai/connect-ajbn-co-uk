@@ -44,6 +44,7 @@ const KIND_STYLE: Record<string, string> = {
 const PLACEHOLDER_EVENTS = [
   {
     id: "autumn-showcase-2026-09",
+    kind: "networking",
     title: "AJBN Members Only Autumn Showcase",
     subtitle: "Bimonthly Members-Only Meetup",
     dateLabel: "September 2026",
@@ -55,6 +56,7 @@ const PLACEHOLDER_EVENTS = [
   },
   {
     id: "winter-gala-2026-12",
+    kind: "networking",
     title: "AJBN Members-Only Meetup",
     subtitle: "High-Value Peer-to-Peer Engagement",
     dateLabel: "December 2026",
@@ -167,60 +169,68 @@ export default function EventsPage() {
           </TabsList>
         </Tabs>
 
-        {/* Coming soon placeholders */}
-        <div className="mb-8 space-y-4">
-          <h2 className="text-lg font-display font-semibold flex items-center gap-2">
-            <Crown size={18} className="text-gold" /> Coming Soon / TBA
-          </h2>
-          <div className="grid gap-4">
-            {PLACEHOLDER_EVENTS.map((p) => (
-              <div key={p.id} className="bg-card border border-gold/20 rounded-2xl shadow-sm overflow-hidden">
-                <div className="p-5 md:p-6 grid md:grid-cols-[auto,1fr,auto] gap-5 items-start">
-                  <div className="flex md:flex-col items-center md:items-start gap-2 md:gap-1 md:min-w-[96px]">
-                    <div className="text-xs uppercase tracking-wide text-gold font-medium">{p.dateLabel}</div>
-                    <div className="text-4xl md:text-5xl font-display font-bold text-gold leading-none">TBA</div>
-                    <div className="text-xs text-muted-foreground">Coming soon</div>
-                  </div>
-                  <div className="space-y-2">
-                    <div className="flex flex-wrap items-center gap-2">
-                      <Badge className="bg-gold/10 text-gold border-gold/30">
-                        <Crown size={10} className="mr-1" /> Coming Soon / TBA
-                      </Badge>
+        {(() => {
+          const visiblePlaceholders = PLACEHOLDER_EVENTS.filter((p) => filter === "all" || p.kind === filter);
+          if (visiblePlaceholders.length === 0) return null;
+          return (
+            <>
+              {/* Coming soon placeholders */}
+              <div className="mb-8 space-y-4">
+                <h2 className="text-lg font-display font-semibold flex items-center gap-2">
+                  <Crown size={18} className="text-gold" /> Coming Soon / TBA
+                </h2>
+                <div className="grid gap-4">
+                  {visiblePlaceholders.map((p) => (
+                    <div key={p.id} className="bg-card border border-gold/20 rounded-2xl shadow-sm overflow-hidden">
+                      <div className="p-5 md:p-6 grid md:grid-cols-[auto,1fr,auto] gap-5 items-start">
+                        <div className="flex md:flex-col items-center md:items-start gap-2 md:gap-1 md:min-w-[96px]">
+                          <div className="text-xs uppercase tracking-wide text-gold font-medium">{p.dateLabel}</div>
+                          <div className="text-4xl md:text-5xl font-display font-bold text-gold leading-none">TBA</div>
+                          <div className="text-xs text-muted-foreground">Coming soon</div>
+                        </div>
+                        <div className="space-y-2">
+                          <div className="flex flex-wrap items-center gap-2">
+                            <Badge className="bg-gold/10 text-gold border-gold/30">
+                              <Crown size={10} className="mr-1" /> Coming Soon / TBA
+                            </Badge>
+                          </div>
+                          <h3 className="text-lg font-display font-semibold">{p.title}</h3>
+                          <p className="text-xs text-gold font-medium">{p.subtitle}</p>
+                          <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                            <span className="flex items-center gap-1"><CalendarDays size={12} /> {p.timeLabel}</span>
+                            <span className="flex items-center gap-1"><MapPin size={12} /> {p.location}</span>
+                          </div>
+                          {p.highlights && (
+                            <ul className="grid sm:grid-cols-2 gap-1.5 text-xs pt-1">
+                              {p.highlights.map((h) => (
+                                <li key={h} className="flex items-start gap-1.5">
+                                  <Trophy size={12} className="text-gold mt-0.5 shrink-0" /> <span>{h}</span>
+                                </li>
+                              ))}
+                            </ul>
+                          )}
+                          <p className="text-sm text-muted-foreground">{p.description}</p>
+                        </div>
+                        <div className="md:pt-1">
+                          <TooltipProvider>
+                            <Tooltip>
+                              <TooltipTrigger asChild>
+                                <span className="inline-block">
+                                  <Button size="sm" disabled variant="goldOutline">Keep Me Updated</Button>
+                                </span>
+                              </TooltipTrigger>
+                              <TooltipContent side="top"><p>Details releasing soon!</p></TooltipContent>
+                            </Tooltip>
+                          </TooltipProvider>
+                        </div>
+                      </div>
                     </div>
-                    <h3 className="text-lg font-display font-semibold">{p.title}</h3>
-                    <p className="text-xs text-gold font-medium">{p.subtitle}</p>
-                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
-                      <span className="flex items-center gap-1"><CalendarDays size={12} /> {p.timeLabel}</span>
-                      <span className="flex items-center gap-1"><MapPin size={12} /> {p.location}</span>
-                    </div>
-                    {p.highlights && (
-                      <ul className="grid sm:grid-cols-2 gap-1.5 text-xs pt-1">
-                        {p.highlights.map((h) => (
-                          <li key={h} className="flex items-start gap-1.5">
-                            <Trophy size={12} className="text-gold mt-0.5 shrink-0" /> <span>{h}</span>
-                          </li>
-                        ))}
-                      </ul>
-                    )}
-                    <p className="text-sm text-muted-foreground">{p.description}</p>
-                  </div>
-                  <div className="md:pt-1">
-                    <TooltipProvider>
-                      <Tooltip>
-                        <TooltipTrigger asChild>
-                          <span className="inline-block">
-                            <Button size="sm" disabled variant="goldOutline">Keep Me Updated</Button>
-                          </span>
-                        </TooltipTrigger>
-                        <TooltipContent side="top"><p>Details releasing soon!</p></TooltipContent>
-                      </Tooltip>
-                    </TooltipProvider>
-                  </div>
+                  ))}
                 </div>
               </div>
-            ))}
-          </div>
-        </div>
+            </>
+          );
+        })()}
 
         {(() => {
           const visible = events.filter((e) =>
