@@ -77,6 +77,38 @@ const EVENTS: EventItem[] = [
       "Sponsorship, stands & brand exposure available",
     ],
   },
+  {
+    id: "autumn-showcase-2026-09",
+    kind: "coming_soon",
+    title: "AJBN Members Only Autumn Showcase",
+    subtitle: "Bimonthly Members-Only Meetup",
+    date: "2026-09-18T18:00:00Z",
+    dateLabel: "September 2026",
+    timeLabel: "To Be Announced",
+    location: "To be confirmed",
+    description:
+      "An exclusive, high-value networking and capital connection evening for registered members. Full details, venue, and guest speaker reveal coming soon.",
+    ctaLabel: "Keep Me Updated",
+    ctaHref: "#",
+    isPlaceholder: true,
+    highlights: ["High-Value Peer-to-Peer Engagement"],
+  },
+  {
+    id: "winter-gala-2026-12",
+    kind: "coming_soon",
+    title: "AJBN Annual Winter Gala & Networking",
+    subtitle: "Bimonthly Members-Only Meetup",
+    date: "2026-12-10T18:00:00Z",
+    dateLabel: "December 2026",
+    timeLabel: "To Be Announced",
+    location: "To be confirmed",
+    description:
+      "Our premier end-of-year gathering celebrating our business community, property updates, and member achievements. Full venue details and registration opening shortly.",
+    ctaLabel: "Keep Me Updated",
+    ctaHref: "#",
+    isPlaceholder: true,
+    highlights: ["High-Value Peer-to-Peer Engagement"],
+  },
 ];
 
 const REGISTER_EVENT_ID = "members-evening-2026-07-09";
