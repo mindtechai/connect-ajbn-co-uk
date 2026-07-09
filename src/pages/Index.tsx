@@ -29,6 +29,7 @@ const Index = () => {
       <StatsSection />
       <AboutSection />
       <FeaturesSection />
+      <DirectMessagingPublicSection />
       <MembersShowcase />
       <EventsSection />
       <ImpactLionsSection />
