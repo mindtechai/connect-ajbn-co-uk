@@ -334,6 +334,7 @@ export function EventsSection() {
                           {e.price && <Badge variant="outline" className="text-xs">{e.price}</Badge>}
                         </div>
                         <h3 className="text-xl md:text-2xl font-display font-semibold">{e.title}</h3>
+                        {e.subtitle && <p className="text-xs text-gold font-medium">{e.subtitle}</p>}
                         <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
                           <span className="flex items-center gap-1"><CalendarDays size={12} /> {e.timeLabel}</span>
                           <span className="flex items-center gap-1"><MapPin size={12} /> {e.location}</span>
