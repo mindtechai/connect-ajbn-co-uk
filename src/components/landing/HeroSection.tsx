@@ -51,6 +51,18 @@ export function HeroSection() {
                   <ArrowRight className="ml-2" size={18} />
                 </Button>
               </Link>
+              <Button
+                variant="teal"
+                size="xl"
+                onClick={() =>
+                  document
+                    .getElementById("messaging")
+                    ?.scrollIntoView({ behavior: "smooth", block: "start" })
+                }
+              >
+                Direct Member Messaging
+                <MessageCircle className="ml-2" size={18} />
+              </Button>
             </div>
           </ScrollReveal>
         </div>
