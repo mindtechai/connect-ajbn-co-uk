@@ -301,13 +301,23 @@ export function EventsSection() {
                   <article className="bg-card border border-border/60 rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
                     <div className="p-6 md:p-8 grid md:grid-cols-[auto,1fr,auto] gap-6 items-start">
                       <div className="flex md:flex-col items-center md:items-start gap-3 md:gap-1 md:min-w-[96px]">
-                        <div className="text-xs uppercase tracking-wide text-muted-foreground">
-                          {d.toLocaleString("en-GB", { month: "short" })}
-                        </div>
-                        <div className="text-4xl md:text-5xl font-display font-bold text-primary leading-none">
-                          {d.getUTCDate()}
-                        </div>
-                        <div className="text-xs text-muted-foreground">{d.getUTCFullYear()}</div>
+                        {e.isPlaceholder ? (
+                          <>
+                            <div className="text-xs uppercase tracking-wide text-gold font-medium">{e.dateLabel}</div>
+                            <div className="text-4xl md:text-5xl font-display font-bold text-gold leading-none">TBA</div>
+                            <div className="text-xs text-muted-foreground">Coming soon</div>
+                          </>
+                        ) : (
+                          <>
+                            <div className="text-xs uppercase tracking-wide text-muted-foreground">
+                              {d.toLocaleString("en-GB", { month: "short" })}
+                            </div>
+                            <div className="text-4xl md:text-5xl font-display font-bold text-primary leading-none">
+                              {d.getUTCDate()}
+                            </div>
+                            <div className="text-xs text-muted-foreground">{d.getUTCFullYear()}</div>
+                          </>
+                        )}
                       </div>
 
                       <div className="space-y-3">
