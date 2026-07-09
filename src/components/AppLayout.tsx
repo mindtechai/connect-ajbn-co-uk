@@ -75,8 +75,11 @@ export function AppLayout({
       </main>
 
       <footer className="border-t bg-card mt-auto">
-        <div className="container mx-auto px-4 lg:px-8 py-4">
+        <div className="container mx-auto px-4 lg:px-8 py-4 flex flex-col sm:flex-row items-center justify-between gap-2">
           <DeveloperCredit />
+          <Link to="/privacy" className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2">
+            Privacy Policy
+          </Link>
         </div>
       </footer>
     </div>

@@ -72,7 +72,12 @@ export function MessagingOnboardingCard() {
           </p>
           <div className="flex items-center gap-1.5 mt-2 text-[11px] text-white/70">
             <ShieldCheck size={12} className="text-teal" />
-            <span>Contact details stay private — messages route inside AJBN Connect only.</span>
+            <span>
+              Contact details stay private — messages route inside AJBN Connect only.{" "}
+              <Link to="/privacy" className="underline text-gold hover:text-gold/80">
+                Read our Privacy Policy
+              </Link>.
+            </span>
           </div>
         </div>
         <div className="flex flex-col sm:flex-row gap-2 shrink-0">

@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
 import impactLionsLogo from "@/assets/impact-lions-logo.png.asset.json";
 import { assetUrl } from "@/lib/asset";
@@ -35,6 +36,11 @@ export function Footer() {
           </div>
         </div>
         <div className="border-t mt-8 pt-6 text-center">
+          <div className="mb-2">
+            <Link to="/privacy" className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2">
+              Privacy Policy
+            </Link>
+          </div>
           <p className="text-xs text-muted-foreground">
             © {new Date().getFullYear()} Asian Jewish Business Network. All rights reserved.
           </p>
