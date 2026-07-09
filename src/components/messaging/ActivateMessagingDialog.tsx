@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -53,7 +53,12 @@ export function ActivateMessagingDialog({ open, onOpenChange, recipientName, rec
         </DialogHeader>
         <div className="flex items-start gap-2 rounded-md bg-muted p-3 text-xs text-muted-foreground">
           <ShieldCheck size={16} className="text-teal shrink-0 mt-0.5" />
-          <p>Messages are visible only to you and the recipient. Contact details are never shared.</p>
+          <p>
+            Your phone number and email stay private.{" "}
+            <Link to="/privacy" className="underline text-primary hover:text-primary/80">
+              Read our Privacy Policy
+            </Link>.
+          </p>
         </div>
         <DialogFooter className="gap-2 sm:gap-2">
           <Button variant="outline" onClick={() => onOpenChange(false)} disabled={loading}>Not now</Button>
