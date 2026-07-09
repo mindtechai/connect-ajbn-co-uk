@@ -10,6 +10,12 @@ import { EventQRCode } from "@/components/EventQRCode";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Link } from "react-router-dom";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import {
+  Tooltip,
+  TooltipContent,
+  TooltipProvider,
+  TooltipTrigger,
+} from "@/components/ui/tooltip";
 
 type EventRow = {
   id: string;
@@ -34,6 +40,29 @@ const KIND_STYLE: Record<string, string> = {
   roundtable: "bg-muted text-muted-foreground border-border",
   other: "bg-muted text-muted-foreground border-border",
 };
+
+const PLACEHOLDER_EVENTS = [
+  {
+    id: "autumn-showcase-2026-09",
+    title: "AJBN Members Only Autumn Showcase",
+    subtitle: "Bimonthly Members-Only Meetup",
+    dateLabel: "September 2026",
+    timeLabel: "To Be Announced",
+    location: "To be confirmed",
+    description:
+      "An exclusive, high-value networking and capital connection evening for registered members. Full details, venue, and guest speaker reveal coming soon.",
+  },
+  {
+    id: "winter-gala-2026-12",
+    title: "AJBN Annual Winter Gala & Networking",
+    subtitle: "Bimonthly Members-Only Meetup",
+    dateLabel: "December 2026",
+    timeLabel: "To Be Announced",
+    location: "To be confirmed",
+    description:
+      "Our premier end-of-year gathering celebrating our business community, property updates, and member achievements. Full venue details and registration opening shortly.",
+  },
+];
 
 export default function EventsPage() {
   const { user, loading: authLoading } = useAuth();
@@ -135,6 +164,52 @@ export default function EventsPage() {
             <TabsTrigger value="fundraising" className="gap-1"><Crown size={12} /> Impact Lions</TabsTrigger>
           </TabsList>
         </Tabs>
+
+        {/* Coming soon placeholders */}
+        <div className="mb-8 space-y-4">
+          <h2 className="text-lg font-display font-semibold flex items-center gap-2">
+            <Crown size={18} className="text-gold" /> Coming Soon / TBA
+          </h2>
+          <div className="grid gap-4">
+            {PLACEHOLDER_EVENTS.map((p) => (
+              <div key={p.id} className="bg-card border border-gold/20 rounded-2xl shadow-sm overflow-hidden">
+                <div className="p-5 md:p-6 grid md:grid-cols-[auto,1fr,auto] gap-5 items-start">
+                  <div className="flex md:flex-col items-center md:items-start gap-2 md:gap-1 md:min-w-[96px]">
+                    <div className="text-xs uppercase tracking-wide text-gold font-medium">{p.dateLabel}</div>
+                    <div className="text-4xl md:text-5xl font-display font-bold text-gold leading-none">TBA</div>
+                    <div className="text-xs text-muted-foreground">Coming soon</div>
+                  </div>
+                  <div className="space-y-2">
+                    <div className="flex flex-wrap items-center gap-2">
+                      <Badge className="bg-gold/10 text-gold border-gold/30">
+                        <Crown size={10} className="mr-1" /> Coming Soon / TBA
+                      </Badge>
+                    </div>
+                    <h3 className="text-lg font-display font-semibold">{p.title}</h3>
+                    <p className="text-xs text-gold font-medium">{p.subtitle}</p>
+                    <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                      <span className="flex items-center gap-1"><CalendarDays size={12} /> {p.timeLabel}</span>
+                      <span className="flex items-center gap-1"><MapPin size={12} /> {p.location}</span>
+                    </div>
+                    <p className="text-sm text-muted-foreground">{p.description}</p>
+                  </div>
+                  <div className="md:pt-1">
+                    <TooltipProvider>
+                      <Tooltip>
+                        <TooltipTrigger asChild>
+                          <span className="inline-block">
+                            <Button size="sm" disabled variant="goldOutline">Keep Me Updated</Button>
+                          </span>
+                        </TooltipTrigger>
+                        <TooltipContent side="top"><p>Details releasing soon!</p></TooltipContent>
+                      </Tooltip>
+                    </TooltipProvider>
+                  </div>
+                </div>
+              </div>
+            ))}
+          </div>
+        </div>
 
         {(() => {
           const visible = events.filter((e) =>
