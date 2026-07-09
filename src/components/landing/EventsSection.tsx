@@ -324,8 +324,12 @@ export function EventsSection() {
                         <div className="flex flex-wrap items-center gap-2">
                           <Badge className={e.kind === "fundraising"
                             ? "bg-gold/10 text-gold border-gold/30"
+                            : e.kind === "coming_soon"
+                            ? "bg-gold/10 text-gold border-gold/30"
                             : "bg-teal/10 text-teal border-teal/20"}>
-                            {e.kind === "fundraising" ? <><Crown size={10} className="mr-1" /> Impact Lions</> : <><Users size={10} className="mr-1" /> Networking</>}
+                            {e.kind === "fundraising" ? <><Crown size={10} className="mr-1" /> Impact Lions</>
+                              : e.kind === "coming_soon" ? <><Crown size={10} className="mr-1" /> Coming Soon / TBA</>
+                              : <><Users size={10} className="mr-1" /> Networking</>}
                           </Badge>
                           {e.price && <Badge variant="outline" className="text-xs">{e.price}</Badge>}
                         </div>
