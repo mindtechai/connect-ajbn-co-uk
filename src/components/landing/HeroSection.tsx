@@ -2,7 +2,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import heroImage from "@/assets/hero-networking.jpg";
-import { ArrowRight } from "lucide-react";
+import { ArrowRight, MessageCircle } from "lucide-react";
 
 export function HeroSection() {
   return (
@@ -51,6 +51,18 @@ export function HeroSection() {
                   <ArrowRight className="ml-2" size={18} />
                 </Button>
               </Link>
+              <Button
+                variant="teal"
+                size="xl"
+                onClick={() =>
+                  document
+                    .getElementById("messaging")
+                    ?.scrollIntoView({ behavior: "smooth", block: "start" })
+                }
+              >
+                Direct Member Messaging
+                <MessageCircle className="ml-2" size={18} />
+              </Button>
             </div>
           </ScrollReveal>
         </div>
