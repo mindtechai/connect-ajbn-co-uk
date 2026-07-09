@@ -44,7 +44,7 @@ export function DirectMessagingPublicSection() {
                 Secure, Private Peer-to-Peer Networking
               </h2>
               <p className="text-primary-foreground/70 text-base md:text-lg max-w-2xl mx-auto leading-relaxed">
-                Connect directly and securely with fellow members, property developers, and finance providers without exposing your personal contact details.
+                Connect directly and securely with fellow members, without exposing your personal contact details
               </p>
             </div>
           </ScrollReveal>
