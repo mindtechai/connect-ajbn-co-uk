@@ -3,12 +3,13 @@ import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
 import impactLionsLogo from "@/assets/impact-lions-logo.png.asset.json";
 import { assetUrl } from "@/lib/asset";
 import { DeveloperCredit } from "@/components/DeveloperCredit";
+import { ContactCards } from "@/components/landing/ContactCards";
 
 export function Footer() {
   return (
-    <footer className="py-12 bg-card border-t">
+    <footer id="contact" className="py-12 bg-card border-t">
       <div className="container mx-auto px-4 lg:px-8">
-        <div className="grid md:grid-cols-3 gap-8">
+        <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
           <div>
             <div className="flex items-center flex-wrap gap-3 mb-3">
               <img src={assetUrl(ajbnLogo)} alt="Asian Jewish Business Network logo" className="h-12 w-12 md:h-14 md:w-14 rounded-lg object-cover shadow-md ring-2 ring-gold/60 shrink-0" />
@@ -22,17 +23,15 @@ export function Footer() {
           <div>
             <p className="font-semibold text-sm mb-3">Quick Links</p>
             <div className="flex flex-col gap-2">
-              {["About", "Events", "Impact Lions", "Contact"].map((link) => (
-                <a key={link} href="#" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                  {link}
-                </a>
-              ))}
+              <Link to="/" className="text-sm text-muted-foreground hover:text-foreground transition-colors">About</Link>
+              <Link to="/events" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Events</Link>
+              <Link to="/lions" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Impact Lions</Link>
+              <Link to="/contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">Contact</Link>
             </div>
           </div>
-          <div>
-            <p className="font-semibold text-sm mb-3">Contact</p>
-            <p className="text-sm text-muted-foreground">russell@ajbn.co.uk</p>
-            <p className="text-sm text-muted-foreground">London, United Kingdom</p>
+          <div className="md:col-span-2">
+            <p className="font-semibold text-sm mb-3">Contact Us</p>
+            <ContactCards />
           </div>
         </div>
         <div className="border-t mt-8 pt-6 text-center">
