@@ -262,7 +262,8 @@ export function EventsSection() {
   );
 
   return (
-    <section id="events" className="py-20 bg-gradient-to-b from-background to-muted/30">
+    <TooltipProvider delayDuration={0}>
+      <section id="events" className="py-20 bg-gradient-to-b from-background to-muted/30">
       <div className="container mx-auto px-4 max-w-5xl">
         <ScrollReveal>
           <div className="text-center mb-10">
