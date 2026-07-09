@@ -26,6 +26,7 @@ import BuyTicketsFlagshipPage from "./pages/BuyTicketsFlagship.tsx";
 import MessagesPage from "./pages/Messages.tsx";
 import MessageThreadPage from "./pages/MessageThread.tsx";
 import PrivacyPage from "./pages/Privacy.tsx";
+import ContactPage from "./pages/Contact.tsx";
 import { AuthProvider } from "@/hooks/useAuth";
 import { RequireSuperAdmin } from "@/components/RequireSuperAdmin";
 import { RequireAuth } from "@/components/RequireAuth";
