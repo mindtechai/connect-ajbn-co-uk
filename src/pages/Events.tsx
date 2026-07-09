@@ -51,16 +51,18 @@ const PLACEHOLDER_EVENTS = [
     location: "To be confirmed",
     description:
       "An exclusive, high-value networking and capital connection evening for registered members. Full details, venue, and guest speaker reveal coming soon.",
+    highlights: ["High-Value Peer-to-Peer Engagement"],
   },
   {
     id: "winter-gala-2026-12",
-    title: "AJBN Annual Winter Gala & Networking",
-    subtitle: "Bimonthly Members-Only Meetup",
+    title: "AJBN Members-Only Meetup",
+    subtitle: "High-Value Peer-to-Peer Engagement",
     dateLabel: "December 2026",
-    timeLabel: "To Be Announced",
+    timeLabel: "To Be Announced / Coming Soon",
     location: "To be confirmed",
     description:
-      "Our premier end-of-year gathering celebrating our business community, property updates, and member achievements. Full venue details and registration opening shortly.",
+      "Our final bimonthly meetup of the year, bringing together members for targeted peer-to-peer engagement and deal-structuring before the festive break. Full details TBA shortly.",
+    highlights: ["Bimonthly Members-Only Meetup"],
   },
 ];
 
