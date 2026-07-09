@@ -25,6 +25,7 @@ import SponsorsPartnersPage from "./pages/SponsorsPartners.tsx";
 import BuyTicketsFlagshipPage from "./pages/BuyTicketsFlagship.tsx";
 import MessagesPage from "./pages/Messages.tsx";
 import MessageThreadPage from "./pages/MessageThread.tsx";
+import PrivacyPage from "./pages/Privacy.tsx";
 import { AuthProvider } from "@/hooks/useAuth";
 import { RequireSuperAdmin } from "@/components/RequireSuperAdmin";
 import { RequireAuth } from "@/components/RequireAuth";
@@ -59,6 +60,7 @@ const App = () => (
           <Route path="/referral-rewards" element={<ReferralRewardsPage />} />
           <Route path="/sponsors-partners" element={<SponsorsPartnersPage />} />
           <Route path="/tickets/flagship" element={<BuyTicketsFlagshipPage />} />
+          <Route path="/privacy" element={<PrivacyPage />} />
           <Route path="/unsubscribe" element={<UnsubscribePage />} />
           <Route path="/email-unsubscribe" element={<EmailUnsubscribePage />} />
           <Route path="/admin" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
