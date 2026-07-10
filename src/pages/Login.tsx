@@ -12,7 +12,7 @@ import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 
 export default function LoginPage() {
   const [showPassword, setShowPassword] = useState(false);
-  const [mode, setMode] = useState<"register" | "signin">("register");
+  const [mode, setMode] = useState<"register" | "signin">("signin");
 
   // Sign-in fields
   const [email, setEmail] = useState("");
@@ -99,7 +99,9 @@ export default function LoginPage() {
             Welcome to the New AJBN Connect Portal
           </h1>
           <p className="text-muted-foreground text-sm mt-2 mb-6">
-            Because our platform is brand new, <strong>ALL existing and new members must register a fresh account</strong> to activate their profile and messaging services.
+            {mode === "signin"
+              ? "Sign in with your AJBN Connect account. New here? You can register a fresh account below."
+              : "New to the portal? Create your AJBN Connect account to activate your profile and messaging."}
           </p>
 
           {mode === "register" ? (
