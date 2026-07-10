@@ -47,6 +47,7 @@ const App = () => (
         <AuthProvider>
         <ReferralSideRibbon />
         <OfflineFallback />
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<LoginPage />} />
