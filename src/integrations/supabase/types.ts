@@ -176,6 +176,36 @@ export type Database = {
         }
         Relationships: []
       }
+      deal_logs: {
+        Row: {
+          amount_gbp: number
+          counterparty_name: string | null
+          created_at: string
+          deal_type: string
+          id: string
+          notes: string | null
+          user_id: string
+        }
+        Insert: {
+          amount_gbp: number
+          counterparty_name?: string | null
+          created_at?: string
+          deal_type: string
+          id?: string
+          notes?: string | null
+          user_id: string
+        }
+        Update: {
+          amount_gbp?: number
+          counterparty_name?: string | null
+          created_at?: string
+          deal_type?: string
+          id?: string
+          notes?: string | null
+          user_id?: string
+        }
+        Relationships: []
+      }
       email_send_log: {
         Row: {
           created_at: string
@@ -716,7 +746,9 @@ export type Database = {
           linkedin: string | null
           phone: string | null
           referral_code: string | null
+          referred_by: string | null
           referred_by_code: string | null
+          tags: string[]
           title: string | null
           updated_at: string
         }
@@ -733,7 +765,9 @@ export type Database = {
           linkedin?: string | null
           phone?: string | null
           referral_code?: string | null
+          referred_by?: string | null
           referred_by_code?: string | null
+          tags?: string[]
           title?: string | null
           updated_at?: string
         }
@@ -750,7 +784,9 @@ export type Database = {
           linkedin?: string | null
           phone?: string | null
           referral_code?: string | null
+          referred_by?: string | null
           referred_by_code?: string | null
+          tags?: string[]
           title?: string | null
           updated_at?: string
         }
@@ -931,13 +967,17 @@ export type Database = {
         Returns: {
           bio: string
           company: string
+          enquiry_count: number
           first_name: string
           id: string
           industry: string
           is_lion: boolean
           is_messaging_active: boolean
+          is_top_ambassador: boolean
+          is_verified_connector: boolean
           last_name: string
           linkedin: string
+          tags: string[]
           title: string
         }[]
       }
@@ -962,6 +1002,13 @@ export type Database = {
           source_queue: string
         }
         Returns: number
+      }
+      network_totals: {
+        Args: never
+        Returns: {
+          deal_count: number
+          total_deal_value_gbp: number
+        }[]
       }
       public_member_directory: {
         Args: never
@@ -992,7 +1039,17 @@ export type Database = {
           user_id: string
         }[]
       }
+      referrers_directory: {
+        Args: never
+        Returns: {
+          company: string
+          first_name: string
+          id: string
+          last_name: string
+        }[]
+      }
       start_or_get_conversation: { Args: { _other: string }; Returns: string }
+      top_network_ambassador: { Args: never; Returns: string }
     }
     Enums: {
       app_role:
