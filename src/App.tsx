@@ -34,6 +34,7 @@ import { RequireAuth } from "@/components/RequireAuth";
 import { ReferralSideRibbon } from "@/components/ReferralSideRibbon";
 import { MobileTabBar } from "@/components/MobileTabBar";
 import { OfflineFallback } from "@/components/OfflineFallback";
+import { ScrollToTop } from "@/components/ScrollToTop";
 
 const queryClient = new QueryClient();
 
@@ -46,6 +47,7 @@ const App = () => (
         <AuthProvider>
         <ReferralSideRibbon />
         <OfflineFallback />
+        <ScrollToTop />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<LoginPage />} />
