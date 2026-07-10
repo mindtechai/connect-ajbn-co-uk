@@ -59,6 +59,7 @@ export function Navbar() {
           {[
             { label: "About", to: "/#about" },
             { label: "Events", to: "/#events" },
+            { label: "Services", to: "/services" },
             { label: "Impact Lions", to: "/lions" },
           ].map((item) => (
             <Link
@@ -109,6 +110,7 @@ export function Navbar() {
           {[
             { label: "About", to: "/#about" },
             { label: "Events", to: "/#events" },
+            { label: "Services", to: "/services" },
             { label: "Impact Lions", to: "/lions" },
           ].map((item) => (
             <Link
