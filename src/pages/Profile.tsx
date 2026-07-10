@@ -11,6 +11,7 @@ import { toast } from "@/hooks/use-toast";
 import { Loader2, Copy, Upload } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
+import { DeleteAccountDialog } from "@/components/DeleteAccountDialog";
 
 const TAG_SUGGESTIONS = ["Barrister","Solicitor","Accountant","IFA","Funder","Property Consultant","Business Coach","Architect"];
 
@@ -195,6 +196,14 @@ export default function ProfilePage() {
               {saving && <Loader2 size={14} className="animate-spin" />} Save changes
             </Button>
           </div>
+        </div>
+
+        <div className="mt-8 border border-destructive/40 rounded-xl p-6 bg-destructive/5">
+          <h2 className="text-lg font-semibold text-destructive mb-1">Danger Zone</h2>
+          <p className="text-sm text-muted-foreground mb-4">
+            Permanently delete your account and all associated data. This cannot be undone.
+          </p>
+          <DeleteAccountDialog />
         </div>
       </>
     </AppLayout>
