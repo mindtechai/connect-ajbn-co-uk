@@ -61,15 +61,23 @@ export function ServiceEnquiryDialog({ open, onOpenChange, serviceType }: Props)
       message: parsed.data.message || null,
       service_type: serviceType,
     });
-    setSubmitting(false);
     if (error) {
+      setSubmitting(false);
       toast.error("Could not submit. Please try again.");
       return;
     }
+    // Lightweight routing logic (email dispatch handled downstream)
+    const routeTo =
+      serviceType === "Referral Incentives Marketplace"
+        ? "Russell@ajbn.co.uk"
+        : "Salil@ajbn.co.uk";
+    console.info("[service-enquiry] route", { serviceType, routeTo });
     toast.success("Thank you — our team will be in touch within 24 hours");
     setPhone("");
     setMessage("");
     onOpenChange(false);
+    // 3s cooldown to prevent double submissions
+    setTimeout(() => setSubmitting(false), 3000);
   };
 
   return (
@@ -96,9 +104,9 @@ export function ServiceEnquiryDialog({ open, onOpenChange, serviceType }: Props)
           </div>
           <div className="space-y-1.5">
             <Label htmlFor="svc-message">Message</Label>
-            <Textarea id="svc-message" value={message} onChange={(e) => setMessage(e.target.value)} maxLength={2000} rows={4} placeholder="Tell us a bit about what you need" />
+            <Textarea id="svc-message" value={message} onChange={(e) => setMessage(e.target.value)} required minLength={10} maxLength={2000} rows={4} placeholder="Tell us a bit about what you need (min 10 characters)" />
           </div>
-          <Button type="submit" className="w-full" disabled={submitting}>
+          <Button type="submit" className="w-full" disabled={submitting} data-testid="svc-submit">
             {submitting && <Loader2 className="mr-2 h-4 w-4 animate-spin" />}
             Send enquiry
           </Button>
