@@ -85,6 +85,7 @@ const App = () => (
           <Route path="/admin/settings" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <MobileTabBar />
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>
