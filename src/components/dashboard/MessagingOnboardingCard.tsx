@@ -4,11 +4,16 @@ import { MessageCircle, ArrowRight, ShieldCheck, X, CheckCircle2 } from "lucide-
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { useMessagingProfile } from "@/hooks/useMessagingProfile";
+import { useAuth } from "@/hooks/useAuth";
 
 const DISMISS_KEY = "ajbn.messaging.onboarding.dismissed";
 
 export function MessagingOnboardingCard() {
   const { isActive, loading, activate } = useMessagingProfile();
+  const { roles } = useAuth();
+  const isApprovedMember = roles.some((r) =>
+    r === "ajbn_member" || r === "impact_lion" || r === "super_admin"
+  );
   const [dismissed, setDismissed] = useState(() => {
     if (typeof window === "undefined") return false;
     return localStorage.getItem(DISMISS_KEY) === "1";
@@ -16,7 +21,9 @@ export function MessagingOnboardingCard() {
   const [busy, setBusy] = useState(false);
 
   if (loading) return null;
-  if (isActive && dismissed) return null;
+  // Hide entirely for non-approved members — activation would fail server-side.
+  if (!isApprovedMember) return null;
+  if (dismissed) return null;
 
   const handleActivate = async () => {
     setBusy(true);
@@ -41,15 +48,13 @@ export function MessagingOnboardingCard() {
         <div className="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-teal blur-3xl" />
         <div className="absolute -left-10 -bottom-10 w-40 h-40 rounded-full bg-gold blur-3xl" />
       </div>
-      {isActive && (
-        <button
-          onClick={dismiss}
-          className="absolute top-3 right-3 text-white/70 hover:text-white"
-          aria-label="Dismiss"
-        >
-          <X size={16} />
-        </button>
-      )}
+      <button
+        onClick={dismiss}
+        className="absolute top-3 right-3 text-white/70 hover:text-white"
+        aria-label="Dismiss"
+      >
+        <X size={16} />
+      </button>
       <div className="relative p-5 md:p-6 flex flex-col md:flex-row md:items-center gap-4 md:gap-6">
         <div className="shrink-0 rounded-xl bg-white/10 border border-white/15 w-12 h-12 grid place-items-center">
           {isActive
