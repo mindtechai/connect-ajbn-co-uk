@@ -10,6 +10,7 @@ import { assetUrl } from "@/lib/asset";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { GoogleSignInButton } from "@/components/GoogleSignInButton";
+import { ReferrerCombobox } from "@/components/ReferrerCombobox";
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -19,6 +20,7 @@ export default function RegisterPage() {
   const [company, setCompany] = useState("");
   const [password, setPassword] = useState("");
   const [referral, setReferral] = useState("");
+  const [referredBy, setReferredBy] = useState<string | null>(null);
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
@@ -44,6 +46,7 @@ export default function RegisterPage() {
           last_name: lastName,
           company,
           referred_by_code: code || undefined,
+          referred_by: referredBy || undefined,
         },
       },
     });
@@ -124,6 +127,12 @@ export default function RegisterPage() {
             <div className="space-y-2">
               <Label htmlFor="referral">Referral Code (optional)</Label>
               <Input id="referral" placeholder="Enter code from referring member" value={referral} onChange={(e) => setReferral(e.target.value)} />
+            </div>
+
+            <div className="space-y-2">
+              <Label>Who referred you to AJBN? (optional)</Label>
+              <ReferrerCombobox value={referredBy} onChange={setReferredBy} />
+              <p className="text-[11px] text-muted-foreground">Search by name or company — helps us credit the right member.</p>
             </div>
 
             <Button className="w-full" size="lg" disabled={loading}>{loading ? "Submitting…" : "Submit Application"}</Button>

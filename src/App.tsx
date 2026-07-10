@@ -32,6 +32,8 @@ import { AuthProvider } from "@/hooks/useAuth";
 import { RequireSuperAdmin } from "@/components/RequireSuperAdmin";
 import { RequireAuth } from "@/components/RequireAuth";
 import { ReferralSideRibbon } from "@/components/ReferralSideRibbon";
+import { MobileTabBar } from "@/components/MobileTabBar";
+import { OfflineFallback } from "@/components/OfflineFallback";
 
 const queryClient = new QueryClient();
 
@@ -43,6 +45,7 @@ const App = () => (
       <BrowserRouter>
         <AuthProvider>
         <ReferralSideRibbon />
+        <OfflineFallback />
         <Routes>
           <Route path="/" element={<Index />} />
           <Route path="/login" element={<LoginPage />} />
@@ -82,6 +85,7 @@ const App = () => (
           <Route path="/admin/settings" element={<RequireSuperAdmin><AdminPage /></RequireSuperAdmin>} />
           <Route path="*" element={<NotFound />} />
         </Routes>
+        <MobileTabBar />
         </AuthProvider>
       </BrowserRouter>
     </TooltipProvider>

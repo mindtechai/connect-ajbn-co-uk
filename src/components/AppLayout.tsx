@@ -43,7 +43,11 @@ export function AppLayout({
         Skip to main content
       </a>
 
-      <header className="border-b bg-card sticky top-0 z-40" role="banner">
+      <header
+        className="border-b bg-card sticky top-0 z-40"
+        role="banner"
+        style={{ paddingTop: "env(safe-area-inset-top)" }}
+      >
         <nav
           aria-label="Primary"
           className="container mx-auto px-4 lg:px-8 h-20 flex items-center gap-3"
@@ -69,7 +73,7 @@ export function AppLayout({
       <main
         id="main-content"
         tabIndex={-1}
-        className={`${mainClassName} ${MAX_W[maxWidth]} focus:outline-none`}
+        className={`${mainClassName} ${MAX_W[maxWidth]} focus:outline-none pb-[calc(env(safe-area-inset-bottom)+72px)] md:pb-8`}
       >
         {children}
       </main>

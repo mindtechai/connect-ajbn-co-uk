@@ -18,6 +18,8 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { MessagingOnboardingCard } from "@/components/dashboard/MessagingOnboardingCard";
 import { MessageCircle } from "lucide-react";
+import { NetworkTicker } from "@/components/dashboard/NetworkTicker";
+import { LogActivityDialog } from "@/components/dashboard/LogActivityDialog";
 
 type Announcement = { id: string; title: string; body: string; priority: string; published_at: string; pinned: boolean };
 type UpcomingEvent = { id: string; title: string; starts_at: string; location: string | null };
@@ -29,6 +31,7 @@ export default function DashboardPage() {
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [upcomingEvents, setUpcomingEvents] = useState<UpcomingEvent[]>([]);
   const [referralCount, setReferralCount] = useState(0);
+  const [tickerKey, setTickerKey] = useState(0);
 
   useEffect(() => {
     if (!user) return;
@@ -105,6 +108,15 @@ export default function DashboardPage() {
       <main className="container mx-auto px-4 lg:px-8 py-8 max-w-5xl">
         <ScrollReveal>
           <MessagingOnboardingCard />
+        </ScrollReveal>
+
+        <ScrollReveal>
+          <div className="mb-6 space-y-3">
+            <NetworkTicker refreshKey={tickerKey} />
+            <div className="flex justify-end">
+              <LogActivityDialog onLogged={() => setTickerKey((k) => k + 1)} />
+            </div>
+          </div>
         </ScrollReveal>
 
         {/* Welcome */}

@@ -9,6 +9,10 @@ import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "@/hooks/use-toast";
 import { Loader2, Copy, Upload } from "lucide-react";
+import { Badge } from "@/components/ui/badge";
+import { X } from "lucide-react";
+
+const TAG_SUGGESTIONS = ["Barrister","Solicitor","Accountant","IFA","Funder","Property Consultant","Business Coach","Architect"];
 
 export default function ProfilePage() {
   const { user, loading: authLoading } = useAuth();
@@ -18,9 +22,10 @@ export default function ProfilePage() {
   const [form, setForm] = useState({
     first_name: "", last_name: "", company: "", title: "",
     industry: "", phone: "", linkedin: "", bio: "", email: "",
-    referral_code: "", avatar_url: "",
+    referral_code: "", avatar_url: "", tags: [] as string[],
   });
   const [uploading, setUploading] = useState(false);
+  const [tagDraft, setTagDraft] = useState("");
 
   useEffect(() => {
     if (authLoading) return;
@@ -40,6 +45,7 @@ export default function ProfilePage() {
           email: data.email ?? user.email ?? "",
           referral_code: (data as any).referral_code ?? "",
           avatar_url: (data as any).avatar_url ?? "",
+          tags: Array.isArray((data as any).tags) ? (data as any).tags : [],
         });
       }
       setLoading(false);
@@ -73,7 +79,8 @@ export default function ProfilePage() {
       phone: form.phone,
       linkedin: form.linkedin,
       bio: form.bio,
-    }).eq("id", user.id);
+      tags: form.tags,
+    } as any).eq("id", user.id);
     setSaving(false);
     if (error) toast({ title: "Save failed", description: error.message, variant: "destructive" });
     else toast({ title: "Profile updated" });
@@ -85,6 +92,14 @@ export default function ProfilePage() {
 
   const set = (k: keyof typeof form) => (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) =>
     setForm((p) => ({ ...p, [k]: e.target.value }));
+
+  const addTag = (raw: string) => {
+    const t = raw.trim();
+    if (!t) return;
+    setForm((p) => p.tags.includes(t) ? p : { ...p, tags: [...p.tags, t] });
+    setTagDraft("");
+  };
+  const removeTag = (t: string) => setForm((p) => ({ ...p, tags: p.tags.filter((x) => x !== t) }));
 
   return (
     <AppLayout maxWidth="2xl">
@@ -123,6 +138,40 @@ export default function ProfilePage() {
           </div>
           <div className="space-y-2"><Label>LinkedIn</Label><Input value={form.linkedin} onChange={set("linkedin")} placeholder="https://linkedin.com/in/…" /></div>
           <div className="space-y-2"><Label>Bio</Label><Textarea value={form.bio} onChange={set("bio")} rows={4} placeholder="Short professional bio…" /></div>
+
+          <div className="space-y-2">
+            <Label>Professional tags</Label>
+            <p className="text-xs text-muted-foreground -mt-1">Keywords shown on your profile and searched in the directory.</p>
+            <div className="flex flex-wrap gap-1.5">
+              {form.tags.map((t) => (
+                <Badge key={t} variant="secondary" className="gap-1">
+                  {t}
+                  <button type="button" onClick={() => removeTag(t)} aria-label={`Remove ${t}`} className="hover:text-destructive">
+                    <X size={10} />
+                  </button>
+                </Badge>
+              ))}
+            </div>
+            <div className="flex gap-2">
+              <Input
+                value={tagDraft}
+                onChange={(e) => setTagDraft(e.target.value)}
+                onKeyDown={(e) => {
+                  if (e.key === "Enter" || e.key === ",") { e.preventDefault(); addTag(tagDraft); }
+                }}
+                placeholder="Type a tag and press Enter"
+              />
+              <Button type="button" variant="outline" onClick={() => addTag(tagDraft)}>Add</Button>
+            </div>
+            <div className="flex flex-wrap gap-1.5 pt-1">
+              {TAG_SUGGESTIONS.filter((s) => !form.tags.includes(s)).map((s) => (
+                <button key={s} type="button" onClick={() => addTag(s)}
+                  className="text-[11px] px-2 py-0.5 rounded-full border border-dashed text-muted-foreground hover:text-foreground hover:border-solid">
+                  + {s}
+                </button>
+              ))}
+            </div>
+          </div>
 
           <div className="pt-4 border-t space-y-2">
             <Label>Your referral code</Label>

@@ -6,13 +6,13 @@ import { useAuth } from "@/hooks/useAuth";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Search, Crown, Loader2, Building2, Linkedin, Send } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import { useMessagingProfile } from "@/hooks/useMessagingProfile";
 import { ActivateMessagingDialog } from "@/components/messaging/ActivateMessagingDialog";
 import { toast } from "sonner";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
+import { MemberBadges } from "@/components/badges/MemberBadges";
 
 type Member = {
   id: string;
@@ -23,8 +23,12 @@ type Member = {
   industry: string | null;
   bio: string | null;
   linkedin: string | null;
+  tags: string[] | null;
   is_lion: boolean;
   is_messaging_active: boolean;
+  enquiry_count: number | null;
+  is_verified_connector: boolean | null;
+  is_top_ambassador: boolean | null;
 };
 
 export default function DirectoryPage() {
@@ -34,7 +38,6 @@ export default function DirectoryPage() {
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
-  const [industry, setIndustry] = useState("all");
   const [pendingRecipient, setPendingRecipient] = useState<Member | null>(null);
 
   const canAccess = roles.includes("ajbn_member") || roles.includes("impact_lion") || roles.includes("super_admin");
@@ -48,19 +51,17 @@ export default function DirectoryPage() {
     })();
   }, [user, authLoading]);
 
-  const industries = useMemo(() => {
-    const s = new Set<string>();
-    members.forEach((m) => m.industry && s.add(m.industry));
-    return Array.from(s).sort();
-  }, [members]);
-
-  const filtered = useMemo(() => members.filter((m) => {
-    const name = `${m.first_name ?? ""} ${m.last_name ?? ""}`.toLowerCase();
-    const search = q.toLowerCase();
-    const okQ = !search || name.includes(search) || (m.company ?? "").toLowerCase().includes(search) || (m.title ?? "").toLowerCase().includes(search);
-    const okInd = industry === "all" || m.industry === industry;
-    return okQ && okInd;
-  }), [members, q, industry]);
+  const filtered = useMemo(() => {
+    const search = q.trim().toLowerCase();
+    if (!search) return members;
+    return members.filter((m) => {
+      const haystack = [
+        m.first_name, m.last_name, m.company, m.title, m.industry, m.bio,
+        ...(m.tags ?? []),
+      ].filter(Boolean).join(" ").toLowerCase();
+      return haystack.includes(search);
+    });
+  }, [members, q]);
 
   const openChatWith = async (m: Member) => {
     if (!m.is_messaging_active) {
@@ -95,18 +96,19 @@ export default function DirectoryPage() {
           <div className="py-16 flex justify-center"><Loader2 className="animate-spin text-muted-foreground" /></div>
         ) : (
           <>
-            <div className="flex flex-col sm:flex-row gap-3 mb-6">
-              <div className="relative flex-1">
+            <div className="mb-6">
+              <div className="relative">
                 <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-                <Input placeholder="Search by name, company or title…" value={q} onChange={(e) => setQ(e.target.value)} className="pl-9" />
+                <Input
+                  placeholder="Search names, companies, bios, industries, tags…"
+                  value={q}
+                  onChange={(e) => setQ(e.target.value)}
+                  className="pl-9"
+                />
               </div>
-              <Select value={industry} onValueChange={setIndustry}>
-                <SelectTrigger className="w-full sm:w-56"><SelectValue placeholder="Industry" /></SelectTrigger>
-                <SelectContent>
-                  <SelectItem value="all">All industries</SelectItem>
-                  {industries.map((i) => <SelectItem key={i} value={i}>{i}</SelectItem>)}
-                </SelectContent>
-              </Select>
+              <p className="text-[11px] text-muted-foreground mt-2">
+                Try keywords like "Barrister", "Architect", "Solicitor", "Funder", "IFA", or a company name.
+              </p>
             </div>
 
             <p className="text-xs text-muted-foreground mb-3">
@@ -118,7 +120,13 @@ export default function DirectoryPage() {
                 <div key={m.id} className="bg-card border rounded-xl p-5 shadow-sm space-y-2">
                   <div className="flex items-start justify-between gap-2">
                     <div className="min-w-0">
-                      <p className="font-semibold text-sm truncate">{m.first_name} {m.last_name}</p>
+                      <div className="flex items-center gap-1.5 min-w-0">
+                        <p className="font-semibold text-sm truncate">{m.first_name} {m.last_name}</p>
+                        <MemberBadges
+                          verifiedConnector={!!m.is_verified_connector}
+                          topAmbassador={!!m.is_top_ambassador}
+                        />
+                      </div>
                       {m.title && <p className="text-xs text-muted-foreground truncate">{m.title}</p>}
                     </div>
                     {m.is_lion && <Crown size={16} className="text-gold shrink-0" />}
@@ -129,6 +137,13 @@ export default function DirectoryPage() {
                     </p>
                   )}
                   {m.industry && <Badge variant="outline" className="text-[10px]">{m.industry}</Badge>}
+                  {m.tags && m.tags.length > 0 && (
+                    <div className="flex flex-wrap gap-1 pt-1">
+                      {m.tags.slice(0, 6).map((t) => (
+                        <Badge key={t} variant="secondary" className="text-[10px]">{t}</Badge>
+                      ))}
+                    </div>
+                  )}
                   {m.bio && <p className="text-xs text-muted-foreground line-clamp-3 pt-1">{m.bio}</p>}
                   <div className="flex gap-2 pt-2 border-t">
                     {m.id !== user?.id && (
