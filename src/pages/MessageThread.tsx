@@ -1,77 +1,62 @@
 import { useEffect, useRef, useState } from "react";
 import { useParams, Link } from "react-router-dom";
 import { AppLayout } from "@/components/AppLayout";
-import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Send, Loader2, ShieldCheck, ArrowLeft } from "lucide-react";
-import { toast } from "sonner";
-
-type Msg = { id: string; sender_id: string; body: string; created_at: string };
-type Convo = { id: string; user_a: string; user_b: string };
+import { Send, ShieldCheck } from "lucide-react";
+import {
+  getConversation,
+  sendMessage as sendDemoMessage,
+  markRead,
+  type DemoConversation,
+  type DemoMsg,
+} from "@/lib/demoMessaging";
 
 export default function MessageThreadPage() {
   const { conversationId } = useParams<{ conversationId: string }>();
   const { user } = useAuth();
-  const [convo, setConvo] = useState<Convo | null>(null);
-  const [other, setOther] = useState<{ first_name: string | null; last_name: string | null; company: string | null } | null>(null);
-  const [messages, setMessages] = useState<Msg[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [convo, setConvo] = useState<DemoConversation | null>(null);
+  const [messages, setMessages] = useState<DemoMsg[]>([]);
   const [body, setBody] = useState("");
-  const [sending, setSending] = useState(false);
   const endRef = useRef<HTMLDivElement>(null);
+  const meId = user?.id ?? "demo-me";
 
-  useEffect(() => {
-    if (!conversationId || !user) return;
-    let cancelled = false;
-    (async () => {
-      const { data: c } = await supabase.from("conversations").select("id,user_a,user_b").eq("id", conversationId).maybeSingle();
-      if (cancelled) return;
-      if (!c) { setLoading(false); return; }
-      setConvo(c as Convo);
-      const otherId = c.user_a === user.id ? c.user_b : c.user_a;
-      const { data: p } = await supabase.from("profiles").select("first_name,last_name,company").eq("id", otherId).maybeSingle();
-      setOther(p as any);
-      const { data: m } = await supabase.from("messages").select("id,sender_id,body,created_at").eq("conversation_id", conversationId).order("created_at", { ascending: true });
-      setMessages((m ?? []) as Msg[]);
-      await (supabase as any).rpc("mark_conversation_read", { _conversation: conversationId });
-      setLoading(false);
-    })();
-    return () => { cancelled = true; };
-  }, [conversationId, user]);
-
-  // Realtime subscription
-  useEffect(() => {
+  const refresh = () => {
     if (!conversationId) return;
-    const channel = supabase
-      .channel(`messages:${conversationId}`)
-      .on("postgres_changes", { event: "INSERT", schema: "public", table: "messages", filter: `conversation_id=eq.${conversationId}` }, (payload) => {
-        const m = payload.new as Msg;
-        setMessages((prev) => (prev.some((x) => x.id === m.id) ? prev : [...prev, m]));
-      })
-      .subscribe();
-    return () => { supabase.removeChannel(channel); };
+    const c = getConversation(conversationId);
+    if (c) {
+      setConvo(c);
+      setMessages(c.messages);
+    }
+  };
+
+  useEffect(() => {
+    refresh();
+    if (conversationId) markRead(conversationId);
+    const h = (e: Event) => {
+      const d = (e as CustomEvent).detail;
+      if (d?.conversationId === conversationId) refresh();
+    };
+    window.addEventListener("ajbn-demo-message", h);
+    return () => window.removeEventListener("ajbn-demo-message", h);
   }, [conversationId]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const send = async () => {
+  const send = () => {
     const text = body.trim();
-    if (!text || !conversationId || !user) return;
-    setSending(true);
-    const { data, error } = await supabase
-      .from("messages")
-      .insert({ conversation_id: conversationId, sender_id: user.id, body: text })
-      .select("id,sender_id,body,created_at")
-      .single();
-    setSending(false);
-    if (error) { toast.error(error.message); return; }
-    setMessages((prev) => (prev.some((x) => x.id === data!.id) ? prev : [...prev, data as Msg]));
+    if (!text || !conversationId) return;
+    sendDemoMessage(conversationId, meId, text);
     setBody("");
+    refresh();
   };
+  const other = convo
+    ? { first_name: convo.other_first_name, last_name: convo.other_last_name, company: convo.other_company }
+    : null;
+  const loading = false;
 
   return (
     <AppLayout maxWidth="3xl" back={{ to: "/messages", label: "Inbox" }}>
