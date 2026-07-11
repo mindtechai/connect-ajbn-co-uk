@@ -1,7 +1,8 @@
 import { Link, useLocation } from "react-router-dom";
 import { Button } from "@/components/ui/button";
-import { Menu, X } from "lucide-react";
+import { Menu, X, LayoutDashboard, LogOut, User as UserIcon } from "lucide-react";
 import { useState, useEffect } from "react";
+import { useAuth } from "@/hooks/useAuth";
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
 import impactLionsLogo from "@/assets/impact-lions-logo.png.asset.json";
 import { assetUrl } from "@/lib/asset";
@@ -11,6 +12,13 @@ export function Navbar() {
   const [scrolled, setScrolled] = useState(false);
   const location = useLocation();
   const isLanding = location.pathname === "/";
+  const { user, signOut } = useAuth();
+
+  const displayName = (() => {
+    const meta: any = (user as any)?.user_metadata ?? {};
+    return meta.full_name || meta.name || user?.email || "";
+  })();
+  const initial = (displayName || "?").trim().charAt(0).toUpperCase();
 
   useEffect(() => {
     const onScroll = () => setScrolled(window.scrollY > 60);
@@ -82,16 +90,39 @@ export function Navbar() {
           >
             Sponsors & Partners
           </Link>
-          <Link to="/login">
-            <Button variant={showSolid ? "outline" : "heroOutline"} size="sm">
-              Sign In
-            </Button>
-          </Link>
-          <Link to="/register">
-            <Button variant={showSolid ? "default" : "hero"} size="sm">
-              Join AJBN
-            </Button>
-          </Link>
+          {user ? (
+            <div className="flex items-center gap-3">
+              <div className={`flex items-center gap-2 ${showSolid ? "text-foreground" : "text-primary-foreground"}`}>
+                <div className="h-9 w-9 rounded-full bg-gold/90 text-primary grid place-items-center font-semibold ring-2 ring-gold/60 shadow-sm">
+                  {initial}
+                </div>
+                <span className="text-sm font-medium max-w-[160px] truncate hidden lg:inline" title={displayName}>
+                  {displayName}
+                </span>
+              </div>
+              <Link to="/dashboard">
+                <Button variant={showSolid ? "outline" : "heroOutline"} size="sm">
+                  <LayoutDashboard size={16} className="mr-1.5" /> Dashboard
+                </Button>
+              </Link>
+              <Button variant={showSolid ? "default" : "hero"} size="sm" onClick={() => signOut()}>
+                <LogOut size={16} className="mr-1.5" /> Sign Out
+              </Button>
+            </div>
+          ) : (
+            <>
+              <Link to="/login">
+                <Button variant={showSolid ? "outline" : "heroOutline"} size="sm">
+                  Sign In
+                </Button>
+              </Link>
+              <Link to="/register">
+                <Button variant={showSolid ? "default" : "hero"} size="sm">
+                  Join AJBN
+                </Button>
+              </Link>
+            </>
+          )}
         </div>
 
         {/* Mobile menu toggle */}
@@ -136,12 +167,33 @@ export function Navbar() {
           >
             Sponsors & Partners
           </Link>
-          <Link to="/login" onClick={() => setOpen(false)}>
-            <Button variant="outline" size="sm" className="w-full">Sign In</Button>
-          </Link>
-          <Link to="/register" onClick={() => setOpen(false)}>
-            <Button size="sm" className="w-full">Join AJBN</Button>
-          </Link>
+          {user ? (
+            <>
+              <div className="flex items-center gap-2 py-2 text-sm text-foreground">
+                <div className="h-8 w-8 rounded-full bg-gold/90 text-primary grid place-items-center font-semibold">
+                  {initial}
+                </div>
+                <span className="font-medium truncate">{displayName}</span>
+              </div>
+              <Link to="/dashboard" onClick={() => setOpen(false)}>
+                <Button variant="outline" size="sm" className="w-full">
+                  <LayoutDashboard size={16} className="mr-1.5" /> Dashboard
+                </Button>
+              </Link>
+              <Button size="sm" className="w-full" onClick={() => { setOpen(false); signOut(); }}>
+                <LogOut size={16} className="mr-1.5" /> Sign Out
+              </Button>
+            </>
+          ) : (
+            <>
+              <Link to="/login" onClick={() => setOpen(false)}>
+                <Button variant="outline" size="sm" className="w-full">Sign In</Button>
+              </Link>
+              <Link to="/register" onClick={() => setOpen(false)}>
+                <Button size="sm" className="w-full">Join AJBN</Button>
+              </Link>
+            </>
+          )}
         </div>
       )}
     </nav>
