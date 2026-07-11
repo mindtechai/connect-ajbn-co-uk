@@ -41,8 +41,26 @@ const KIND_STYLE: Record<string, string> = {
   other: "bg-muted text-muted-foreground border-border",
 };
 
+const PIPELINE_EVENT = {
+  id: "upcoming-bimonthly-networking",
+  kind: "networking",
+  title: "Upcoming Bimonthly In-Person Networking Event",
+  subtitle: "Bimonthly In-Person Networking",
+  dateLabel: "Date TBA",
+  timeLabel: "To Be Announced",
+  location: "London (Venue TBA)",
+  description:
+    "Register your interest now to be the first to hear about our next bimonthly in-person networking event in London. We'll confirm the venue, date, and full details with priority notice for registered members.",
+  highlights: [
+    "Bimonthly in-person networking",
+    "Priority registration for members",
+    "London venue",
+  ],
+};
+
 const PLACEHOLDER_EVENTS = [
   {
+
     id: "autumn-showcase-2026-09",
     kind: "networking",
     title: "AJBN Members Only Autumn Showcase",
