@@ -304,9 +304,8 @@ export function EventsSection() {
               const d = new Date(e.date);
               const now = new Date();
               const isRegistered = registeredIds.has(e.id);
-              const isPipelineEvent = e.id === PIPELINE_EVENT_ID;
-              const isInterestDialog = e.id === REGISTER_EVENT_ID || isPipelineEvent;
-              const isPastEvent = d < now && !isPipelineEvent;
+              const isInterestDialog = INTEREST_EVENT_IDS.has(e.id);
+              const isPastEvent = d < now;
               return (
 
                 <ScrollReveal key={e.id}>
