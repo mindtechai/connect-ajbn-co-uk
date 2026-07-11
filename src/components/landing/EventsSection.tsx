@@ -200,7 +200,7 @@ export function EventsSection() {
             throw insertError;
           }
         } else {
-          toast.success("You're registered for AJBN Members' Evening!");
+          toast.success(`You're registered for ${event.title}!`);
         }
 
         setRegisteredIds((prev) => new Set(prev).add(event.id));
