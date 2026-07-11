@@ -34,46 +34,20 @@ export default function LoginPage() {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Demo account shortcut for presentation mode
-    if (email.trim().toLowerCase() === "demo@ajbn.co.uk" && password === "password123") {
-      let { error } = await supabase.auth.signInWithPassword({ email: "demo@ajbn.co.uk", password: "password123" });
-      if (error) {
-        // Auto-provision the demo account if it doesn't exist yet
-        const signUpRes = await supabase.auth.signUp({
-          email: "demo@ajbn.co.uk",
-          password: "password123",
-          options: {
-            emailRedirectTo: `${window.location.origin}/dashboard`,
-            data: { first_name: "Demo", last_name: "User", company: "AJBN Demo" },
-          },
-        });
-        if (signUpRes.error && !/registered/i.test(signUpRes.error.message)) {
-          setLoading(false);
-          toast({ title: "Demo login failed", description: signUpRes.error.message, variant: "destructive" });
-          return;
-        }
-        if (!signUpRes.data.session) {
-          const retry = await supabase.auth.signInWithPassword({ email: "demo@ajbn.co.uk", password: "password123" });
-          error = retry.error;
-        } else {
-          error = null;
-        }
-      }
-      setLoading(false);
-      if (error) {
-        toast({ title: "Demo login failed", description: error.message, variant: "destructive" });
-        return;
-      }
-      navigate("/dashboard");
-      return;
-    }
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    // Demo mode: bypass Supabase entirely — accept any credentials.
+    const mockEmail = email.trim() || "demo@ajbn.co.uk";
+    const mockUser = {
+      id: `demo-${crypto.randomUUID()}`,
+      email: mockEmail,
+      user_metadata: { first_name: "Demo", last_name: "User", company: "AJBN Demo" },
+      app_metadata: {},
+      aud: "authenticated",
+      created_at: new Date().toISOString(),
+    };
+    localStorage.setItem("ajbn_demo_mock_user", JSON.stringify(mockUser));
     setLoading(false);
-    if (error) {
-      toast({ title: "Sign in failed", description: error.message, variant: "destructive" });
-      return;
-    }
-    navigate(next);
+    toast({ title: "Welcome to AJBN Connect", description: "Signed in (demo mode)." });
+    window.location.href = next.startsWith("/") ? next : "/dashboard";
   };
 
   const handleRegister = async (e: React.FormEvent) => {
@@ -87,37 +61,18 @@ export default function LoginPage() {
       return;
     }
     setLoading(true);
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/dashboard`,
-        data: {
-          first_name: firstName,
-          last_name: lastName,
-          company,
-          referred_by: referredBy || undefined,
-        },
-      },
-    });
-    if (error) {
-      setLoading(false);
-      toast({ title: "Registration failed", description: error.message, variant: "destructive" });
-      return;
-    }
-    // Presentation mode: bypass email verification and log in immediately
-    if (!data.session) {
-      const { error: signInErr } = await supabase.auth.signInWithPassword({ email, password });
-      if (signInErr) {
-        setLoading(false);
-        toast({ title: "Account created", description: "Please sign in to continue." });
-        setMode("signin");
-        return;
-      }
-    }
+    const mockUser = {
+      id: `demo-${crypto.randomUUID()}`,
+      email: email.trim(),
+      user_metadata: { first_name: firstName, last_name: lastName, company, referred_by: referredBy || undefined },
+      app_metadata: {},
+      aud: "authenticated",
+      created_at: new Date().toISOString(),
+    };
+    localStorage.setItem("ajbn_demo_mock_user", JSON.stringify(mockUser));
     setLoading(false);
     toast({ title: "Welcome to AJBN Connect", description: "Your account is ready." });
-    navigate("/dashboard");
+    window.location.href = "/dashboard";
   };
 
   return (
