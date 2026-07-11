@@ -329,9 +329,13 @@ export function EventsSection() {
           <div className="grid gap-5">
             {visible.map((e) => {
               const d = new Date(e.date);
+              const now = new Date();
               const isRegistered = registeredIds.has(e.id);
-              const isInterestDialog = e.id === REGISTER_EVENT_ID || e.id === PIPELINE_EVENT_ID;
+              const isPipelineEvent = e.id === PIPELINE_EVENT_ID;
+              const isInterestDialog = e.id === REGISTER_EVENT_ID || isPipelineEvent;
+              const isPastEvent = d < now && !isPipelineEvent;
               return (
+
                 <ScrollReveal key={e.id}>
                   <article className="bg-card border border-border/60 rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
                     <div className="p-6 md:p-8 grid md:grid-cols-[auto,1fr,auto] gap-6 items-start">
@@ -387,7 +391,11 @@ export function EventsSection() {
                       </div>
 
                       <div className="md:pt-1">
-                        {e.isPlaceholder && e.id !== PIPELINE_EVENT_ID ? (
+                        {isPastEvent ? (
+                          <Button size="sm" disabled variant="outline">
+                            Event Closed
+                          </Button>
+                        ) : e.isPlaceholder && e.id !== PIPELINE_EVENT_ID ? (
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <span className="inline-block">
@@ -401,7 +409,6 @@ export function EventsSection() {
                             </TooltipContent>
                           </Tooltip>
                         ) : isInterestDialog ? (
-
                           <Button
                             size="sm"
                             onClick={() => openDialog(e.id)}
@@ -428,6 +435,7 @@ export function EventsSection() {
                           </Button>
                         )}
                       </div>
+
                     </div>
                   </article>
 
