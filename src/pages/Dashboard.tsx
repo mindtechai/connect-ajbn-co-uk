@@ -106,6 +106,38 @@ export default function DashboardPage() {
       </header>
 
       <main className="container mx-auto px-4 lg:px-8 py-8 max-w-5xl">
+        {/* Premium hero banner */}
+        <div className="mb-6 overflow-hidden rounded-xl border border-gold/20 bg-hero-pattern text-primary-foreground shadow-sm">
+          <div className="p-6 md:p-8">
+            <h2 className="font-display text-2xl md:text-3xl font-bold text-gold mb-2">
+              <span aria-hidden="true">👥</span> The Power of the Room
+            </h2>
+            <p className="text-lg md:text-xl font-medium text-primary-foreground/90 mb-4">
+              Flesh-and-blood relationships are more vital now than ever.
+            </p>
+            <p className="text-sm md:text-base text-primary-foreground/80 leading-relaxed mb-4">
+              Recent global metrics reveal a major shift: heavy, daily AI chatbot usage has plummeted by 31% over the past year as people actively seek out real, human interaction over digital noise. AJBN Connect does not replace the room—it powers it. Use this digital toolkit to map out your partnerships, form authentic 1-on-1 connections at our bimonthly in-person meetings, and log your successful network deals.
+            </p>
+            <p className="text-xs text-primary-foreground/60 italic mb-6">
+              Source: "Heavy AI usage has plummeted 31% in the past year, according to new survey" • David Nield, TechRadar (July 2026)
+            </p>
+            <div className="grid grid-cols-1 md:grid-cols-3 gap-4 border-t border-gold/20 pt-5">
+              <div>
+                <p className="text-sm font-bold text-gold mb-1">TARGET</p>
+                <p className="text-xs text-primary-foreground/80">Use Universal Search to locate specific profiles before the meeting.</p>
+              </div>
+              <div>
+                <p className="text-sm font-bold text-gold mb-1">CONNECT</p>
+                <p className="text-xs text-primary-foreground/80">Meet face-to-face and shake hands live in the room.</p>
+              </div>
+              <div>
+                <p className="text-sm font-bold text-gold mb-1">TRACK</p>
+                <p className="text-xs text-primary-foreground/80">Log your transactions to build cumulative network value.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
         <ScrollReveal>
           <MessagingOnboardingCard />
         </ScrollReveal>
