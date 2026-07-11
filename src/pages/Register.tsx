@@ -36,7 +36,7 @@ export default function RegisterPage() {
         return;
       }
     }
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -50,13 +50,24 @@ export default function RegisterPage() {
         },
       },
     });
-    setLoading(false);
     if (error) {
+      setLoading(false);
       toast({ title: "Sign up failed", description: error.message, variant: "destructive" });
       return;
     }
-    toast({ title: "Application submitted", description: "Check your email to confirm your account." });
-    navigate("/login");
+    // Presentation mode: bypass email verification and log in immediately
+    if (!data.session) {
+      const { error: signInErr } = await supabase.auth.signInWithPassword({ email, password });
+      if (signInErr) {
+        setLoading(false);
+        toast({ title: "Application submitted", description: "Please sign in to continue." });
+        navigate("/login");
+        return;
+      }
+    }
+    setLoading(false);
+    toast({ title: "Welcome to AJBN Connect", description: "Your account is ready." });
+    navigate("/dashboard");
   };
 
   return (

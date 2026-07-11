@@ -34,6 +34,39 @@ export default function LoginPage() {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    // Demo account shortcut for presentation mode
+    if (email.trim().toLowerCase() === "demo@ajbn.co.uk" && password === "password123") {
+      let { error } = await supabase.auth.signInWithPassword({ email: "demo@ajbn.co.uk", password: "password123" });
+      if (error) {
+        // Auto-provision the demo account if it doesn't exist yet
+        const signUpRes = await supabase.auth.signUp({
+          email: "demo@ajbn.co.uk",
+          password: "password123",
+          options: {
+            emailRedirectTo: `${window.location.origin}/dashboard`,
+            data: { first_name: "Demo", last_name: "User", company: "AJBN Demo" },
+          },
+        });
+        if (signUpRes.error && !/registered/i.test(signUpRes.error.message)) {
+          setLoading(false);
+          toast({ title: "Demo login failed", description: signUpRes.error.message, variant: "destructive" });
+          return;
+        }
+        if (!signUpRes.data.session) {
+          const retry = await supabase.auth.signInWithPassword({ email: "demo@ajbn.co.uk", password: "password123" });
+          error = retry.error;
+        } else {
+          error = null;
+        }
+      }
+      setLoading(false);
+      if (error) {
+        toast({ title: "Demo login failed", description: error.message, variant: "destructive" });
+        return;
+      }
+      navigate("/dashboard");
+      return;
+    }
     const { error } = await supabase.auth.signInWithPassword({ email, password });
     setLoading(false);
     if (error) {
@@ -54,7 +87,7 @@ export default function LoginPage() {
       return;
     }
     setLoading(true);
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -67,13 +100,24 @@ export default function LoginPage() {
         },
       },
     });
-    setLoading(false);
     if (error) {
+      setLoading(false);
       toast({ title: "Registration failed", description: error.message, variant: "destructive" });
       return;
     }
-    toast({ title: "Account created", description: "Check your email to confirm your account, then sign in." });
-    setMode("signin");
+    // Presentation mode: bypass email verification and log in immediately
+    if (!data.session) {
+      const { error: signInErr } = await supabase.auth.signInWithPassword({ email, password });
+      if (signInErr) {
+        setLoading(false);
+        toast({ title: "Account created", description: "Please sign in to continue." });
+        setMode("signin");
+        return;
+      }
+    }
+    setLoading(false);
+    toast({ title: "Welcome to AJBN Connect", description: "Your account is ready." });
+    navigate("/dashboard");
   };
 
   return (
