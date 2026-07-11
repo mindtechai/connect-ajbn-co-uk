@@ -112,7 +112,29 @@ const EVENTS: EventItem[] = [
 ];
 
 const REGISTER_EVENT_ID = "members-evening-2026-07-09";
+const PIPELINE_EVENT_ID = "upcoming-bimonthly-networking";
 const ORGANISER_EMAIL = "info@ajbn.co.uk";
+
+const PIPELINE_EVENT: EventItem = {
+  id: PIPELINE_EVENT_ID,
+  kind: "networking",
+  title: "Upcoming Bimonthly In-Person Networking Event",
+  date: "2026-07-10T00:00:00Z",
+  dateLabel: "Date TBA",
+  timeLabel: "To Be Announced",
+  location: "London (Venue TBA)",
+  description:
+    "Register your interest now to be the first to hear about our next bimonthly in-person networking event in London. We'll confirm the venue, date, and full details with priority notice for registered members.",
+  ctaLabel: "Register your interest",
+  ctaHref: "#",
+  isPlaceholder: true,
+  highlights: [
+    "Bimonthly in-person networking",
+    "Priority registration for members",
+    "London venue",
+  ],
+};
+
 
 type Filter = "all" | "networking" | "fundraising";
 
@@ -157,8 +179,20 @@ export function EventsSection() {
 
   const visible = useMemo(() => {
     const list = filter === "all" ? EVENTS : EVENTS.filter((e) => e.kind === filter);
-    return [...list].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    const sorted = [...list].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    const hasClosedSpecificEvent = EVENTS.some(
+      (e) => !e.isPlaceholder && new Date(e.date) < new Date()
+    );
+    if (!hasClosedSpecificEvent || (filter !== "all" && filter !== "networking")) return sorted;
+    const now = new Date();
+    const lastPastIndex = sorted.length - 1 - [...sorted].reverse().findIndex((e) => new Date(e.date) < now);
+    const insertIndex = lastPastIndex === sorted.length ? 0 : lastPastIndex + 1;
+    const result = [...sorted];
+    result.splice(insertIndex, 0, PIPELINE_EVENT);
+    return result;
   }, [filter]);
+
+
 
   const openDialog = useCallback((id: string) => setOpenDialogId(id), []);
   const closeDialog = useCallback(() => setOpenDialogId(null), []);
@@ -296,7 +330,7 @@ export function EventsSection() {
             {visible.map((e) => {
               const d = new Date(e.date);
               const isRegistered = registeredIds.has(e.id);
-              const isInterestDialog = e.id === REGISTER_EVENT_ID;
+              const isInterestDialog = e.id === REGISTER_EVENT_ID || e.id === PIPELINE_EVENT_ID;
               return (
                 <ScrollReveal key={e.id}>
                   <article className="bg-card border border-border/60 rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
@@ -353,7 +387,7 @@ export function EventsSection() {
                       </div>
 
                       <div className="md:pt-1">
-                        {e.isPlaceholder ? (
+                        {e.isPlaceholder && e.id !== PIPELINE_EVENT_ID ? (
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <span className="inline-block">
@@ -367,6 +401,7 @@ export function EventsSection() {
                             </TooltipContent>
                           </Tooltip>
                         ) : isInterestDialog ? (
+
                           <Button
                             size="sm"
                             onClick={() => openDialog(e.id)}

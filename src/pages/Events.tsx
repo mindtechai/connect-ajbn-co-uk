@@ -41,8 +41,26 @@ const KIND_STYLE: Record<string, string> = {
   other: "bg-muted text-muted-foreground border-border",
 };
 
+const PIPELINE_EVENT = {
+  id: "upcoming-bimonthly-networking",
+  kind: "networking",
+  title: "Upcoming Bimonthly In-Person Networking Event",
+  subtitle: "Bimonthly In-Person Networking",
+  dateLabel: "Date TBA",
+  timeLabel: "To Be Announced",
+  location: "London (Venue TBA)",
+  description:
+    "Register your interest now to be the first to hear about our next bimonthly in-person networking event in London. We'll confirm the venue, date, and full details with priority notice for registered members.",
+  highlights: [
+    "Bimonthly in-person networking",
+    "Priority registration for members",
+    "London venue",
+  ],
+};
+
 const PLACEHOLDER_EVENTS = [
   {
+
     id: "autumn-showcase-2026-09",
     kind: "networking",
     title: "AJBN Members Only Autumn Showcase",
@@ -169,12 +187,55 @@ export default function EventsPage() {
           </TabsList>
         </Tabs>
 
+        {filter !== "fundraising" && (
+          <div className="mb-8 space-y-4">
+            <div className="bg-card border border-teal/20 rounded-2xl shadow-sm overflow-hidden">
+              <div className="p-5 md:p-6 grid md:grid-cols-[auto,1fr,auto] gap-5 items-start">
+                <div className="flex md:flex-col items-center md:items-start gap-2 md:gap-1 md:min-w-[96px]">
+                  <div className="text-xs uppercase tracking-wide text-teal font-medium">Date TBA</div>
+                  <div className="text-4xl md:text-5xl font-display font-bold text-teal leading-none">TBA</div>
+                  <div className="text-xs text-muted-foreground">Register interest</div>
+                </div>
+                <div className="space-y-2">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <Badge className="bg-teal/10 text-teal border-teal/20">
+                      <Users size={10} className="mr-1" /> Networking
+                    </Badge>
+                  </div>
+                  <h3 className="text-lg font-display font-semibold">{PIPELINE_EVENT.title}</h3>
+                  <p className="text-xs text-teal font-medium">{PIPELINE_EVENT.subtitle}</p>
+                  <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
+                    <span className="flex items-center gap-1"><CalendarDays size={12} /> {PIPELINE_EVENT.timeLabel}</span>
+                    <span className="flex items-center gap-1"><MapPin size={12} /> {PIPELINE_EVENT.location}</span>
+                  </div>
+                  {PIPELINE_EVENT.highlights && (
+                    <ul className="grid sm:grid-cols-2 gap-1.5 text-xs pt-1">
+                      {PIPELINE_EVENT.highlights.map((h) => (
+                        <li key={h} className="flex items-start gap-1.5">
+                          <Trophy size={12} className="text-gold mt-0.5 shrink-0" /> <span>{h}</span>
+                        </li>
+                      ))}
+                    </ul>
+                  )}
+                  <p className="text-sm text-muted-foreground">{PIPELINE_EVENT.description}</p>
+                </div>
+                <div className="md:pt-1">
+                  <Button asChild size="sm" variant="outline">
+                    <a href="mailto:info@ajbn.co.uk?subject=Register%20Interest%3A%20Upcoming%20Bimonthly%20In-Person%20Networking%20Event">Register your interest</a>
+                  </Button>
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
+
         {(() => {
           const visiblePlaceholders = PLACEHOLDER_EVENTS.filter((p) => filter === "all" || p.kind === filter);
           if (visiblePlaceholders.length === 0) return null;
           return (
             <>
               {/* Coming soon placeholders */}
+
               <div className="mb-8 space-y-4">
                 <h2 className="text-lg font-display font-semibold flex items-center gap-2">
                   <Crown size={18} className="text-gold" /> Coming Soon / TBA
