@@ -244,10 +244,29 @@ export default function DashboardPage() {
           <ScrollReveal delay={160}>
             <DashboardCard title="Renewal Status" icon={CalendarDays}>
               <div className="space-y-3">
-                <p className="text-sm text-muted-foreground">
-                  Renewals and billing will appear here once your membership is active.
-                </p>
-                <Button size="sm" className="w-full" disabled>Renew Membership</Button>
+                <div className="flex items-center gap-2">
+                  <span className="inline-flex h-2 w-2 rounded-full bg-emerald-500 animate-pulse" />
+                  <span className="text-sm font-semibold text-emerald-600">Active</span>
+                </div>
+                <div className="grid grid-cols-2 gap-2 text-xs">
+                  <div>
+                    <p className="text-muted-foreground">Tier</p>
+                    <p className="font-semibold text-gold">Corporate Elite</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Next Renewal</p>
+                    <p className="font-semibold">July 2027</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Billing</p>
+                    <p className="font-semibold">£0</p>
+                  </div>
+                  <div>
+                    <p className="text-muted-foreground">Pass</p>
+                    <p className="font-semibold">Hackathon</p>
+                  </div>
+                </div>
+                <Button size="sm" variant="outline" className="w-full">Manage Membership</Button>
               </div>
             </DashboardCard>
           </ScrollReveal>
