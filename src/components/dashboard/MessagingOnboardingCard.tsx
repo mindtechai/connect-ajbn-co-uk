@@ -10,10 +10,7 @@ const DISMISS_KEY = "ajbn.messaging.onboarding.dismissed";
 
 export function MessagingOnboardingCard() {
   const { isActive, loading, activate } = useMessagingProfile();
-  const { roles } = useAuth();
-  const isApprovedMember = roles.some((r) =>
-    r === "ajbn_member" || r === "impact_lion" || r === "super_admin"
-  );
+  const { user } = useAuth();
   const [dismissed, setDismissed] = useState(() => {
     if (typeof window === "undefined") return false;
     return localStorage.getItem(DISMISS_KEY) === "1";
@@ -21,8 +18,7 @@ export function MessagingOnboardingCard() {
   const [busy, setBusy] = useState(false);
 
   if (loading) return null;
-  // Hide entirely for non-approved members — activation would fail server-side.
-  if (!isApprovedMember) return null;
+  if (!user) return null;
   if (dismissed) return null;
 
   const handleActivate = async () => {
