@@ -85,10 +85,10 @@ const EVENTS: EventItem[] = [
     date: "2026-09-18T18:00:00Z",
     dateLabel: "September 2026",
     timeLabel: "To Be Announced",
-    location: "To be confirmed",
+    location: "London - Venue TBA",
     description:
       "An exclusive, high-value networking and capital connection evening for registered members. Full details, venue, and guest speaker reveal coming soon.",
-    ctaLabel: "Keep Me Updated",
+    ctaLabel: "Register your interest",
     ctaHref: "#",
     isPlaceholder: true,
     highlights: ["High-Value Peer-to-Peer Engagement"],
@@ -96,44 +96,27 @@ const EVENTS: EventItem[] = [
   {
     id: "winter-gala-2026-12",
     kind: "networking",
-    title: "AJBN Members-Only Meetup",
+    title: "AJBN Members-Only Networking Event",
     subtitle: "High-Value Peer-to-Peer Engagement",
     date: "2026-12-10T18:00:00Z",
     dateLabel: "December 2026",
     timeLabel: "To Be Announced / Coming Soon",
-    location: "To be confirmed",
+    location: "London - Venue TBA",
     description:
       "Our final bimonthly meetup of the year, bringing together members for targeted peer-to-peer engagement and deal-structuring before the festive break. Full details TBA shortly.",
-    ctaLabel: "Keep Me Updated",
+    ctaLabel: "Register your interest",
     ctaHref: "#",
     isPlaceholder: true,
     highlights: ["Bimonthly Members-Only Meetup"],
   },
 ];
 
-const REGISTER_EVENT_ID = "members-evening-2026-07-09";
-const PIPELINE_EVENT_ID = "upcoming-bimonthly-networking";
+const INTEREST_EVENT_IDS = new Set([
+  "members-evening-2026-07-09",
+  "autumn-showcase-2026-09",
+  "winter-gala-2026-12",
+]);
 const ORGANISER_EMAIL = "info@ajbn.co.uk";
-
-const PIPELINE_EVENT: EventItem = {
-  id: PIPELINE_EVENT_ID,
-  kind: "networking",
-  title: "Upcoming Bimonthly In-Person Networking Event",
-  date: "2026-07-10T00:00:00Z",
-  dateLabel: "Date TBA",
-  timeLabel: "To Be Announced",
-  location: "London (Venue TBA)",
-  description:
-    "Register your interest now to be the first to hear about our next bimonthly in-person networking event in London. We'll confirm the venue, date, and full details with priority notice for registered members.",
-  ctaLabel: "Register your interest",
-  ctaHref: "#",
-  isPlaceholder: true,
-  highlights: [
-    "Bimonthly in-person networking",
-    "Priority registration for members",
-    "London venue",
-  ],
-};
 
 
 type Filter = "all" | "networking" | "fundraising";
