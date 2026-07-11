@@ -175,9 +175,14 @@ export default function DirectoryPage() {
       setPendingRecipient(m);
       return;
     }
-    const { data, error } = await (supabase as any).rpc("start_or_get_conversation", { _other: m.id });
-    if (error) { toast.error(error.message); return; }
-    navigate(`/messages/${data}`);
+    const { startOrGetConversation } = await import("@/lib/demoMessaging");
+    const id = startOrGetConversation({
+      id: m.id,
+      first_name: m.first_name,
+      last_name: m.last_name,
+      company: m.company,
+    });
+    navigate(`/messages/${id}`);
   };
 
   return (
