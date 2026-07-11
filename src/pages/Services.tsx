@@ -1,4 +1,5 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import { useLocation } from "react-router-dom";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { ScrollReveal } from "@/components/ScrollReveal";
@@ -44,6 +45,18 @@ const SERVICES = [
 export default function ServicesPage() {
   const [open, setOpen] = useState(false);
   const [serviceType, setServiceType] = useState("");
+  const location = useLocation();
+
+  const slug = (s: string) => s.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/(^-|-$)/g, "");
+
+  useEffect(() => {
+    if (!location.hash) return;
+    const id = location.hash.slice(1);
+    const el = document.getElementById(id);
+    if (el) {
+      setTimeout(() => el.scrollIntoView({ behavior: "smooth", block: "start" }), 100);
+    }
+  }, [location.hash]);
 
   const openFor = (title: string) => {
     setServiceType(title);
@@ -80,6 +93,7 @@ export default function ServicesPage() {
           <div className="grid md:grid-cols-2 gap-6">
             {SERVICES.map((s, i) => (
               <ScrollReveal key={s.title} delay={i * 60}>
+                <div id={slug(s.title)} className="scroll-mt-24">
                 <ServiceCard
                   icon={s.icon}
                   title={s.title}
@@ -88,6 +102,7 @@ export default function ServicesPage() {
                   cta={s.cta}
                   onClick={() => openFor(s.title)}
                 />
+                </div>
               </ScrollReveal>
             ))}
           </div>
