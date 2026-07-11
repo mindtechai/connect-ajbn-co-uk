@@ -33,6 +33,19 @@ const KIND_LABEL: Record<string, string> = {
   other: "Other",
 };
 
+const thisYear = new Date().getFullYear();
+const iso = (m: number, d: number) => new Date(thisYear, m, d).toISOString();
+const DEMO_ROWS: Contribution[] = [
+  { id: "d1", kind: "donation", amount: 500, currency: "GBP", hours: null, notes: "Impact Lions winter appeal", occurred_at: iso(1, 12), event_id: null },
+  { id: "d2", kind: "sponsorship", amount: 2500, currency: "GBP", hours: null, notes: "Bronze sponsor – AJBN Spring Showcase", occurred_at: iso(2, 20), event_id: null },
+  { id: "d3", kind: "volunteer_hours", amount: 0, currency: "GBP", hours: 8, notes: "Mentoring session with local founders", occurred_at: iso(3, 5), event_id: null },
+  { id: "d4", kind: "event_attendance", amount: 0, currency: "GBP", hours: null, notes: "AJBN Members' Evening – Harrow", occurred_at: iso(6, 9), event_id: null },
+  { id: "d5", kind: "volunteer_hours", amount: 0, currency: "GBP", hours: 16, notes: "Charity board advisory work", occurred_at: iso(4, 18), event_id: null },
+  { id: "d6", kind: "donation", amount: 750, currency: "GBP", hours: null, notes: "Community grant round", occurred_at: iso(5, 2), event_id: null },
+  { id: "d7", kind: "event_attendance", amount: 0, currency: "GBP", hours: null, notes: "Quarterly Networking Breakfast", occurred_at: iso(2, 14), event_id: null },
+  { id: "d8", kind: "other", amount: 0, currency: "GBP", hours: null, notes: "Carbon offset: 1.2 tons via verified programme", occurred_at: iso(0, 22), event_id: null },
+];
+
 export default function ESGReportPage() {
   const { user, loading: authLoading } = useAuth();
   const [rows, setRows] = useState<Contribution[]>([]);
