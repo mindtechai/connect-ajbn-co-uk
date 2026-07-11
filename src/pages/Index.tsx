@@ -24,7 +24,7 @@ const Index = () => {
     });
   }, [hash]);
   return (
-    <div className="min-h-screen">
+    <div className="min-h-screen pb-[calc(env(safe-area-inset-bottom)+72px)] md:pb-0">
       <Navbar />
       <HeroSection />
       <StatsSection />
