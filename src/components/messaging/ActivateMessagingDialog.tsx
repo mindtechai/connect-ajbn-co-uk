@@ -3,8 +3,8 @@ import { Link, useNavigate } from "react-router-dom";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, DialogFooter } from "@/components/ui/dialog";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
 import { MessageCircle, ShieldCheck } from "lucide-react";
+import { startOrGetConversation } from "@/lib/demoMessaging";
 
 interface Props {
   open: boolean;
@@ -26,9 +26,13 @@ export function ActivateMessagingDialog({ open, onOpenChange, recipientName, rec
       toast.success("Chat inbox activated");
       onActivated?.();
       if (recipientId) {
-        const { data, error } = await (supabase as any).rpc("start_or_get_conversation", { _other: recipientId });
-        if (error) throw error;
-        navigate(`/messages/${data}`);
+        const [first, ...rest] = (recipientName ?? "Member").split(" ");
+        const id = startOrGetConversation({
+          id: recipientId,
+          first_name: first,
+          last_name: rest.join(" "),
+        });
+        navigate(`/messages/${id}`);
       }
       onOpenChange(false);
     } catch (e: any) {
