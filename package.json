@@ -13,6 +13,9 @@
     "test:watch": "vitest"
   },
   "dependencies": {
+  "@capacitor/core": "^6.0.0",
+  "@capacitor/android": "^6.0.0",
+  "@capacitor/ios": "^6.0.0",
     "@hookform/resolvers": "^3.10.0",
     "@lovable.dev/cloud-auth-js": "^1.1.2",
     "@meshconnect/web-link-sdk": "^3.10.2",
