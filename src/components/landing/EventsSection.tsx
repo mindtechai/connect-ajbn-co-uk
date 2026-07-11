@@ -179,8 +179,19 @@ export function EventsSection() {
 
   const visible = useMemo(() => {
     const list = filter === "all" ? EVENTS : EVENTS.filter((e) => e.kind === filter);
-    return [...list].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    const sorted = [...list].sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+    const hasClosedSpecificEvent = EVENTS.some(
+      (e) => !e.isPlaceholder && new Date(e.date) < new Date()
+    );
+    if (!hasClosedSpecificEvent || (filter !== "all" && filter !== "networking")) return sorted;
+    const now = new Date();
+    const lastPastIndex = sorted.findLastIndex((e) => new Date(e.date) < now);
+    const insertIndex = lastPastIndex === -1 ? 0 : lastPastIndex + 1;
+    const result = [...sorted];
+    result.splice(insertIndex, 0, PIPELINE_EVENT);
+    return result;
   }, [filter]);
+
 
   const openDialog = useCallback((id: string) => setOpenDialogId(id), []);
   const closeDialog = useCallback(() => setOpenDialogId(null), []);
