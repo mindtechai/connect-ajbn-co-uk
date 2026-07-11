@@ -14,6 +14,7 @@ import { X } from "lucide-react";
 import { DeleteAccountDialog } from "@/components/DeleteAccountDialog";
 
 const TAG_SUGGESTIONS = ["Barrister","Solicitor","Accountant","IFA","Funder","Property Consultant","Business Coach","Architect"];
+const PROFILE_KEY = "ajbn_demo_profile";
 
 export default function ProfilePage() {
   const { user, loading: authLoading } = useAuth();
@@ -32,23 +33,29 @@ export default function ProfilePage() {
     if (authLoading) return;
     if (!user) { navigate("/login"); return; }
     (async () => {
-      const { data } = await supabase.from("profiles").select("*").eq("id", user.id).maybeSingle();
-      if (data) {
-        setForm({
-          first_name: data.first_name ?? "",
-          last_name: data.last_name ?? "",
-          company: data.company ?? "",
-          title: (data as any).title ?? "",
-          industry: (data as any).industry ?? "",
-          phone: (data as any).phone ?? "",
-          linkedin: (data as any).linkedin ?? "",
-          bio: (data as any).bio ?? "",
-          email: data.email ?? user.email ?? "",
-          referral_code: (data as any).referral_code ?? "",
-          avatar_url: (data as any).avatar_url ?? "",
-          tags: Array.isArray((data as any).tags) ? (data as any).tags : [],
-        });
-      }
+      // Demo mode: load profile from localStorage, bypassing the backend.
+      let saved: any = null;
+      try {
+        const raw = localStorage.getItem(PROFILE_KEY);
+        if (raw) saved = JSON.parse(raw);
+      } catch {}
+      const avatarFallback = (() => {
+        try { return localStorage.getItem("ajbn_demo_avatar") ?? ""; } catch { return ""; }
+      })();
+      setForm({
+        first_name: saved?.first_name ?? (user as any).user_metadata?.first_name ?? "",
+        last_name: saved?.last_name ?? (user as any).user_metadata?.last_name ?? "",
+        company: saved?.company ?? (user as any).user_metadata?.company ?? "",
+        title: saved?.title ?? "",
+        industry: saved?.industry ?? "",
+        phone: saved?.phone ?? "",
+        linkedin: saved?.linkedin ?? "",
+        bio: saved?.bio ?? "",
+        email: saved?.email ?? user.email ?? "",
+        referral_code: saved?.referral_code ?? "AJBN-DEMO0001",
+        avatar_url: saved?.avatar_url ?? avatarFallback ?? "",
+        tags: Array.isArray(saved?.tags) ? saved.tags : [],
+      });
       setLoading(false);
     })();
   }, [user, authLoading, navigate]);
@@ -82,22 +89,19 @@ export default function ProfilePage() {
   };
 
   const save = async () => {
-    if (!user) return;
     setSaving(true);
-    const { error } = await supabase.from("profiles").update({
-      first_name: form.first_name,
-      last_name: form.last_name,
-      company: form.company,
-      title: form.title,
-      industry: form.industry,
-      phone: form.phone,
-      linkedin: normalizeLinkedIn(form.linkedin),
-      bio: form.bio,
-      tags: form.tags,
-    } as any).eq("id", user.id);
-    setSaving(false);
-    if (error) toast({ title: "Save failed", description: error.message, variant: "destructive" });
-    else toast({ title: "Profile updated" });
+    try {
+      const payload = { ...form, linkedin: normalizeLinkedIn(form.linkedin) ?? "" };
+      localStorage.setItem(PROFILE_KEY, JSON.stringify(payload));
+      if (payload.avatar_url) {
+        try { localStorage.setItem("ajbn_demo_avatar", payload.avatar_url); } catch {}
+      }
+      toast({ title: "Profile updated", description: "Your changes have been saved." });
+    } catch (e: any) {
+      toast({ title: "Save failed", description: e?.message ?? "Try again.", variant: "destructive" });
+    } finally {
+      setSaving(false);
+    }
   };
 
   if (loading) {
