@@ -365,21 +365,8 @@ export function EventsSection() {
                       <div className="md:pt-1">
                         {isPastEvent ? (
                           <Button size="sm" disabled variant="outline">
-                            Event Closed
+                            Registration Closed
                           </Button>
-                        ) : e.isPlaceholder && e.id !== PIPELINE_EVENT_ID ? (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <span className="inline-block">
-                                <Button size="sm" disabled variant="goldOutline">
-                                  {e.ctaLabel}
-                                </Button>
-                              </span>
-                            </TooltipTrigger>
-                            <TooltipContent side="top">
-                              <p>Details releasing soon!</p>
-                            </TooltipContent>
-                          </Tooltip>
                         ) : isInterestDialog ? (
                           <Button
                             size="sm"
