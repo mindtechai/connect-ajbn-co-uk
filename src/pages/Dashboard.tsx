@@ -105,7 +105,7 @@ export default function DashboardPage() {
         </div>
       </header>
 
-      <main className="container mx-auto px-4 lg:px-8 py-8 max-w-5xl">
+      <main className="container mx-auto px-4 lg:px-8 py-8 max-w-5xl pb-[calc(env(safe-area-inset-bottom)+72px)] md:pb-8">
         {/* Premium hero banner */}
         <div className="mb-6 overflow-hidden rounded-xl border border-gold/20 bg-hero-pattern text-primary-foreground shadow-sm">
           <div className="p-6 md:p-8">
