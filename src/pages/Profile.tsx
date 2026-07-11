@@ -68,6 +68,13 @@ export default function ProfilePage() {
     toast({ title: "Avatar updated" });
   };
 
+  const normalizeLinkedIn = (value: string): string | null => {
+    const trimmed = value.trim();
+    if (trimmed === "") return null;
+    if (/^https?:\/\//i.test(trimmed)) return trimmed;
+    return `https://${trimmed}`;
+  };
+
   const save = async () => {
     if (!user) return;
     setSaving(true);
@@ -78,7 +85,7 @@ export default function ProfilePage() {
       title: form.title,
       industry: form.industry,
       phone: form.phone,
-      linkedin: form.linkedin,
+      linkedin: normalizeLinkedIn(form.linkedin),
       bio: form.bio,
       tags: form.tags,
     } as any).eq("id", user.id);
