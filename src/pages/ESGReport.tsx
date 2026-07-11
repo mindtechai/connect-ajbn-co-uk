@@ -130,11 +130,13 @@ export default function ESGReportPage() {
           <div className="py-16 flex justify-center"><Loader2 className="animate-spin text-muted-foreground" /></div>
         ) : (
           <>
-            <div className="grid sm:grid-cols-4 gap-3 mb-8">
+            <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3 mb-8">
               <StatCard label="Donations" value={`£${totals.donated.toLocaleString()}`} icon={HandCoins} tint="text-gold" />
               <StatCard label="Sponsorships" value={`£${totals.sponsored.toLocaleString()}`} icon={HeartHandshake} tint="text-primary" />
               <StatCard label="Volunteer hours" value={String(totals.hours)} icon={Clock} tint="text-teal" />
               <StatCard label="Events attended" value={String(totals.events)} icon={CalendarCheck} tint="text-primary" />
+              <StatCard label="Carbon offset" value="1.2 tons" icon={Trophy} tint="text-emerald-600" />
+              <StatCard label="Social impact score" value="85%" icon={Trophy} tint="text-gold" />
             </div>
 
             <div className="bg-card border rounded-xl shadow-sm divide-y">
