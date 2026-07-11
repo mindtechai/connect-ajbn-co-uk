@@ -41,48 +41,34 @@ const KIND_STYLE: Record<string, string> = {
   other: "bg-muted text-muted-foreground border-border",
 };
 
-const PIPELINE_EVENT = {
-  id: "upcoming-bimonthly-networking",
-  kind: "networking",
-  title: "Upcoming Bimonthly In-Person Networking Event",
-  subtitle: "Bimonthly In-Person Networking",
-  dateLabel: "Date TBA",
-  timeLabel: "To Be Announced",
-  location: "London (Venue TBA)",
-  description:
-    "Register your interest now to be the first to hear about our next bimonthly in-person networking event in London. We'll confirm the venue, date, and full details with priority notice for registered members.",
-  highlights: [
-    "Bimonthly in-person networking",
-    "Priority registration for members",
-    "London venue",
-  ],
-};
-
 const PLACEHOLDER_EVENTS = [
   {
-
     id: "autumn-showcase-2026-09",
     kind: "networking",
     title: "AJBN Members Only Autumn Showcase",
     subtitle: "Bimonthly Members-Only Meetup",
     dateLabel: "September 2026",
     timeLabel: "To Be Announced",
-    location: "To be confirmed",
+    location: "London - Venue TBA",
     description:
       "An exclusive, high-value networking and capital connection evening for registered members. Full details, venue, and guest speaker reveal coming soon.",
     highlights: ["High-Value Peer-to-Peer Engagement"],
+    ctaLabel: "Register your interest",
+    ctaHref: "mailto:info@ajbn.co.uk?subject=Register%20Interest%3A%20AJBN%20Members%20Only%20Autumn%20Showcase",
   },
   {
     id: "winter-gala-2026-12",
     kind: "networking",
-    title: "AJBN Members-Only Meetup",
+    title: "AJBN Members-Only Networking Event",
     subtitle: "High-Value Peer-to-Peer Engagement",
     dateLabel: "December 2026",
     timeLabel: "To Be Announced / Coming Soon",
-    location: "To be confirmed",
+    location: "London - Venue TBA",
     description:
       "Our final bimonthly meetup of the year, bringing together members for targeted peer-to-peer engagement and deal-structuring before the festive break. Full details TBA shortly.",
     highlights: ["Bimonthly Members-Only Meetup"],
+    ctaLabel: "Register your interest",
+    ctaHref: "mailto:info@ajbn.co.uk?subject=Register%20Interest%3A%20AJBN%20Members-Only%20Networking%20Event",
   },
 ];
 
