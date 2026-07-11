@@ -134,30 +134,29 @@ export function EventsSection() {
   const [registeredIds, setRegisteredIds] = useState<Set<string>>(new Set());
   const [loadingRegistrations, setLoadingRegistrations] = useState(false);
 
-  // Load which events this user has already registered interest in, so the
-  // button reflects the true state after a reload and duplicates are blocked
-  // client-side before we even hit the database.
+  // Demo-only: load which events this user has already registered interest in
+  // from local storage so the button reflects the true state after a reload.
+  // No backend API calls are used for the hackathon presentation.
   useEffect(() => {
-    let cancelled = false;
     if (!user) {
       setRegisteredIds(new Set());
+      setLoadingRegistrations(false);
       return;
     }
     setLoadingRegistrations(true);
-    (async () => {
-      const { data, error } = await supabase
-        .from("event_interests")
-        .select("event_id")
-        .eq("user_id", user.id);
-      if (cancelled) return;
-      if (!error && data) {
-        setRegisteredIds(new Set(data.map((r) => r.event_id)));
+    try {
+      const raw = localStorage.getItem("ajbn_demo_event_registrations");
+      if (raw) {
+        const parsed = JSON.parse(raw);
+        if (Array.isArray(parsed)) {
+          setRegisteredIds(new Set(parsed));
+        }
       }
+    } catch {
+      // ignore localStorage errors
+    } finally {
       setLoadingRegistrations(false);
-    })();
-    return () => {
-      cancelled = true;
-    };
+    }
   }, [user]);
 
   const visible = useMemo(() => {
