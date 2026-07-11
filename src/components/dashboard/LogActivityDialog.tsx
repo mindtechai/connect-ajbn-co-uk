@@ -6,8 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
+import { addDeal } from "@/lib/demoDeals";
 import { PlusCircle } from "lucide-react";
 
 const DEAL_TYPES = [
@@ -20,7 +19,6 @@ const DEAL_TYPES = [
 ];
 
 export function LogActivityDialog({ onLogged }: { onLogged?: () => void }) {
-  const { user, roles } = useAuth();
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
   const [dealType, setDealType] = useState(DEAL_TYPES[0]);
@@ -28,35 +26,28 @@ export function LogActivityDialog({ onLogged }: { onLogged?: () => void }) {
   const [counterparty, setCounterparty] = useState("");
   const [notes, setNotes] = useState("");
 
-  const isApproved = roles.some((r) => r === "ajbn_member" || r === "impact_lion" || r === "super_admin");
-  if (!isApproved) return null;
-
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (busy || !user) return;
+    if (busy) return;
     const value = Number(amount);
     if (!isFinite(value) || value < 0) {
       toast.error("Enter a valid amount in GBP");
       return;
     }
     setBusy(true);
-    const { error } = await supabase.from("deal_logs").insert({
-      user_id: user.id,
+    addDeal({
       deal_type: dealType,
       amount_gbp: value,
       counterparty_name: counterparty || null,
       notes: notes || null,
-    } as any);
-    if (error) {
-      setBusy(false);
-      toast.error(error.message);
-      return;
-    }
-    toast.success("Activity logged — network ticker updated.");
+    });
+    toast.success("Activity Logged Successfully!", {
+      description: `${dealType} · £${value.toLocaleString("en-GB")} added to the network ticker.`,
+    });
     setAmount(""); setCounterparty(""); setNotes(""); setDealType(DEAL_TYPES[0]);
     setOpen(false);
     onLogged?.();
-    setTimeout(() => setBusy(false), 3000); // 3s cooldown
+    setTimeout(() => setBusy(false), 800);
   };
 
   return (
