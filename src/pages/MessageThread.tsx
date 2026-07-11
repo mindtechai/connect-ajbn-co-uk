@@ -79,9 +79,7 @@ export default function MessageThreadPage() {
 
       <div className="bg-card border rounded-xl flex flex-col h-[70vh]">
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
-          {loading ? (
-            <div className="h-full grid place-items-center"><Loader2 className="animate-spin text-muted-foreground" /></div>
-          ) : messages.length === 0 ? (
+          {messages.length === 0 ? (
             <p className="text-center text-sm text-muted-foreground py-12">Say hello 👋</p>
           ) : (
             messages.map((m) => {
@@ -109,7 +107,7 @@ export default function MessageThreadPage() {
             rows={2}
             className="resize-none"
           />
-          <Button onClick={send} disabled={sending || !body.trim()} size="icon" aria-label="Send message">
+          <Button onClick={send} disabled={!body.trim()} size="icon" aria-label="Send message">
             <Send size={16} />
           </Button>
         </div>
