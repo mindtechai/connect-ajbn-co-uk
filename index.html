@@ -12,13 +12,13 @@
     <meta property="og:url" content="https://connect.ajbn.co.uk/" />
     <meta property="og:title" content="AJBN Connect | Business, Property & Finance Network">
     <meta property="og:description" content="The official AJBN Connect portal. Access member directories, direct 1-on-1 messaging, capital matching, and professional advisory services.">
-    <meta property="og:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/dd423cbd-6ffb-42bc-94d8-f706d2334c71/id-preview-27b341d9--ea06cd7a-4bd9-4863-94a9-8c7e36dcfd62.lovable.app-1774059171440.png">
+    <meta property="og:image" content="https://connect.ajbn.co.uk/__l5e/assets-v1/314cab37-47ab-4d26-a5f8-5ae1ca6bc1a8/ajbn-email-banner-v2.jpg">
 
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="AJBN Connect | Business, Property & Finance Network">
     <meta name="twitter:description" content="The official AJBN Connect portal. Access member directories, direct 1-on-1 messaging, capital matching, and professional advisory services.">
-    <meta name="twitter:image" content="https://pub-bb2e103a32db4e198524a2e9ed8f35b4.r2.dev/dd423cbd-6ffb-42bc-94d8-f706d2334c71/id-preview-27b341d9--ea06cd7a-4bd9-4863-94a9-8c7e36dcfd62.lovable.app-1774059171440.png">
-    <link rel="icon" type="image/x-icon" href="/favicon.ico">
+    <meta name="twitter:image" content="https://connect.ajbn.co.uk/__l5e/assets-v1/314cab37-47ab-4d26-a5f8-5ae1ca6bc1a8/ajbn-email-banner-v2.jpg">
+    <link rel="icon" type="image/jpeg" href="/__l5e/assets-v1/679ddc11-bc98-4005-a111-6bd9d1115105/ajbn-logo.jpg">
 
     <!-- PWA / install metadata -->
     <link rel="manifest" href="/manifest.webmanifest" />
@@ -26,7 +26,7 @@
     <meta name="apple-mobile-web-app-capable" content="yes" />
     <meta name="apple-mobile-web-app-status-bar-style" content="default" />
     <meta name="apple-mobile-web-app-title" content="AJBN Connect" />
-    <link rel="apple-touch-icon" href="/favicon.ico" />
+    <link rel="apple-touch-icon" href="/__l5e/assets-v1/679ddc11-bc98-4005-a111-6bd9d1115105/ajbn-logo.jpg" />
 
     <!-- Organization structured data -->
     <script type="application/ld+json">
@@ -39,11 +39,56 @@
         "description": "The UK's only network dedicated to strengthening professional ties between Asian and Jewish business communities."
       }
     </script>
+
+    <style>
+      #root > .ajbn-splash {
+        min-height: 100vh;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        gap: 1rem;
+        text-align: center;
+        padding: 2rem;
+        background: #0f172a;
+      }
+      .ajbn-splash img {
+        width: 96px;
+        height: 96px;
+        border-radius: 1rem;
+        object-fit: cover;
+        box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      }
+      .ajbn-splash-title {
+        color: #f8fafc;
+        font-family: system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+        font-size: 1.25rem;
+        font-weight: 600;
+        letter-spacing: 0.02em;
+      }
+      .ajbn-splash-spinner {
+        width: 28px;
+        height: 28px;
+        border: 3px solid rgba(255,255,255,0.15);
+        border-top-color: #c9a227;
+        border-radius: 50%;
+        animation: ajbn-spin 0.8s linear infinite;
+      }
+      @keyframes ajbn-spin {
+        to { transform: rotate(360deg); }
+      }
+    </style>
 </head>
 
 
   <body>
-    <div id="root"></div>
+    <div id="root">
+      <div class="ajbn-splash" aria-label="AJBN Connect loading">
+        <img src="/__l5e/assets-v1/679ddc11-bc98-4005-a111-6bd9d1115105/ajbn-logo.jpg" alt="AJBN Connect" />
+        <div class="ajbn-splash-title">AJBN Connect</div>
+        <div class="ajbn-splash-spinner" aria-hidden="true"></div>
+      </div>
+    </div>
     <script type="module" src="/src/main.tsx"></script>
   </body>
 </html>
