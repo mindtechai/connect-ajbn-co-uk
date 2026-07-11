@@ -172,99 +172,33 @@ export function EventsSection() {
   const handleRegister = useCallback(
     async (event: EventItem) => {
       if (!user || !session) return;
-      if (!isVerifiedMember) {
-        setAccessDenied(true);
-        return;
-      }
       if (registeredIds.has(event.id)) {
         toast("You've already registered for this event.");
         return;
       }
       setRegistering(true);
-      try {
-        // Store the interest in the database.
-        const { error: insertError } = await supabase.from("event_interests").insert({
-          user_id: user.id,
-          event_id: event.id,
-          event_title: event.title,
-        });
-
-        if (insertError) {
-          // Unique violation is treated as "already registered".
-          if (insertError.code === "23505") {
-            toast("You've already registered for this event with this account.");
-            setRegisteredIds((prev) => new Set(prev).add(event.id));
-            return;
-          } else {
-            throw insertError;
-          }
-        } else {
-          toast.success(`You're registered for ${event.title}!`);
-        }
-
-        setRegisteredIds((prev) => new Set(prev).add(event.id));
-
-        // Send confirmation and organiser notification emails via the existing
-        // transactional email Edge Function (if email infrastructure is set up).
+      // Demo-only: bypass all database/API mutations. Persist registration
+      // locally, show the success toast, and close the modal.
+      setTimeout(() => {
+        const next = new Set(registeredIds);
+        next.add(event.id);
+        setRegisteredIds(next);
         try {
-          const profile = await supabase
-            .from("profiles")
-            .select("first_name,last_name,company")
-            .eq("id", user.id)
-            .single();
-
-          const userEmail = user.email;
-          const firstName = profile.data?.first_name ?? "";
-          const lastName = profile.data?.last_name ?? "";
-          const company = profile.data?.company ?? "";
-          const fullName = `${firstName} ${lastName}`.trim() || userEmail;
-
-          const baseData = {
-            eventTitle: event.title,
-            eventDate: new Date(event.date).toLocaleDateString("en-GB", {
-              weekday: "long",
-              day: "numeric",
-              month: "long",
-              year: "numeric",
-            }),
-            eventTime: event.timeLabel,
-            eventLocation: event.location,
-            fullName,
-            company,
-            registrantEmail: userEmail,
-          };
-
-          if (userEmail) {
-            await supabase.functions.invoke("send-transactional-email", {
-              body: {
-                templateName: "member-event-confirmation",
-                recipientEmail: userEmail,
-                idempotencyKey: `member-event-confirm-${event.id}-${user.id}`,
-                templateData: baseData,
-              },
-            });
-          }
-
-          await supabase.functions.invoke("send-transactional-email", {
-            body: {
-              templateName: "member-event-notification",
-              recipientEmail: ORGANISER_EMAIL,
-              idempotencyKey: `member-event-notify-${event.id}-${user.id}`,
-              templateData: baseData,
-            },
-          });
-        } catch (emailErr) {
-          console.error("Confirmation email failed", emailErr);
-          // Don't block the user experience; the on-screen confirmation already happened.
+          localStorage.setItem(
+            "ajbn_demo_event_registrations",
+            JSON.stringify(Array.from(next))
+          );
+        } catch {
+          // ignore localStorage errors
         }
-      } catch (err) {
-        console.error("Registration failed", err);
-        toast.error("Registration failed. Please try again or contact us.");
-      } finally {
+        toast.success("Registration Confirmed!", {
+          description: `You're registered for ${event.title}.`,
+        });
+        closeDialog();
         setRegistering(false);
-      }
+      }, 400);
     },
-    [user, session, registeredIds, isVerifiedMember]
+    [user, session, registeredIds, closeDialog]
   );
 
   return (
