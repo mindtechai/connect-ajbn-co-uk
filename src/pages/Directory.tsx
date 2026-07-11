@@ -40,7 +40,7 @@ export default function DirectoryPage() {
   const [q, setQ] = useState("");
   const [pendingRecipient, setPendingRecipient] = useState<Member | null>(null);
 
-  const canAccess = roles.includes("ajbn_member") || roles.includes("impact_lion") || roles.includes("super_admin");
+  const canAccess = !!user;
 
   useEffect(() => {
     if (authLoading || !user) return;
@@ -90,7 +90,7 @@ export default function DirectoryPage() {
 
         {!canAccess ? (
           <div className="bg-card border rounded-xl p-8 text-center">
-            <p className="text-sm text-muted-foreground">Your application is under review. Once approved, the directory unlocks automatically.</p>
+            <p className="text-sm text-muted-foreground">Please sign in to browse the directory.</p>
           </div>
         ) : loading ? (
           <div className="py-16 flex justify-center"><Loader2 className="animate-spin text-muted-foreground" /></div>
