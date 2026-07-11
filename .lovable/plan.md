@@ -1,21 +1,22 @@
-Execute the three requested SEO/PWA metadata updates only. No sitemap will be generated.
+Implement a continuous registration pipeline for networking events by adding a persistent, always-on card that automatically appears whenever the most recent specific event has passed and no definite future date is announced.
 
-1. Create `public/manifest.webmanifest`
-   - Add basic PWA metadata: `name`, `short_name`, `description`, `start_url`, `scope`, `display`, `background_color`, `theme_color`, `orientation`.
-   - Point icons to the existing `/favicon.ico` so the manifest is valid without introducing new assets.
-   - Use AJBN brand colors (navy `#174164` for theme/background) and a safe description.
+### Changes planned
 
-2. Update `index.html`
-   - Keep the existing `title`, `description`, `canonical`, `og:*`, and `twitter:*` tags.
-   - Add PWA install tags: `<link rel="manifest" href="/manifest.webmanifest" />`, `<meta name="theme-color" content="#174164" />`, `<meta name="apple-mobile-web-app-capable" content="yes" />`, `<meta name="apple-mobile-web-app-status-bar-style" content="default" />`, `<meta name="apple-mobile-web-app-title" content="AJBN Connect" />`, and `<link rel="apple-touch-icon" href="/favicon.ico" />`.
-   - Add Organization JSON-LD script block linking the portal to the Asian Jewish Business Network brand: `@type: Organization`, `name`, `url`, `sameAs` (placeholder for LinkedIn/website if known), and `description`.
+1. `src/components/landing/EventsSection.tsx` (primary target)
+   - Add a new `PIPELINE_EVENT` constant for the generic next networking event:
+     - Title: "Upcoming Bimonthly In-Person Networking Event"
+     - Location: "London (Venue TBA)"
+     - CTA: "Register Your Interest" (active, not disabled)
+   - Add a helper that checks whether the most recent specific event (with a definite date) has already ended.
+   - When the helper returns true, prepend or insert the pipeline card into the visible events list so it renders as a high-priority networking card.
+   - Make the CTA fully active: open the existing registration dialog and store the interest in `event_interests` with a dedicated event ID (`upcoming-bimonthly-networking`), so duplicates are still blocked and confirmation emails are sent.
 
-3. Update `public/robots.txt`
-   - Keep the existing `User-agent` blocks for Googlebot, Bingbot, Twitterbot, and facebookexternalhit.
-   - Change the wildcard `User-agent: *` block to allow public landing pages and explicitly disallow private routes behind authentication.
-   - Disallow: `/dashboard`, `/settings/`, `/directory`, `/messages`, `/events`, `/esg`, `/lions/apply`, `/admin`, `/unsubscribe`, `/email-unsubscribe`, `/reset-password`, `/forgot-password`, `/tickets/flagship`, `/buy`, `/buy/`, and any path starting with `/lovable/` or `__l5e`.
-   - Add a `Sitemap: https://connect.ajbn.co.uk/sitemap.xml` directive only if the user explicitly asks; in this plan, omit it to match the request.
+2. `src/pages/Events.tsx` (mirror if required)
+   - Add the same pipeline card logic to the dedicated events page so signed-in members see the same continuous registration option when the next bimonthly date is unannounced.
+   - Keep the existing disabled "Keep Me Updated" placeholders for the September/December placeholders untouched.
 
-4. Verify
-   - Run a build or typecheck to ensure the static files are syntactically valid and the project still compiles.
-   - No new runtime dependencies or backend changes.
+### Scope boundaries
+- This is purely a UI-state change: no new database tables, no new API endpoints, no new edge functions.
+- The pipeline card will use the existing `event_interests` table and the existing `handleRegister` flow for member verification/duplication handling, so no new backend work is required.
+- The "Register Your Interest" button will be enabled for the pipeline card only; existing placeholder cards remain disabled.
+- No changes to event filtering, tabs, or branding.

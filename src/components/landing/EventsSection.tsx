@@ -112,7 +112,29 @@ const EVENTS: EventItem[] = [
 ];
 
 const REGISTER_EVENT_ID = "members-evening-2026-07-09";
+const PIPELINE_EVENT_ID = "upcoming-bimonthly-networking";
 const ORGANISER_EMAIL = "info@ajbn.co.uk";
+
+const PIPELINE_EVENT: EventItem = {
+  id: PIPELINE_EVENT_ID,
+  kind: "networking",
+  title: "Upcoming Bimonthly In-Person Networking Event",
+  date: "2026-07-10T00:00:00Z",
+  dateLabel: "Date TBA",
+  timeLabel: "To Be Announced",
+  location: "London (Venue TBA)",
+  description:
+    "Register your interest now to be the first to hear about our next bimonthly in-person networking event in London. We'll confirm the venue, date, and full details with priority notice for registered members.",
+  ctaLabel: "Register your interest",
+  ctaHref: "#",
+  isPlaceholder: true,
+  highlights: [
+    "Bimonthly in-person networking",
+    "Priority registration for members",
+    "London venue",
+  ],
+};
+
 
 type Filter = "all" | "networking" | "fundraising";
 
