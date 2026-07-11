@@ -330,7 +330,7 @@ export function EventsSection() {
             {visible.map((e) => {
               const d = new Date(e.date);
               const isRegistered = registeredIds.has(e.id);
-              const isInterestDialog = e.id === REGISTER_EVENT_ID;
+              const isInterestDialog = e.id === REGISTER_EVENT_ID || e.id === PIPELINE_EVENT_ID;
               return (
                 <ScrollReveal key={e.id}>
                   <article className="bg-card border border-border/60 rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
