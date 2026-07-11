@@ -27,47 +27,25 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    const code = referral.trim().toUpperCase();
-    if (code) {
-      const { data: valid, error: rpcErr } = await supabase.rpc("referral_code_exists", { _code: code });
-      if (rpcErr || !valid) {
-        setLoading(false);
-        toast({ title: "Invalid referral code", description: "That code doesn't match any AJBN member. Leave blank if you don't have one.", variant: "destructive" });
-        return;
-      }
-    }
-    const { data, error } = await supabase.auth.signUp({
-      email,
-      password,
-      options: {
-        emailRedirectTo: `${window.location.origin}/dashboard`,
-        data: {
-          first_name: firstName,
-          last_name: lastName,
-          company,
-          referred_by_code: code || undefined,
-          referred_by: referredBy || undefined,
-        },
+    // Demo mode: bypass Supabase — accept any input and log in.
+    const mockUser = {
+      id: `demo-${crypto.randomUUID()}`,
+      email: email.trim(),
+      user_metadata: {
+        first_name: firstName,
+        last_name: lastName,
+        company,
+        referred_by_code: referral.trim().toUpperCase() || undefined,
+        referred_by: referredBy || undefined,
       },
-    });
-    if (error) {
-      setLoading(false);
-      toast({ title: "Sign up failed", description: error.message, variant: "destructive" });
-      return;
-    }
-    // Presentation mode: bypass email verification and log in immediately
-    if (!data.session) {
-      const { error: signInErr } = await supabase.auth.signInWithPassword({ email, password });
-      if (signInErr) {
-        setLoading(false);
-        toast({ title: "Application submitted", description: "Please sign in to continue." });
-        navigate("/login");
-        return;
-      }
-    }
+      app_metadata: {},
+      aud: "authenticated",
+      created_at: new Date().toISOString(),
+    };
+    localStorage.setItem("ajbn_demo_mock_user", JSON.stringify(mockUser));
     setLoading(false);
     toast({ title: "Welcome to AJBN Connect", description: "Your account is ready." });
-    navigate("/dashboard");
+    window.location.href = "/dashboard";
   };
 
   return (
