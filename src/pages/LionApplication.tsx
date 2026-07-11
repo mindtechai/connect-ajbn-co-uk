@@ -16,6 +16,7 @@ export default function LionApplicationPage() {
   const { user, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const [existing, setExisting] = useState<App | null>(null);
+  const [submitted, setSubmitted] = useState(false);
   const [motivation, setMotivation] = useState("");
   const [saving, setSaving] = useState(false);
   const [loading, setLoading] = useState(true);
@@ -24,30 +25,29 @@ export default function LionApplicationPage() {
   useEffect(() => {
     if (authLoading) return;
     if (!user) { navigate("/login?next=/lions/apply"); return; }
-    (async () => {
-      const [{ data: app }, { data: role }] = await Promise.all([
-        supabase.from("lion_applications").select("status, motivation, review_notes, created_at").eq("user_id", user.id).maybeSingle(),
-        supabase.from("user_roles").select("role").eq("user_id", user.id).eq("role", "impact_lion").maybeSingle(),
-      ]);
-      if (app) { setExisting(app as App); setMotivation(app.motivation); }
-      setIsLion(!!role);
-      setLoading(false);
-    })();
+    // Demo mode: skip backend calls, load any previously-submitted demo application from localStorage.
+    try {
+      const saved = localStorage.getItem("ajbn_demo_lion_application");
+      if (saved) {
+        const parsed = JSON.parse(saved) as App;
+        setExisting(parsed);
+        setMotivation(parsed.motivation);
+        setSubmitted(true);
+      }
+    } catch {}
+    setLoading(false);
   }, [user, authLoading, navigate]);
 
   const submit = async () => {
-    if (!user || !motivation.trim()) return;
+    if (!motivation.trim()) return;
     setSaving(true);
-    const { error } = await supabase.from("lion_applications").upsert(
-      { user_id: user.id, motivation: motivation.trim(), status: "pending" },
-      { onConflict: "user_id" },
-    );
+    await new Promise((r) => setTimeout(r, 500));
+    const record: App = { status: "pending", motivation: motivation.trim(), review_notes: null, created_at: new Date().toISOString() };
+    try { localStorage.setItem("ajbn_demo_lion_application", JSON.stringify(record)); } catch {}
+    setExisting(record);
+    setSubmitted(true);
     setSaving(false);
-    if (error) toast({ title: "Failed", description: error.message, variant: "destructive" });
-    else {
-      toast({ title: "Application submitted", description: "A super admin will review shortly." });
-      setExisting({ status: "pending", motivation: motivation.trim(), review_notes: null, created_at: new Date().toISOString() });
-    }
+    toast({ title: "Application Submitted Successfully!", description: "Thank you — a super admin will review shortly." });
   };
 
   if (loading) return <div className="min-h-screen grid place-items-center"><Loader2 className="animate-spin text-muted-foreground" /></div>;
@@ -63,11 +63,16 @@ export default function LionApplicationPage() {
           The charitable arm of AJBN. Members contribute £250/year to fund community initiatives, ESG projects and event fundraising.
         </p>
 
-        {isLion ? (
+        {isLion || submitted ? (
           <div className="bg-gold/10 border border-gold/30 rounded-xl p-6 text-center">
             <Crown className="mx-auto text-gold mb-2" />
-            <p className="font-semibold">You are an Impact Lion.</p>
-            <p className="text-sm text-muted-foreground">Thank you for your support of the club.</p>
+            <p className="font-semibold text-lg">Application Submitted Successfully!</p>
+            <p className="text-sm text-muted-foreground mt-1">
+              Thank you for stepping forward. A super admin will be in touch shortly to welcome you into the Impact Lions Club.
+            </p>
+            {existing?.motivation && (
+              <p className="text-xs text-muted-foreground italic mt-3">"{existing.motivation}"</p>
+            )}
           </div>
         ) : (
           <div className="bg-card border rounded-xl p-6 shadow-sm space-y-5">
