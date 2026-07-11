@@ -380,6 +380,19 @@ export function EventsSection() {
                               <>{e.ctaLabel} <ArrowRight size={14} className="ml-1" /></>
                             )}
                           </Button>
+                        ) : e.isPlaceholder ? (
+                          <Tooltip>
+                            <TooltipTrigger asChild>
+                              <span className="inline-block">
+                                <Button size="sm" disabled variant="goldOutline">
+                                  {e.ctaLabel}
+                                </Button>
+                              </span>
+                            </TooltipTrigger>
+                            <TooltipContent side="top">
+                              <p>Details releasing soon!</p>
+                            </TooltipContent>
+                          </Tooltip>
                         ) : (
                           <Button asChild size="sm">
                             {e.ctaHref.startsWith("/") ? (
