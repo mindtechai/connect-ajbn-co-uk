@@ -185,12 +185,13 @@ export function EventsSection() {
     );
     if (!hasClosedSpecificEvent || (filter !== "all" && filter !== "networking")) return sorted;
     const now = new Date();
-    const lastPastIndex = sorted.findLastIndex((e) => new Date(e.date) < now);
-    const insertIndex = lastPastIndex === -1 ? 0 : lastPastIndex + 1;
+    const lastPastIndex = sorted.length - 1 - [...sorted].reverse().findIndex((e) => new Date(e.date) < now);
+    const insertIndex = lastPastIndex === sorted.length ? 0 : lastPastIndex + 1;
     const result = [...sorted];
     result.splice(insertIndex, 0, PIPELINE_EVENT);
     return result;
   }, [filter]);
+
 
 
   const openDialog = useCallback((id: string) => setOpenDialogId(id), []);
