@@ -54,18 +54,24 @@ export default function ProfilePage() {
   }, [user, authLoading, navigate]);
 
   const uploadAvatar = async (file: File) => {
-    if (!user) return;
     setUploading(true);
-    const ext = file.name.split(".").pop() || "jpg";
-    const path = `${user.id}/avatar.${ext}`;
-    const { error } = await supabase.storage.from("avatars").upload(path, file, { upsert: true, contentType: file.type });
-    if (error) { setUploading(false); toast({ title: "Upload failed", description: error.message, variant: "destructive" }); return; }
-    const { data: signed } = await supabase.storage.from("avatars").createSignedUrl(path, 60 * 60 * 24 * 365);
-    const url = signed?.signedUrl ?? "";
-    await supabase.from("profiles").update({ avatar_url: url } as any).eq("id", user.id);
-    setForm((p) => ({ ...p, avatar_url: url }));
-    setUploading(false);
-    toast({ title: "Avatar updated" });
+    try {
+      // Demo mode: bypass storage bucket entirely. Convert to a local data URL
+      // so the avatar renders instantly for the presentation.
+      const dataUrl: string = await new Promise((resolve, reject) => {
+        const reader = new FileReader();
+        reader.onload = () => resolve(String(reader.result ?? ""));
+        reader.onerror = () => reject(reader.error);
+        reader.readAsDataURL(file);
+      });
+      setForm((p) => ({ ...p, avatar_url: dataUrl }));
+      try { localStorage.setItem("ajbn_demo_avatar", dataUrl); } catch {}
+      toast({ title: "Avatar updated" });
+    } catch (e: any) {
+      toast({ title: "Upload failed", description: e?.message ?? "Try a smaller image.", variant: "destructive" });
+    } finally {
+      setUploading(false);
+    }
   };
 
   const normalizeLinkedIn = (value: string): string | null => {
