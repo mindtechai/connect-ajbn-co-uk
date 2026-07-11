@@ -391,7 +391,11 @@ export function EventsSection() {
                       </div>
 
                       <div className="md:pt-1">
-                        {e.isPlaceholder && e.id !== PIPELINE_EVENT_ID ? (
+                        {isPastEvent ? (
+                          <Button size="sm" disabled variant="outline">
+                            Event Closed
+                          </Button>
+                        ) : e.isPlaceholder && e.id !== PIPELINE_EVENT_ID ? (
                           <Tooltip>
                             <TooltipTrigger asChild>
                               <span className="inline-block">
@@ -405,7 +409,6 @@ export function EventsSection() {
                             </TooltipContent>
                           </Tooltip>
                         ) : isInterestDialog ? (
-
                           <Button
                             size="sm"
                             onClick={() => openDialog(e.id)}
@@ -432,6 +435,7 @@ export function EventsSection() {
                           </Button>
                         )}
                       </div>
+
                     </div>
                   </article>
 
