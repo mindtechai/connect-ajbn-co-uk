@@ -6,6 +6,9 @@ import { Loader2 } from "lucide-react";
 export function RequireAuth({ children }: { children: ReactNode }) {
   const { user, loading } = useAuth();
   const location = useLocation();
+  // Demo mode: if a mock user token exists, always treat as authenticated.
+  const hasMock = typeof window !== "undefined" && !!localStorage.getItem("ajbn_demo_mock_user");
+  if (hasMock) return <>{children}</>;
   if (loading) {
     return (
       <div className="min-h-screen grid place-items-center">
