@@ -217,16 +217,22 @@ export default function EventsPage() {
                           <p className="text-sm text-muted-foreground">{p.description}</p>
                         </div>
                         <div className="md:pt-1">
-                          <TooltipProvider>
-                            <Tooltip>
-                              <TooltipTrigger asChild>
-                                <span className="inline-block">
-                                  <Button size="sm" disabled variant="goldOutline">Keep Me Updated</Button>
-                                </span>
-                              </TooltipTrigger>
-                              <TooltipContent side="top"><p>Details releasing soon!</p></TooltipContent>
-                            </Tooltip>
-                          </TooltipProvider>
+                          {p.ctaHref ? (
+                            <Button asChild size="sm" variant="outline">
+                              <a href={p.ctaHref}>{p.ctaLabel}</a>
+                            </Button>
+                          ) : (
+                            <TooltipProvider>
+                              <Tooltip>
+                                <TooltipTrigger asChild>
+                                  <span className="inline-block">
+                                    <Button size="sm" disabled variant="goldOutline">Keep Me Updated</Button>
+                                  </span>
+                                </TooltipTrigger>
+                                <TooltipContent side="top"><p>Details releasing soon!</p></TooltipContent>
+                              </Tooltip>
+                            </TooltipProvider>
+                          )}
                         </div>
                       </div>
                     </div>
