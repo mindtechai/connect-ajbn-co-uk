@@ -47,7 +47,8 @@ export default function ESGReportPage() {
         .select("*")
         .eq("user_id", user.id)
         .order("occurred_at", { ascending: false });
-      setRows((data ?? []) as Contribution[]);
+      const list = (data ?? []) as Contribution[];
+      setRows(list.length ? list : DEMO_ROWS);
       setLoading(false);
     })();
   }, [user, authLoading]);
