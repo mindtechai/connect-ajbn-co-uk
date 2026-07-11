@@ -18,6 +18,16 @@ const Ctx = createContext<AuthCtx>({
   signOut: async () => {},
 });
 
+const MOCK_KEY = "ajbn_demo_mock_user";
+
+function readMockUser(): User | null {
+  try {
+    const raw = localStorage.getItem(MOCK_KEY);
+    if (!raw) return null;
+    return JSON.parse(raw) as User;
+  } catch { return null; }
+}
+
 export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
@@ -25,6 +35,16 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
+    // Demo mode: hydrate from mock user if present
+    const mock = readMockUser();
+    if (mock) {
+      setUser(mock);
+      setSession({ access_token: "demo", refresh_token: "demo", expires_in: 3600, token_type: "bearer", user: mock } as unknown as Session);
+      setRoles(["ajbn_member"]);
+      setLoading(false);
+      return;
+    }
+
     const { data: sub } = supabase.auth.onAuthStateChange((_evt, s) => {
       setSession(s);
       setUser(s?.user ?? null);
@@ -58,8 +78,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   }
 
   const signOut = async () => {
+    localStorage.removeItem(MOCK_KEY);
     await supabase.auth.signOut();
     setRoles([]);
+    setUser(null);
+    setSession(null);
+    window.location.href = "/";
   };
 
   return (
