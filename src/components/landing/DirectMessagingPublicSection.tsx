@@ -51,26 +51,28 @@ export function DirectMessagingPublicSection() {
             </div>
           </ScrollReveal>
 
-          <div className="grid md:grid-cols-3 gap-5 mb-10">
-            {steps.map((step, i) => (
-              <ScrollReveal key={step.title} delay={i * 100}>
-                <div className="relative bg-primary-foreground/5 border border-primary-foreground/10 rounded-xl p-6 h-full backdrop-blur-sm hover:bg-primary-foreground/10 transition-colors">
-                  <div className="absolute top-4 right-4 text-5xl font-display font-bold text-primary-foreground/5">
-                    {i + 1}
+          {!user && (
+            <div className="grid md:grid-cols-3 gap-5 mb-10">
+              {steps.map((step, i) => (
+                <ScrollReveal key={step.title} delay={i * 100}>
+                  <div className="relative bg-primary-foreground/5 border border-primary-foreground/10 rounded-xl p-6 h-full backdrop-blur-sm hover:bg-primary-foreground/10 transition-colors">
+                    <div className="absolute top-4 right-4 text-5xl font-display font-bold text-primary-foreground/5">
+                      {i + 1}
+                    </div>
+                    <div className="w-12 h-12 rounded-lg bg-teal/20 border border-teal/30 flex items-center justify-center mb-4">
+                      <step.icon size={22} className="text-teal" />
+                    </div>
+                    <h3 className="font-display text-lg font-semibold text-primary-foreground mb-2">
+                      {step.title}
+                    </h3>
+                    <p className="text-sm text-primary-foreground/70 leading-relaxed">
+                      {step.description}
+                    </p>
                   </div>
-                  <div className="w-12 h-12 rounded-lg bg-teal/20 border border-teal/30 flex items-center justify-center mb-4">
-                    <step.icon size={22} className="text-teal" />
-                  </div>
-                  <h3 className="font-display text-lg font-semibold text-primary-foreground mb-2">
-                    {step.title}
-                  </h3>
-                  <p className="text-sm text-primary-foreground/70 leading-relaxed">
-                    {step.description}
-                  </p>
-                </div>
-              </ScrollReveal>
-            ))}
-          </div>
+                </ScrollReveal>
+              ))}
+            </div>
+          )}
 
           <ScrollReveal delay={300}>
             <div className="flex flex-col items-center gap-3">
