@@ -1,7 +1,8 @@
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { MessageCircle, LogIn, Inbox, Send, ArrowRight, ShieldCheck } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { MessageCircle, LogIn, Inbox, Send, ArrowRight, ShieldCheck, LayoutDashboard } from "lucide-react";
 
 const steps = [
   {
@@ -25,6 +26,7 @@ const steps = [
 ];
 
 export function DirectMessagingPublicSection() {
+  const { user } = useAuth();
   return (
     <section id="messaging" className="py-24 bg-hero-pattern relative overflow-hidden">
       <div className="absolute inset-0 opacity-10 pointer-events-none" aria-hidden>
@@ -49,26 +51,28 @@ export function DirectMessagingPublicSection() {
             </div>
           </ScrollReveal>
 
-          <div className="grid md:grid-cols-3 gap-5 mb-10">
-            {steps.map((step, i) => (
-              <ScrollReveal key={step.title} delay={i * 100}>
-                <div className="relative bg-primary-foreground/5 border border-primary-foreground/10 rounded-xl p-6 h-full backdrop-blur-sm hover:bg-primary-foreground/10 transition-colors">
-                  <div className="absolute top-4 right-4 text-5xl font-display font-bold text-primary-foreground/5">
-                    {i + 1}
+          {!user && (
+            <div className="grid md:grid-cols-3 gap-5 mb-10">
+              {steps.map((step, i) => (
+                <ScrollReveal key={step.title} delay={i * 100}>
+                  <div className="relative bg-primary-foreground/5 border border-primary-foreground/10 rounded-xl p-6 h-full backdrop-blur-sm hover:bg-primary-foreground/10 transition-colors">
+                    <div className="absolute top-4 right-4 text-5xl font-display font-bold text-primary-foreground/5">
+                      {i + 1}
+                    </div>
+                    <div className="w-12 h-12 rounded-lg bg-teal/20 border border-teal/30 flex items-center justify-center mb-4">
+                      <step.icon size={22} className="text-teal" />
+                    </div>
+                    <h3 className="font-display text-lg font-semibold text-primary-foreground mb-2">
+                      {step.title}
+                    </h3>
+                    <p className="text-sm text-primary-foreground/70 leading-relaxed">
+                      {step.description}
+                    </p>
                   </div>
-                  <div className="w-12 h-12 rounded-lg bg-teal/20 border border-teal/30 flex items-center justify-center mb-4">
-                    <step.icon size={22} className="text-teal" />
-                  </div>
-                  <h3 className="font-display text-lg font-semibold text-primary-foreground mb-2">
-                    {step.title}
-                  </h3>
-                  <p className="text-sm text-primary-foreground/70 leading-relaxed">
-                    {step.description}
-                  </p>
-                </div>
-              </ScrollReveal>
-            ))}
-          </div>
+                </ScrollReveal>
+              ))}
+            </div>
+          )}
 
           <ScrollReveal delay={300}>
             <div className="flex flex-col items-center gap-3">
@@ -82,12 +86,21 @@ export function DirectMessagingPublicSection() {
                   .
                 </span>
               </div>
-              <Link to="/login">
-                <Button variant="hero" size="xl" className="gap-2">
-                  Log In to Activate Messaging
-                  <ArrowRight size={18} />
-                </Button>
-              </Link>
+              {user ? (
+                <Link to="/dashboard">
+                  <Button variant="hero" size="xl" className="gap-2">
+                    <LayoutDashboard size={18} />
+                    Go to Messaging Dashboard
+                  </Button>
+                </Link>
+              ) : (
+                <Link to="/login">
+                  <Button variant="hero" size="xl" className="gap-2">
+                    Log In to Activate Messaging
+                    <ArrowRight size={18} />
+                  </Button>
+                </Link>
+              )}
             </div>
           </ScrollReveal>
         </div>
