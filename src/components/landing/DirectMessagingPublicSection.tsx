@@ -86,12 +86,21 @@ export function DirectMessagingPublicSection() {
                   .
                 </span>
               </div>
-              <Link to="/login">
-                <Button variant="hero" size="xl" className="gap-2">
-                  Log In to Activate Messaging
-                  <ArrowRight size={18} />
-                </Button>
-              </Link>
+              {user ? (
+                <Link to="/dashboard">
+                  <Button variant="hero" size="xl" className="gap-2">
+                    <LayoutDashboard size={18} />
+                    Go to Messaging Dashboard
+                  </Button>
+                </Link>
+              ) : (
+                <Link to="/login">
+                  <Button variant="hero" size="xl" className="gap-2">
+                    Log In to Activate Messaging
+                    <ArrowRight size={18} />
+                  </Button>
+                </Link>
+              )}
             </div>
           </ScrollReveal>
         </div>
