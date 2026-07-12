@@ -1,7 +1,8 @@
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { Button } from "@/components/ui/button";
 import { Link } from "react-router-dom";
-import { MessageCircle, LogIn, Inbox, Send, ArrowRight, ShieldCheck } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
+import { MessageCircle, LogIn, Inbox, Send, ArrowRight, ShieldCheck, LayoutDashboard } from "lucide-react";
 
 const steps = [
   {
