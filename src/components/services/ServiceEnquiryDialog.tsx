@@ -6,8 +6,6 @@ import { Textarea } from "@/components/ui/textarea";
 import { Button } from "@/components/ui/button";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { supabase } from "@/integrations/supabase/client";
-import { useAuth } from "@/hooks/useAuth";
 import { Loader2 } from "lucide-react";
 
 const schema = z.object({
@@ -24,26 +22,31 @@ interface Props {
 }
 
 export function ServiceEnquiryDialog({ open, onOpenChange, serviceType }: Props) {
-  const { user } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [phone, setPhone] = useState("");
   const [message, setMessage] = useState("");
   const [submitting, setSubmitting] = useState(false);
 
+  // Pre-populate from the demo profile store if available
   useEffect(() => {
-    if (!open || !user) return;
-    (async () => {
-      const { data } = await supabase
-        .from("profiles")
-        .select("first_name,last_name,email")
-        .eq("id", user.id)
-        .maybeSingle();
-      const full = [data?.first_name, data?.last_name].filter(Boolean).join(" ").trim();
-      setName((prev) => prev || full || (user.user_metadata?.first_name ?? ""));
-      setEmail((prev) => prev || data?.email || user.email || "");
-    })();
-  }, [open, user]);
+    if (!open) return;
+    try {
+      const raw = localStorage.getItem("ajbn_demo_profile");
+      if (raw) {
+        const profile = JSON.parse(raw) as {
+          first_name?: string;
+          last_name?: string;
+          email?: string;
+        };
+        const full = [profile.first_name, profile.last_name].filter(Boolean).join(" ").trim();
+        setName((prev) => prev || full || "");
+        setEmail((prev) => prev || profile.email || "");
+      }
+    } catch {
+      // ignore malformed localStorage
+    }
+  }, [open]);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -53,31 +56,14 @@ export function ServiceEnquiryDialog({ open, onOpenChange, serviceType }: Props)
       return;
     }
     setSubmitting(true);
-    const { error } = await supabase.from("service_enquiries").insert({
-      user_id: user?.id ?? null,
-      name: parsed.data.name,
-      email: parsed.data.email,
-      phone: parsed.data.phone || null,
-      message: parsed.data.message || null,
-      service_type: serviceType,
+    await new Promise((r) => setTimeout(r, 500));
+    toast.success("Inquiry Submitted Successfully!", {
+      description: "An AJBN representative will contact you shortly.",
     });
-    if (error) {
-      setSubmitting(false);
-      toast.error("Could not submit. Please try again.");
-      return;
-    }
-    // Lightweight routing logic (email dispatch handled downstream)
-    const routeTo =
-      serviceType === "Referral Incentives Marketplace"
-        ? "Russell@ajbn.co.uk"
-        : "Salil@ajbn.co.uk";
-    console.info("[service-enquiry] route", { serviceType, routeTo });
-    toast.success("Thank you — our team will be in touch within 24 hours");
     setPhone("");
     setMessage("");
     onOpenChange(false);
-    // 3s cooldown to prevent double submissions
-    setTimeout(() => setSubmitting(false), 3000);
+    setTimeout(() => setSubmitting(false), 300);
   };
 
   return (
