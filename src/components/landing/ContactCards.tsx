@@ -3,7 +3,7 @@ import { Mail, User } from "lucide-react";
 const contacts = [
   {
     heading: "Membership & General Referrals",
-    name: "Russell Bahar",
+    name: "Russell Bahar (Founder & CEO)",
     email: "Russell@ajbn.co.uk",
     description:
       "For all general network enquiries, membership applications, renewals, sponsorship and referral reward queries.",
