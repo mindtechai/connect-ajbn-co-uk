@@ -5,6 +5,7 @@ import { CalendarDays, MapPin, Ticket, ArrowLeft, ExternalLink, Crown } from "lu
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
 import impactLionsLogo from "@/assets/impact-lions-logo.png.asset.json";
 import { assetUrl } from "@/lib/asset";
+import { FlagshipSponsors } from "@/components/FlagshipSponsors";
 
 const EXTERNAL_TICKETS_URL = "https://www.ajbn.co.uk/buy-tickets/";
 
@@ -93,6 +94,8 @@ export default function BuyTicketsFlagshipPage() {
             <li>• Unmatched networking opportunities</li>
             <li>• Sponsorship, stands &amp; brand exposure</li>
           </ul>
+
+          <FlagshipSponsors />
 
           <div className="pt-4 border-t flex flex-wrap items-center justify-between gap-4">
             <div>
