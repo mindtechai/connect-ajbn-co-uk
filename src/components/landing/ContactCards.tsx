@@ -10,7 +10,7 @@ const contacts = [
   },
   {
     heading: "Capital Connect & Deal Matching",
-    name: "Salil Patankar (Capital Connect Lead)",
+    name: "Salil Patankar (Capital Connect Lead -Founder & Mentor AJBN iMPACT Lions Club)",
     email: "Salil@ajbn.co.uk",
     description:
       "For developers seeking funds, investors, banks and bridging companies looking for capital deployment, or professional advisors structuring network transactions.",
