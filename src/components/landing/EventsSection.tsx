@@ -23,6 +23,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import prideviewLogo from "@/assets/prideview-group.jpg.asset.json";
 import lubbockFineLogo from "@/assets/lubbock-fine.png.asset.json";
+import { FlagshipSponsors } from "@/components/FlagshipSponsors";
 
 type EventItem = {
   id: string;
@@ -323,6 +324,9 @@ export function EventsSection() {
                               </li>
                             ))}
                           </ul>
+                        )}
+                        {e.id === "flagship-2026-10-19" && (
+                          <FlagshipSponsors compact />
                         )}
                       </div>
 
