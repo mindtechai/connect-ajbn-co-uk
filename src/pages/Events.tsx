@@ -10,6 +10,7 @@ import { EventQRCode } from "@/components/EventQRCode";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
 import { Link } from "react-router-dom";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { FlagshipSponsors } from "@/components/FlagshipSponsors";
 import {
   Tooltip,
   TooltipContent,
@@ -162,6 +163,7 @@ export default function EventsPage() {
                 </Button>
               </div>
             </div>
+            <FlagshipSponsors compact />
           </div>
         </div>
 
