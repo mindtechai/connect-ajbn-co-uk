@@ -3,14 +3,14 @@ import { Mail, User } from "lucide-react";
 const contacts = [
   {
     heading: "Membership & General Referrals",
-    name: "Russell Bahar",
+    name: "Russell Bahar (Founder & CEO)",
     email: "Russell@ajbn.co.uk",
     description:
       "For all general network enquiries, membership applications, renewals, sponsorship and referral reward queries.",
   },
   {
     heading: "Capital Connect & Deal Matching",
-    name: "Salil Patankar (Capital Connect Lead)",
+    name: "Salil Patankar (Capital Connect Lead -Founder & Mentor AJBN iMPACT Lions Club)",
     email: "Salil@ajbn.co.uk",
     description:
       "For developers seeking funds, investors, banks and bridging companies looking for capital deployment, or professional advisors structuring network transactions.",

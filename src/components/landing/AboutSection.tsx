@@ -4,7 +4,7 @@ import salilPatankar from "@/assets/salil-patankar.jpg.asset.json";
 
 const team = [
   {
-    name: "Russell Bahar",
+    name: "Russell Bahar (Founder & CEO)",
     pronouns: "",
     role: "Director & Co-founder",
     image:
@@ -35,7 +35,7 @@ const team = [
     linkedin: "https://www.linkedin.com/in/justin-cohen-mbe-79678b181/",
   },
   {
-    name: "Salil Patankar",
+    name: "Salil Patankar (Capital Connect Lead -Founder & Mentor AJBN iMPACT Lions Club)",
     pronouns: "He/Him",
     role: "Head of Capital Connect Ecosystems @AJBN · App Developer",
     image: salilPatankar.url,
