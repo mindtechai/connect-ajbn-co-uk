@@ -21,6 +21,8 @@ import {
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import prideviewLogo from "@/assets/prideview-group.jpg.asset.json";
+import lubbockFineLogo from "@/assets/lubbock-fine.png.asset.json";
 
 type EventItem = {
   id: string;
@@ -37,6 +39,10 @@ type EventItem = {
   ctaHref: string;
   highlights?: string[];
   isPlaceholder?: boolean;
+  hostName?: string;
+  hostWebsiteLabel?: string;
+  hostWebsiteUrl?: string;
+  hostLogoUrl?: string;
 };
 
 const EVENTS: EventItem[] = [
@@ -79,7 +85,7 @@ const EVENTS: EventItem[] = [
   {
     id: "autumn-showcase-2026-09",
     kind: "networking",
-    title: "AJBN Members Only Autumn Showcase",
+    title: "AJBN Members Event Hosted by Prideview Group",
     subtitle: "Bimonthly Members-Only Meetup",
     date: "2026-09-18T18:00:00Z",
     dateLabel: "September 2026",
@@ -91,11 +97,15 @@ const EVENTS: EventItem[] = [
     ctaHref: "#",
     isPlaceholder: true,
     highlights: ["High-Value Peer-to-Peer Engagement"],
+    hostName: "Hosted by Prideview Group",
+    hostWebsiteLabel: "www.prideviewgroup.com",
+    hostWebsiteUrl: "https://www.prideviewgroup.com",
+    hostLogoUrl: prideviewLogo.url,
   },
   {
     id: "winter-gala-2026-12",
     kind: "networking",
-    title: "AJBN Members-Only Networking Event",
+    title: "AJBN Members Event Hosted by Lubbock Fine",
     subtitle: "High-Value Peer-to-Peer Engagement",
     date: "2026-12-10T18:00:00Z",
     dateLabel: "December 2026",
@@ -107,6 +117,10 @@ const EVENTS: EventItem[] = [
     ctaHref: "#",
     isPlaceholder: true,
     highlights: ["Bimonthly Members-Only Meetup"],
+    hostName: "Hosted by Lubbock Fine",
+    hostWebsiteLabel: "www.lubbockfine.co.uk",
+    hostWebsiteUrl: "https://www.lubbockfine.co.uk",
+    hostLogoUrl: lubbockFineLogo.url,
   },
 ];
 
