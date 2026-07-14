@@ -128,8 +128,6 @@ const INTEREST_EVENT_IDS = new Set([
   "members-evening-2026-07-09",
   "autumn-showcase-2026-09",
   "winter-gala-2026-12",
-  "autumn-showcase-2026-09",
-  "winter-gala-2026-12",
 ]);
 const ORGANISER_EMAIL = "info@ajbn.co.uk";
 
