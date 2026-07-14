@@ -21,6 +21,8 @@ import {
 import { Link } from "react-router-dom";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
+import prideviewLogo from "@/assets/prideview-group.jpg.asset.json";
+import lubbockFineLogo from "@/assets/lubbock-fine.png.asset.json";
 
 type EventItem = {
   id: string;
@@ -37,6 +39,10 @@ type EventItem = {
   ctaHref: string;
   highlights?: string[];
   isPlaceholder?: boolean;
+  hostName?: string;
+  hostWebsiteLabel?: string;
+  hostWebsiteUrl?: string;
+  hostLogoUrl?: string;
 };
 
 const EVENTS: EventItem[] = [
@@ -79,7 +85,7 @@ const EVENTS: EventItem[] = [
   {
     id: "autumn-showcase-2026-09",
     kind: "networking",
-    title: "AJBN Members Only Autumn Showcase",
+    title: "AJBN Members Event Hosted by Prideview Group",
     subtitle: "Bimonthly Members-Only Meetup",
     date: "2026-09-18T18:00:00Z",
     dateLabel: "September 2026",
@@ -91,11 +97,15 @@ const EVENTS: EventItem[] = [
     ctaHref: "#",
     isPlaceholder: true,
     highlights: ["High-Value Peer-to-Peer Engagement"],
+    hostName: "Hosted by Prideview Group",
+    hostWebsiteLabel: "www.prideviewgroup.com",
+    hostWebsiteUrl: "https://www.prideviewgroup.com",
+    hostLogoUrl: prideviewLogo.url,
   },
   {
     id: "winter-gala-2026-12",
     kind: "networking",
-    title: "AJBN Members-Only Networking Event",
+    title: "AJBN Members Event Hosted by Lubbock Fine",
     subtitle: "High-Value Peer-to-Peer Engagement",
     date: "2026-12-10T18:00:00Z",
     dateLabel: "December 2026",
@@ -107,6 +117,10 @@ const EVENTS: EventItem[] = [
     ctaHref: "#",
     isPlaceholder: true,
     highlights: ["Bimonthly Members-Only Meetup"],
+    hostName: "Hosted by Lubbock Fine",
+    hostWebsiteLabel: "www.lubbockfine.co.uk",
+    hostWebsiteUrl: "https://www.lubbockfine.co.uk",
+    hostLogoUrl: lubbockFineLogo.url,
   },
 ];
 
@@ -273,6 +287,29 @@ export function EventsSection() {
                         </div>
                         <h3 className="text-xl md:text-2xl font-display font-semibold">{e.title}</h3>
                         {e.subtitle && <p className="text-xs text-gold font-medium">{e.subtitle}</p>}
+                        {e.hostLogoUrl && (
+                          <div className="flex items-center gap-3 pt-1">
+                            <img
+                              src={e.hostLogoUrl}
+                              alt={e.hostName ?? "Host logo"}
+                              className="h-10 w-auto rounded bg-background object-contain border border-border/60 p-1"
+                              loading="lazy"
+                            />
+                            <div className="text-xs">
+                              {e.hostName && <div className="font-medium text-foreground">{e.hostName}</div>}
+                              {e.hostWebsiteUrl && (
+                                <a
+                                  href={e.hostWebsiteUrl}
+                                  target="_blank"
+                                  rel="noopener noreferrer"
+                                  className="text-teal hover:underline"
+                                >
+                                  {e.hostWebsiteLabel ?? e.hostWebsiteUrl}
+                                </a>
+                              )}
+                            </div>
+                          </div>
+                        )}
                         <div className="flex flex-wrap gap-x-4 gap-y-1 text-xs text-muted-foreground">
                           <span className="flex items-center gap-1"><CalendarDays size={12} /> {e.timeLabel}</span>
                           <span className="flex items-center gap-1"><MapPin size={12} /> {e.location}</span>
@@ -377,6 +414,29 @@ export function EventsSection() {
                             <span className="flex items-center gap-1"><CalendarDays size={14} /> {e.timeLabel}</span>
                             <span className="flex items-center gap-1"><MapPin size={14} /> {e.location}</span>
                           </div>
+                          {e.hostLogoUrl && (
+                            <div className="flex items-center gap-3 rounded-lg border border-border/60 p-3">
+                              <img
+                                src={e.hostLogoUrl}
+                                alt={e.hostName ?? "Host logo"}
+                                className="h-12 w-auto object-contain"
+                                loading="lazy"
+                              />
+                              <div className="text-xs">
+                                {e.hostName && <div className="font-medium text-foreground">{e.hostName}</div>}
+                                {e.hostWebsiteUrl && (
+                                  <a
+                                    href={e.hostWebsiteUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-teal hover:underline"
+                                  >
+                                    {e.hostWebsiteLabel ?? e.hostWebsiteUrl}
+                                  </a>
+                                )}
+                              </div>
+                            </div>
+                          )}
                           <p className="text-muted-foreground">{e.description}</p>
 
                           {user ? (
