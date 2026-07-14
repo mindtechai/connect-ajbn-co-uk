@@ -414,6 +414,29 @@ export function EventsSection() {
                             <span className="flex items-center gap-1"><CalendarDays size={14} /> {e.timeLabel}</span>
                             <span className="flex items-center gap-1"><MapPin size={14} /> {e.location}</span>
                           </div>
+                          {e.hostLogoUrl && (
+                            <div className="flex items-center gap-3 rounded-lg border border-border/60 p-3">
+                              <img
+                                src={e.hostLogoUrl}
+                                alt={e.hostName ?? "Host logo"}
+                                className="h-12 w-auto object-contain"
+                                loading="lazy"
+                              />
+                              <div className="text-xs">
+                                {e.hostName && <div className="font-medium text-foreground">{e.hostName}</div>}
+                                {e.hostWebsiteUrl && (
+                                  <a
+                                    href={e.hostWebsiteUrl}
+                                    target="_blank"
+                                    rel="noopener noreferrer"
+                                    className="text-teal hover:underline"
+                                  >
+                                    {e.hostWebsiteLabel ?? e.hostWebsiteUrl}
+                                  </a>
+                                )}
+                              </div>
+                            </div>
+                          )}
                           <p className="text-muted-foreground">{e.description}</p>
 
                           {user ? (
