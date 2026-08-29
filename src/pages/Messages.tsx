@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { AppLayout } from "@/components/AppLayout";
 import { useMessagingProfile } from "@/hooks/useMessagingProfile";
 import { ActivateMessagingDialog } from "@/components/messaging/ActivateMessagingDialog";

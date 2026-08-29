@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { ArrowLeft } from "lucide-react";
 import { BrandLink } from "@/components/BrandLink";
 import { DeveloperCredit } from "@/components/DeveloperCredit";

@@ -1,7 +1,7 @@
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 
 const EXTERNAL_URL = "https://www.ajbn.co.uk/sponsors-partners/";
 

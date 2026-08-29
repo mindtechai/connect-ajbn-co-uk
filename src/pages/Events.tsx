@@ -8,7 +8,7 @@ import { CalendarDays, MapPin, Users, Loader2, Crown, Trophy, QrCode } from "luc
 import { toast } from "@/hooks/use-toast";
 import { EventQRCode } from "@/components/EventQRCode";
 import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FlagshipSponsors } from "@/components/FlagshipSponsors";
 import {

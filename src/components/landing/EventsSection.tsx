@@ -18,7 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import prideviewLogo from "@/assets/prideview-group.jpg.asset.json";
