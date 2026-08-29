@@ -149,15 +149,16 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link(
 
 export function Navigate({ to, replace, state }: { to: string; replace?: boolean; state?: unknown }) {
   const tsNav = tsNavigate();
-  const router = useRouter();
-  // One-shot imperative redirect. <TSNavigate> re-fires on every parent
-  // render (the parsed `search` object gets a fresh identity), which loops
-  // "Maximum update depth exceeded" when a guard like RequireAuth re-renders
-  // mid-transition — and a [to]-keyed effect re-fires with a stale pathname,
-  // clobbering redirect params like ?next=. Guards render Navigate once per
-  // decision, so first target wins for the lifetime of the mount.
+  // One-shot imperative redirect pinned to the FIRST target this mount saw.
+  // <TSNavigate> re-fires on every parent render (the parsed `search` object
+  // gets a fresh identity), which loops "Maximum update depth exceeded" when
+  // a guard like RequireAuth re-renders mid-transition — and any re-fire
+  // computes `to` from the already-updated pathname, clobbering redirect
+  // params like ?next=. Guards render Navigate once per decision, so the
+  // first target wins for the lifetime of the mount.
+  const targetRef = useRef(to);
   useEffect(() => {
-    const { pathname, search, hash } = parseTo(to);
+    const { pathname, search, hash } = parseTo(targetRef.current);
     tsNav({
       to: pathname as never,
       search: (search ?? {}) as never,
@@ -167,7 +168,6 @@ export function Navigate({ to, replace, state }: { to: string; replace?: boolean
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  void router;
   return null;
 }
 
