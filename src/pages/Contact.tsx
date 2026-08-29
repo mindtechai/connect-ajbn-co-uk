@@ -30,13 +30,20 @@ export default function ContactPage() {
         </div>
       </section>
 
-      <section className="py-20 flex-1">
+      <section className="py-20 flex-1" aria-labelledby="contact-leads-heading">
         <div className="container mx-auto px-4 lg:px-8 max-w-4xl">
+          <h2
+            id="contact-leads-heading"
+            className="text-2xl md:text-3xl font-display font-bold text-primary mb-8"
+          >
+            Who to contact at AJBN
+          </h2>
           <ScrollReveal>
             <ContactCards />
           </ScrollReveal>
         </div>
       </section>
+
 
       <Footer />
     </div>
