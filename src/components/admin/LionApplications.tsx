@@ -39,7 +39,7 @@ export function LionApplications() {
     const { data: { user } } = await supabase.auth.getUser();
     await supabase.from("lion_applications").update({
       status: approve ? "approved" : "rejected",
-      reviewed_by: user?.id, reviewed_at: new Date().toISOString(),
+      reviewed_by: user?.id ?? null, reviewed_at: new Date().toISOString(),
       review_notes: notes[r.id] || null,
     }).eq("id", r.id);
     if (approve) {

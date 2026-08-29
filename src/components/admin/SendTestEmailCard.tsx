@@ -37,7 +37,7 @@ const emailSchema = z.string().trim().email().max(254);
 export function SendTestEmailCard() {
   const { user } = useAuth();
   const allOptions = useMemo(() => [...AUTH_OPTIONS, ...TRANSACTIONAL_OPTIONS], []);
-  const [selected, setSelected] = useState<string>(AUTH_OPTIONS[0].value);
+  const [selected, setSelected] = useState<string>(AUTH_OPTIONS[0]!.value);
   const [recipient, setRecipient] = useState("");
   const [sending, setSending] = useState(false);
 

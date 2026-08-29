@@ -87,12 +87,12 @@ function generateDemoMembers(): Member[] {
   const out: Member[] = [];
   let idx = 0;
   for (let i = 0; i < 110; i++) {
-    const base = baseMembers[i % baseMembers.length];
-    const first = rand(FIRST_NAMES, idx * 7 + 3);
-    const last = rand(LAST_NAMES, idx * 11 + 1);
-    const city = rand(UK_CITIES, idx * 5);
-    const title = rand(TITLES, idx * 3);
-    const avatar = rand(AVATAR_SEEDS, idx);
+    const base = baseMembers[i % baseMembers.length]!;
+    const first = rand(FIRST_NAMES, idx * 7 + 3)!;
+    const last = rand(LAST_NAMES, idx * 11 + 1)!;
+    const city = rand(UK_CITIES, idx * 5)!;
+    const title = rand(TITLES, idx * 3)!;
+    const avatar = rand(AVATAR_SEEDS, idx)!;
     const suffix = i >= baseMembers.length ? ` ${Math.floor(i / baseMembers.length) + 1}` : "";
     const company = `${base.company}${suffix}`;
     out.push({
@@ -104,7 +104,7 @@ function generateDemoMembers(): Member[] {
       industry: base.industry,
       bio: `${title} at ${company}, based in ${city}. Passionate about connecting corporate members across the AJBN network.`,
       linkedin: `https://linkedin.com/in/${first.toLowerCase()}-${last.toLowerCase()}-${i}`,
-      tags: [base.industry.split("/")[0].split(" ")[0], city],
+      tags: [base.industry.split("/")[0]!.split(" ")[0]!, city],
       is_lion: i % 9 === 0,
       is_messaging_active: i % 3 !== 0,
       enquiry_count: (i * 3) % 12,

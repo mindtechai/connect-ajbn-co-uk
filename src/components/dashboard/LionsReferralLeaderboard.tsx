@@ -53,7 +53,7 @@ export function LionsReferralLeaderboard() {
         </div>
         <div className="flex items-center gap-3">
           <MemberDepositButton 
-            userId={user?.id}
+            userId={user?.id ?? ""}
             onSuccess={() => {
               console.log('Deposit successful!');
             }}

@@ -49,7 +49,7 @@ export default function DashboardPage() {
     })();
   }, [user]);
 
-  const firstName = profile?.first_name || user?.user_metadata?.first_name || (user?.email ?? "").split("@")[0];
+  const firstName = profile?.first_name || user?.user_metadata?.["first_name"] || (user?.email ?? "").split("@")[0];
   const memberSince = user?.created_at ? new Date(user.created_at).toLocaleDateString("en-GB", { month: "short", year: "numeric" }) : "—";
   const referralCode = profile?.referral_code ?? "—";
   const completion = calcCompletion(profile);

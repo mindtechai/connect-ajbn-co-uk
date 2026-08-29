@@ -145,7 +145,7 @@ export function sendMessage(id: string, senderId: string, body: string): DemoMsg
     m2[id].messages.push({
       id: uid(),
       sender_id: convo.other_user_id,
-      body: replyBody,
+      body: replyBody ?? "Thanks for the update!",
       created_at: new Date().toISOString(),
     });
     write(m2);

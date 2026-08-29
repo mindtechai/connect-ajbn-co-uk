@@ -274,7 +274,7 @@ export default function EventsPage() {
                     <div className="flex flex-wrap items-start justify-between gap-2">
                       <div>
                         <div className="flex items-center gap-2 flex-wrap">
-                          <Badge className={`text-xs capitalize ${KIND_STYLE[e.kind] ?? KIND_STYLE.other}`}>
+                          <Badge className={`text-xs capitalize ${KIND_STYLE[e.kind] ?? KIND_STYLE["other"]}`}>
                             {e.kind === "fundraising" && <Crown size={10} className="mr-1" />}
                             {e.kind}
                           </Badge>

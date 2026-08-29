@@ -18,7 +18,7 @@ export interface AssetPointer {
   [key: string]: unknown;
 }
 
-const RAW_BASE = (import.meta.env.VITE_ASSET_BASE_URL ?? "").trim();
+const RAW_BASE = (import.meta.env["VITE_ASSET_BASE_URL"] ?? "").trim();
 // Strip trailing slash so we can safely concatenate with the leading-slash `url`.
 export const ASSET_BASE_URL = RAW_BASE.replace(/\/+$/, "");
 

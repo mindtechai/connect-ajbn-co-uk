@@ -15,6 +15,7 @@ import {
 import { useToast } from "@/hooks/use-toast";
 import { cn } from "@/lib/utils";
 import { supabase } from "@/integrations/supabase/client";
+import { sendBulkMessage } from "@/lib/send-bulk-message.functions";
 import {
   Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription
 } from "@/components/ui/dialog";
@@ -133,11 +134,9 @@ export function BulkActionsPanel() {
 
     setSending(true);
     try {
-      const { data, error } = await supabase.functions.invoke("send-bulk-message", {
-        body: { subject: title, body, segments: selected, channels, category },
+      const data = await sendBulkMessage({
+        data: { subject: title, body, segments: selected, channels, category },
       });
-      if (error) throw error;
-      if (data?.error) throw new Error(typeof data.error === "string" ? data.error : "Send failed");
 
       const { data: deliveries } = await supabase
         .from("message_deliveries")
