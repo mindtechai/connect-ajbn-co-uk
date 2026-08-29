@@ -20,6 +20,7 @@ import {
 } from "@/components/ui/dialog";
 import { Link } from "@/lib/router-compat";
 import { useAuth } from "@/hooks/useAuth";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import prideviewLogo from "@/assets/prideview-group.jpg.asset.json";
 import lubbockFineLogo from "@/assets/lubbock-fine.png.asset.json";
@@ -143,29 +144,46 @@ export function EventsSection() {
   const [registeredIds, setRegisteredIds] = useState<Set<string>>(new Set());
   const [loadingRegistrations, setLoadingRegistrations] = useState(false);
 
-  // Demo-only: load which events this user has already registered interest in
-  // from local storage so the button reflects the true state after a reload.
-  // No backend API calls are used for the hackathon presentation.
+  // Load which events this user has already registered interest in from the
+  // database, falling back to a local cache when the request fails offline.
   useEffect(() => {
     if (!user) {
       setRegisteredIds(new Set());
       setLoadingRegistrations(false);
       return;
     }
+    let cancelled = false;
     setLoadingRegistrations(true);
-    try {
-      const raw = localStorage.getItem("ajbn_demo_event_registrations");
-      if (raw) {
-        const parsed = JSON.parse(raw);
-        if (Array.isArray(parsed)) {
-          setRegisteredIds(new Set(parsed));
+    (async () => {
+      try {
+        const { data, error } = await supabase
+          .from("event_interests")
+          .select("event_id")
+          .eq("user_id", user.id);
+        if (error) throw error;
+        if (cancelled) return;
+        const ids = new Set((data ?? []).map((row) => row.event_id));
+        setRegisteredIds(ids);
+        try {
+          localStorage.setItem("ajbn_event_registrations", JSON.stringify(Array.from(ids)));
+        } catch {
+          // ignore cache write errors
         }
+      } catch {
+        try {
+          const raw = localStorage.getItem("ajbn_event_registrations");
+          const parsed = raw ? JSON.parse(raw) : null;
+          if (!cancelled && Array.isArray(parsed)) setRegisteredIds(new Set(parsed));
+        } catch {
+          // ignore cache read errors
+        }
+      } finally {
+        if (!cancelled) setLoadingRegistrations(false);
       }
-    } catch {
-      // ignore localStorage errors
-    } finally {
-      setLoadingRegistrations(false);
-    }
+    })();
+    return () => {
+      cancelled = true;
+    };
   }, [user]);
 
   const visible = useMemo(() => {
@@ -186,29 +204,39 @@ export function EventsSection() {
         return;
       }
       setRegistering(true);
-      // Demo-only: bypass all database/API mutations. Persist registration
-      // locally, show the success toast, and close the modal.
-      setTimeout(() => {
+      try {
+        const { error } = await supabase.from("event_interests").insert({
+          user_id: user.id,
+          event_id: event.id,
+          event_title: event.title,
+        });
+        // Unique-violation means the interest is already recorded server-side.
+        if (error && error.code !== "23505") throw error;
+
         const next = new Set(registeredIds);
         next.add(event.id);
         setRegisteredIds(next);
         try {
-          localStorage.setItem(
-            "ajbn_demo_event_registrations",
-            JSON.stringify(Array.from(next))
-          );
+          localStorage.setItem("ajbn_event_registrations", JSON.stringify(Array.from(next)));
         } catch {
-          // ignore localStorage errors
+          // ignore cache write errors
         }
         toast.success("Registration Confirmed!", {
-          description: `You're registered for ${event.title}.`,
+          description: `You're registered for ${event.title}. The AJBN team has been notified.`,
         });
         closeDialog();
+      } catch (err) {
+        toast.error("Registration failed", {
+          description:
+            err instanceof Error ? err.message : "Please try again in a moment.",
+        });
+      } finally {
         setRegistering(false);
-      }, 400);
+      }
     },
     [user, session, registeredIds, closeDialog]
   );
+
 
   return (
     <TooltipProvider delayDuration={0}>
