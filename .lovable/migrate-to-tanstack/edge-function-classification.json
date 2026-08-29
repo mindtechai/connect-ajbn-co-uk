@@ -1,0 +1,76 @@
+{
+  "functions": [
+    {
+      "name": "agent-api",
+      "classification": "MCP server",
+      "signal": "fixed URL published in public/openapi.json and public/.well-known/mcp.json for external AI agents",
+      "outcome": "left"
+    },
+    {
+      "name": "auth-email-hook",
+      "classification": "webhook receiver",
+      "signal": "verifyWebhookRequest from @lovable.dev/webhooks-js; Supabase auth email hook configured in config.toml",
+      "outcome": "left"
+    },
+    {
+      "name": "delete-account",
+      "classification": "internal-only",
+      "signal": "called only from src/components/DeleteAccountDialog.tsx via functions.invoke",
+      "outcome": "migrated"
+    },
+    {
+      "name": "handle-email-suppression",
+      "classification": "webhook receiver",
+      "signal": "verifyWebhookRequest signature verification; no internal call sites",
+      "outcome": "left"
+    },
+    {
+      "name": "handle-email-unsubscribe",
+      "classification": "webhook receiver",
+      "signal": "token URLs embedded in already-sent emails resolve to this function; URL is load-bearing",
+      "outcome": "left"
+    },
+    {
+      "name": "handle-unsubscribe",
+      "classification": "webhook receiver",
+      "signal": "unsubscribe token URLs embedded in already-sent emails; URL is load-bearing",
+      "outcome": "left"
+    },
+    {
+      "name": "mesh-token",
+      "classification": "unknown",
+      "signal": "no internal call sites found in src/; Deno std import; default to external",
+      "outcome": "left"
+    },
+    {
+      "name": "preview-transactional-email",
+      "classification": "unknown",
+      "signal": "no internal call sites found in src/; renders Deno-shared email templates",
+      "outcome": "left"
+    },
+    {
+      "name": "process-email-queue",
+      "classification": "cron target",
+      "signal": "cron.schedule('process-email-queue') in supabase/migrations/20260706154152_email_infra.sql",
+      "outcome": "left"
+    },
+    {
+      "name": "send-bulk-message",
+      "classification": "internal-only",
+      "signal": "called only from src/components/admin/BulkActionsPanel.tsx via functions.invoke",
+      "outcome": "migrated"
+    },
+    {
+      "name": "send-test-email",
+      "classification": "Deno-only dependency",
+      "signal": "imports Deno-shared _shared/email-templates/*.tsx (npm: specifiers) also used by auth-email-hook which must stay; migrating would fork the email template tree",
+      "outcome": "left"
+    },
+    {
+      "name": "send-transactional-email",
+      "classification": "custom response / shared infrastructure",
+      "signal": "invoked by other Supabase functions (send-bulk-message, process-email-queue) and renders Deno-shared templates; must stay with the email pipeline",
+      "outcome": "left"
+    }
+  ]
+}
