@@ -113,7 +113,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "canonical", href: "https://connect.ajbn.co.uk/" },
       {
         rel: "icon",
         type: "image/jpeg",
@@ -128,8 +127,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     scripts: [
       { type: "application/ld+json", children: JSON.stringify(organizationSchema) },
       { type: "application/ld+json", children: JSON.stringify(softwareApplicationSchema) },
-      { type: "application/ld+json", children: JSON.stringify(flagshipEventSchema) },
     ],
+
   }),
   shellComponent: RootShell,
   component: RootComponent,
