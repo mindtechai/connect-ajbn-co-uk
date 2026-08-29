@@ -88,9 +88,16 @@ export default function ServicesPage() {
         </div>
       </section>
 
-      <section className="py-20 flex-1">
+      <section className="py-20 flex-1" aria-labelledby="services-list-heading">
         <div className="container mx-auto px-4 lg:px-8 max-w-6xl">
+          <h2
+            id="services-list-heading"
+            className="text-2xl md:text-3xl font-display font-bold text-primary mb-8"
+          >
+            Added value services for members
+          </h2>
           <div className="grid md:grid-cols-2 gap-6">
+
             {SERVICES.map((s, i) => (
               <ScrollReveal key={s.title} delay={i * 60}>
                 <div id={slug(s.title)} className="scroll-mt-24">
