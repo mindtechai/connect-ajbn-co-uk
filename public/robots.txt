@@ -16,3 +16,25 @@ Disallow: /tickets/flagship
 Disallow: /buy
 Disallow: /lovable/
 Disallow: /__l5e
+
+# AI answer engines (AEO/GEO) — public pages are open
+User-agent: GPTBot
+Allow: /
+Disallow: /dashboard
+Disallow: /directory
+Disallow: /messages
+Disallow: /admin
+
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: ClaudeBot
+Allow: /
+
+User-agent: Google-Extended
+Allow: /
+
+Sitemap: https://connect.ajbn.co.uk/sitemap.xml

@@ -22,16 +22,23 @@ export function HeroSection() {
         <div className="max-w-2xl">
           <ScrollReveal>
             <p className="text-primary-foreground/70 font-body text-xs md:text-sm tracking-[0.2em] uppercase leading-relaxed mb-4 md:mb-5 max-w-xl">
-              The UK's only network dedicated to strengthening professional ties between Asian and Jewish business communities.
+              AJBN Connect — the digital hub for the Asian Jewish Business Network, a premier B2B networking organisation and professional corporate event management company.
             </p>
           </ScrollReveal>
 
           <ScrollReveal delay={80}>
             <h1 className="text-4xl md:text-5xl lg:text-6xl font-display font-bold text-primary-foreground leading-[1.05] mb-6 md:mb-7">
-              Empowering Business.{" "}
-              <span className="text-gradient-gold">Connecting Communities.</span>
+              High-Profile London Business Networking Events.{" "}
+              <span className="text-gradient-gold">Cross-Communal Business Networking.</span>
             </h1>
           </ScrollReveal>
+
+          <ScrollReveal delay={160}>
+            <p className="text-primary-foreground/80 font-body text-base md:text-lg leading-relaxed mb-7 max-w-xl">
+              A professional business networking club delivering corporate event management and exhibitions, curated introductions and B2B strategic partnerships London founders, investors and corporate leaders can act on.
+            </p>
+          </ScrollReveal>
+
 
           <ScrollReveal delay={240}>
             <div className="flex flex-wrap gap-4">

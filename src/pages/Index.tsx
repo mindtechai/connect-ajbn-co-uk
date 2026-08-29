@@ -5,6 +5,8 @@ import { FeaturesSection } from "@/components/landing/FeaturesSection";
 import { DirectMessagingPublicSection } from "@/components/landing/DirectMessagingPublicSection";
 import { MembersShowcase } from "@/components/landing/MembersShowcase";
 import { EventsSection } from "@/components/landing/EventsSection";
+import { FlagshipEventSEOSection } from "@/components/landing/FlagshipEventSEOSection";
+
 import { ImpactLionsSection } from "@/components/landing/ImpactLionsSection";
 import { ReferralRewardsSection } from "@/components/landing/ReferralRewardsSection";
 import { DirectMessagingTeaserSection } from "@/components/landing/DirectMessagingTeaserSection";
@@ -27,7 +29,9 @@ const Index = () => {
     <div className="min-h-screen pb-[calc(env(safe-area-inset-bottom)+72px)] md:pb-0">
       <Navbar />
       <HeroSection />
+      <FlagshipEventSEOSection />
       <StatsSection />
+
       <AboutSection />
       <FeaturesSection />
       <DirectMessagingPublicSection />
