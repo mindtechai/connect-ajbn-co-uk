@@ -233,7 +233,7 @@ export default function DirectoryPage() {
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {filtered.map((m) => (
-                <div key={m.id} className="bg-card border rounded-xl p-5 shadow-sm space-y-2">
+                <div key={m.id} className="bg-card border rounded-xl p-5 shadow-xs space-y-2">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-start gap-3 min-w-0">
                       {m.avatar_url && (

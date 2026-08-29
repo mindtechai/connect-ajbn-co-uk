@@ -119,7 +119,7 @@ export function MemberIntroRequests() {
 
   return (
     <div className="grid lg:grid-cols-2 gap-8">
-      <form onSubmit={submit} className="rounded-xl border bg-card p-6 shadow-sm space-y-4">
+      <form onSubmit={submit} className="rounded-xl border bg-card p-6 shadow-xs space-y-4">
         <div>
           <h3 className="text-xl font-display font-semibold mb-1">Request a member-to-member intro</h3>
           <p className="text-sm text-muted-foreground">
@@ -174,7 +174,7 @@ export function MemberIntroRequests() {
         </Button>
       </form>
 
-      <div className="rounded-xl border bg-card p-6 shadow-sm">
+      <div className="rounded-xl border bg-card p-6 shadow-xs">
         <div className="flex items-center justify-between mb-4">
           <h3 className="text-xl font-display font-semibold">Your intro requests</h3>
           <Clock size={16} className="text-muted-foreground" />

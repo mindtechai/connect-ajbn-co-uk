@@ -10,7 +10,7 @@ export function BrandLink({ full = false }: { full?: boolean }) {
       <Link
         to="/"
         aria-label={`${label} — Home`}
-        className="flex items-center gap-2 sm:gap-3 shrink-0 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+        className="flex items-center gap-2 sm:gap-3 shrink-0 rounded-md outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
       >
         <img
           src={assetUrl(ajbnLogo)}
@@ -25,7 +25,7 @@ export function BrandLink({ full = false }: { full?: boolean }) {
       <Link
         to="/lions"
         aria-label="AJBN Impact Lions Club page"
-        className="shrink-0 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
+        className="shrink-0 rounded-md outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card"
       >
         <img
           src={assetUrl(impactLionsLogo)}

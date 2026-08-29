@@ -23,7 +23,7 @@ export function ContactCards({ className }: { className?: string }) {
       {contacts.map((c) => (
         <div
           key={c.heading}
-          className="bg-card border rounded-xl p-5 sm:p-6 shadow-sm hover:shadow-md transition-shadow h-full flex flex-col"
+          className="bg-card border rounded-xl p-5 sm:p-6 shadow-xs hover:shadow-md transition-shadow h-full flex flex-col"
         >
           <div className="flex items-center gap-3 mb-4">
             <div className="w-10 h-10 rounded-lg bg-gold/10 flex items-center justify-center shrink-0">

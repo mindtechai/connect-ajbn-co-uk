@@ -124,7 +124,7 @@ export default function NotificationPreferencesPage() {
           </p>
         </div>
 
-        <div className="bg-card border rounded-xl shadow-sm divide-y">
+        <div className="bg-card border rounded-xl shadow-xs divide-y">
           <div className="grid grid-cols-[1fr,80px,80px] items-center px-5 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">
             <div>Category</div>
             <div className="flex justify-center"><Bell size={14} /></div>

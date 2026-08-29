@@ -47,7 +47,7 @@ function SponsorTile({ s, size = "md" }: { s: Sponsor; size?: "sm" | "md" }) {
       href={s.url}
       target="_blank"
       rel="noopener noreferrer"
-      className="group flex flex-col items-center justify-center gap-2 rounded-lg border border-border/60 bg-background p-3 hover:border-primary/40 hover:shadow-sm transition"
+      className="group flex flex-col items-center justify-center gap-2 rounded-lg border border-border/60 bg-background p-3 hover:border-primary/40 hover:shadow-xs transition"
       aria-label={`${s.name} — ${s.label}`}
     >
       <img

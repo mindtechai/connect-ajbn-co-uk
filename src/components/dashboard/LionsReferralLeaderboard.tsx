@@ -41,7 +41,7 @@ export function LionsReferralLeaderboard() {
   }, []);
 
   return (
-    <div className="bg-card rounded-xl border border-gold/20 p-5 shadow-sm">
+    <div className="bg-card rounded-xl border border-gold/20 p-5 shadow-xs">
       {/* Header with Lions badge */}
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2.5">

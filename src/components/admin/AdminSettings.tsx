@@ -13,7 +13,7 @@ export function AdminSettings() {
         <p className="text-sm text-muted-foreground">Portal-wide configuration and admin tools.</p>
       </div>
 
-      <div className="bg-card border rounded-xl p-5 shadow-sm space-y-3">
+      <div className="bg-card border rounded-xl p-5 shadow-xs space-y-3">
         <div className="flex items-center gap-2">
           <Users size={16} className="text-primary" />
           <h2 className="font-semibold text-sm">Super admin whitelist</h2>
@@ -27,7 +27,7 @@ export function AdminSettings() {
         </ul>
       </div>
 
-      <div className="bg-card border rounded-xl p-5 shadow-sm space-y-3">
+      <div className="bg-card border rounded-xl p-5 shadow-xs space-y-3">
         <div className="flex items-center gap-2">
           <Mail size={16} className="text-primary" />
           <h2 className="font-semibold text-sm">Communications</h2>
@@ -42,7 +42,7 @@ export function AdminSettings() {
 
       <SendTestEmailCard />
 
-      <div className="bg-card border rounded-xl p-5 shadow-sm space-y-3">
+      <div className="bg-card border rounded-xl p-5 shadow-xs space-y-3">
         <div className="flex items-center gap-2">
           <Bell size={16} className="text-primary" />
           <h2 className="font-semibold text-sm">Members' preferences</h2>

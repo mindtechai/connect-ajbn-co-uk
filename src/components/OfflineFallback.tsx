@@ -16,7 +16,7 @@ export function OfflineFallback() {
   }, []);
   if (online) return null;
   return (
-    <div className="fixed inset-0 z-[100] bg-primary/95 backdrop-blur-sm grid place-items-center p-6">
+    <div className="fixed inset-0 z-[100] bg-primary/95 backdrop-blur-xs grid place-items-center p-6">
       <div className="max-w-sm w-full bg-card border rounded-2xl p-8 text-center shadow-2xl">
         <div className="mx-auto w-14 h-14 rounded-full bg-muted grid place-items-center mb-4">
           <WifiOff className="text-muted-foreground" />

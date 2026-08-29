@@ -12,7 +12,7 @@ interface Props {
 
 export function ServiceCard({ icon: Icon, title, tagline, description, cta, onClick }: Props) {
   return (
-    <div className="group relative h-full rounded-2xl border border-gold/25 bg-card/60 backdrop-blur-sm p-6 md:p-8 shadow-sm hover:border-gold/60 hover:shadow-lg transition-all flex flex-col">
+    <div className="group relative h-full rounded-2xl border border-gold/25 bg-card/60 backdrop-blur-xs p-6 md:p-8 shadow-xs hover:border-gold/60 hover:shadow-lg transition-all flex flex-col">
       <div className="w-12 h-12 rounded-xl bg-gold/10 border border-gold/30 flex items-center justify-center mb-5">
         <Icon size={22} className="text-gold" />
       </div>

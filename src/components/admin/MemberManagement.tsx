@@ -166,7 +166,7 @@ export function MemberManagement() {
           const st = statusOf(m);
           const isLion = m.roles.includes("impact_lion");
           return (
-            <div key={m.id} className="bg-card rounded-xl border p-4 shadow-sm space-y-2">
+            <div key={m.id} className="bg-card rounded-xl border p-4 shadow-xs space-y-2">
               <div className="flex items-start justify-between">
                 <div className="flex items-center gap-2">
                   <p className="font-semibold text-sm">{m.first_name} {m.last_name}</p>
@@ -181,7 +181,7 @@ export function MemberManagement() {
         })}
       </div>
 
-      <div className="hidden md:block bg-card rounded-xl border shadow-sm">
+      <div className="hidden md:block bg-card rounded-xl border shadow-xs">
         <Table>
           <TableHeader>
             <TableRow>

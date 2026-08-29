@@ -126,7 +126,7 @@ export default function EventsPage() {
         </div>
 
         {/* Flagship event highlight */}
-        <div className="mb-8 bg-gradient-to-br from-primary/10 via-teal/5 to-gold/10 border border-primary/20 rounded-2xl overflow-hidden shadow-sm">
+        <div className="mb-8 bg-gradient-to-br from-primary/10 via-teal/5 to-gold/10 border border-primary/20 rounded-2xl overflow-hidden shadow-xs">
           <div className="p-6 md:p-8 space-y-4">
             <div className="flex items-center gap-2">
               <Badge className="bg-primary/10 text-primary border-primary/20">
@@ -188,7 +188,7 @@ export default function EventsPage() {
                 </h2>
                 <div className="grid gap-4">
                   {visiblePlaceholders.map((p) => (
-                    <div key={p.id} className="bg-card border border-gold/20 rounded-2xl shadow-sm overflow-hidden">
+                    <div key={p.id} className="bg-card border border-gold/20 rounded-2xl shadow-xs overflow-hidden">
                       <div className="p-5 md:p-6 grid md:grid-cols-[auto,1fr,auto] gap-5 items-start">
                         <div className="flex md:flex-col items-center md:items-start gap-2 md:gap-1 md:min-w-[96px]">
                           <div className="text-xs uppercase tracking-wide text-gold font-medium">{p.dateLabel}</div>
@@ -266,7 +266,7 @@ export default function EventsPage() {
                 ? Math.min(100, Math.round((Number(e.fundraising_raised) / Number(e.fundraising_target)) * 100))
                 : null;
               return (
-                <div key={e.id} className="bg-card border rounded-xl shadow-sm overflow-hidden">
+                <div key={e.id} className="bg-card border rounded-xl shadow-xs overflow-hidden">
                   {e.cover_image_url && (
                     <img src={e.cover_image_url} alt="" className="w-full h-40 object-cover" />
                   )}

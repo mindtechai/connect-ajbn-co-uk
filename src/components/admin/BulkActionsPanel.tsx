@@ -190,7 +190,7 @@ export function BulkActionsPanel() {
 
         <div className="mt-6 grid lg:grid-cols-5 gap-6">
           {/* Composer */}
-          <div className="lg:col-span-3 bg-card rounded-xl border p-5 shadow-sm space-y-5">
+          <div className="lg:col-span-3 bg-card rounded-xl border p-5 shadow-xs space-y-5">
             {/* Segments */}
             <div className="space-y-2">
               <div className="flex items-center justify-between">
@@ -213,7 +213,7 @@ export function BulkActionsPanel() {
                       className={cn(
                         "flex items-center justify-between gap-2 rounded-lg border px-3 py-2.5 text-left transition-all",
                         active
-                          ? `${s.tint} border-2 shadow-sm`
+                          ? `${s.tint} border-2 shadow-xs`
                           : "border-border bg-background hover:bg-muted/50"
                       )}
                     >
@@ -378,7 +378,7 @@ export function BulkActionsPanel() {
 
           {/* Preview + recent */}
           <div className="lg:col-span-2 space-y-4">
-            <div className="bg-card rounded-xl border p-4 shadow-sm space-y-3">
+            <div className="bg-card rounded-xl border p-4 shadow-xs space-y-3">
               <h3 className="text-sm font-semibold">Preview</h3>
               <div className="rounded-lg border bg-background p-4 space-y-2">
                 {tab === "announcement" && (
@@ -415,7 +415,7 @@ export function BulkActionsPanel() {
               <h3 className="text-sm font-semibold">Recent bulk actions</h3>
               <div className="space-y-2">
                 {recentActions.map((a) => (
-                  <div key={a.id} className="bg-card rounded-lg border p-3 shadow-sm space-y-1.5">
+                  <div key={a.id} className="bg-card rounded-lg border p-3 shadow-xs space-y-1.5">
                     <div className="flex items-start justify-between gap-2">
                       <p className="text-sm font-medium leading-tight">{a.title}</p>
                       <Badge variant="outline" className="text-[10px] shrink-0 capitalize">{a.type}</Badge>

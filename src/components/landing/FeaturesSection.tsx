@@ -43,7 +43,7 @@ export function FeaturesSection() {
         <div className="grid md:grid-cols-2 gap-6 max-w-4xl mx-auto">
           {features.map((f, i) => (
             <ScrollReveal key={f.title} delay={i * 90}>
-              <div className="group bg-card rounded-xl p-7 shadow-sm hover:shadow-md transition-shadow border">
+              <div className="group bg-card rounded-xl p-7 shadow-xs hover:shadow-md transition-shadow border">
                 <div className="w-11 h-11 rounded-lg bg-secondary flex items-center justify-center mb-4 group-hover:bg-primary group-hover:text-primary-foreground transition-colors">
                   <f.icon size={22} />
                 </div>

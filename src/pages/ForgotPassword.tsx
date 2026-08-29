@@ -30,7 +30,7 @@ export default function ForgotPasswordPage() {
 
   return (
     <div className="min-h-screen grid place-items-center bg-background px-4">
-      <div className="w-full max-w-sm bg-card border rounded-2xl p-8 shadow-sm">
+      <div className="w-full max-w-sm bg-card border rounded-2xl p-8 shadow-xs">
         <Link to="/" className="flex items-center gap-2 mb-2">
           <img src={assetUrl(ajbnLogo)} alt="AJBN" className="h-10 w-10 rounded-md object-cover" />
           <span className="font-display text-2xl font-bold text-primary">AJBN</span>

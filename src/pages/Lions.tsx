@@ -110,7 +110,7 @@ export default function LionsPage() {
           <div className="grid md:grid-cols-3 gap-6">
             {benefits.map((b, i) => (
               <ScrollReveal key={i} delay={i * 80}>
-                <div className="h-full rounded-xl border bg-card p-6 shadow-sm hover:shadow-md transition-shadow">
+                <div className="h-full rounded-xl border bg-card p-6 shadow-xs hover:shadow-md transition-shadow">
                   <div className="w-10 h-10 rounded-lg bg-gold/10 flex items-center justify-center mb-4">
                     <b.icon size={20} className="text-gold" />
                   </div>
@@ -127,7 +127,7 @@ export default function LionsPage() {
           <div className="grid md:grid-cols-3 gap-6">
             {contributions.map((c, i) => (
               <ScrollReveal key={c.title} delay={i * 80}>
-                <div className="h-full rounded-xl border bg-card p-6 shadow-sm">
+                <div className="h-full rounded-xl border bg-card p-6 shadow-xs">
                   <div className="w-10 h-10 rounded-lg bg-gold/10 flex items-center justify-center mb-4">
                     <c.icon size={20} className="text-gold" />
                   </div>

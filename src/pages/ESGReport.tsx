@@ -139,7 +139,7 @@ export default function ESGReportPage() {
               <StatCard label="Social impact score" value="85%" icon={Trophy} tint="text-gold" />
             </div>
 
-            <div className="bg-card border rounded-xl shadow-sm divide-y">
+            <div className="bg-card border rounded-xl shadow-xs divide-y">
               <div className="px-5 py-3 text-xs font-medium text-muted-foreground uppercase tracking-wide">
                 {filtered.length} contribution{filtered.length !== 1 && "s"} in {year}
               </div>
@@ -178,7 +178,7 @@ export default function ESGReportPage() {
 
 function StatCard({ label, value, icon: Icon, tint }: { label: string; value: string; icon: any; tint: string }) {
   return (
-    <div className="bg-card border rounded-xl p-4 shadow-sm">
+    <div className="bg-card border rounded-xl p-4 shadow-xs">
       <div className="flex items-center gap-2 mb-1.5">
         <Icon size={14} className={tint} />
         <p className="text-xs text-muted-foreground">{label}</p>

@@ -55,7 +55,7 @@ export function DirectMessagingPublicSection() {
             <div className="grid md:grid-cols-3 gap-5 mb-10">
               {steps.map((step, i) => (
                 <ScrollReveal key={step.title} delay={i * 100}>
-                  <div className="relative bg-primary-foreground/5 border border-primary-foreground/10 rounded-xl p-6 h-full backdrop-blur-sm hover:bg-primary-foreground/10 transition-colors">
+                  <div className="relative bg-primary-foreground/5 border border-primary-foreground/10 rounded-xl p-6 h-full backdrop-blur-xs hover:bg-primary-foreground/10 transition-colors">
                     <div className="absolute top-4 right-4 text-5xl font-display font-bold text-primary-foreground/5">
                       {i + 1}
                     </div>

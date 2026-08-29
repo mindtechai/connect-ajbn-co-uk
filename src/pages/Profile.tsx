@@ -126,7 +126,7 @@ export default function ProfilePage() {
         <h1 className="text-2xl md:text-3xl font-display font-bold mb-1">Your profile</h1>
         <p className="text-sm text-muted-foreground mb-6">Kept private within the AJBN member network.</p>
 
-        <div className="bg-card border rounded-xl p-6 shadow-sm space-y-5">
+        <div className="bg-card border rounded-xl p-6 shadow-xs space-y-5">
           <div className="flex items-center gap-4 pb-4 border-b">
             <div className="h-16 w-16 rounded-full bg-muted overflow-hidden flex items-center justify-center text-lg font-semibold text-muted-foreground">
               {form.avatar_url ? <img src={form.avatar_url} alt="" className="h-full w-full object-cover" /> : (form.first_name[0] ?? "?")}

@@ -68,7 +68,7 @@ export function LionApplications() {
         <div className="bg-card border rounded-xl p-8 text-center text-sm text-muted-foreground">No pending applications.</div>
       )}
       {rows.map((r) => (
-        <div key={r.id} className="bg-card border rounded-xl p-4 shadow-sm space-y-3">
+        <div key={r.id} className="bg-card border rounded-xl p-4 shadow-xs space-y-3">
           <div className="flex items-start justify-between gap-3">
             <div>
               <p className="font-semibold text-sm">{r.profiles?.first_name} {r.profiles?.last_name}</p>

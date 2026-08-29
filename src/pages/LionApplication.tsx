@@ -75,7 +75,7 @@ export default function LionApplicationPage() {
             )}
           </div>
         ) : (
-          <div className="bg-card border rounded-xl p-6 shadow-sm space-y-5">
+          <div className="bg-card border rounded-xl p-6 shadow-xs space-y-5">
             {existing && (
               <div className="flex items-center gap-2">
                 <span className="text-sm text-muted-foreground">Current status:</span>

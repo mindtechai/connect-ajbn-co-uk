@@ -60,7 +60,7 @@ export function AnalyticsOverview() {
       {/* KPI Cards */}
       <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
         {kpis.map((kpi) => (
-          <div key={kpi.label} className="bg-card rounded-xl border p-4 shadow-sm">
+          <div key={kpi.label} className="bg-card rounded-xl border p-4 shadow-xs">
             <div className="flex items-center gap-2 mb-2">
               <kpi.icon size={16} className={kpi.color} />
               <span className="text-xs text-muted-foreground font-medium">{kpi.label}</span>
@@ -76,7 +76,7 @@ export function AnalyticsOverview() {
       {/* Charts row */}
       <div className="grid lg:grid-cols-2 gap-5">
         {/* Membership growth */}
-        <div className="bg-card rounded-xl border p-5 shadow-sm">
+        <div className="bg-card rounded-xl border p-5 shadow-xs">
           <h3 className="text-sm font-semibold mb-4">Membership Growth</h3>
           <ResponsiveContainer width="100%" height={240}>
             <AreaChart data={membershipGrowth}>
@@ -114,7 +114,7 @@ export function AnalyticsOverview() {
         </div>
 
         {/* Revenue */}
-        <div className="bg-card rounded-xl border p-5 shadow-sm">
+        <div className="bg-card rounded-xl border p-5 shadow-xs">
           <h3 className="text-sm font-semibold mb-4">Revenue Breakdown</h3>
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={revenueData}>
@@ -137,7 +137,7 @@ export function AnalyticsOverview() {
         </div>
 
         {/* Event attendance */}
-        <div className="bg-card rounded-xl border p-5 shadow-sm">
+        <div className="bg-card rounded-xl border p-5 shadow-xs">
           <h3 className="text-sm font-semibold mb-4">Event Attendance</h3>
           <ResponsiveContainer width="100%" height={240}>
             <BarChart data={eventAttendance} layout="vertical">
@@ -159,7 +159,7 @@ export function AnalyticsOverview() {
         </div>
 
         {/* Member status pie */}
-        <div className="bg-card rounded-xl border p-5 shadow-sm">
+        <div className="bg-card rounded-xl border p-5 shadow-xs">
           <h3 className="text-sm font-semibold mb-4">Member Status</h3>
           <div className="flex items-center justify-center">
             <ResponsiveContainer width="100%" height={240}>
