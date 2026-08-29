@@ -29,7 +29,9 @@ const Index = () => {
     <div className="min-h-screen pb-[calc(env(safe-area-inset-bottom)+72px)] md:pb-0">
       <Navbar />
       <HeroSection />
+      <FlagshipEventSEOSection />
       <StatsSection />
+
       <AboutSection />
       <FeaturesSection />
       <DirectMessagingPublicSection />
