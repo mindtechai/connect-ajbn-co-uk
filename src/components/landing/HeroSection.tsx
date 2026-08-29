@@ -49,9 +49,10 @@ export function HeroSection() {
               </Link>
               <a href="#about">
                 <Button variant="heroOutline" size="xl">
-                  Learn More
+                  About AJBN &amp; our mission
                 </Button>
               </a>
+
               <Link to="/referral-rewards">
                 <Button variant="heroOutline" size="xl">
                   Members Referral Rewards
