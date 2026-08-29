@@ -21,7 +21,7 @@ const DEAL_TYPES = [
 export function LogActivityDialog({ onLogged }: { onLogged?: () => void }) {
   const [open, setOpen] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [dealType, setDealType] = useState(DEAL_TYPES[0]);
+  const [dealType, setDealType] = useState<string>(DEAL_TYPES[0] ?? "");
   const [amount, setAmount] = useState("");
   const [counterparty, setCounterparty] = useState("");
   const [notes, setNotes] = useState("");
@@ -44,7 +44,7 @@ export function LogActivityDialog({ onLogged }: { onLogged?: () => void }) {
     toast.success("Activity Logged Successfully!", {
       description: `${dealType} · £${value.toLocaleString("en-GB")} added to the network ticker.`,
     });
-    setAmount(""); setCounterparty(""); setNotes(""); setDealType(DEAL_TYPES[0]);
+    setAmount(""); setCounterparty(""); setNotes(""); setDealType(DEAL_TYPES[0] ?? "");
     setOpen(false);
     onLogged?.();
     setTimeout(() => setBusy(false), 800);

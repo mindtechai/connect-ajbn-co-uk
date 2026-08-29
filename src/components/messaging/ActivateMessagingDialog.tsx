@@ -9,8 +9,8 @@ import { startOrGetConversation } from "@/lib/demoMessaging";
 interface Props {
   open: boolean;
   onOpenChange: (v: boolean) => void;
-  recipientName?: string;
-  recipientId?: string;
+  recipientName?: string | undefined;
+  recipientId?: string | undefined;
   onActivated?: () => void;
   activate: () => Promise<void>;
 }
@@ -29,7 +29,7 @@ export function ActivateMessagingDialog({ open, onOpenChange, recipientName, rec
         const [first, ...rest] = (recipientName ?? "Member").split(" ");
         const id = startOrGetConversation({
           id: recipientId,
-          first_name: first,
+          first_name: first ?? null,
           last_name: rest.join(" "),
         });
         navigate(`/messages/${id}`);

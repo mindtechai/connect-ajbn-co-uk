@@ -7,6 +7,7 @@ import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,
 } from "@/components/ui/dialog";
 import { supabase } from "@/integrations/supabase/client";
+import { deleteAccount } from "@/lib/delete-account.functions";
 import { toast } from "@/hooks/use-toast";
 import { Loader2, Trash2 } from "lucide-react";
 
@@ -22,8 +23,7 @@ export function DeleteAccountDialog() {
     if (!canDelete) return;
     setBusy(true);
     try {
-      const { error } = await supabase.functions.invoke("delete-account");
-      if (error) throw error;
+      await deleteAccount();
       await supabase.auth.signOut();
       toast({ title: "Account successfully deleted." });
       navigate("/", { replace: true });

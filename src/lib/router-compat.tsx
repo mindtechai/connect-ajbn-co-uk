@@ -7,25 +7,24 @@ import {
   useNavigate as tsNavigate,
   useLocation as tsLocation,
   useParams as tsParams,
-  useSearch as tsSearch,
   useRouter,
   Link as TSLink,
   Navigate as TSNavigate,
   Outlet as TSOutlet,
 } from "@tanstack/react-router";
-import { useMemo, useCallback, forwardRef, type ComponentProps, type ReactNode } from "react";
+import { useMemo, useCallback, useEffect, useRef, forwardRef, type ComponentProps, type ReactNode } from "react";
 
 // ---------- shared URL parsing ----------
 
 function parseTo(to: string): { pathname: string; search?: Record<string, string>; hash?: string } {
-  const [beforeHash, hashStr] = (to ?? "").split("#");
-  const [pathname, searchStr] = beforeHash.split("?");
+  const [beforeHash = "", hashStr] = (to ?? "").split("#");
+  const [pathname = "", searchStr] = beforeHash.split("?");
   return {
     // react-router keeps the current path for search-only ("?a=1") and
     // hash-only ("#section") targets; TanStack's "." means current route.
     pathname: pathname || ".",
-    search: searchStr ? Object.fromEntries(new URLSearchParams(searchStr)) : undefined,
-    hash: hashStr || undefined,
+    ...(searchStr ? { search: Object.fromEntries(new URLSearchParams(searchStr)) } : {}),
+    ...(hashStr ? { hash: hashStr } : {}),
   };
 }
 
@@ -49,10 +48,10 @@ export function useNavigate(): NavigateFn {
     const { pathname, search, hash } = parseTo(to);
     tsNav({
       to: pathname,
-      search: search as never,
-      hash,
-      state: options?.state as never,
-      replace: options?.replace,
+      search: (search ?? {}) as never,
+      ...(hash !== undefined ? { hash } : {}),
+      ...(options?.state !== undefined ? { state: options.state as never } : {}),
+      ...(options?.replace !== undefined ? { replace: options.replace } : {}),
     });
   }, [tsNav, router]) as NavigateFn;
 }
@@ -105,7 +104,11 @@ export function useSearchParams(): [URLSearchParams, (init: URLSearchParams | Re
             : new URLSearchParams(init);
       const searchObj: Record<string, string> = {};
       next.forEach((v, k) => { searchObj[k] = v; });
-      nav({ to: live.pathname, search: searchObj as never, replace: opts?.replace });
+      nav({
+        to: live.pathname,
+        search: searchObj as never,
+        ...(opts?.replace !== undefined ? { replace: opts.replace } : {}),
+      });
     },
     [nav, router],
   );
@@ -130,10 +133,10 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link(
     <TSLink
       ref={ref as never}
       to={pathname as never}
-      search={search as never}
-      hash={hash}
-      replace={replace}
-      state={state as never}
+      search={(search ?? {}) as never}
+      {...(hash !== undefined ? { hash } : {})}
+      {...(replace !== undefined ? { replace } : {})}
+      {...(state !== undefined ? { state: state as never } : {})}
       {...((rest ?? {}) as Record<string, unknown>)}
     >
       {children}
@@ -145,8 +148,27 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link(
 // ---------- Navigate ----------
 
 export function Navigate({ to, replace, state }: { to: string; replace?: boolean; state?: unknown }) {
-  const { pathname, search, hash } = parseTo(to);
-  return <TSNavigate to={pathname as never} search={search as never} hash={hash} state={state as never} replace={replace} />;
+  const tsNav = tsNavigate();
+  // One-shot imperative redirect pinned to the FIRST target this mount saw.
+  // <TSNavigate> re-fires on every parent render (the parsed `search` object
+  // gets a fresh identity), which loops "Maximum update depth exceeded" when
+  // a guard like RequireAuth re-renders mid-transition — and any re-fire
+  // computes `to` from the already-updated pathname, clobbering redirect
+  // params like ?next=. Guards render Navigate once per decision, so the
+  // first target wins for the lifetime of the mount.
+  const targetRef = useRef(to);
+  useEffect(() => {
+    const { pathname, search, hash } = parseTo(targetRef.current);
+    tsNav({
+      to: pathname as never,
+      search: (search ?? {}) as never,
+      ...(hash !== undefined ? { hash } : {}),
+      ...(state !== undefined ? { state: state as never } : {}),
+      ...(replace !== undefined ? { replace } : {}),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+  return null;
 }
 
 // ---------- Outlet ----------

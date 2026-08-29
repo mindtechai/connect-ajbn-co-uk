@@ -116,7 +116,7 @@ function IntroRow({
   onStatus,
 }: {
   row: Row;
-  requester?: Requester;
+  requester: Requester | undefined;
   onStatus: (id: string, status: Status, patch?: Record<string, unknown>) => Promise<void>;
 }) {
   const [openComplete, setOpenComplete] = useState(false);

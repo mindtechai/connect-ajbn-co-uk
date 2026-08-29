@@ -2,8 +2,8 @@ import { useEffect, useState } from "react";
 import { useSearchParams } from "@/lib/router-compat";
 import { Button } from "@/components/ui/button";
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
-const SUPABASE_ANON = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY as string;
+const SUPABASE_URL = import.meta.env["VITE_SUPABASE_URL"] as string;
+const SUPABASE_ANON = import.meta.env["VITE_SUPABASE_PUBLISHABLE_KEY"] as string;
 
 type State =
   | { kind: "loading" }
