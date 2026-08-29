@@ -12,7 +12,7 @@ import {
   Navigate as TSNavigate,
   Outlet as TSOutlet,
 } from "@tanstack/react-router";
-import { useMemo, useCallback, forwardRef, type ComponentProps, type ReactNode } from "react";
+import { useMemo, useCallback, useEffect, forwardRef, type ComponentProps, type ReactNode } from "react";
 
 // ---------- shared URL parsing ----------
 
@@ -148,16 +148,23 @@ export const Link = forwardRef<HTMLAnchorElement, LinkProps>(function Link(
 // ---------- Navigate ----------
 
 export function Navigate({ to, replace, state }: { to: string; replace?: boolean; state?: unknown }) {
-  const { pathname, search, hash } = parseTo(to);
-  return (
-    <TSNavigate
-      to={pathname as never}
-      search={(search ?? {}) as never}
-      {...(hash !== undefined ? { hash } : {})}
-      {...(replace !== undefined ? { replace } : {})}
-      {...(state !== undefined ? { state: state as never } : {})}
-    />
-  );
+  const tsNav = tsNavigate();
+  // Imperative redirect keyed on the target string. <TSNavigate> re-fires on
+  // every parent render because the parsed `search` object gets a fresh
+  // identity, which loops "Maximum update depth exceeded" when a guard like
+  // RequireAuth re-renders mid-transition.
+  useEffect(() => {
+    const { pathname, search, hash } = parseTo(to);
+    tsNav({
+      to: pathname as never,
+      search: (search ?? {}) as never,
+      ...(hash !== undefined ? { hash } : {}),
+      ...(state !== undefined ? { state: state as never } : {}),
+      ...(replace !== undefined ? { replace } : {}),
+    });
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [to]);
+  return null;
 }
 
 // ---------- Outlet ----------
