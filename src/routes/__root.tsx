@@ -50,34 +50,9 @@ const softwareApplicationSchema = {
   offers: { "@type": "Offer", category: "Membership" },
 };
 
-const flagshipEventSchema = {
-  "@context": "https://schema.org",
-  "@type": "BusinessEvent",
-  name: "AJBN Flagship B2B Networking Exhibition & Corporate Event",
-  description:
-    "Corporate Networking Exhibition in London hosting founders, investors and corporate leaders for cross-communal business networking and B2B strategic partnerships.",
-  startDate: "2026-10-19T18:00:00+01:00",
-  endDate: "2026-10-19T22:00:00+01:00",
-  eventStatus: "https://schema.org/EventScheduled",
-  eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
-  url: "https://connect.ajbn.co.uk/tickets/flagship",
-  location: {
-    "@type": "Place",
-    name: "London Marriott Hotel Regent's Park",
-    address: {
-      "@type": "PostalAddress",
-      streetAddress: "128 King Henry\u2019s Rd",
-      addressLocality: "London",
-      postalCode: "NW3 3BY",
-      addressCountry: "GB",
-    },
-  },
-  organizer: {
-    "@type": "Organization",
-    name: "Asian Jewish Business Network",
-    url: "https://connect.ajbn.co.uk",
-  },
-};
+// The flagship BusinessEvent schema lives on src/routes/tickets/flagship.tsx
+// so event rich results are only claimed on the event page itself.
+
 
 export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()({
   head: () => ({
@@ -138,7 +113,6 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     ],
     links: [
       { rel: "stylesheet", href: appCss },
-      { rel: "canonical", href: "https://connect.ajbn.co.uk/" },
       {
         rel: "icon",
         type: "image/jpeg",
@@ -153,8 +127,8 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     scripts: [
       { type: "application/ld+json", children: JSON.stringify(organizationSchema) },
       { type: "application/ld+json", children: JSON.stringify(softwareApplicationSchema) },
-      { type: "application/ld+json", children: JSON.stringify(flagshipEventSchema) },
     ],
+
   }),
   shellComponent: RootShell,
   component: RootComponent,
