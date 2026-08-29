@@ -1,4 +1,4 @@
-import { NavLink, useLocation } from "react-router-dom";
+import { Link, useLocation } from "@/lib/router-compat";
 import { Home, BookUser, MessageCircle, Briefcase, User } from "lucide-react";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
@@ -25,21 +25,26 @@ export function MobileTabBar() {
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
     >
       <ul className="grid grid-cols-5">
-        {TABS.map(({ to, label, icon: Icon }) => (
-          <li key={to}>
-            <NavLink
-              to={to}
-              end={to === "/dashboard"}
-              className={({ isActive }) => cn(
-                "flex flex-col items-center justify-center gap-0.5 py-2 min-h-[56px] text-[10px] font-medium transition-colors",
-                isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
-              )}
-            >
-              <Icon size={20} aria-hidden />
-              <span>{label}</span>
-            </NavLink>
-          </li>
-        ))}
+        {TABS.map(({ to, label, icon: Icon }) => {
+          const isActive =
+            to === "/dashboard"
+              ? pathname === "/dashboard"
+              : pathname === to || pathname.startsWith(`${to}/`);
+          return (
+            <li key={to}>
+              <Link
+                to={to}
+                className={cn(
+                  "flex flex-col items-center justify-center gap-0.5 py-2 min-h-[56px] text-[10px] font-medium transition-colors",
+                  isActive ? "text-primary" : "text-muted-foreground hover:text-foreground"
+                )}
+              >
+                <Icon size={20} aria-hidden />
+                <span>{label}</span>
+              </Link>
+            </li>
+          );
+        })}
       </ul>
     </nav>
   );

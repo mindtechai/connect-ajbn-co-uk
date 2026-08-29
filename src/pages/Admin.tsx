@@ -1,4 +1,4 @@
-import { useNavigate, useLocation } from "react-router-dom";
+import { useNavigate, useLocation } from "@/lib/router-compat";
 import { Bell, LogOut, Shield } from "lucide-react";
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
 import { assetUrl } from "@/lib/asset";

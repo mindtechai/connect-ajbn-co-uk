@@ -40,7 +40,7 @@ export function NetworkTicker({ refreshKey = 0 }: { refreshKey?: number }) {
   }, [target]);
 
   return (
-    <div className="relative overflow-hidden rounded-xl border bg-navy-gradient text-white shadow-sm px-5 py-4 md:px-6 md:py-5">
+    <div className="relative overflow-hidden rounded-xl border bg-navy-gradient text-white shadow-xs px-5 py-4 md:px-6 md:py-5">
       <div className="absolute inset-0 opacity-10 pointer-events-none" aria-hidden>
         <div className="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-gold blur-3xl" />
       </div>

@@ -95,7 +95,7 @@ export function ESGManagement() {
           <p className="text-sm text-muted-foreground">Nothing recorded yet.</p>
         </div>
       ) : (
-        <div className="bg-card border rounded-xl shadow-sm divide-y">
+        <div className="bg-card border rounded-xl shadow-xs divide-y">
           {rows.map((r) => {
             const Icon = r.kind === "donation" ? HandCoins :
                          r.kind === "sponsorship" ? HeartHandshake :

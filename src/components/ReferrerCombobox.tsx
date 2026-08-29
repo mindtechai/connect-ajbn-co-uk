@@ -50,7 +50,7 @@ export function ReferrerCombobox({
           <ChevronsUpDown size={14} className="opacity-50 shrink-0" />
         </Button>
       </PopoverTrigger>
-      <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+      <PopoverContent className="w-[var(--radix-popover-trigger-width)] p-0" align="start">
         <Command>
           <CommandInput placeholder="Type a name or company…" />
           <CommandList>

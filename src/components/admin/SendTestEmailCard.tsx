@@ -80,7 +80,7 @@ export function SendTestEmailCard() {
   };
 
   return (
-    <div className="bg-card border rounded-xl p-5 shadow-sm space-y-4">
+    <div className="bg-card border rounded-xl p-5 shadow-xs space-y-4">
       <div className="flex items-center gap-2">
         <Mail size={16} className="text-primary" />
         <h2 className="font-semibold text-sm">Send test email</h2>

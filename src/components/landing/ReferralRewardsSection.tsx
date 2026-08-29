@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { Button } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { Handshake, Users, Trophy, ArrowRight } from "lucide-react";
@@ -43,7 +43,7 @@ export function ReferralRewardsSection() {
         <div className="grid md:grid-cols-3 gap-6 mb-10">
           {items.map((it, i) => (
             <ScrollReveal key={it.title} delay={i * 80}>
-              <div className="h-full rounded-xl border bg-card p-6 shadow-sm hover:shadow-md transition-shadow">
+              <div className="h-full rounded-xl border bg-card p-6 shadow-xs hover:shadow-md transition-shadow">
                 <div className="w-10 h-10 rounded-lg bg-gold/10 flex items-center justify-center mb-4">
                   <it.icon size={20} className="text-gold" />
                 </div>

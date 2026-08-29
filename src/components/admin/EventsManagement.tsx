@@ -108,7 +108,7 @@ export function EventsManagement() {
       ) : (
         <div className="grid md:grid-cols-2 gap-4">
           {events.map((e) => (
-            <div key={e.id} className="bg-card border rounded-xl p-5 shadow-sm space-y-2">
+            <div key={e.id} className="bg-card border rounded-xl p-5 shadow-xs space-y-2">
               <div className="flex items-start justify-between gap-2">
                 <div>
                   <Badge variant="outline" className="text-xs capitalize">{e.kind}</Badge>

@@ -103,7 +103,7 @@ export function AboutSection() {
         <div className="grid md:grid-cols-3 gap-6">
           {team.map((m, i) => (
             <ScrollReveal key={m.name} delay={i * 90}>
-              <div className="bg-card border rounded-xl overflow-hidden h-full flex flex-col shadow-sm hover:shadow-md transition-shadow">
+              <div className="bg-card border rounded-xl overflow-hidden h-full flex flex-col shadow-xs hover:shadow-md transition-shadow">
                 <div className="aspect-[4/5] bg-muted overflow-hidden">
                   <img
                     src={m.image}

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { Link, useSearchParams } from "react-router-dom";
+import { Link, useSearchParams } from "@/lib/router-compat";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { CheckCircle2, XCircle, Loader2, Mail, Undo2 } from "lucide-react";
@@ -55,7 +55,7 @@ export default function UnsubscribePage() {
 
   return (
     <AppLayout back={null} maxWidth="md" mainClassName="container mx-auto px-4 py-12 grid place-items-center">
-      <div className="max-w-md w-full bg-card border rounded-2xl shadow-sm p-8 text-center space-y-4">
+      <div className="max-w-md w-full bg-card border rounded-2xl shadow-xs p-8 text-center space-y-4">
         {state === "validating" && (
           <>
             <Loader2 className="mx-auto animate-spin text-muted-foreground" />

@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation } from "@/lib/router-compat";
 import { Button } from "@/components/ui/button";
 import { Menu, X, LayoutDashboard, LogOut, User as UserIcon } from "lucide-react";
 import { useState, useEffect } from "react";
@@ -29,7 +29,7 @@ export function Navbar() {
   const showSolid = !isLanding || scrolled;
 
   return (
-    <nav className={`fixed top-0 left-0 right-0 z-50 pt-[env(safe-area-inset-top)] transition-all duration-300 ${showSolid ? "bg-card shadow-sm" : "bg-transparent"}`}>
+    <nav className={`fixed top-0 left-0 right-0 z-50 pt-[env(safe-area-inset-top)] transition-all duration-300 ${showSolid ? "bg-card shadow-xs" : "bg-transparent"}`}>
       <div className="container mx-auto flex justify-between items-center h-20 px-4 lg:px-8">
         <div className="flex items-center gap-2 sm:gap-3 min-w-0">
           <Link
@@ -93,7 +93,7 @@ export function Navbar() {
           {user ? (
             <div className="flex items-center gap-3">
               <div className={`flex items-center gap-2 ${showSolid ? "text-foreground" : "text-primary-foreground"}`}>
-                <div className="h-9 w-9 rounded-full bg-gold/90 text-primary grid place-items-center font-semibold ring-2 ring-gold/60 shadow-sm">
+                <div className="h-9 w-9 rounded-full bg-gold/90 text-primary grid place-items-center font-semibold ring-2 ring-gold/60 shadow-xs">
                   {initial}
                 </div>
                 <span className="text-sm font-medium max-w-[160px] truncate hidden lg:inline" title={displayName}>

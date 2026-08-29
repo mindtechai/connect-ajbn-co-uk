@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { Button } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { CalendarDays, MapPin } from "lucide-react";
@@ -19,7 +19,7 @@ export function FlagshipEventSEOSection() {
             Next High-Profile B2B Event
           </h2>
 
-          <article className="rounded-xl border bg-card p-6 md:p-8 shadow-sm">
+          <article className="rounded-xl border bg-card p-6 md:p-8 shadow-xs">
             <h3 className="text-xl md:text-2xl font-display font-semibold text-foreground mb-4">
               AJBN Flagship B2B Networking Exhibition &amp; Corporate Event
             </h3>

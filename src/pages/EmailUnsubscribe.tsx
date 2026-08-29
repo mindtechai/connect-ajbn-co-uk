@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useSearchParams } from "react-router-dom";
+import { useSearchParams } from "@/lib/router-compat";
 import { Button } from "@/components/ui/button";
 
 const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL as string;
@@ -83,7 +83,7 @@ export default function EmailUnsubscribePage() {
 
   return (
     <main className="min-h-screen bg-background flex items-center justify-center p-6">
-      <div className="max-w-md w-full bg-card border rounded-lg p-8 shadow-sm">
+      <div className="max-w-md w-full bg-card border rounded-lg p-8 shadow-xs">
         <h1 className="text-2xl font-bold mb-4">Email preferences</h1>
         {state.kind === "loading" && (
           <p className="text-muted-foreground">Checking your unsubscribe link…</p>

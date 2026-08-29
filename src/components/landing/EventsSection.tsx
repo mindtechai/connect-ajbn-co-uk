@@ -18,7 +18,7 @@ import {
   DialogHeader,
   DialogTitle,
 } from "@/components/ui/dialog";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "sonner";
 import prideviewLogo from "@/assets/prideview-group.jpg.asset.json";
@@ -251,7 +251,7 @@ export function EventsSection() {
               return (
 
                 <ScrollReveal key={e.id}>
-                  <article className="bg-card border border-border/60 rounded-2xl shadow-sm overflow-hidden hover:shadow-md transition-shadow">
+                  <article className="bg-card border border-border/60 rounded-2xl shadow-xs overflow-hidden hover:shadow-md transition-shadow">
                     <div className="p-6 md:p-8 grid md:grid-cols-[auto,1fr,auto] gap-6 items-start">
                       <div className="flex md:flex-col items-center md:items-start gap-3 md:gap-1 md:min-w-[96px]">
                         {e.isPlaceholder ? (

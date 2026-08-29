@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { Button } from "@/components/ui/button";
@@ -161,7 +161,7 @@ export default function ReferralRewardsPage() {
           <div className="grid md:grid-cols-3 gap-6">
             {capitalConnectSteps.map((s, i) => (
               <ScrollReveal key={s.title} delay={i * 80}>
-                <div className="h-full rounded-xl border bg-card p-6 shadow-sm hover:shadow-md transition-shadow">
+                <div className="h-full rounded-xl border bg-card p-6 shadow-xs hover:shadow-md transition-shadow">
                   <div className="w-10 h-10 rounded-lg bg-gold/10 flex items-center justify-center mb-4">
                     <s.icon size={20} className="text-gold" />
                   </div>
@@ -195,7 +195,7 @@ export default function ReferralRewardsPage() {
           <div className="grid md:grid-cols-3 gap-6">
             {memberGetMemberSteps.map((s, i) => (
               <ScrollReveal key={s.title} delay={i * 80}>
-                <div className="h-full rounded-xl border bg-card p-6 shadow-sm hover:shadow-md transition-shadow">
+                <div className="h-full rounded-xl border bg-card p-6 shadow-xs hover:shadow-md transition-shadow">
                   <div className="w-10 h-10 rounded-lg bg-primary/10 flex items-center justify-center mb-4">
                     <s.icon size={20} className="text-primary" />
                   </div>

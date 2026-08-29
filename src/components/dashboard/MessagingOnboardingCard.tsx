@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { MessageCircle, ArrowRight, ShieldCheck, X, CheckCircle2 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
@@ -39,7 +39,7 @@ export function MessagingOnboardingCard() {
   };
 
   return (
-    <div className="relative mb-6 overflow-hidden rounded-xl border bg-navy-gradient text-white shadow-sm">
+    <div className="relative mb-6 overflow-hidden rounded-xl border bg-navy-gradient text-white shadow-xs">
       <div className="absolute inset-0 opacity-10 pointer-events-none" aria-hidden>
         <div className="absolute -right-16 -top-16 w-64 h-64 rounded-full bg-teal blur-3xl" />
         <div className="absolute -left-10 -bottom-10 w-40 h-40 rounded-full bg-gold blur-3xl" />

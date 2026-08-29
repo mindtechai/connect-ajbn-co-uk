@@ -1,7 +1,7 @@
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, ArrowLeft } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 
 const EXTERNAL_URL = "https://www.ajbn.co.uk/sponsors-partners/";
 
@@ -47,7 +47,7 @@ export default function SponsorsPartnersPage() {
             {SPONSORS.map((s) => (
               <article
                 key={s.name}
-                className="rounded-xl border bg-card p-6 shadow-sm flex flex-col items-center text-center gap-4"
+                className="rounded-xl border bg-card p-6 shadow-xs flex flex-col items-center text-center gap-4"
               >
                 <div className="w-full h-32 flex items-center justify-center">
                   <img
@@ -75,7 +75,7 @@ export default function SponsorsPartnersPage() {
           </div>
         </section>
 
-        <section className="rounded-xl border bg-card p-6 md:p-8 shadow-sm space-y-5">
+        <section className="rounded-xl border bg-card p-6 md:p-8 shadow-xs space-y-5">
           <p className="text-sm text-muted-foreground">
             Our full, up-to-date sponsors and partners directory is maintained on the
             AJBN public website. Open it below — you can return to the app at any

@@ -39,7 +39,7 @@ export function ReferralLeaderboard() {
   }, []);
 
   return (
-    <div className="bg-card rounded-xl border p-5 shadow-sm">
+    <div className="bg-card rounded-xl border p-5 shadow-xs">
       <div className="flex items-center justify-between mb-5">
         <div className="flex items-center gap-2">
           <TrendingUp size={16} className="text-muted-foreground" />

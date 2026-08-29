@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { ArrowLeft } from "lucide-react";
 import { BrandLink } from "@/components/BrandLink";
 import { DeveloperCredit } from "@/components/DeveloperCredit";
@@ -38,7 +38,7 @@ export function AppLayout({
       {/* Skip link: appears on keyboard focus, jumps past the header */}
       <a
         href="#main-content"
-        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[60] focus:rounded-md focus:bg-primary focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-primary-foreground focus:shadow-lg focus:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+        className="sr-only focus:not-sr-only focus:fixed focus:top-2 focus:left-2 focus:z-[60] focus:rounded-md focus:bg-primary focus:px-3 focus:py-2 focus:text-sm focus:font-medium focus:text-primary-foreground focus:shadow-lg focus:outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
       >
         Skip to main content
       </a>
@@ -59,7 +59,7 @@ export function AppLayout({
               <Link
                 to={back.to}
                 aria-label={`Back to ${back.label}`}
-                className="text-foreground/80 hover:text-foreground focus-visible:text-foreground flex items-center gap-1.5 text-sm font-medium rounded-md px-1 -mx-1 outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card min-h-11 min-w-11 sm:min-h-0 sm:min-w-0"
+                className="text-foreground/80 hover:text-foreground focus-visible:text-foreground flex items-center gap-1.5 text-sm font-medium rounded-md px-1 -mx-1 outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 focus-visible:ring-offset-card min-h-11 min-w-11 sm:min-h-0 sm:min-w-0"
               >
                 <ArrowLeft size={14} aria-hidden="true" focusable="false" />
                 <span>{back.label}</span>
@@ -73,7 +73,7 @@ export function AppLayout({
       <main
         id="main-content"
         tabIndex={-1}
-        className={`${mainClassName} ${MAX_W[maxWidth]} focus:outline-none pb-[calc(env(safe-area-inset-bottom)+72px)] md:pb-8`}
+        className={`${mainClassName} ${MAX_W[maxWidth]} focus:outline-hidden pb-[calc(env(safe-area-inset-bottom)+72px)] md:pb-8`}
       >
         {children}
       </main>

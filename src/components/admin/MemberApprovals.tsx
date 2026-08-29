@@ -141,7 +141,7 @@ export function MemberApprovals() {
 
       <div className="md:hidden space-y-3">
         {filtered.map((m) => (
-          <div key={m.id} className="bg-card rounded-xl border p-4 shadow-sm space-y-3">
+          <div key={m.id} className="bg-card rounded-xl border p-4 shadow-xs space-y-3">
             <div>
               <p className="font-semibold text-sm">{m.first_name} {m.last_name}</p>
               <p className="text-xs text-muted-foreground">{[m.company, m.industry].filter(Boolean).join(" · ")}</p>
@@ -162,7 +162,7 @@ export function MemberApprovals() {
         )}
       </div>
 
-      <div className="hidden md:block bg-card rounded-xl border shadow-sm">
+      <div className="hidden md:block bg-card rounded-xl border shadow-xs">
         <Table>
           <TableHeader>
             <TableRow>

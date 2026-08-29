@@ -1,4 +1,4 @@
-import { Link, useLocation } from "react-router-dom";
+import { Link, useLocation } from "@/lib/router-compat";
 import {
   Users, BarChart3, Mail, Shield, ChevronLeft,
   UserCheck, Settings, Home, Zap, CalendarDays, HeartHandshake, Crown, QrCode, ScrollText, Handshake, Inbox

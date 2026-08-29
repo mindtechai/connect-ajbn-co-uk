@@ -1,5 +1,5 @@
 import { useEffect, useMemo, useState } from "react";
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { AppLayout } from "@/components/AppLayout";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
@@ -14,7 +14,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useNavigate } from "react-router-dom";
+import { useNavigate } from "@/lib/router-compat";
 import { useMessagingProfile } from "@/hooks/useMessagingProfile";
 import { ActivateMessagingDialog } from "@/components/messaging/ActivateMessagingDialog";
 import { toast } from "sonner";
@@ -233,7 +233,7 @@ export default function DirectoryPage() {
 
             <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
               {filtered.map((m) => (
-                <div key={m.id} className="bg-card border rounded-xl p-5 shadow-sm space-y-2">
+                <div key={m.id} className="bg-card border rounded-xl p-5 shadow-xs space-y-2">
                   <div className="flex items-start justify-between gap-2">
                     <div className="flex items-start gap-3 min-w-0">
                       {m.avatar_url && (

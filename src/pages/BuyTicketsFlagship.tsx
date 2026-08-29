@@ -1,4 +1,4 @@
-import { Link } from "react-router-dom";
+import { Link } from "@/lib/router-compat";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { CalendarDays, MapPin, Ticket, ArrowLeft, ExternalLink, Crown } from "lucide-react";
@@ -18,7 +18,7 @@ export default function BuyTicketsFlagshipPage() {
           <Link
             to="/"
             aria-label="Asian Jewish Business Network — back to home"
-            className="flex items-center gap-3 rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring"
+            className="flex items-center gap-3 rounded-md outline-hidden focus-visible:ring-2 focus-visible:ring-ring"
           >
             <img
               src={assetUrl(ajbnLogo)}
@@ -32,7 +32,7 @@ export default function BuyTicketsFlagshipPage() {
           <Link
             to="/lions"
             aria-label="AJBN Impact Lions Club — visit page"
-            className="rounded-md outline-none focus-visible:ring-2 focus-visible:ring-ring shrink-0"
+            className="rounded-md outline-hidden focus-visible:ring-2 focus-visible:ring-ring shrink-0"
           >
             <img
               src={assetUrl(impactLionsLogo)}
@@ -51,7 +51,7 @@ export default function BuyTicketsFlagshipPage() {
           <ArrowLeft size={14} /> Back to events
         </Link>
 
-        <div className="rounded-2xl border bg-card shadow-sm p-6 md:p-10 space-y-6">
+        <div className="rounded-2xl border bg-card shadow-xs p-6 md:p-10 space-y-6">
           <div className="flex flex-wrap items-center gap-2">
             <Badge className="bg-primary/10 text-primary border-primary/20">
               <Crown size={12} className="mr-1" /> Flagship Event
