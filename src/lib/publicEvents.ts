@@ -44,7 +44,7 @@ export const EVENTS: EventItem[] = [
     description:
       "6:00 PM – 9:00 PM | Vyman House, 104 College Rd, Harrow, HA1 1BQ. Hosted by Vyman Solicitors on their fabulous terrace. Join us for an enjoyable evening of networking, drinks, and delicious food, all in the company of fellow AJBN members.",
     ctaLabel: "Register your interest",
-    ctaHref: "mailto:info@ajbn.co.uk?subject=AJBN%20Members%27%20Evening%20Registration%20of%20Interest",
+    ctaHref: "mailto:russell@ajbn.co.uk?subject=AJBN%20Members%27%20Evening%20Registration%20of%20Interest",
     highlights: [
       "Networking with fellow AJBN members",
       "Drinks & delicious food",
