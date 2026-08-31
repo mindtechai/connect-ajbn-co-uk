@@ -64,7 +64,10 @@ export function useLocation() {
     () => ({
       pathname: loc.pathname,
       search: loc.searchStr ? `?${loc.searchStr}` : "",
-      hash: loc.hash ?? "",
+      // react-router semantics: hash includes the leading "#".
+      // TanStack returns it unprefixed, so callers doing hash.slice(1)
+      // would otherwise lose the first character of the element id.
+      hash: loc.hash ? (loc.hash.startsWith("#") ? loc.hash : `#${loc.hash}`) : "",
       state: (loc.state ?? null) as unknown,
       key: loc.pathname + (loc.searchStr ?? ""),
     }),
