@@ -35,21 +35,21 @@ const team = [
     linkedin: "https://www.linkedin.com/in/justin-cohen-mbe-79678b181/",
   },
   {
-    name: "Salil Patankar (Capital Connect Lead -Founder & Mentor AJBN iMPACT Lions Club)",
+    name: "Salil Patankar (Capital Connect Lead — Founder & Mentor, AJBN iMPACT Lions Club)",
     pronouns: "He/Him",
-    role: "Head of Capital Connect Ecosystems @AJBN · App Developer",
+    role: "Capital Connect Lead (member networking & introductions) @AJBN · App Developer",
     image: salilPatankar.url,
     bio:
-      "AI-Driven CFO & Tax Advisor | Web3 Architect (zeuseaverse.com). Leads capital-connect ecosystems at AJBN, bridging finance, technology and community-driven growth. Designer and developer of the AJBN Deal Orchestrator platform powering this member portal.",
+      "AI-Driven CFO & Tax Advisor | Web3 Architect (zeuseaverse.com). Leads Capital Connect at AJBN, connecting members with relevant business and professional contacts across the network, and bringing together technology and community-driven growth. Designer and developer of the member platform powering AJBN Connect.",
     skills: [
       "Tax advisory including corporate tax",
-      "Fundraising",
-      "Networking and B2B matchmaking",
+      "Networking and B2B introductions",
       "Digital marketing including AI deployment",
       "Public speaking",
     ],
     linkedin: "https://www.linkedin.com/in/salil-patankar-94892a367/",
   },
+
 ];
 
 export function AboutSection() {
