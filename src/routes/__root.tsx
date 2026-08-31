@@ -179,6 +179,7 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
     scripts: [
       { type: "application/ld+json", children: JSON.stringify(organizationSchema) },
       { type: "application/ld+json", children: JSON.stringify(softwareApplicationSchema) },
+      { type: "application/ld+json", children: JSON.stringify(webSiteSchema) },
     ],
 
   }),
