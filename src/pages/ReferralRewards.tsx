@@ -20,21 +20,21 @@ import {
 const capitalConnectSteps = [
   {
     icon: Target,
-    title: "Members ask Salil to qualify a lead",
+    title: "A member identifies a business need",
     body:
-      "Members are free to connect directly with each other. When you want a lead formally qualified and routed, approach Salil with the opportunity brief. If the deal closes, a success fee is charged for the qualified introduction.",
+      "Members are free to connect directly with each other. Where you'd like help finding the right person, tell the AJBN team what kind of business or professional connection you're looking for.",
   },
   {
     icon: Handshake,
-    title: "Routed to the right member",
+    title: "AJBN may identify a relevant connection",
     body:
-      "Qualified deals — capital raises, acquisitions, mandates, service work — are matched to members whose sector, ticket-size and geography fit.",
+      "AJBN may identify a relevant professional or business connection within its wider network — for example solicitors, accountants, tax advisers, architects, surveyors, property or construction professionals, technology, marketing or other business specialists.",
   },
   {
     icon: Gift,
-    title: "You are rewarded on close",
+    title: "An introduction is facilitated on request",
     body:
-      "If a Capital Connect intro converts, the introducing side (Salil or a member) receives a success reward, credited against renewals or paid per the reward schedule.",
+      "At the member's request, AJBN may facilitate an introduction. The parties then communicate and contract independently. AJBN does not provide financial advice, recommend financial products or negotiate transactions.",
   },
 ];
 
@@ -49,15 +49,16 @@ const memberGetMemberSteps = [
     icon: ShieldCheck,
     title: "They apply & are vetted",
     body:
-      "Your referral applies through /register using your code. Salil and the admissions team run the standard AJBN vetting.",
+      "Your referral applies through /register using your code. The admissions team runs the standard AJBN membership vetting.",
   },
   {
     icon: Sparkles,
     title: "You both benefit",
     body:
-      "On approval and paid membership, you earn referral credit toward your next renewal (or Impact Lions add-on) and they receive a first-year introduction discount.",
+      "On approval and paid membership, you earn membership referral credit toward your next renewal (or Impact Lions add-on) and they receive a first-year introduction discount. Rewards relate to AJBN membership only.",
   },
 ];
+
 
 const tiers = [
   {
