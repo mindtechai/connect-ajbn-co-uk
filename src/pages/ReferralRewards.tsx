@@ -348,10 +348,11 @@ export default function ReferralRewardsPage() {
             ) : (
               <div className="rounded-xl border bg-card p-8">
                 <p className="text-muted-foreground leading-relaxed mb-6">
-                  Full referral mechanics — including your personal code, live leaderboard
-                  position and the Capital Connect submission flow — are available to
-                  approved AJBN members only.
+                  Full membership referral mechanics — including your personal code, live
+                  leaderboard position and the Capital Connect introduction request route — are
+                  available to approved AJBN members only.
                 </p>
+
                 <div className="flex flex-wrap gap-3">
                   <Link to="/login?next=/referral-rewards">
                     <Button variant="default">Sign in</Button>
