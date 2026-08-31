@@ -25,13 +25,20 @@ const eventListSchema = () => ({
       name: e.title,
       description: e.description,
       startDate: e.date,
+      ...(e.endDate ? { endDate: e.endDate } : {}),
       eventStatus: "https://schema.org/EventScheduled",
       eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
       url: `${BASE}/events#${e.id}`,
       location: { "@type": "Place", name: e.location, address: e.location },
-      organizer: { "@type": "Organization", name: "Asian Jewish Business Network", url: BASE },
+      organizer: {
+        "@type": "Organization",
+        "@id": `${BASE}/#organization`,
+        name: "Asian Jewish Business Network",
+        url: BASE,
+      },
       audience: { "@type": "BusinessAudience", name: "AJBN corporate members and invited guests" },
     },
+
   })),
 });
 
