@@ -7,12 +7,12 @@ const items = [
   {
     icon: Handshake,
     title: "Capital Connect",
-    body: "Qualified deals flow through Salil and are routed to the right member. Introducers earn on close.",
+    body: "Ask AJBN for a relevant business or professional introduction within the network. The parties communicate and contract independently.",
   },
   {
     icon: Users,
-    title: "Member-get-member",
-    body: "Share your AJBN referral code. Approved introductions earn renewal credit — your referral gets a first-year discount.",
+    title: "Membership referrals",
+    body: "Share your AJBN referral code. Approved membership introductions earn renewal credit — your referral gets a first-year discount.",
   },
   {
     icon: Trophy,
@@ -20,6 +20,7 @@ const items = [
     body: "Connector · Ambassador · Chair's Circle. Progress tracked in your dashboard, celebrated at flagship events.",
   },
 ];
+
 
 export function ReferralRewardsSection() {
   return (
