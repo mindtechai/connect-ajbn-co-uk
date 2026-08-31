@@ -22,9 +22,8 @@ import { Link } from "@/lib/router-compat";
 import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
-import prideviewLogo from "@/assets/prideview-group.jpg.asset.json";
-import lubbockFineLogo from "@/assets/lubbock-fine.png.asset.json";
 import { FlagshipSponsors } from "@/components/FlagshipSponsors";
+import { EVENTS, type EventItem } from "@/lib/publicEvents";
 
 type EventItem = {
   id: string;
