@@ -48,7 +48,7 @@ export function NetworkTicker({ refreshKey = 0 }: { refreshKey?: number }) {
         <div>
           <p className="text-[11px] uppercase tracking-wider text-white/70 flex items-center gap-1.5">
             <TrendingUp size={12} className="text-gold" />
-            Total Capital & Deal Value Swapped in Network
+            Total Business Value Reported by the Network
           </p>
           <p className="font-display text-2xl md:text-3xl font-bold text-gold tabular-nums mt-1">
             {fmt.format(display)}
