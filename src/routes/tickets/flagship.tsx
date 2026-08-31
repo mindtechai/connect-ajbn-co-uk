@@ -12,8 +12,8 @@ const flagshipEventSchema = {
   name: "AJBN Flagship B2B Networking Exhibition & Corporate Event",
   description:
     "Corporate Networking Exhibition in London hosting founders, investors and corporate leaders for cross-communal business networking and B2B strategic partnerships.",
-  startDate: "2026-10-19T18:00:00+01:00",
-  endDate: "2026-10-19T22:00:00+01:00",
+  startDate: "2026-10-19T10:00:00+01:00",
+  endDate: "2026-10-19T16:00:00+01:00",
   eventStatus: "https://schema.org/EventScheduled",
   eventAttendanceMode: "https://schema.org/OfflineEventAttendanceMode",
   url: `${BASE}/tickets/flagship`,
@@ -30,8 +30,18 @@ const flagshipEventSchema = {
   },
   organizer: {
     "@type": "Organization",
+    "@id": `${BASE}/#organization`,
     name: "Asian Jewish Business Network",
     url: BASE,
+  },
+  offers: {
+    "@type": "Offer",
+    name: "AJBN Flagship event ticket",
+    url: `${BASE}/tickets/flagship`,
+    price: "60",
+    priceCurrency: "GBP",
+    valueAddedTaxIncluded: false,
+    availability: "https://schema.org/InStock",
   },
 };
 

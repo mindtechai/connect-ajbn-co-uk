@@ -15,6 +15,8 @@ export type EventItem = {
   title: string;
   subtitle?: string;
   date: string; // ISO
+  endDate?: string; // ISO, only where the finish time is publicly stated
+  priceGBP?: string; // numeric ticket price, only where publicly stated
   dateLabel?: string;
   timeLabel: string;
   location: string;
@@ -36,6 +38,7 @@ export const EVENTS: EventItem[] = [
     kind: "networking",
     title: "AJBN Members' Evening",
     date: "2026-07-09T17:00:00Z",
+    endDate: "2026-07-09T20:00:00Z",
     timeLabel: "6:00 PM – 9:00 PM",
     location: "Vyman House, 104 College Rd, Harrow, HA1 1BQ",
     description:
@@ -52,12 +55,14 @@ export const EVENTS: EventItem[] = [
     id: "flagship-2026-10-19",
     kind: "networking",
     title: "AJBN Flagship Networking Day",
-    date: "2026-10-19T10:00:00Z",
+    date: "2026-10-19T09:00:00Z",
+    endDate: "2026-10-19T15:00:00Z",
     timeLabel: "10:00 AM – 4:00 PM",
     location: "London Marriott Hotel, 128 King Henry's Rd, London NW3 3BY",
     description:
       "The UK's only platform dedicated to fostering commercial ties between the Asian and Jewish business communities. Senior leaders across Finance, Property, Banking, Law, Technology and Business Services meet for collaboration and knowledge exchange.",
     price: "£60 + VAT",
+    priceGBP: "60",
     ctaLabel: "Buy tickets",
     ctaHref: "/tickets/flagship",
     highlights: [
