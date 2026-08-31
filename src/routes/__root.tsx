@@ -35,7 +35,7 @@ const organizationSchema = {
   alternateName: ["AJBN"],
   url: "https://connect.ajbn.co.uk",
   logo: "https://connect.ajbn.co.uk/__l5e/assets-v1/679ddc11-bc98-4005-a111-6bd9d1115105/ajbn-logo.jpg",
-  email: "russell@ajbn.co.uk",
+  email: "russell@springadconsultancy.co.uk",
   areaServed: { "@type": "City", name: "London" },
   description:
     "A multidisciplinary B2B business and professional network bringing together businesses, professionals, entrepreneurs and organisations across many sectors, and a professional corporate event management company delivering high-profile London business networking events and cross-communal business networking.",
