@@ -2,10 +2,10 @@ import { ScrollReveal } from "@/components/ScrollReveal";
 
 const stats = [
   { value: "150+", label: "Active Corporate Members" },
-  { value: "£10M+", label: "Deals Facilitated Todate" },
-  { value: "50+", label: "Events Todate" },
+  { value: "50+", label: "Events to Date" },
   { value: "£87K", label: "Raised for Charity" },
 ];
+
 
 export function StatsSection() {
   return (
