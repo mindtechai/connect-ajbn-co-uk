@@ -83,8 +83,10 @@ export default function ServicesPage() {
           </ScrollReveal>
           <ScrollReveal delay={160}>
             <p className="text-primary-foreground/75 text-lg md:text-xl leading-relaxed max-w-2xl">
-              Curated services built around our members — capital, advisory, referral rewards
-              and technology, delivered by trusted specialists inside the AJBN network.
+              Curated services built around our members — business and professional
+              introductions, advisory connections, membership referral rewards and technology,
+              delivered by specialists inside the multidisciplinary AJBN network.
+
             </p>
           </ScrollReveal>
         </div>
