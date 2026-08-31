@@ -116,6 +116,49 @@ export default function ServicesPage() {
         </div>
       </section>
 
+      <section className="pb-20" aria-labelledby="capital-connect-heading">
+        <div className="container mx-auto px-4 lg:px-8 max-w-6xl border-t pt-12">
+          <h2
+            id="capital-connect-heading"
+            className="text-2xl md:text-3xl font-display font-bold text-primary mb-4"
+          >
+            How AJBN Capital Connect works
+          </h2>
+          <p className="text-muted-foreground leading-relaxed max-w-3xl">
+            Capital Connect is the capital and deal-matching part of the Asian Jewish Business
+            Network. Members submit transaction parameters to the Capital Connect desk, which
+            matches them with relevant counterparties inside the network — property developers,
+            investors, capital providers, banks, bridging and property finance providers, and the
+            professional advisers (solicitors, accountants and IFAs) needed to complete a
+            transaction. Introductions are made person to person; AJBN does not provide financial
+            advice or lend.
+          </p>
+          <p className="mt-4 text-muted-foreground leading-relaxed max-w-3xl">
+            Capital Connect sits alongside the rest of the network:{" "}
+            <Link to="/events" className="text-teal hover:underline">
+              AJBN networking events in London
+            </Link>{" "}
+            are where most introductions start,{" "}
+            <Link to="/referral-rewards" className="text-teal hover:underline">
+              referral rewards and membership tiers
+            </Link>{" "}
+            recognise members who introduce business,{" "}
+            <Link to="/sponsors-partners" className="text-teal hover:underline">
+              sponsors and partners
+            </Link>{" "}
+            support the programme, and the{" "}
+            <Link to="/lions" className="text-teal hover:underline">
+              AJBN Impact Lions Club
+            </Link>{" "}
+            channels surplus into charitable work. Access is for members —{" "}
+            <Link to="/register" className="text-teal hover:underline">
+              apply to join AJBN Connect
+            </Link>
+            .
+          </p>
+        </div>
+      </section>
+
       <ServiceEnquiryDialog open={open} onOpenChange={setOpen} serviceType={serviceType} />
 
       <Footer />
