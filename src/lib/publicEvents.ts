@@ -37,12 +37,12 @@ export const EVENTS: EventItem[] = [
     id: "members-evening-2026-07-09",
     kind: "networking",
     title: "AJBN Members' Evening",
-    date: "2026-07-09T17:00:00Z",
+    date: "2026-07-09T17:30:00Z",
     endDate: "2026-07-09T20:00:00Z",
-    timeLabel: "6:00 PM – 9:00 PM",
+    timeLabel: "6:30 PM – 9:00 PM",
     location: "Vyman House, 104 College Rd, Harrow, HA1 1BQ",
     description:
-      "6:00 PM – 9:00 PM | Vyman House, 104 College Rd, Harrow, HA1 1BQ. Hosted by Vyman Solicitors on their fabulous terrace. Join us for an enjoyable evening of networking, drinks, and delicious food, all in the company of fellow AJBN members.",
+      "6:30 PM – 9:00 PM | Vyman House, 104 College Rd, Harrow, HA1 1BQ. Hosted by Vyman Solicitors on their fabulous terrace. Join us for an enjoyable evening of networking, drinks, and delicious food, all in the company of fellow AJBN members.",
     ctaLabel: "Register your interest",
     ctaHref: "mailto:russell@ajbn.co.uk?subject=AJBN%20Members%27%20Evening%20Registration%20of%20Interest",
     highlights: [
