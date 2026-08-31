@@ -239,9 +239,10 @@ export default function ReferralRewardsPage() {
               Tiers &amp; recognition
             </h2>
             <p className="text-muted-foreground leading-relaxed">
-              Rewards scale with contribution across both tracks combined. Progress is
-              tracked in your dashboard; the leaderboard resets annually.
+              Rewards scale with approved AJBN membership referrals. Progress is tracked in your
+              dashboard; the leaderboard resets annually.
             </p>
+
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
