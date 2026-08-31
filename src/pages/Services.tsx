@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useLocation } from "@/lib/router-compat";
+import { useLocation, Link } from "@/lib/router-compat";
 import { Navbar } from "@/components/Navbar";
 import { Footer } from "@/components/landing/Footer";
 import { ScrollReveal } from "@/components/ScrollReveal";
