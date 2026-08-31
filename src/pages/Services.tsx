@@ -129,15 +129,25 @@ export default function ServicesPage() {
             How AJBN Capital Connect works
           </h2>
           <p className="text-muted-foreground leading-relaxed max-w-3xl">
-            Capital Connect is the capital and deal-matching part of the Asian Jewish Business
-            Network. Members submit transaction parameters to the Capital Connect desk, which
-            matches them with relevant counterparties inside the network — property developers,
-            investors, capital providers, banks, bridging and property finance providers, and the
-            professional advisers (solicitors, accountants and IFAs) needed to complete a
-            transaction. Introductions are made person to person; AJBN does not provide financial
-            advice or lend.
+            Capital Connect is AJBN's member networking and business/professional introduction
+            initiative. A member identifies a business need; AJBN may identify a relevant
+            professional or business connection within its network; and, at the member's request,
+            AJBN may facilitate an introduction. The parties then communicate and contract
+            independently. The wider AJBN network spans solicitors and barristers, accountants and
+            tax advisers, architects, surveyors, capital allowances specialists, property and
+            construction professionals, technology and marketing businesses, business advisers and
+            other professional and commercial services. AJBN does not provide financial advice,
+            recommend financial products or negotiate transactions.
           </p>
           <p className="mt-4 text-muted-foreground leading-relaxed max-w-3xl">
+            To ask for a connection,{" "}
+            <Link to="/contact" className="text-teal hover:underline">
+              contact the AJBN team to request an introduction
+            </Link>
+            .
+          </p>
+          <p className="mt-4 text-muted-foreground leading-relaxed max-w-3xl">
+
             Capital Connect sits alongside the rest of the network:{" "}
             <Link to="/events" className="text-teal hover:underline">
               AJBN networking events in London
