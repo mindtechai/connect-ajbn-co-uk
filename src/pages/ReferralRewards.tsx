@@ -303,28 +303,32 @@ export default function ReferralRewardsPage() {
               Members only
             </p>
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
-              Submit a referral
+              Request an introduction or refer a member
             </h2>
 
             {user ? (
               <>
                 <p className="text-muted-foreground leading-relaxed mb-6">
-                  Two paths, both tracked against your rewards profile:
+                  Two separate paths:
                 </p>
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div className="rounded-xl border bg-card p-6">
-                    <h3 className="font-display font-semibold mb-2">Capital Connect intro</h3>
+                    <h3 className="font-display font-semibold mb-2">
+                      Capital Connect introduction
+                    </h3>
                     <p className="text-sm text-muted-foreground mb-4">
-                      Send the opportunity brief (sector, ticket, timing, contact) to Salil.
-                      He'll qualify and route it.
+                      Tell Salil what kind of business or professional connection you're looking
+                      for. Where AJBN can identify someone relevant in the network, an
+                      introduction can be facilitated at your request.
                     </p>
-                    <a href="mailto:salil@ajbn.co.uk?subject=Capital%20Connect%20intro">
+                    <a href="mailto:salil@ajbn.co.uk?subject=Capital%20Connect%20introduction%20request">
                       <Button variant="default" size="sm">
-                        Email Salil
+                        Request an introduction
                         <ArrowRight className="ml-2" size={14} />
                       </Button>
                     </a>
                   </div>
+
                   <div className="rounded-xl border bg-card p-6">
                     <h3 className="font-display font-semibold mb-2">Refer a new member</h3>
                     <p className="text-sm text-muted-foreground mb-4">
