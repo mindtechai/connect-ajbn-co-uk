@@ -10,28 +10,30 @@ import { Handshake, Scale, Gift, Code2 } from "lucide-react";
 const SERVICES = [
   {
     icon: Handshake,
-    title: "Capital & Deal Matching",
-    tagline: "Bridging the gap between projects and funding.",
+    title: "Capital Connect",
+    tagline:
+      "A member networking initiative connecting AJBN members with relevant business and professional connections across the wider AJBN network.",
     description:
-      "Connecting vetted property developers with active private and institutional capital. Submit your transaction parameters directly to our Capital Connect desk for targeted matching.",
-    cta: "Submit a Deal",
+      "Where a member identifies a business need, AJBN may identify a relevant professional or business connection within its network and, at the member's request, facilitate an introduction. The parties communicate and contract independently. AJBN does not provide financial advice, recommend financial products or negotiate transactions.",
+    cta: "Request an Introduction",
   },
   {
     icon: Scale,
     title: "Professional Advisory Connect",
-    tagline: "Transaction-ready legal and financial expertise.",
+    tagline: "Introductions to professional advisers within the network.",
     description:
-      "Direct access to our inner circle of network-verified Solicitors, Accountants, and IFAs specifically chosen to structure, secure, and complete high-value transactions safely.",
+      "Members can ask to be introduced to network solicitors, accountants, surveyors, architects, capital allowances specialists and other professional advisers. Any engagement is agreed directly between the parties.",
     cta: "Connect with an Advisor",
   },
   {
     icon: Gift,
-    title: "Referral Incentives Marketplace",
-    tagline: "Monetise your introductions.",
+    title: "Membership Referral Programme",
+    tagline: "Introduce businesses and professionals to AJBN.",
     description:
-      "Introduce a high-value client, property developer, or finance provider to the network and earn structured referral fees or commission splits upon successful deal closure.",
+      "Members can introduce prospective businesses and professionals to AJBN membership and may receive membership renewal credit or another membership referral benefit. This is a membership referral programme, not a transaction referral programme.",
     cta: "Enquire About Rewards",
   },
+
   {
     icon: Code2,
     title: "Member-Exclusive Tech Builds",
