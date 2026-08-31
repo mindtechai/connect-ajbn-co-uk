@@ -4,7 +4,6 @@ Disallow: /dashboard
 Disallow: /settings/
 Disallow: /directory
 Disallow: /messages
-Disallow: /events
 Disallow: /esg
 Disallow: /lions/apply
 Disallow: /admin
@@ -12,7 +11,6 @@ Disallow: /unsubscribe
 Disallow: /email-unsubscribe
 Disallow: /reset-password
 Disallow: /forgot-password
-Disallow: /tickets/flagship
 Disallow: /buy
 Disallow: /lovable/
 Disallow: /__l5e
