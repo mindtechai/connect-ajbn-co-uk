@@ -6,7 +6,12 @@ const TITLE = "Added Value Services for Members | AJBN Connect";
 const DESCRIPTION =
   "Concierge services for AJBN members: capital introductions, advisory, referral rewards and technology support, delivered by trusted specialists inside our professional business networking club.";
 
-const ORG = { "@type": "Organization", name: "Asian Jewish Business Network", url: BASE } as const;
+const ORG = {
+  "@type": "Organization",
+  "@id": `${BASE}/#organization`,
+  name: "Asian Jewish Business Network",
+  url: BASE,
+} as const;
 
 // Describes the four services actually listed on this page.
 const servicesSchema = {
@@ -16,9 +21,9 @@ const servicesSchema = {
   itemListElement: [
     {
       name: "AJBN Capital Connect — Capital & Deal Matching",
-      serviceType: "Capital and deal matching",
+      serviceType: "Commercial connections and professional introductions",
       description:
-        "Connecting vetted property developers with active private and institutional capital, including investors, capital providers, banks and bridging or property finance providers, through the AJBN Capital Connect desk.",
+        "A specialist component within AJBN that makes commercial connections and professional introductions between members, spanning areas such as property, development, capital-related businesses, investors and relevant professional advisers.",
       url: `${BASE}/services#capital-deal-matching`,
     },
     {
@@ -33,6 +38,7 @@ const servicesSchema = {
       serviceType: "Referral programme",
       description:
         "Structured referral fees or commission splits for members who introduce clients, property developers or finance providers that lead to a completed deal.",
+      isRelatedTo: `${BASE}/referral-rewards`,
       url: `${BASE}/services#referral-incentives-marketplace`,
     },
     {
@@ -75,6 +81,8 @@ export const Route = createFileRoute("/services")({
       { name: "description", content: DESCRIPTION },
       { property: "og:title", content: TITLE },
       { property: "og:description", content: DESCRIPTION },
+      { name: "twitter:title", content: TITLE },
+      { name: "twitter:description", content: DESCRIPTION },
       { property: "og:url", content: `${BASE}/services` },
     ],
     links: [{ rel: "canonical", href: `${BASE}/services` }],
