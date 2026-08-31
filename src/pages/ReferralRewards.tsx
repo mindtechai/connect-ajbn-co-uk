@@ -378,9 +378,10 @@ export default function ReferralRewardsPage() {
                 Member-to-member introductions
               </h2>
               <p className="text-muted-foreground leading-relaxed">
-                Ask for a direct introduction to another AJBN member — no success fee, no
-                qualifying step. Submit the request below and track its status here.
+                Ask for a direct introduction to another AJBN member. Submit the request below and
+                track its status here.
               </p>
+
             </div>
             <MemberIntroRequests />
           </div>
