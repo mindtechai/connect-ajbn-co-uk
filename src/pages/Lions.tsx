@@ -150,6 +150,17 @@ export default function LionsPage() {
               Membership requires an active AJBN membership. Apply below and the committee will
               review your application.
             </p>
+            <p className="text-muted-foreground max-w-2xl mx-auto mb-8 text-sm">
+              Fundraising happens through the{" "}
+              <Link to="/events" className="underline underline-offset-4 hover:text-foreground">
+                AJBN events programme
+              </Link>{" "}
+              and alongside our{" "}
+              <Link to="/sponsors-partners" className="underline underline-offset-4 hover:text-foreground">
+                sponsors and partners
+              </Link>
+              .
+            </p>
             <Link to={user ? "/lions/apply" : "/register?next=/lions/apply"}>
               <Button variant="gold" size="xl">
                 <Crown className="mr-2" size={18} />
