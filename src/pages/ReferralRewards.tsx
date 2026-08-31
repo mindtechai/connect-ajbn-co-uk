@@ -156,7 +156,19 @@ export default function ReferralRewardsPage() {
               Capital Connect is the route for deals you want Salil to qualify, match and
               route. On completion, a success fee applies for qualified introductions.
             </p>
+            <p className="text-muted-foreground leading-relaxed mt-3">
+              See how this sits alongside the other{" "}
+              <Link to="/services" className="underline underline-offset-4 hover:text-foreground">
+                AJBN added value services
+              </Link>
+              , or{" "}
+              <Link to="/contact" className="underline underline-offset-4 hover:text-foreground">
+                contact the AJBN team
+              </Link>
+              .
+            </p>
           </div>
+
 
           <div className="grid md:grid-cols-3 gap-6">
             {capitalConnectSteps.map((s, i) => (
