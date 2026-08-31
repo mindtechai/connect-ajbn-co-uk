@@ -71,7 +71,7 @@ const tiers = [
     range: "3–5 referrals / year",
     perks: [
       "20% renewal credit per approved referral",
-      "Priority Capital Connect routing",
+      "Priority support with Capital Connect introduction requests",
       "20% discount off the rate-card, on the Stand at the Annual Flagship event held in October, with a free half a page advert in the annual magazine",
     ],
   },
