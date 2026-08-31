@@ -20,9 +20,14 @@ import NotFound from "@/pages/NotFound";
 import { reportLovableError } from "@/lib/lovable-error-reporting";
 import appCss from "../styles.css?url";
 
+const ORG_ID = "https://connect.ajbn.co.uk/#organization";
+
+// Entity hierarchy: AJBN (organisation) → AJBN Connect (platform),
+// Capital Connect (service), AJBN events, AJBN Impact Lions Club.
 const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
+  "@id": ORG_ID,
   name: "Asian Jewish Business Network",
   alternateName: ["AJBN", "AJBN Connect"],
   url: "https://connect.ajbn.co.uk",
@@ -31,6 +36,53 @@ const organizationSchema = {
   areaServed: { "@type": "City", name: "London" },
   description:
     "A premier B2B networking organisation and professional corporate event management company, delivering high-profile London business networking events, cross-communal business networking and B2B strategic partnerships.",
+  knowsAbout: [
+    "business networking in London",
+    "property networking",
+    "property and bridging finance introductions",
+    "professional advisory connections",
+    "corporate event management and exhibitions",
+  ],
+  subOrganization: [
+    {
+      "@type": "Organization",
+      name: "AJBN Impact Lions Club",
+      url: "https://connect.ajbn.co.uk/lions",
+      description:
+        "The charitable initiative of the Asian Jewish Business Network, raising funds through AJBN events and member contributions.",
+    },
+  ],
+  hasOfferCatalog: {
+    "@type": "OfferCatalog",
+    name: "AJBN member services",
+    url: "https://connect.ajbn.co.uk/services",
+    itemListElement: [
+      {
+        "@type": "Offer",
+        itemOffered: {
+          "@type": "Service",
+          name: "AJBN Capital Connect",
+          url: "https://connect.ajbn.co.uk/services",
+          serviceType: "Capital and deal matching",
+          provider: { "@id": ORG_ID },
+          description:
+            "The AJBN capital and deal-matching ecosystem, connecting property developers with investors, capital providers, banks, bridging and property finance providers, and professional advisers inside the network.",
+        },
+      },
+    ],
+  },
+};
+
+const webSiteSchema = {
+  "@context": "https://schema.org",
+  "@type": "WebSite",
+  "@id": "https://connect.ajbn.co.uk/#website",
+  name: "AJBN Connect",
+  alternateName: "Asian Jewish Business Network member platform",
+  url: "https://connect.ajbn.co.uk",
+  publisher: { "@id": ORG_ID },
+  description:
+    "AJBN Connect is the digital member platform of the Asian Jewish Business Network, covering the member directory, AJBN events, Capital Connect introductions and the AJBN Impact Lions Club.",
 };
 
 const softwareApplicationSchema = {
