@@ -123,7 +123,7 @@ export function MemberIntroRequests() {
         <div>
           <h3 className="text-xl font-display font-semibold mb-1">Request a member-to-member intro</h3>
           <p className="text-sm text-muted-foreground">
-            Free for members. Ask to be introduced directly to another member — no success fee applies.
+            Free for members. Ask to be introduced directly to another member.
           </p>
         </div>
         <div className="grid sm:grid-cols-2 gap-4">

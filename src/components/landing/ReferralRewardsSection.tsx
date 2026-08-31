@@ -35,9 +35,10 @@ export function ReferralRewardsSection() {
               Grow the network. Get rewarded.
             </h2>
             <p className="text-muted-foreground leading-relaxed">
-              AJBN runs on qualified introductions — capital opportunities passed through
-              Salil, and new members brought in by existing ones. Both earn you rewards.
+              AJBN runs on introductions — relevant business and professional connections inside
+              the network, and new members brought in by existing ones.
             </p>
+
           </ScrollReveal>
         </div>
 
