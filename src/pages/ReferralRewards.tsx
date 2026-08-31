@@ -200,12 +200,14 @@ export default function ReferralRewardsPage() {
               Track 2
             </p>
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
-              Member-get-member introductions
+              AJBN membership referrals
             </h2>
             <p className="text-muted-foreground leading-relaxed">
-              The strength of AJBN is who's in the room. Members who bring the right people
-              in are recognised — and rewarded.
+              The strength of AJBN is who's in the room. Members who introduce prospective
+              businesses and professionals to AJBN membership are recognised — and rewarded with
+              membership benefits. This is a membership referral programme only.
             </p>
+
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
