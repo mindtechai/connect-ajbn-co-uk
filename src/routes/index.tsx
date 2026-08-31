@@ -41,10 +41,11 @@ const peopleSchema = {
       "@id": `${BASE}/#person-salil-patankar`,
       name: "Salil Patankar",
       jobTitle:
-        "Head of Capital Connect Ecosystems @AJBN · App Developer · Founder & Mentor, AJBN Impact Lions Club",
+        "Capital Connect Lead (member networking and business introductions) @AJBN · App Developer · Founder & Mentor, AJBN Impact Lions Club",
       worksFor: { "@id": ORG_ID },
       sameAs: "https://www.linkedin.com/in/salil-patankar-94892a367/",
     },
+
   ],
 };
 

@@ -20,21 +20,21 @@ import {
 const capitalConnectSteps = [
   {
     icon: Target,
-    title: "Members ask Salil to qualify a lead",
+    title: "A member identifies a business need",
     body:
-      "Members are free to connect directly with each other. When you want a lead formally qualified and routed, approach Salil with the opportunity brief. If the deal closes, a success fee is charged for the qualified introduction.",
+      "Members are free to connect directly with each other. Where you'd like help finding the right person, tell the AJBN team what kind of business or professional connection you're looking for.",
   },
   {
     icon: Handshake,
-    title: "Routed to the right member",
+    title: "AJBN may identify a relevant connection",
     body:
-      "Qualified deals — capital raises, acquisitions, mandates, service work — are matched to members whose sector, ticket-size and geography fit.",
+      "AJBN may identify a relevant professional or business connection within its wider network — for example solicitors, accountants, tax advisers, architects, surveyors, property or construction professionals, technology, marketing or other business specialists.",
   },
   {
     icon: Gift,
-    title: "You are rewarded on close",
+    title: "An introduction is facilitated on request",
     body:
-      "If a Capital Connect intro converts, the introducing side (Salil or a member) receives a success reward, credited against renewals or paid per the reward schedule.",
+      "At the member's request, AJBN may facilitate an introduction. The parties then communicate and contract independently. AJBN does not provide financial advice, recommend financial products or negotiate transactions.",
   },
 ];
 
@@ -49,15 +49,16 @@ const memberGetMemberSteps = [
     icon: ShieldCheck,
     title: "They apply & are vetted",
     body:
-      "Your referral applies through /register using your code. Salil and the admissions team run the standard AJBN vetting.",
+      "Your referral applies through /register using your code. The admissions team runs the standard AJBN membership vetting.",
   },
   {
     icon: Sparkles,
     title: "You both benefit",
     body:
-      "On approval and paid membership, you earn referral credit toward your next renewal (or Impact Lions add-on) and they receive a first-year introduction discount.",
+      "On approval and paid membership, you earn membership referral credit toward your next renewal (or Impact Lions add-on) and they receive a first-year introduction discount. Rewards relate to AJBN membership only.",
   },
 ];
+
 
 const tiers = [
   {
@@ -70,7 +71,7 @@ const tiers = [
     range: "3–5 referrals / year",
     perks: [
       "20% renewal credit per approved referral",
-      "Priority Capital Connect routing",
+      "Priority support with Capital Connect introduction requests",
       "20% discount off the rate-card, on the Stand at the Annual Flagship event held in October, with a free half a page advert in the annual magazine",
     ],
   },
@@ -99,7 +100,7 @@ export default function ReferralRewardsPage() {
           <div className="max-w-3xl">
             <ScrollReveal>
               <p className="text-primary-foreground/70 text-xs md:text-sm tracking-[0.2em] uppercase mb-4">
-                Members-first · Capital Connect
+                Members-first · Membership referrals
               </p>
             </ScrollReveal>
             <ScrollReveal delay={80}>
@@ -109,11 +110,12 @@ export default function ReferralRewardsPage() {
             </ScrollReveal>
             <ScrollReveal delay={160}>
               <p className="text-primary-foreground/75 text-lg md:text-xl leading-relaxed max-w-2xl">
-                Two ways AJBN rewards you for growing the network: passing qualified deals
-                through Capital Connect, and introducing the next generation of members.
-                Members are always free to connect directly with one another; Capital Connect
-                is there when you want a lead qualified and routed through Salil.
+                Introduce prospective businesses and professionals to AJBN membership and you may
+                receive membership renewal credit. Separately, Capital Connect is how members ask
+                for a relevant business or professional introduction inside the wider network —
+                members are always free to connect directly with one another too.
               </p>
+
             </ScrollReveal>
             <ScrollReveal delay={240}>
               <div className="flex flex-wrap gap-4 mt-8">
@@ -149,13 +151,15 @@ export default function ReferralRewardsPage() {
               Track 1
             </p>
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
-              Capital Connect — qualified leads via Salil
+              Capital Connect — requested business & professional introductions
             </h2>
             <p className="text-muted-foreground leading-relaxed">
               Members are free to make direct connections with fellow members at any time.
-              Capital Connect is the route for deals you want Salil to qualify, match and
-              route. On completion, a success fee applies for qualified introductions.
+              Capital Connect is there when you'd like AJBN to identify a relevant professional
+              or business connection within the network and, at your request, facilitate an
+              introduction. The parties communicate and contract independently.
             </p>
+
             <p className="text-muted-foreground leading-relaxed mt-3">
               See how this sits alongside the other{" "}
               <Link to="/services" className="underline underline-offset-4 hover:text-foreground">
@@ -196,12 +200,14 @@ export default function ReferralRewardsPage() {
               Track 2
             </p>
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
-              Member-get-member introductions
+              AJBN membership referrals
             </h2>
             <p className="text-muted-foreground leading-relaxed">
-              The strength of AJBN is who's in the room. Members who bring the right people
-              in are recognised — and rewarded.
+              The strength of AJBN is who's in the room. Members who introduce prospective
+              businesses and professionals to AJBN membership are recognised — and rewarded with
+              membership benefits. This is a membership referral programme only.
             </p>
+
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
@@ -233,9 +239,10 @@ export default function ReferralRewardsPage() {
               Tiers &amp; recognition
             </h2>
             <p className="text-muted-foreground leading-relaxed">
-              Rewards scale with contribution across both tracks combined. Progress is
-              tracked in your dashboard; the leaderboard resets annually.
+              Rewards scale with approved AJBN membership referrals. Progress is tracked in your
+              dashboard; the leaderboard resets annually.
             </p>
+
           </div>
 
           <div className="grid md:grid-cols-3 gap-6">
@@ -297,28 +304,32 @@ export default function ReferralRewardsPage() {
               Members only
             </p>
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
-              Submit a referral
+              Request an introduction or refer a member
             </h2>
 
             {user ? (
               <>
                 <p className="text-muted-foreground leading-relaxed mb-6">
-                  Two paths, both tracked against your rewards profile:
+                  Two separate paths:
                 </p>
                 <div className="grid sm:grid-cols-2 gap-6">
                   <div className="rounded-xl border bg-card p-6">
-                    <h3 className="font-display font-semibold mb-2">Capital Connect intro</h3>
+                    <h3 className="font-display font-semibold mb-2">
+                      Capital Connect introduction
+                    </h3>
                     <p className="text-sm text-muted-foreground mb-4">
-                      Send the opportunity brief (sector, ticket, timing, contact) to Salil.
-                      He'll qualify and route it.
+                      Tell Salil what kind of business or professional connection you're looking
+                      for. Where AJBN can identify someone relevant in the network, an
+                      introduction can be facilitated at your request.
                     </p>
-                    <a href="mailto:salil@ajbn.co.uk?subject=Capital%20Connect%20intro">
+                    <a href="mailto:salil@ajbn.co.uk?subject=Capital%20Connect%20introduction%20request">
                       <Button variant="default" size="sm">
-                        Email Salil
+                        Request an introduction
                         <ArrowRight className="ml-2" size={14} />
                       </Button>
                     </a>
                   </div>
+
                   <div className="rounded-xl border bg-card p-6">
                     <h3 className="font-display font-semibold mb-2">Refer a new member</h3>
                     <p className="text-sm text-muted-foreground mb-4">
@@ -337,10 +348,11 @@ export default function ReferralRewardsPage() {
             ) : (
               <div className="rounded-xl border bg-card p-8">
                 <p className="text-muted-foreground leading-relaxed mb-6">
-                  Full referral mechanics — including your personal code, live leaderboard
-                  position and the Capital Connect submission flow — are available to
-                  approved AJBN members only.
+                  Full membership referral mechanics — including your personal code, live
+                  leaderboard position and the Capital Connect introduction request route — are
+                  available to approved AJBN members only.
                 </p>
+
                 <div className="flex flex-wrap gap-3">
                   <Link to="/login?next=/referral-rewards">
                     <Button variant="default">Sign in</Button>
@@ -366,9 +378,10 @@ export default function ReferralRewardsPage() {
                 Member-to-member introductions
               </h2>
               <p className="text-muted-foreground leading-relaxed">
-                Ask for a direct introduction to another AJBN member — no success fee, no
-                qualifying step. Submit the request below and track its status here.
+                Ask for a direct introduction to another AJBN member. Submit the request below and
+                track its status here.
               </p>
+
             </div>
             <MemberIntroRequests />
           </div>

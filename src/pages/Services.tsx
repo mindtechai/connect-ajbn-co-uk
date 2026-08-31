@@ -10,28 +10,30 @@ import { Handshake, Scale, Gift, Code2 } from "lucide-react";
 const SERVICES = [
   {
     icon: Handshake,
-    title: "Capital & Deal Matching",
-    tagline: "Bridging the gap between projects and funding.",
+    title: "Capital Connect",
+    tagline:
+      "A member networking initiative connecting AJBN members with relevant business and professional connections across the wider AJBN network.",
     description:
-      "Connecting vetted property developers with active private and institutional capital. Submit your transaction parameters directly to our Capital Connect desk for targeted matching.",
-    cta: "Submit a Deal",
+      "Where a member identifies a business need, AJBN may identify a relevant professional or business connection within its network and, at the member's request, facilitate an introduction. The parties communicate and contract independently. AJBN does not provide financial advice, recommend financial products or negotiate transactions.",
+    cta: "Request an Introduction",
   },
   {
     icon: Scale,
     title: "Professional Advisory Connect",
-    tagline: "Transaction-ready legal and financial expertise.",
+    tagline: "Introductions to professional advisers within the network.",
     description:
-      "Direct access to our inner circle of network-verified Solicitors, Accountants, and IFAs specifically chosen to structure, secure, and complete high-value transactions safely.",
+      "Members can ask to be introduced to network solicitors, accountants, surveyors, architects, capital allowances specialists and other professional advisers. Any engagement is agreed directly between the parties.",
     cta: "Connect with an Advisor",
   },
   {
     icon: Gift,
-    title: "Referral Incentives Marketplace",
-    tagline: "Monetise your introductions.",
+    title: "Membership Referral Programme",
+    tagline: "Introduce businesses and professionals to AJBN.",
     description:
-      "Introduce a high-value client, property developer, or finance provider to the network and earn structured referral fees or commission splits upon successful deal closure.",
+      "Members can introduce prospective businesses and professionals to AJBN membership and may receive membership renewal credit or another membership referral benefit. This is a membership referral programme, not a transaction referral programme.",
     cta: "Enquire About Rewards",
   },
+
   {
     icon: Code2,
     title: "Member-Exclusive Tech Builds",
@@ -81,8 +83,10 @@ export default function ServicesPage() {
           </ScrollReveal>
           <ScrollReveal delay={160}>
             <p className="text-primary-foreground/75 text-lg md:text-xl leading-relaxed max-w-2xl">
-              Curated services built around our members — capital, advisory, referral rewards
-              and technology, delivered by trusted specialists inside the AJBN network.
+              Curated services built around our members — business and professional
+              introductions, advisory connections, membership referral rewards and technology,
+              delivered by specialists inside the multidisciplinary AJBN network.
+
             </p>
           </ScrollReveal>
         </div>
@@ -125,15 +129,25 @@ export default function ServicesPage() {
             How AJBN Capital Connect works
           </h2>
           <p className="text-muted-foreground leading-relaxed max-w-3xl">
-            Capital Connect is the capital and deal-matching part of the Asian Jewish Business
-            Network. Members submit transaction parameters to the Capital Connect desk, which
-            matches them with relevant counterparties inside the network — property developers,
-            investors, capital providers, banks, bridging and property finance providers, and the
-            professional advisers (solicitors, accountants and IFAs) needed to complete a
-            transaction. Introductions are made person to person; AJBN does not provide financial
-            advice or lend.
+            Capital Connect is AJBN's member networking and business/professional introduction
+            initiative. A member identifies a business need; AJBN may identify a relevant
+            professional or business connection within its network; and, at the member's request,
+            AJBN may facilitate an introduction. The parties then communicate and contract
+            independently. The wider AJBN network spans solicitors and barristers, accountants and
+            tax advisers, architects, surveyors, capital allowances specialists, property and
+            construction professionals, technology and marketing businesses, business advisers and
+            other professional and commercial services. AJBN does not provide financial advice,
+            recommend financial products or negotiate transactions.
           </p>
           <p className="mt-4 text-muted-foreground leading-relaxed max-w-3xl">
+            To ask for a connection,{" "}
+            <Link to="/contact" className="text-teal hover:underline">
+              contact the AJBN team to request an introduction
+            </Link>
+            .
+          </p>
+          <p className="mt-4 text-muted-foreground leading-relaxed max-w-3xl">
+
             Capital Connect sits alongside the rest of the network:{" "}
             <Link to="/events" className="text-teal hover:underline">
               AJBN networking events in London

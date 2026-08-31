@@ -2,9 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import ServicesPage from "@/pages/Services";
 
 const BASE = "https://connect.ajbn.co.uk";
-const TITLE = "Added Value Services for Members | AJBN Connect";
+const TITLE = "Member Services & Business Introductions | AJBN Connect";
 const DESCRIPTION =
-  "Concierge services for AJBN members: capital introductions, advisory, referral rewards and technology support, delivered by trusted specialists inside our professional business networking club.";
+  "Services for AJBN members: business and professional introductions through Capital Connect, advisory connections, the membership referral programme and technology support inside our multidisciplinary B2B network.";
 
 const ORG = {
   "@type": "Organization",
@@ -20,26 +20,26 @@ const servicesSchema = {
   name: "AJBN added value services",
   itemListElement: [
     {
-      name: "AJBN Capital Connect — Capital & Deal Matching",
-      serviceType: "Commercial connections and professional introductions",
+      name: "AJBN Capital Connect",
+      serviceType: "Member networking and business introductions",
       description:
-        "A specialist component within AJBN that makes commercial connections and professional introductions between members, spanning areas such as property, development, capital-related businesses, investors and relevant professional advisers.",
-      url: `${BASE}/services#capital-deal-matching`,
+        "A member networking initiative connecting AJBN members with relevant business and professional connections across the wider AJBN network. Where a member identifies a business need, AJBN may identify a relevant professional or business connection and, at the member's request, facilitate an introduction. The parties communicate and contract independently. AJBN does not provide financial advice, recommend financial products or negotiate transactions.",
+      url: `${BASE}/services#capital-connect`,
     },
     {
       name: "Professional Advisory Connect",
       serviceType: "Professional advisory introductions",
       description:
-        "Introductions to network-verified solicitors, accountants and IFAs who structure, secure and complete high-value transactions.",
+        "Introductions to professional advisers within the network, including solicitors, accountants, surveyors, architects and capital allowances specialists. Any engagement is agreed directly between the parties.",
       url: `${BASE}/services#professional-advisory-connect`,
     },
     {
-      name: "Referral Incentives Marketplace",
-      serviceType: "Referral programme",
+      name: "Membership Referral Programme",
+      serviceType: "Membership referral programme",
       description:
-        "Structured referral fees or commission splits for members who introduce clients, property developers or finance providers that lead to a completed deal.",
+        "Members who introduce prospective businesses and professionals to AJBN membership may receive membership renewal credit or another membership referral benefit.",
       isRelatedTo: `${BASE}/referral-rewards`,
-      url: `${BASE}/services#referral-incentives-marketplace`,
+      url: `${BASE}/services#membership-referral-programme`,
     },
     {
       name: "Member-Exclusive Tech Builds",
@@ -48,6 +48,7 @@ const servicesSchema = {
         "Custom web apps, client portals and digital platforms for member businesses at member-only corporate rates.",
       url: `${BASE}/services#member-exclusive-tech-builds`,
     },
+
   ].map((s, i) => ({
     "@type": "ListItem",
     position: i + 1,

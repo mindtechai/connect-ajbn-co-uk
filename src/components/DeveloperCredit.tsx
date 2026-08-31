@@ -25,7 +25,7 @@ export function DeveloperCredit({ className = "", align = "center" }: DeveloperC
         Salil Patankar
         <Linkedin className="w-3 h-3" aria-hidden="true" />
       </a>{" "}
-      — creator of the AJBN Deal Orchestrator.
+      — creator of the AJBN Connect member platform.
     </p>
   );
 }

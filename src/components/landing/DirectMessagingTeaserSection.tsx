@@ -39,9 +39,11 @@ export function DirectMessagingTeaserSection() {
               Connect securely. Stay private.
             </h2>
             <p className="text-muted-foreground leading-relaxed">
-              Connect securely 1-on-1 with property developers, finance providers, and
-              corporate members. Your private contact details remain 100% masked.
+              Connect securely 1-on-1 with solicitors, accountants, architects, surveyors,
+              property and construction professionals, technology and marketing businesses and
+              other corporate members. Your private contact details remain 100% masked.
             </p>
+
           </ScrollReveal>
         </div>
 

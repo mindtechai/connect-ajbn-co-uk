@@ -5,7 +5,7 @@ const features = [
   {
     icon: Users,
     title: "Member Directory",
-    description: "Search and connect with professionals across finance, property, legal, tech, and more.",
+    description: "Search and connect with professionals across legal, accountancy and tax, property, architecture, construction, technology, marketing and more.",
   },
   {
     icon: CalendarDays,

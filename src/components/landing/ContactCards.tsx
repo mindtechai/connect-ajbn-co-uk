@@ -9,12 +9,13 @@ const contacts = [
       "For all general network enquiries, membership applications, renewals, sponsorship and referral reward queries.",
   },
   {
-    heading: "Capital Connect & Deal Matching",
-    name: "Salil Patankar (Capital Connect Lead -Founder & Mentor AJBN iMPACT Lions Club)",
+    heading: "Capital Connect — Member Introductions",
+    name: "Salil Patankar (Capital Connect Lead — Founder & Mentor, AJBN iMPACT Lions Club)",
     email: "Salil@ajbn.co.uk",
     description:
-      "For developers seeking funds, investors, banks and bridging companies looking for capital deployment, or professional advisors structuring network transactions.",
+      "To request a relevant business or professional introduction within the wider AJBN network. The parties communicate and contract independently.",
   },
+
 ];
 
 export function ContactCards({ className }: { className?: string }) {

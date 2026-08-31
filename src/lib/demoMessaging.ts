@@ -64,10 +64,10 @@ export function ensureSeeded() {
       other_user_id: "demo-salil",
       other_first_name: "Salil",
       other_last_name: "Patankar",
-      other_company: "Capital Connect & Deal Matching",
+      other_company: "Capital Connect — Member Introductions",
       unread_count: 0,
       messages: [
-        { id: uid(), sender_id: "demo-salil", body: "Hi 👋 I run Capital Connect for AJBN — happy to intro you to investors or dealflow when you're ready.", created_at: nowShift(60) },
+        { id: uid(), sender_id: "demo-salil", body: "Hi 👋 I run Capital Connect for AJBN — happy to introduce you to relevant businesses and professionals in the network when you're ready.", created_at: nowShift(60) },
       ],
     },
   ];

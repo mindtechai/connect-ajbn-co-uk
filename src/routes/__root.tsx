@@ -42,15 +42,18 @@ const organizationSchema = {
   knowsAbout: [
     "business networking in London",
     "cross-communal business networking",
-    "legal services and solicitors",
+    "solicitors and legal professionals",
     "barristers",
-    "accounting",
-    "tax",
-    "property",
-    "architecture",
-    "capital allowances",
-    "finance",
-    "investment and capital-related businesses",
+    "accountants",
+    "tax advisers",
+    "architects",
+    "surveyors",
+    "capital allowances specialists",
+    "property professionals",
+    "construction professionals",
+    "technology businesses",
+    "marketing professionals",
+    "business advisers",
     "professional and commercial services",
     "corporate event management and exhibitions",
   ],
@@ -76,15 +79,17 @@ const organizationSchema = {
         itemOffered: {
           "@type": "Service",
           name: "AJBN Capital Connect",
-          url: "https://connect.ajbn.co.uk/services",
+          serviceType: "Member networking and business introductions",
+          url: "https://connect.ajbn.co.uk/services#capital-connect",
           provider: { "@id": ORG_ID },
           isRelatedTo: { "@id": ORG_ID },
           description:
-            "A specialist component within AJBN focused on commercial connections and professional introductions between members, spanning areas such as property, development, capital-related businesses and relevant professional advisers.",
+            "AJBN's member networking and business/professional introduction initiative. Where a member identifies a business need, AJBN may identify a relevant professional or business connection within its network and, at the member's request, facilitate an introduction. The parties communicate and contract independently. AJBN does not provide financial advice, recommend financial products or negotiate transactions.",
         },
       },
     ],
   },
+
 };
 
 const webSiteSchema = {

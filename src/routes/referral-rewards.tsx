@@ -4,7 +4,8 @@ import ReferralRewardsPage from "@/pages/ReferralRewards";
 const BASE = "https://connect.ajbn.co.uk";
 const TITLE = "Membership Referral Rewards & Tiers | AJBN Connect";
 const DESCRIPTION =
-  "Earn membership rewards for introducing members to AJBN. See referral tiers, recognition and Chair's Circle benefits inside our professional business networking club.";
+  "Earn AJBN membership rewards for introducing businesses and professionals to the network. See membership referral tiers, recognition and Chair's Circle benefits inside our B2B business network.";
+
 
 export const Route = createFileRoute("/referral-rewards")({
   component: ReferralRewardsPage,
