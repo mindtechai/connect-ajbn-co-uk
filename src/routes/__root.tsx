@@ -21,33 +21,47 @@ import { reportLovableError } from "@/lib/lovable-error-reporting";
 import appCss from "../styles.css?url";
 
 const ORG_ID = "https://connect.ajbn.co.uk/#organization";
+const PLATFORM_ID = "https://connect.ajbn.co.uk/#platform";
+const LIONS_ID = "https://connect.ajbn.co.uk/lions#organization";
 
-// Entity hierarchy: AJBN (organisation) → AJBN Connect (platform),
-// Capital Connect (service), AJBN events, AJBN Impact Lions Club.
+// Entity hierarchy: AJBN (parent organisation) → AJBN Connect (its digital
+// member platform), AJBN Capital Connect (one specialist component of AJBN),
+// AJBN events, AJBN Impact Lions Club (charitable arm).
 const organizationSchema = {
   "@context": "https://schema.org",
   "@type": "Organization",
   "@id": ORG_ID,
   name: "Asian Jewish Business Network",
-  alternateName: ["AJBN", "AJBN Connect"],
+  alternateName: ["AJBN"],
   url: "https://connect.ajbn.co.uk",
   logo: "https://connect.ajbn.co.uk/__l5e/assets-v1/679ddc11-bc98-4005-a111-6bd9d1115105/ajbn-logo.jpg",
   email: "russell@ajbn.co.uk",
   areaServed: { "@type": "City", name: "London" },
   description:
-    "A premier B2B networking organisation and professional corporate event management company, delivering high-profile London business networking events, cross-communal business networking and B2B strategic partnerships.",
+    "A multidisciplinary B2B business and professional network bringing together businesses, professionals, entrepreneurs and organisations across many sectors, and a professional corporate event management company delivering high-profile London business networking events and cross-communal business networking.",
   knowsAbout: [
     "business networking in London",
-    "property networking",
-    "property and bridging finance introductions",
-    "professional advisory connections",
+    "cross-communal business networking",
+    "legal services and solicitors",
+    "barristers",
+    "accounting",
+    "tax",
+    "property",
+    "architecture",
+    "capital allowances",
+    "finance",
+    "investment and capital-related businesses",
+    "professional and commercial services",
     "corporate event management and exhibitions",
   ],
+  owns: { "@id": PLATFORM_ID },
   subOrganization: [
     {
       "@type": "Organization",
+      "@id": LIONS_ID,
       name: "AJBN Impact Lions Club",
       url: "https://connect.ajbn.co.uk/lions",
+      parentOrganization: { "@id": ORG_ID },
       description:
         "The charitable initiative of the Asian Jewish Business Network, raising funds through AJBN events and member contributions.",
     },
@@ -63,10 +77,10 @@ const organizationSchema = {
           "@type": "Service",
           name: "AJBN Capital Connect",
           url: "https://connect.ajbn.co.uk/services",
-          serviceType: "Capital and deal matching",
           provider: { "@id": ORG_ID },
+          isRelatedTo: { "@id": ORG_ID },
           description:
-            "The AJBN capital and deal-matching ecosystem, connecting property developers with investors, capital providers, banks, bridging and property finance providers, and professional advisers inside the network.",
+            "A specialist component within AJBN focused on commercial connections and professional introductions between members, spanning areas such as property, development, capital-related businesses and relevant professional advisers.",
         },
       },
     ],
@@ -81,26 +95,29 @@ const webSiteSchema = {
   alternateName: "Asian Jewish Business Network member platform",
   url: "https://connect.ajbn.co.uk",
   publisher: { "@id": ORG_ID },
+  about: { "@id": ORG_ID },
+  mainEntity: { "@id": PLATFORM_ID },
   description:
-    "AJBN Connect is the digital member platform of the Asian Jewish Business Network, covering the member directory, AJBN events, Capital Connect introductions and the AJBN Impact Lions Club.",
+    "AJBN Connect is the digital member platform of the Asian Jewish Business Network, covering the member directory, AJBN events, member introductions and the AJBN Impact Lions Club.",
 };
 
 const softwareApplicationSchema = {
   "@context": "https://schema.org",
-  "@type": "SoftwareApplication",
+  "@type": "WebApplication",
+  "@id": PLATFORM_ID,
   name: "AJBN Connect",
   applicationCategory: "BusinessApplication",
   operatingSystem: "Web, iOS, Android",
   url: "https://connect.ajbn.co.uk",
+  isPartOf: { "@id": "https://connect.ajbn.co.uk/#website" },
+  about: { "@id": ORG_ID },
+  provider: { "@id": ORG_ID },
+  publisher: { "@id": ORG_ID },
   description:
-    "Proprietary business networking and growth application for the Asian Jewish Business Network, serving the London area with member directories, B2B matchmaking and corporate event management.",
-  publisher: {
-    "@type": "Organization",
-    name: "Asian Jewish Business Network",
-    url: "https://connect.ajbn.co.uk",
-  },
+    "The digital member platform operated by the Asian Jewish Business Network, providing member directories, B2B matchmaking and event management for the multidisciplinary AJBN network in London.",
   offers: { "@type": "Offer", category: "Membership" },
 };
+
 
 // The flagship BusinessEvent schema lives on src/routes/tickets/flagship.tsx
 // so event rich results are only claimed on the event page itself.
