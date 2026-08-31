@@ -100,7 +100,7 @@ export default function ReferralRewardsPage() {
           <div className="max-w-3xl">
             <ScrollReveal>
               <p className="text-primary-foreground/70 text-xs md:text-sm tracking-[0.2em] uppercase mb-4">
-                Members-first · Capital Connect
+                Members-first · Membership referrals
               </p>
             </ScrollReveal>
             <ScrollReveal delay={80}>
@@ -110,11 +110,12 @@ export default function ReferralRewardsPage() {
             </ScrollReveal>
             <ScrollReveal delay={160}>
               <p className="text-primary-foreground/75 text-lg md:text-xl leading-relaxed max-w-2xl">
-                Two ways AJBN rewards you for growing the network: passing qualified deals
-                through Capital Connect, and introducing the next generation of members.
-                Members are always free to connect directly with one another; Capital Connect
-                is there when you want a lead qualified and routed through Salil.
+                Introduce prospective businesses and professionals to AJBN membership and you may
+                receive membership renewal credit. Separately, Capital Connect is how members ask
+                for a relevant business or professional introduction inside the wider network —
+                members are always free to connect directly with one another too.
               </p>
+
             </ScrollReveal>
             <ScrollReveal delay={240}>
               <div className="flex flex-wrap gap-4 mt-8">
