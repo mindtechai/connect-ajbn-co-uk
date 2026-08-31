@@ -10,13 +10,13 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/__l5e/assets-v1/679ddc11-bc98-4005-a111-6bd9d1115105/ajbn-logo.jpg?v=2",
-      "type": "image/jpeg",
+      "src": "/favicon-192x192.png",
+      "type": "image/png",
       "sizes": "192x192"
     },
     {
-      "src": "/__l5e/assets-v1/679ddc11-bc98-4005-a111-6bd9d1115105/ajbn-logo.jpg?v=2",
-      "type": "image/jpeg",
+      "src": "/favicon-512x512.png",
+      "type": "image/png",
       "sizes": "512x512"
     }
   ]

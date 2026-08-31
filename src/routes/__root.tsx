@@ -167,13 +167,16 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
       { rel: "stylesheet", href: appCss },
       {
         rel: "icon",
-        type: "image/jpeg",
-        href: "/__l5e/assets-v1/679ddc11-bc98-4005-a111-6bd9d1115105/ajbn-logo.jpg?v=2",
+        type: "image/png",
+        sizes: "32x32",
+        href: "/favicon-32x32.png",
       },
+      { rel: "shortcut icon", href: "/favicon.ico" },
       { rel: "manifest", href: "/manifest.webmanifest" },
       {
         rel: "apple-touch-icon",
-        href: "/__l5e/assets-v1/679ddc11-bc98-4005-a111-6bd9d1115105/ajbn-logo.jpg?v=2",
+        sizes: "180x180",
+        href: "/apple-touch-icon.png",
       },
     ],
     scripts: [
