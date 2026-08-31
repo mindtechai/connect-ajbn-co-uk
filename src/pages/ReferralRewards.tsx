@@ -151,13 +151,15 @@ export default function ReferralRewardsPage() {
               Track 1
             </p>
             <h2 className="text-3xl md:text-4xl font-display font-bold mb-4">
-              Capital Connect — qualified leads via Salil
+              Capital Connect — requested business & professional introductions
             </h2>
             <p className="text-muted-foreground leading-relaxed">
               Members are free to make direct connections with fellow members at any time.
-              Capital Connect is the route for deals you want Salil to qualify, match and
-              route. On completion, a success fee applies for qualified introductions.
+              Capital Connect is there when you'd like AJBN to identify a relevant professional
+              or business connection within the network and, at your request, facilitate an
+              introduction. The parties communicate and contract independently.
             </p>
+
             <p className="text-muted-foreground leading-relaxed mt-3">
               See how this sits alongside the other{" "}
               <Link to="/services" className="underline underline-offset-4 hover:text-foreground">
