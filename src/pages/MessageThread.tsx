@@ -45,17 +45,26 @@ export default function MessageThreadPage() {
     return () => window.removeEventListener("ajbn-demo-message", h);
   }, [conversationId]);
 
+  const [blocked, setBlocked] = useState(false);
+  useEffect(() => {
+    const sync = () => setBlocked(isBlocked(convo?.other_user_id));
+    sync();
+    window.addEventListener("ajbn-moderation-changed", sync);
+    return () => window.removeEventListener("ajbn-moderation-changed", sync);
+  }, [convo?.other_user_id]);
+
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
   const send = () => {
     const text = body.trim();
-    if (!text || !conversationId) return;
+    if (!text || !conversationId || blocked) return;
     sendDemoMessage(conversationId, meId, text);
     setBody("");
     refresh();
   };
+
   const other = convo
     ? { first_name: convo.other_first_name, last_name: convo.other_last_name, company: convo.other_company }
     : null;
