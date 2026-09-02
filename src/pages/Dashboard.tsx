@@ -20,6 +20,8 @@ import { MessagingOnboardingCard } from "@/components/dashboard/MessagingOnboard
 import { MessageCircle } from "lucide-react";
 import { NetworkTicker } from "@/components/dashboard/NetworkTicker";
 import { LogActivityDialog } from "@/components/dashboard/LogActivityDialog";
+import { DEMO_ANNOUNCEMENTS, DEMO_REFERRAL_CODE, DEMO_REFERRAL_COUNT } from "@/lib/demoNetwork";
+import { EVENTS } from "@/lib/publicEvents";
 
 type Announcement = { id: string; title: string; body: string; priority: string; published_at: string; pinned: boolean };
 type UpcomingEvent = { id: string; title: string; starts_at: string; location: string | null };
@@ -232,7 +234,7 @@ export default function DashboardPage() {
               <div className="space-y-3">
                 <div className="flex gap-4">
                   <div>
-                    <p className="text-2xl font-bold tabular-nums">{referralCount}</p>
+                    <p className="text-2xl font-bold tabular-nums">{shownReferralCount}</p>
                     <p className="text-xs text-muted-foreground">Signed up with your code</p>
                   </div>
                 </div>
@@ -375,6 +377,14 @@ function DashboardCard({
       {children}
     </div>
   );
+}
+
+function fallbackUpcomingEvents(): UpcomingEvent[] {
+  const now = Date.now();
+  return EVENTS
+    .filter((e) => !e.isPlaceholder && new Date(e.date).getTime() >= now)
+    .slice(0, 4)
+    .map((e) => ({ id: e.id, title: e.title, starts_at: e.date, location: e.location }));
 }
 
 function calcCompletion(p: any | null): number {
