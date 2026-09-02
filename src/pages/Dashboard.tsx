@@ -20,6 +20,8 @@ import { MessagingOnboardingCard } from "@/components/dashboard/MessagingOnboard
 import { MessageCircle } from "lucide-react";
 import { NetworkTicker } from "@/components/dashboard/NetworkTicker";
 import { LogActivityDialog } from "@/components/dashboard/LogActivityDialog";
+import { DEMO_ANNOUNCEMENTS, DEMO_REFERRAL_CODE, DEMO_REFERRAL_COUNT } from "@/lib/demoNetwork";
+import { EVENTS } from "@/lib/publicEvents";
 
 type Announcement = { id: string; title: string; body: string; priority: string; published_at: string; pinned: boolean };
 type UpcomingEvent = { id: string; title: string; starts_at: string; location: string | null };
@@ -36,22 +38,31 @@ export default function DashboardPage() {
   useEffect(() => {
     if (!user) return;
     (async () => {
+      // Locally saved profile (used when the account has no live profile row yet).
+      let localProfile: any | null = null;
+      try {
+        const raw = localStorage.getItem("ajbn_demo_profile");
+        if (raw) localProfile = JSON.parse(raw);
+      } catch { /* ignore */ }
+
       const [{ data: p }, { data: ann }, { data: ev }, { count }] = await Promise.all([
         supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
         supabase.from("announcements").select("id,title,body,priority,published_at,pinned").order("pinned", { ascending: false }).order("published_at", { ascending: false }).limit(5),
         supabase.from("events").select("id,title,starts_at,location").gte("starts_at", new Date().toISOString()).order("starts_at", { ascending: true }).limit(4),
         supabase.from("profiles").select("*", { count: "exact", head: true }).eq("referred_by_code", (await supabase.from("profiles").select("referral_code").eq("id", user.id).maybeSingle()).data?.referral_code ?? "__none__"),
       ]);
-      setProfile(p);
-      setAnnouncements(ann ?? []);
-      setUpcomingEvents((ev ?? []) as UpcomingEvent[]);
+      setProfile(p ?? localProfile);
+      setAnnouncements((ann?.length ? ann : DEMO_ANNOUNCEMENTS) as Announcement[]);
+      const liveEvents = (ev ?? []) as UpcomingEvent[];
+      setUpcomingEvents(liveEvents.length ? liveEvents : fallbackUpcomingEvents());
       setReferralCount(count ?? 0);
     })();
   }, [user]);
 
   const firstName = profile?.first_name || user?.user_metadata?.["first_name"] || (user?.email ?? "").split("@")[0];
   const memberSince = user?.created_at ? new Date(user.created_at).toLocaleDateString("en-GB", { month: "short", year: "numeric" }) : "—";
-  const referralCode = profile?.referral_code ?? "—";
+  const referralCode = profile?.referral_code ?? DEMO_REFERRAL_CODE;
+  const shownReferralCount = referralCount || DEMO_REFERRAL_COUNT;
   const completion = calcCompletion(profile);
 
   const copyReferral = () => {
@@ -223,7 +234,7 @@ export default function DashboardPage() {
               <div className="space-y-3">
                 <div className="flex gap-4">
                   <div>
-                    <p className="text-2xl font-bold tabular-nums">{referralCount}</p>
+                    <p className="text-2xl font-bold tabular-nums">{shownReferralCount}</p>
                     <p className="text-xs text-muted-foreground">Signed up with your code</p>
                   </div>
                 </div>
@@ -366,6 +377,14 @@ function DashboardCard({
       {children}
     </div>
   );
+}
+
+function fallbackUpcomingEvents(): UpcomingEvent[] {
+  const now = Date.now();
+  return EVENTS
+    .filter((e) => !e.isPlaceholder && new Date(e.date).getTime() >= now)
+    .slice(0, 4)
+    .map((e) => ({ id: e.id, title: e.title, starts_at: e.date, location: e.location }));
 }
 
 function calcCompletion(p: any | null): number {

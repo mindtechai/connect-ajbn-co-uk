@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { MemberDepositButton } from '@/components/mesh/MemberDepositButton';
+import { DEMO_REFERRAL_LEADERS } from "@/lib/demoNetwork";
 
 type Row = {
   user_id: string;
@@ -35,7 +36,9 @@ export function LionsReferralLeaderboard() {
   useEffect(() => {
     (async () => {
       const { data } = await supabase.rpc("referral_leaderboard", { _limit: 30 });
-      setRows(((data ?? []) as Row[]).filter((r) => r.is_lion).slice(0, 10));
+      const live = ((data ?? []) as Row[]).filter((r) => r.is_lion).slice(0, 10);
+      // Placeholder rows keep this panel meaningful for accounts with no live referrals.
+      setRows(live.length ? live : (DEMO_REFERRAL_LEADERS as Row[]).filter((r) => r.is_lion));
       setLoading(false);
     })();
   }, []);
