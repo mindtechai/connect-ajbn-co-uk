@@ -2,6 +2,7 @@
 
 import type { ComponentType } from 'npm:react@18.3.1'
 import { template as bulkMessage } from './bulk-message.tsx'
+import { template as accountDeletionRequest } from './account-deletion-request.tsx'
 
 export interface TemplateEntry {
   component: ComponentType<any>
@@ -13,4 +14,5 @@ export interface TemplateEntry {
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'bulk-message': bulkMessage,
+  'account-deletion-request': accountDeletionRequest,
 }
