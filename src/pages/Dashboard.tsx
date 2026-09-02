@@ -36,22 +36,31 @@ export default function DashboardPage() {
   useEffect(() => {
     if (!user) return;
     (async () => {
+      // Locally saved profile (used when the account has no live profile row yet).
+      let localProfile: any | null = null;
+      try {
+        const raw = localStorage.getItem("ajbn_demo_profile");
+        if (raw) localProfile = JSON.parse(raw);
+      } catch { /* ignore */ }
+
       const [{ data: p }, { data: ann }, { data: ev }, { count }] = await Promise.all([
         supabase.from("profiles").select("*").eq("id", user.id).maybeSingle(),
         supabase.from("announcements").select("id,title,body,priority,published_at,pinned").order("pinned", { ascending: false }).order("published_at", { ascending: false }).limit(5),
         supabase.from("events").select("id,title,starts_at,location").gte("starts_at", new Date().toISOString()).order("starts_at", { ascending: true }).limit(4),
         supabase.from("profiles").select("*", { count: "exact", head: true }).eq("referred_by_code", (await supabase.from("profiles").select("referral_code").eq("id", user.id).maybeSingle()).data?.referral_code ?? "__none__"),
       ]);
-      setProfile(p);
-      setAnnouncements(ann ?? []);
-      setUpcomingEvents((ev ?? []) as UpcomingEvent[]);
+      setProfile(p ?? localProfile);
+      setAnnouncements((ann?.length ? ann : DEMO_ANNOUNCEMENTS) as Announcement[]);
+      const liveEvents = (ev ?? []) as UpcomingEvent[];
+      setUpcomingEvents(liveEvents.length ? liveEvents : fallbackUpcomingEvents());
       setReferralCount(count ?? 0);
     })();
   }, [user]);
 
   const firstName = profile?.first_name || user?.user_metadata?.["first_name"] || (user?.email ?? "").split("@")[0];
   const memberSince = user?.created_at ? new Date(user.created_at).toLocaleDateString("en-GB", { month: "short", year: "numeric" }) : "—";
-  const referralCode = profile?.referral_code ?? "—";
+  const referralCode = profile?.referral_code ?? DEMO_REFERRAL_CODE;
+  const shownReferralCount = referralCount || DEMO_REFERRAL_COUNT;
   const completion = calcCompletion(profile);
 
   const copyReferral = () => {
