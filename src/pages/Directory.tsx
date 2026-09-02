@@ -152,6 +152,7 @@ export default function DirectoryPage() {
   const filtered = useMemo(() => {
     const search = q.trim().toLowerCase();
     return members.filter((m) => {
+      if (blockedIds.includes(m.id)) return false;
       if (industry !== "all" && m.industry !== industry) return false;
       if (!search) return true;
       const haystack = [
@@ -160,7 +161,8 @@ export default function DirectoryPage() {
       ].filter(Boolean).join(" ").toLowerCase();
       return haystack.includes(search);
     });
-  }, [members, q, industry]);
+  }, [members, q, industry, blockedIds]);
+
 
   const openChatWith = async (m: Member) => {
     if (m.id.startsWith("demo-")) {
