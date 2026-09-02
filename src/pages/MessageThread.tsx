@@ -4,7 +4,10 @@ import { AppLayout } from "@/components/AppLayout";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Send, ShieldCheck } from "lucide-react";
+import { Send, ShieldCheck, Ban } from "lucide-react";
+import { MemberSafetyMenu } from "@/components/safety/MemberSafetyMenu";
+import { isBlocked } from "@/lib/moderation";
+
 import {
   getConversation,
   sendMessage as sendDemoMessage,
