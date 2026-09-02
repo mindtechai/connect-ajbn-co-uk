@@ -35,11 +35,15 @@ export function Footer() {
           </div>
         </div>
         <div className="border-t mt-8 pt-6 text-center">
-          <div className="mb-2">
+          <div className="mb-2 flex items-center justify-center gap-4">
             <Link to="/privacy" className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2">
               Privacy Policy
             </Link>
+            <Link to="/account-deletion" className="text-xs text-muted-foreground hover:text-foreground underline underline-offset-2">
+              Account Deletion
+            </Link>
           </div>
+
           <p className="text-xs text-muted-foreground">
             © {new Date().getFullYear()} Asian Jewish Business Network. All rights reserved.
           </p>
