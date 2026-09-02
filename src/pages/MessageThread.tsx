@@ -132,14 +132,16 @@ export default function MessageThreadPage() {
             value={body}
             onChange={(e) => setBody(e.target.value)}
             onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
-            placeholder="Write a message…"
+            placeholder={blocked ? "You've blocked this member" : "Write a message…"}
             rows={2}
+            disabled={blocked}
             className="resize-none"
           />
-          <Button onClick={send} disabled={!body.trim()} size="icon" aria-label="Send message">
+          <Button onClick={send} disabled={!body.trim() || blocked} size="icon" aria-label="Send message">
             <Send size={16} />
           </Button>
         </div>
+
       </div>
 
       {!convo && !loading && (
