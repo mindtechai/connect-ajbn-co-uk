@@ -2,9 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import PrivacyPage from "@/pages/Privacy";
 
 const BASE = "https://connect.ajbn.co.uk";
-const TITLE = "Privacy Policy & Data Protection | AJBN Connect";
+const TITLE = "Privacy Policy | AJBN Network App";
 const DESCRIPTION =
-  "How AJBN Connect collects, uses and protects member data, including direct member messaging, event registrations and your data protection rights.";
+  "How the AJBN Network app collects, protects and uses your data: private contact details, member messaging, retention periods and your UK GDPR rights.";
 
 export const Route = createFileRoute("/privacy")({
   component: PrivacyPage,
