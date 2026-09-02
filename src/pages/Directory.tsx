@@ -20,6 +20,9 @@ import { ActivateMessagingDialog } from "@/components/messaging/ActivateMessagin
 import { toast } from "sonner";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { MemberBadges } from "@/components/badges/MemberBadges";
+import { MemberSafetyMenu } from "@/components/safety/MemberSafetyMenu";
+import { listBlocked } from "@/lib/moderation";
+
 
 type Member = {
   id: string;
@@ -143,15 +146,25 @@ export default function DirectoryPage() {
     })();
   }, [user, authLoading]);
 
+  const [blockedIds, setBlockedIds] = useState<string[]>([]);
+  useEffect(() => {
+    const sync = () => setBlockedIds(listBlocked());
+    sync();
+    window.addEventListener("ajbn-moderation-changed", sync);
+    return () => window.removeEventListener("ajbn-moderation-changed", sync);
+  }, []);
+
   const industries = useMemo(() => {
     const set = new Set<string>();
     members.forEach((m) => m.industry && set.add(m.industry));
     return Array.from(set).sort();
   }, [members]);
 
+
   const filtered = useMemo(() => {
     const search = q.trim().toLowerCase();
     return members.filter((m) => {
+      if (blockedIds.includes(m.id)) return false;
       if (industry !== "all" && m.industry !== industry) return false;
       if (!search) return true;
       const haystack = [
@@ -160,7 +173,8 @@ export default function DirectoryPage() {
       ].filter(Boolean).join(" ").toLowerCase();
       return haystack.includes(search);
     });
-  }, [members, q, industry]);
+  }, [members, q, industry, blockedIds]);
+
 
   const openChatWith = async (m: Member) => {
     if (m.id.startsWith("demo-")) {
@@ -272,7 +286,7 @@ export default function DirectoryPage() {
                     </div>
                   )}
                   {m.bio && <p className="text-xs text-muted-foreground line-clamp-3 pt-1">{m.bio}</p>}
-                  <div className="flex gap-2 pt-2 border-t">
+                  <div className="flex gap-2 pt-2 border-t items-center">
                     {m.id !== user?.id && (
                       m.is_messaging_active ? (
                         <button
@@ -298,7 +312,18 @@ export default function DirectoryPage() {
                         <Linkedin size={12} /> LinkedIn
                       </a>
                     )}
+                    {m.id !== user?.id && (
+                      <div className="ml-auto">
+                        <MemberSafetyMenu
+                          memberId={m.id}
+                          memberName={`${m.first_name ?? ""} ${m.last_name ?? ""}`.trim() || "this member"}
+                          context="profile"
+                          size="sm"
+                        />
+                      </div>
+                    )}
                   </div>
+
                 </div>
               ))}
               {filtered.length === 0 && (
