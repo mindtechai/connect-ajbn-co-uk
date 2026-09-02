@@ -272,7 +272,7 @@ export default function DirectoryPage() {
                     </div>
                   )}
                   {m.bio && <p className="text-xs text-muted-foreground line-clamp-3 pt-1">{m.bio}</p>}
-                  <div className="flex gap-2 pt-2 border-t">
+                  <div className="flex gap-2 pt-2 border-t items-center">
                     {m.id !== user?.id && (
                       m.is_messaging_active ? (
                         <button
@@ -298,7 +298,18 @@ export default function DirectoryPage() {
                         <Linkedin size={12} /> LinkedIn
                       </a>
                     )}
+                    {m.id !== user?.id && (
+                      <div className="ml-auto">
+                        <MemberSafetyMenu
+                          memberId={m.id}
+                          memberName={`${m.first_name ?? ""} ${m.last_name ?? ""}`.trim() || "this member"}
+                          context="profile"
+                          size="sm"
+                        />
+                      </div>
+                    )}
                   </div>
+
                 </div>
               ))}
               {filtered.length === 0 && (
