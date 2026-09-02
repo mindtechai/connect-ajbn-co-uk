@@ -20,6 +20,9 @@ import { ActivateMessagingDialog } from "@/components/messaging/ActivateMessagin
 import { toast } from "sonner";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { MemberBadges } from "@/components/badges/MemberBadges";
+import { MemberSafetyMenu } from "@/components/safety/MemberSafetyMenu";
+import { listBlocked } from "@/lib/moderation";
+
 
 type Member = {
   id: string;
