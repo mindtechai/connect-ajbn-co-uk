@@ -143,11 +143,20 @@ export default function DirectoryPage() {
     })();
   }, [user, authLoading]);
 
+  const [blockedIds, setBlockedIds] = useState<string[]>([]);
+  useEffect(() => {
+    const sync = () => setBlockedIds(listBlocked());
+    sync();
+    window.addEventListener("ajbn-moderation-changed", sync);
+    return () => window.removeEventListener("ajbn-moderation-changed", sync);
+  }, []);
+
   const industries = useMemo(() => {
     const set = new Set<string>();
     members.forEach((m) => m.industry && set.add(m.industry));
     return Array.from(set).sort();
   }, [members]);
+
 
   const filtered = useMemo(() => {
     const search = q.trim().toLowerCase();
