@@ -64,18 +64,35 @@ export default function MessageThreadPage() {
         <div className="rounded-full bg-primary/10 text-primary w-11 h-11 grid place-items-center font-semibold text-sm shrink-0">
           {(other?.first_name?.[0] ?? "?").toUpperCase()}
         </div>
-        <div>
+        <div className="flex-1 min-w-0">
           <h1 className="text-lg font-display font-bold leading-tight">
             {other ? `${other.first_name ?? ""} ${other.last_name ?? ""}`.trim() : "Conversation"}
           </h1>
           {other?.company && <p className="text-xs text-muted-foreground">{other.company}</p>}
         </div>
+        {convo && (
+          <MemberSafetyMenu
+            memberId={convo.other_user_id}
+            memberName={`${convo.other_first_name ?? ""} ${convo.other_last_name ?? ""}`.trim() || "this member"}
+            context="chat"
+          />
+        )}
       </div>
 
       <p className="text-[11px] text-muted-foreground flex items-center gap-1.5 mb-3">
         <ShieldCheck size={12} className="text-teal" />
         End-to-end inside AJBN Connect. Contact details are never shared.
       </p>
+
+      {blocked && (
+        <div className="mb-3 rounded-lg border border-destructive/40 bg-destructive/5 p-3 text-xs text-muted-foreground flex items-start gap-2">
+          <Ban size={14} className="text-destructive mt-0.5 shrink-0" />
+          <span>
+            You've blocked this member. They can't reach you here — use the menu above to unblock.
+          </span>
+        </div>
+      )}
+
 
       <div className="bg-card border rounded-xl flex flex-col h-[70vh]">
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
