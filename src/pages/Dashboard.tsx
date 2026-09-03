@@ -20,7 +20,7 @@ import { MessagingOnboardingCard } from "@/components/dashboard/MessagingOnboard
 import { MessageCircle } from "lucide-react";
 import { NetworkTicker } from "@/components/dashboard/NetworkTicker";
 import { LogActivityDialog } from "@/components/dashboard/LogActivityDialog";
-import { DEMO_ANNOUNCEMENTS, DEMO_REFERRAL_CODE, DEMO_REFERRAL_COUNT } from "@/lib/demoNetwork";
+import { DEMO_ANNOUNCEMENTS, DEMO_REFERRAL_CODE, DEMO_REFERRAL_COUNT, isDemoSession } from "@/lib/demoNetwork";
 import { EVENTS } from "@/lib/publicEvents";
 
 type Announcement = { id: string; title: string; body: string; priority: string; published_at: string; pinned: boolean };
@@ -52,7 +52,7 @@ export default function DashboardPage() {
         supabase.from("profiles").select("*", { count: "exact", head: true }).eq("referred_by_code", (await supabase.from("profiles").select("referral_code").eq("id", user.id).maybeSingle()).data?.referral_code ?? "__none__"),
       ]);
       setProfile(p ?? localProfile);
-      setAnnouncements((ann?.length ? ann : DEMO_ANNOUNCEMENTS) as Announcement[]);
+      setAnnouncements((ann?.length ? ann : (isDemoSession() ? DEMO_ANNOUNCEMENTS : [])) as Announcement[]);
       const liveEvents = (ev ?? []) as UpcomingEvent[];
       setUpcomingEvents(liveEvents.length ? liveEvents : fallbackUpcomingEvents());
       setReferralCount(count ?? 0);
@@ -61,8 +61,8 @@ export default function DashboardPage() {
 
   const firstName = profile?.first_name || user?.user_metadata?.["first_name"] || (user?.email ?? "").split("@")[0];
   const memberSince = user?.created_at ? new Date(user.created_at).toLocaleDateString("en-GB", { month: "short", year: "numeric" }) : "—";
-  const referralCode = profile?.referral_code ?? DEMO_REFERRAL_CODE;
-  const shownReferralCount = referralCount || DEMO_REFERRAL_COUNT;
+  const referralCode = profile?.referral_code ?? (isDemoSession() ? DEMO_REFERRAL_CODE : "—");
+  const shownReferralCount = referralCount || (isDemoSession() ? DEMO_REFERRAL_COUNT : 0);
   const completion = calcCompletion(profile);
 
   const copyReferral = () => {
