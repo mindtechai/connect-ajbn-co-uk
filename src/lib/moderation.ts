@@ -45,6 +45,13 @@ function write(key: string, value: unknown) {
   }
 }
 
+const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
+
+/** Demo/placeholder member ids aren't real accounts, so they stay local-only. */
+function isRealMemberId(id: string): boolean {
+  return UUID_RE.test(id);
+}
+
 function emit() {
   if (typeof window !== "undefined") {
     window.dispatchEvent(new CustomEvent("ajbn-moderation-changed"));
@@ -80,7 +87,7 @@ export async function syncBlocked(): Promise<string[]> {
 export async function blockMember(userId: string): Promise<void> {
   const { data: auth } = await supabase.auth.getUser();
   const me = auth?.user?.id;
-  if (me) {
+  if (me && isRealMemberId(userId)) {
     const { error } = await supabase
       .from("member_blocks")
       .insert({ blocker_id: me, blocked_id: userId });
@@ -94,7 +101,7 @@ export async function blockMember(userId: string): Promise<void> {
 export async function unblockMember(userId: string): Promise<void> {
   const { data: auth } = await supabase.auth.getUser();
   const me = auth?.user?.id;
-  if (me) {
+  if (me && isRealMemberId(userId)) {
     const { error } = await supabase
       .from("member_blocks")
       .delete()
@@ -122,7 +129,7 @@ export async function reportMember(
       .from("member_reports")
       .insert({
         reporter_id: me,
-        target_id: input.target_id,
+        target_id: isRealMemberId(input.target_id) ? input.target_id : null,
         target_name: input.target_name,
         reason: input.reason,
         details: input.details,
