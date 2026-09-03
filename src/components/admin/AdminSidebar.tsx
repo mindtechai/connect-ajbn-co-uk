@@ -1,7 +1,7 @@
 import { Link, useLocation } from "@/lib/router-compat";
 import {
   Users, BarChart3, Mail, Shield, ChevronLeft,
-  UserCheck, Settings, Home, Zap, CalendarDays, HeartHandshake, Crown, QrCode, ScrollText, Handshake, Inbox
+  UserCheck, Settings, Home, Zap, CalendarDays, HeartHandshake, Crown, QrCode, ScrollText, Handshake, Inbox, Flag
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -13,6 +13,7 @@ const navItems = [
   { label: "Lion Applications", icon: Crown, path: "/admin/lions" },
   { label: "Intro Requests", icon: Handshake, path: "/admin/intros" },
   { label: "Enquiries", icon: Inbox, path: "/admin/enquiries" },
+  { label: "Reports", icon: Flag, path: "/admin/reports" },
   { label: "Events", icon: CalendarDays, path: "/admin/events" },
   { label: "Check-in", icon: QrCode, path: "/admin/checkin" },
   { label: "ESG", icon: HeartHandshake, path: "/admin/esg" },

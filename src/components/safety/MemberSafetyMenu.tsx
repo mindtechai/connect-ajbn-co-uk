@@ -35,11 +35,14 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useServerFn } from "@tanstack/react-start";
+import { notifyMemberReport } from "@/lib/member-report.functions";
 import {
   REPORT_REASONS,
   blockMember,
   isBlocked,
   reportMember,
+  syncBlocked,
   unblockMember,
 } from "@/lib/moderation";
 
@@ -58,39 +61,72 @@ export function MemberSafetyMenu({ memberId, memberName, context, size = "defaul
   const [reason, setReason] = useState<string>(REPORT_REASONS[0]);
   const [details, setDetails] = useState("");
 
+  const [busy, setBusy] = useState(false);
+  const notify = useServerFn(notifyMemberReport);
+
   useEffect(() => {
     const sync = () => setBlocked(isBlocked(memberId));
     sync();
+    void syncBlocked();
     window.addEventListener("ajbn-moderation-changed", sync);
     return () => window.removeEventListener("ajbn-moderation-changed", sync);
   }, [memberId]);
 
-  const doBlock = () => {
-    blockMember(memberId);
-    setConfirmBlock(false);
-    toast.success(`${memberName} blocked`, {
-      description: "They can no longer message you and are hidden from your directory.",
-    });
+  const doBlock = async () => {
+    setBusy(true);
+    try {
+      await blockMember(memberId);
+      setConfirmBlock(false);
+      toast.success(`${memberName} blocked`, {
+        description: "They can no longer message you and are hidden from your directory.",
+      });
+    } catch (e) {
+      toast.error("Couldn't block this member", {
+        description: e instanceof Error ? e.message : "Please try again.",
+      });
+    } finally {
+      setBusy(false);
+    }
   };
 
-  const doUnblock = () => {
-    unblockMember(memberId);
-    toast.success(`${memberName} unblocked`);
+  const doUnblock = async () => {
+    try {
+      await unblockMember(memberId);
+      toast.success(`${memberName} unblocked`);
+    } catch (e) {
+      toast.error("Couldn't unblock this member", {
+        description: e instanceof Error ? e.message : "Please try again.",
+      });
+    }
   };
 
-  const submitReport = () => {
-    reportMember({
-      target_id: memberId,
-      target_name: memberName,
-      reason,
-      details: details.trim(),
-      context,
-    });
-    setReportOpen(false);
-    setDetails("");
-    toast.success("Report submitted", {
-      description: "The AJBN team will review this within 24 hours.",
-    });
+  const submitReport = async () => {
+    setBusy(true);
+    try {
+      const created = await reportMember({
+        target_id: memberId,
+        target_name: memberName,
+        reason,
+        details: details.trim(),
+        context,
+      });
+      setReportOpen(false);
+      setDetails("");
+      // Fire-and-forget: the report is already stored; email is best-effort.
+      // Local-only demo reports have non-UUID ids and are not emailed.
+      if (/^[0-9a-f-]{36}$/i.test(created.id)) {
+        void notify({ data: { reportId: created.id } }).catch(() => {});
+      }
+      toast.success("Report submitted", {
+        description: "The AJBN team has received this and reviews reports within 24 hours.",
+      });
+    } catch (e) {
+      toast.error("Couldn't submit your report", {
+        description: e instanceof Error ? e.message : "Please try again.",
+      });
+    } finally {
+      setBusy(false);
+    }
   };
 
   return (
@@ -108,7 +144,7 @@ export function MemberSafetyMenu({ memberId, memberName, context, size = "defaul
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end" className="w-52">
           {blocked ? (
-            <DropdownMenuItem onSelect={doUnblock}>
+            <DropdownMenuItem onSelect={() => { void doUnblock(); }}>
               <ShieldOff size={14} className="mr-2" /> Unblock member
             </DropdownMenuItem>
           ) : (
@@ -133,7 +169,7 @@ export function MemberSafetyMenu({ memberId, memberName, context, size = "defaul
           </AlertDialogHeader>
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
-            <AlertDialogAction onClick={doBlock}>Block</AlertDialogAction>
+            <AlertDialogAction onClick={(e) => { e.preventDefault(); void doBlock(); }} disabled={busy}>Block</AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
@@ -171,7 +207,9 @@ export function MemberSafetyMenu({ memberId, memberName, context, size = "defaul
           </div>
           <DialogFooter className="gap-2 sm:gap-0">
             <Button variant="outline" onClick={() => setReportOpen(false)}>Cancel</Button>
-            <Button variant="destructive" onClick={submitReport}>Submit report</Button>
+            <Button variant="destructive" onClick={() => { void submitReport(); }} disabled={busy}>
+              {busy ? "Submitting…" : "Submit report"}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

@@ -38,6 +38,7 @@ import { Route as AdminEventsRouteImport } from './routes/admin/events'
 import { Route as AdminIntrosRouteImport } from './routes/admin/intros'
 import { Route as AdminLionsRouteImport } from './routes/admin/lions'
 import { Route as AdminMembersRouteImport } from './routes/admin/members'
+import { Route as AdminReportsRouteImport } from './routes/admin/reports'
 import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
 import { Route as LionsIndexRouteImport } from './routes/lions/index'
 import { Route as LionsApplyRouteImport } from './routes/lions/apply'
@@ -192,6 +193,11 @@ const AdminMembersRoute = AdminMembersRouteImport.update({
   path: '/admin/members',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminReportsRoute = AdminReportsRouteImport.update({
+  id: '/admin/reports',
+  path: '/admin/reports',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminSettingsRoute = AdminSettingsRouteImport.update({
   id: '/admin/settings',
   path: '/admin/settings',
@@ -262,6 +268,7 @@ export interface FileRoutesByFullPath {
   '/admin/intros': typeof AdminIntrosRoute
   '/admin/lions': typeof AdminLionsRoute
   '/admin/members': typeof AdminMembersRoute
+  '/admin/reports': typeof AdminReportsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/lions/apply': typeof LionsApplyRoute
   '/messages/$conversationId': typeof MessagesConversationIdRoute
@@ -301,6 +308,7 @@ export interface FileRoutesByTo {
   '/admin/intros': typeof AdminIntrosRoute
   '/admin/lions': typeof AdminLionsRoute
   '/admin/members': typeof AdminMembersRoute
+  '/admin/reports': typeof AdminReportsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/lions/apply': typeof LionsApplyRoute
   '/messages/$conversationId': typeof MessagesConversationIdRoute
@@ -341,6 +349,7 @@ export interface FileRoutesById {
   '/admin/intros': typeof AdminIntrosRoute
   '/admin/lions': typeof AdminLionsRoute
   '/admin/members': typeof AdminMembersRoute
+  '/admin/reports': typeof AdminReportsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/lions/apply': typeof LionsApplyRoute
   '/messages/$conversationId': typeof MessagesConversationIdRoute
@@ -382,6 +391,7 @@ export interface FileRouteTypes {
     | '/admin/intros'
     | '/admin/lions'
     | '/admin/members'
+    | '/admin/reports'
     | '/admin/settings'
     | '/lions/apply'
     | '/messages/$conversationId'
@@ -421,6 +431,7 @@ export interface FileRouteTypes {
     | '/admin/intros'
     | '/admin/lions'
     | '/admin/members'
+    | '/admin/reports'
     | '/admin/settings'
     | '/lions/apply'
     | '/messages/$conversationId'
@@ -460,6 +471,7 @@ export interface FileRouteTypes {
     | '/admin/intros'
     | '/admin/lions'
     | '/admin/members'
+    | '/admin/reports'
     | '/admin/settings'
     | '/lions/apply'
     | '/messages/$conversationId'
@@ -500,6 +512,7 @@ export interface RootRouteChildren {
   AdminIntrosRoute: typeof AdminIntrosRoute
   AdminLionsRoute: typeof AdminLionsRoute
   AdminMembersRoute: typeof AdminMembersRoute
+  AdminReportsRoute: typeof AdminReportsRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   LionsApplyRoute: typeof LionsApplyRoute
   MessagesConversationIdRoute: typeof MessagesConversationIdRoute
@@ -716,6 +729,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminMembersRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/reports': {
+      id: '/admin/reports'
+      path: '/admin/reports'
+      fullPath: '/admin/reports'
+      preLoaderRoute: typeof AdminReportsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/settings': {
       id: '/admin/settings'
       path: '/admin/settings'
@@ -804,6 +824,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminIntrosRoute: AdminIntrosRoute,
   AdminLionsRoute: AdminLionsRoute,
   AdminMembersRoute: AdminMembersRoute,
+  AdminReportsRoute: AdminReportsRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   LionsApplyRoute: LionsApplyRoute,
   MessagesConversationIdRoute: MessagesConversationIdRoute,

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
 import { Send, ShieldCheck, Ban } from "lucide-react";
 import { MemberSafetyMenu } from "@/components/safety/MemberSafetyMenu";
-import { isBlocked } from "@/lib/moderation";
+import { isBlocked, syncBlocked } from "@/lib/moderation";
 
 import {
   getConversation,
@@ -49,6 +49,7 @@ export default function MessageThreadPage() {
   useEffect(() => {
     const sync = () => setBlocked(isBlocked(convo?.other_user_id));
     sync();
+    void syncBlocked();
     window.addEventListener("ajbn-moderation-changed", sync);
     return () => window.removeEventListener("ajbn-moderation-changed", sync);
   }, [convo?.other_user_id]);
