@@ -1,3 +1,4 @@
+import { isBlocked } from "@/lib/moderation";
 // Local, in-browser demo store for chat/messaging.
 // No backend calls — everything is persisted to localStorage.
 
@@ -134,6 +135,8 @@ export function sendMessage(id: string, senderId: string, body: string): DemoMsg
   const map = read();
   const convo = map[id];
   if (!convo) return null;
+  // Blocked members can neither receive nor send in this thread.
+  if (isBlocked(convo.other_user_id)) return null;
   const msg: DemoMsg = { id: uid(), sender_id: senderId, body, created_at: new Date().toISOString() };
   convo.messages.push(msg);
 
