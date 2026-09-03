@@ -35,6 +35,8 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
+import { useServerFn } from "@tanstack/react-start";
+import { notifyMemberReport } from "@/lib/member-report.functions";
 import {
   REPORT_REASONS,
   blockMember,
@@ -60,6 +62,7 @@ export function MemberSafetyMenu({ memberId, memberName, context, size = "defaul
   const [details, setDetails] = useState("");
 
   const [busy, setBusy] = useState(false);
+  const notify = useServerFn(notifyMemberReport);
 
   useEffect(() => {
     const sync = () => setBlocked(isBlocked(memberId));
@@ -100,7 +103,7 @@ export function MemberSafetyMenu({ memberId, memberName, context, size = "defaul
   const submitReport = async () => {
     setBusy(true);
     try {
-      await reportMember({
+      const created = await reportMember({
         target_id: memberId,
         target_name: memberName,
         reason,
@@ -109,6 +112,8 @@ export function MemberSafetyMenu({ memberId, memberName, context, size = "defaul
       });
       setReportOpen(false);
       setDetails("");
+      // Fire-and-forget: the report is already stored; email is best-effort.
+      void notify({ data: { reportId: created.id } }).catch(() => {});
       toast.success("Report submitted", {
         description: "The AJBN team has received this and reviews reports within 24 hours.",
       });
