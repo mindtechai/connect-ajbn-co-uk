@@ -540,6 +540,27 @@ export type Database = {
         }
         Relationships: []
       }
+      member_blocks: {
+        Row: {
+          blocked_id: string
+          blocker_id: string
+          created_at: string
+          id: string
+        }
+        Insert: {
+          blocked_id: string
+          blocker_id: string
+          created_at?: string
+          id?: string
+        }
+        Update: {
+          blocked_id?: string
+          blocker_id?: string
+          created_at?: string
+          id?: string
+        }
+        Relationships: []
+      }
       member_intro_requests: {
         Row: {
           admin_notes: string | null
@@ -581,6 +602,45 @@ export type Database = {
           target_company?: string | null
           target_email?: string | null
           target_name?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      member_reports: {
+        Row: {
+          context: string
+          created_at: string
+          details: string
+          id: string
+          reason: string
+          reporter_id: string
+          status: string
+          target_id: string | null
+          target_name: string | null
+          updated_at: string
+        }
+        Insert: {
+          context?: string
+          created_at?: string
+          details?: string
+          id?: string
+          reason: string
+          reporter_id: string
+          status?: string
+          target_id?: string | null
+          target_name?: string | null
+          updated_at?: string
+        }
+        Update: {
+          context?: string
+          created_at?: string
+          details?: string
+          id?: string
+          reason?: string
+          reporter_id?: string
+          status?: string
+          target_id?: string | null
+          target_name?: string | null
           updated_at?: string
         }
         Relationships: []
@@ -990,6 +1050,7 @@ export type Database = {
         Returns: boolean
       }
       is_approved_member: { Args: { _uid: string }; Returns: boolean }
+      is_block_between: { Args: { _a: string; _b: string }; Returns: boolean }
       is_messaging_active: { Args: { _uid: string }; Returns: boolean }
       mark_conversation_read: {
         Args: { _conversation: string }
