@@ -43,3 +43,17 @@ export const DEMO_ANNOUNCEMENTS = [
 
 export const DEMO_REFERRAL_CODE = "AJBN-DEMO1234";
 export const DEMO_REFERRAL_COUNT = 3;
+
+/**
+ * True only for the local demo/review session (no real backend account).
+ * Real signed-in members must never see fabricated referral codes, counts,
+ * announcements or leaderboard names.
+ */
+export function isDemoSession(): boolean {
+  if (typeof window === "undefined") return false;
+  try {
+    return localStorage.getItem("ajbn_demo_mock_user") !== null;
+  } catch {
+    return false;
+  }
+}
