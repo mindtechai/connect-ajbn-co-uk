@@ -8,7 +8,7 @@ import { formatDistanceToNow } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
 import { listInbox, type DemoConversation } from "@/lib/demoMessaging";
-import { isBlocked } from "@/lib/moderation";
+import { isBlocked, syncBlocked } from "@/lib/moderation";
 
 export default function MessagesPage() {
   const { isActive, activate } = useMessagingProfile();
@@ -22,6 +22,7 @@ export default function MessagesPage() {
     load();
     const h = () => load();
     window.addEventListener("ajbn-demo-message", h);
+    void syncBlocked();
     window.addEventListener("ajbn-moderation-changed", h);
     return () => {
       window.removeEventListener("ajbn-demo-message", h);

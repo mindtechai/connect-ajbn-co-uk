@@ -21,7 +21,7 @@ import { toast } from "sonner";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { MemberBadges } from "@/components/badges/MemberBadges";
 import { MemberSafetyMenu } from "@/components/safety/MemberSafetyMenu";
-import { listBlocked } from "@/lib/moderation";
+import { listBlocked, syncBlocked } from "@/lib/moderation";
 
 
 type Member = {
@@ -150,6 +150,7 @@ export default function DirectoryPage() {
   useEffect(() => {
     const sync = () => setBlockedIds(listBlocked());
     sync();
+    void syncBlocked();
     window.addEventListener("ajbn-moderation-changed", sync);
     return () => window.removeEventListener("ajbn-moderation-changed", sync);
   }, []);
