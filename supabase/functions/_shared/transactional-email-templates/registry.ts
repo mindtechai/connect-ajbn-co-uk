@@ -3,6 +3,7 @@
 import type { ComponentType } from 'npm:react@18.3.1'
 import { template as bulkMessage } from './bulk-message.tsx'
 import { template as accountDeletionRequest } from './account-deletion-request.tsx'
+import { template as memberReport } from './member-report.tsx'
 
 export interface TemplateEntry {
   component: ComponentType<any>
