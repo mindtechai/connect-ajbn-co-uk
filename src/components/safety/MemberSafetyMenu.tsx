@@ -113,7 +113,10 @@ export function MemberSafetyMenu({ memberId, memberName, context, size = "defaul
       setReportOpen(false);
       setDetails("");
       // Fire-and-forget: the report is already stored; email is best-effort.
-      void notify({ data: { reportId: created.id } }).catch(() => {});
+      // Local-only demo reports have non-UUID ids and are not emailed.
+      if (/^[0-9a-f-]{36}$/i.test(created.id)) {
+        void notify({ data: { reportId: created.id } }).catch(() => {});
+      }
       toast.success("Report submitted", {
         description: "The AJBN team has received this and reviews reports within 24 hours.",
       });
