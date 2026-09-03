@@ -16,4 +16,5 @@ export interface TemplateEntry {
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'bulk-message': bulkMessage,
   'account-deletion-request': accountDeletionRequest,
+  'member-report': memberReport,
 }
