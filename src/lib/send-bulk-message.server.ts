@@ -27,7 +27,7 @@ type DeliveryRow = {
   recipient_email: string;
   recipient_name: string | null;
   channel: "in_app" | "email";
-  status: "sent" | "queued" | "suppressed" | "failed";
+  status: "sent" | "queued" | "suppressed" | "skipped" | "failed";
   sent_at?: string;
   error?: string;
 };
