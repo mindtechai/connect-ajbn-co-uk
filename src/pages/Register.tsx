@@ -27,23 +27,33 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Demo mode: bypass Supabase — accept any input and log in.
-    const mockUser = {
-      id: `demo-${crypto.randomUUID()}`,
+    localStorage.removeItem("ajbn_demo_mock_user");
+    const { data, error } = await supabase.auth.signUp({
       email: email.trim(),
-      user_metadata: {
-        first_name: firstName,
-        last_name: lastName,
-        company,
-        referred_by_code: referral.trim().toUpperCase() || undefined,
-        referred_by: referredBy || undefined,
+      password,
+      options: {
+        data: {
+          first_name: firstName.trim(),
+          last_name: lastName.trim(),
+          company: company.trim(),
+          referred_by_code: referral.trim().toUpperCase() || undefined,
+          referred_by: referredBy || undefined,
+        },
       },
-      app_metadata: {},
-      aud: "authenticated",
-      created_at: new Date().toISOString(),
-    };
-    localStorage.setItem("ajbn_demo_mock_user", JSON.stringify(mockUser));
+    });
     setLoading(false);
+    if (error) {
+      toast({ title: "Registration failed", description: error.message, variant: "destructive" });
+      return;
+    }
+    if (!data.session) {
+      toast({
+        title: "Check your email",
+        description: "Use the verification link we sent before signing in.",
+      });
+      navigate("/login");
+      return;
+    }
     toast({ title: "Welcome to AJBN Connect", description: "Your account is ready." });
     window.location.href = "/dashboard";
   };

@@ -34,19 +34,17 @@ export default function LoginPage() {
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // Demo mode: bypass Supabase entirely — accept any credentials.
-    const mockEmail = email.trim() || "demo@ajbn.co.uk";
-    const mockUser = {
-      id: `demo-${crypto.randomUUID()}`,
-      email: mockEmail,
-      user_metadata: { first_name: "Demo", last_name: "User", company: "AJBN Demo" },
-      app_metadata: {},
-      aud: "authenticated",
-      created_at: new Date().toISOString(),
-    };
-    localStorage.setItem("ajbn_demo_mock_user", JSON.stringify(mockUser));
-    setLoading(false);
-    toast({ title: "Welcome to AJBN Connect", description: "Signed in (demo mode)." });
+    localStorage.removeItem("ajbn_demo_mock_user");
+    const { error } = await supabase.auth.signInWithPassword({
+      email: email.trim(),
+      password,
+    });
+    if (error) {
+      setLoading(false);
+      toast({ title: "Sign in failed", description: error.message, variant: "destructive" });
+      return;
+    }
+    toast({ title: "Welcome to AJBN Connect" });
     window.location.href = next.startsWith("/") ? next : "/dashboard";
   };
 
@@ -61,16 +59,32 @@ export default function LoginPage() {
       return;
     }
     setLoading(true);
-    const mockUser = {
-      id: `demo-${crypto.randomUUID()}`,
+    localStorage.removeItem("ajbn_demo_mock_user");
+    const { data, error } = await supabase.auth.signUp({
       email: email.trim(),
-      user_metadata: { first_name: firstName, last_name: lastName, company, referred_by: referredBy || undefined },
-      app_metadata: {},
-      aud: "authenticated",
-      created_at: new Date().toISOString(),
-    };
-    localStorage.setItem("ajbn_demo_mock_user", JSON.stringify(mockUser));
+      password,
+      options: {
+        data: {
+          first_name: firstName.trim(),
+          last_name: lastName.trim(),
+          company: company.trim(),
+          referred_by: referredBy || undefined,
+        },
+      },
+    });
     setLoading(false);
+    if (error) {
+      toast({ title: "Registration failed", description: error.message, variant: "destructive" });
+      return;
+    }
+    if (!data.session) {
+      toast({
+        title: "Check your email",
+        description: "Use the verification link we sent before signing in.",
+      });
+      setMode("signin");
+      return;
+    }
     toast({ title: "Welcome to AJBN Connect", description: "Your account is ready." });
     window.location.href = "/dashboard";
   };

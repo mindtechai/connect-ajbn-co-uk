@@ -112,10 +112,12 @@ export function MemberSafetyMenu({ memberId, memberName, context, size = "defaul
       });
       setReportOpen(false);
       setDetails("");
-      // Fire-and-forget: the report is already stored; email is best-effort.
-      // Local-only demo reports have non-UUID ids and are not emailed.
-      if (/^[0-9a-f-]{36}$/i.test(created.id)) {
-        void notify({ data: { reportId: created.id } }).catch(() => {});
+      const notification = await notify({ data: { reportId: created.id } });
+      if (!notification.ok) {
+        toast.warning("Report saved", {
+          description: "Your report is in the admin review queue, but the email alert could not be sent.",
+        });
+        return;
       }
       toast.success("Report submitted", {
         description: "The AJBN team has received this and reviews reports within 24 hours.",
