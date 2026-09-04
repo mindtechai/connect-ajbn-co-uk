@@ -46,9 +46,9 @@ export async function sendAppEmail(
 ): Promise<AppEmailResult> {
   const attempt = () =>
     sendTemplateEmail(templateName, recipientEmail, {
-      templateData: options.templateData as Record<string, any> | undefined,
-      idempotencyKey: options.idempotencyKey,
-      replyTo: options.replyTo,
+      ...(options.templateData ? { templateData: options.templateData as Record<string, any> } : {}),
+      ...(options.idempotencyKey ? { idempotencyKey: options.idempotencyKey } : {}),
+      ...(options.replyTo ? { replyTo: options.replyTo } : {}),
     });
 
   try {

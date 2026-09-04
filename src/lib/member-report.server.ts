@@ -23,7 +23,7 @@ export async function sendMemberReportNotification(input: ReportNotification) {
 
   const result = await sendAppEmail(admin, "member-report", TEAM_EMAIL, {
     idempotencyKey: `member-report-${input.reportId}`,
-    replyTo: input.reporterEmail || undefined,
+    ...(input.reporterEmail ? { replyTo: input.reporterEmail } : {}),
 
     templateData: {
       reporter_name: input.reporterName,
