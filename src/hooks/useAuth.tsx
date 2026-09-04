@@ -35,33 +35,36 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Demo mode: hydrate from mock user if present
-    const mock = readMockUser();
-    if (mock) {
-      setUser(mock);
-      setSession({ access_token: "demo", refresh_token: "demo", expires_in: 3600, token_type: "bearer", user: mock } as unknown as Session);
-      setRoles(["ajbn_member"]);
-      setLoading(false);
-      return;
-    }
-
     const { data: sub } = supabase.auth.onAuthStateChange((_evt, s) => {
-      setSession(s);
-      setUser(s?.user ?? null);
       if (s?.user) {
+        localStorage.removeItem(MOCK_KEY);
+        setSession(s);
+        setUser(s.user);
         // defer role fetch
         setTimeout(() => fetchRoles(s.user.id), 0);
       } else {
-        setRoles([]);
+        const mock = readMockUser();
+        setSession(mock
+          ? ({ access_token: "demo", refresh_token: "demo", expires_in: 3600, token_type: "bearer", user: mock } as unknown as Session)
+          : null);
+        setUser(mock);
+        setRoles(mock ? ["ajbn_member"] : []);
       }
     });
 
     supabase.auth.getSession().then(({ data }) => {
-      setSession(data.session);
-      setUser(data.session?.user ?? null);
       if (data.session?.user) {
+        localStorage.removeItem(MOCK_KEY);
+        setSession(data.session);
+        setUser(data.session.user);
         fetchRoles(data.session.user.id).finally(() => setLoading(false));
       } else {
+        const mock = readMockUser();
+        setSession(mock
+          ? ({ access_token: "demo", refresh_token: "demo", expires_in: 3600, token_type: "bearer", user: mock } as unknown as Session)
+          : null);
+        setUser(mock);
+        setRoles(mock ? ["ajbn_member"] : []);
         setLoading(false);
       }
     });

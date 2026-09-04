@@ -47,9 +47,17 @@ function write(key: string, value: unknown) {
 
 const UUID_RE = /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i;
 
-/** Demo/placeholder member ids aren't real accounts, so they stay local-only. */
+/** Demo/placeholder member ids aren't valid backend member accounts. */
 function isRealMemberId(id: string): boolean {
   return UUID_RE.test(id);
+}
+
+async function requireAuthenticatedUser(): Promise<string> {
+  const { data, error } = await supabase.auth.getUser();
+  if (error || !data.user) {
+    throw new Error("Please sign in with your AJBN Connect account to use member safety tools.");
+  }
+  return data.user.id;
 }
 
 function emit() {
@@ -72,7 +80,7 @@ export function isBlocked(userId?: string | null): boolean {
 export async function syncBlocked(): Promise<string[]> {
   const { data: auth } = await supabase.auth.getUser();
   const me = auth?.user?.id;
-  if (!me) return listBlocked();
+  if (!me) return [];
   const { data, error } = await supabase
     .from("member_blocks")
     .select("blocked_id")
@@ -85,30 +93,26 @@ export async function syncBlocked(): Promise<string[]> {
 }
 
 export async function blockMember(userId: string): Promise<void> {
-  const { data: auth } = await supabase.auth.getUser();
-  const me = auth?.user?.id;
-  if (me && isRealMemberId(userId)) {
-    const { error } = await supabase
-      .from("member_blocks")
-      .insert({ blocker_id: me, blocked_id: userId });
-    // Duplicate block (already blocked) is not an error for the user.
-    if (error && error.code !== "23505") throw new Error(error.message);
-  }
+  const me = await requireAuthenticatedUser();
+  if (!isRealMemberId(userId)) throw new Error("This demo profile cannot be blocked.");
+  const { error } = await supabase
+    .from("member_blocks")
+    .insert({ blocker_id: me, blocked_id: userId });
+  // Duplicate block (already blocked) is not an error for the user.
+  if (error && error.code !== "23505") throw new Error(error.message);
   write(BLOCK_KEY, Array.from(new Set([...listBlocked(), userId])));
   emit();
 }
 
 export async function unblockMember(userId: string): Promise<void> {
-  const { data: auth } = await supabase.auth.getUser();
-  const me = auth?.user?.id;
-  if (me && isRealMemberId(userId)) {
-    const { error } = await supabase
-      .from("member_blocks")
-      .delete()
-      .eq("blocker_id", me)
-      .eq("blocked_id", userId);
-    if (error) throw new Error(error.message);
-  }
+  const me = await requireAuthenticatedUser();
+  if (!isRealMemberId(userId)) throw new Error("This demo profile cannot be unblocked.");
+  const { error } = await supabase
+    .from("member_blocks")
+    .delete()
+    .eq("blocker_id", me)
+    .eq("blocked_id", userId);
+  if (error) throw new Error(error.message);
   write(BLOCK_KEY, listBlocked().filter((id) => id !== userId));
   emit();
 }
@@ -120,28 +124,23 @@ export function listReports(): MemberReport[] {
 export async function reportMember(
   input: Omit<MemberReport, "id" | "created_at">,
 ): Promise<MemberReport> {
-  const { data: auth } = await supabase.auth.getUser();
-  const me = auth?.user?.id;
-  let id = `rep-${Math.random().toString(36).slice(2, 10)}-${Date.now().toString(36)}`;
+  const me = await requireAuthenticatedUser();
+  const { data, error } = await supabase
+    .from("member_reports")
+    .insert({
+      reporter_id: me,
+      target_id: isRealMemberId(input.target_id) ? input.target_id : null,
+      target_name: input.target_name,
+      reason: input.reason,
+      details: input.details,
+      context: input.context,
+    })
+    .select("id")
+    .single();
+  if (error) throw new Error(error.message);
+  if (!data?.id) throw new Error("The report could not be saved. Please try again.");
 
-  if (me) {
-    const { data, error } = await supabase
-      .from("member_reports")
-      .insert({
-        reporter_id: me,
-        target_id: isRealMemberId(input.target_id) ? input.target_id : null,
-        target_name: input.target_name,
-        reason: input.reason,
-        details: input.details,
-        context: input.context,
-      })
-      .select("id")
-      .single();
-    if (error) throw new Error(error.message);
-    if (data?.id) id = data.id;
-  }
-
-  const report: MemberReport = { ...input, id, created_at: new Date().toISOString() };
+  const report: MemberReport = { ...input, id: data.id, created_at: new Date().toISOString() };
   write(REPORT_KEY, [report, ...listReports()].slice(0, 200));
   emit();
   return report;
