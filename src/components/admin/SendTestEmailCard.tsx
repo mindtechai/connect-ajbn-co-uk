@@ -32,7 +32,10 @@ const AUTH_OPTIONS: TemplateOption[] = [
 
 const TRANSACTIONAL_OPTIONS: TemplateOption[] = [
   { value: "bulk-message", label: "Bulk message / announcement", kind: "transactional" },
+  { value: "account-deletion-request", label: "Account deletion request", kind: "transactional" },
+  { value: "member-report", label: "Member report alert", kind: "transactional" },
 ];
+
 
 const emailSchema = z.string().trim().email().max(254);
 
