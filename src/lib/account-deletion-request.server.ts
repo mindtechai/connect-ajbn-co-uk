@@ -36,21 +36,13 @@ export async function runAccountDeletionRequest(rawInput: unknown) {
   });
   const reference = `ADR-${String(data.id).slice(0, 8).toUpperCase()}`;
 
-  let emailed = false;
-  try {
-    const { error: sendErr } = await admin.functions.invoke("send-transactional-email", {
-      body: {
-        templateName: "account-deletion-request",
-        recipientEmail: email,
-        idempotencyKey: `account-deletion-${data.id}`,
-        templateData: { email, reason: reason ?? "", reference, due_by: dueBy },
-      },
-    });
-    emailed = !sendErr;
-    if (sendErr) console.error("[account-deletion-request] email failed", sendErr);
-  } catch (e) {
-    console.error("[account-deletion-request] email threw", e);
-  }
+  const { sendAppEmail } = await import("./email-send.server");
+  const sendResult = await sendAppEmail(admin, "account-deletion-request", email, {
+    idempotencyKey: `account-deletion-${data.id}`,
+    templateData: { email, reason: reason ?? "", reference, due_by: dueBy },
+  });
+  const emailed = sendResult.sent;
+
 
   return { ok: true as const, reference, dueBy, emailed };
 }

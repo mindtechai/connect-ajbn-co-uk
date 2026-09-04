@@ -13,9 +13,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { sendTestEmail } from "@/lib/send-test-email.functions";
 import { useAuth } from "@/hooks/useAuth";
 import { toast } from "@/hooks/use-toast";
+
 
 type TemplateOption = { value: string; label: string; kind: "auth" | "transactional" };
 
@@ -30,12 +32,16 @@ const AUTH_OPTIONS: TemplateOption[] = [
 
 const TRANSACTIONAL_OPTIONS: TemplateOption[] = [
   { value: "bulk-message", label: "Bulk message / announcement", kind: "transactional" },
+  { value: "account-deletion-request", label: "Account deletion request", kind: "transactional" },
+  { value: "member-report", label: "Member report alert", kind: "transactional" },
 ];
+
 
 const emailSchema = z.string().trim().email().max(254);
 
 export function SendTestEmailCard() {
   const { user } = useAuth();
+  const send = useServerFn(sendTestEmail);
   const allOptions = useMemo(() => [...AUTH_OPTIONS, ...TRANSACTIONAL_OPTIONS], []);
   const [selected, setSelected] = useState<string>(AUTH_OPTIONS[0]!.value);
   const [recipient, setRecipient] = useState("");
@@ -55,20 +61,27 @@ export function SendTestEmailCard() {
     if (!option) return;
     setSending(true);
     try {
-      const { data, error } = await supabase.functions.invoke("send-test-email", {
-        body: {
+      const result = await send({
+        data: {
           kind: option.kind,
           templateName: option.value,
           recipientEmail: parsed.data,
         },
       });
-      if (error) throw error;
-      if ((data as any)?.error) throw new Error((data as any).error);
-      toast({
-        title: "Test email queued",
-        description: `Sent “${option.label}” to ${parsed.data}. Message id: ${(data as any)?.messageId ?? "n/a"}`,
-      });
+      if (!result.success) {
+        toast({
+          title: "Not delivered",
+          description: `${parsed.data} is on the suppression list (bounced, complained or unsubscribed).`,
+          variant: "destructive",
+        });
+      } else {
+        toast({
+          title: "Test email sent",
+          description: `Sent “${option.label}” to ${parsed.data}.`,
+        });
+      }
     } catch (e: any) {
+
       toast({
         title: "Failed to send",
         description: e?.message ?? "Unknown error",
