@@ -47,6 +47,7 @@ import { Route as MessagesConversationIdRouteImport } from './routes/messages/$c
 import { Route as SettingsNotificationsRouteImport } from './routes/settings/notifications'
 import { Route as SettingsProfileRouteImport } from './routes/settings/profile'
 import { Route as TicketsFlagshipRouteImport } from './routes/tickets/flagship'
+import { Route as LovableEmailEventsRouteImport } from './routes/lovable/email/events'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
@@ -241,6 +242,11 @@ const TicketsFlagshipRoute = TicketsFlagshipRouteImport.update({
   path: '/tickets/flagship',
   getParentRoute: () => rootRouteImport,
 } as any)
+const LovableEmailEventsRoute = LovableEmailEventsRouteImport.update({
+  id: '/lovable/email/events',
+  path: '/lovable/email/events',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   id: '/lovable/email/auth/preview',
   path: '/lovable/email/auth/preview',
@@ -297,6 +303,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/lions/': typeof LionsIndexRoute
   '/messages/': typeof MessagesIndexRoute
+  '/lovable/email/events': typeof LovableEmailEventsRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -340,6 +347,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/lions': typeof LionsIndexRoute
   '/messages': typeof MessagesIndexRoute
+  '/lovable/email/events': typeof LovableEmailEventsRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -384,6 +392,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/lions/': typeof LionsIndexRoute
   '/messages/': typeof MessagesIndexRoute
+  '/lovable/email/events': typeof LovableEmailEventsRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -429,6 +438,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/lions/'
     | '/messages/'
+    | '/lovable/email/events'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -472,6 +482,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/lions'
     | '/messages'
+    | '/lovable/email/events'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -515,6 +526,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/lions/'
     | '/messages/'
+    | '/lovable/email/events'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -559,6 +571,7 @@ export interface RootRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   LionsIndexRoute: typeof LionsIndexRoute
   MessagesIndexRoute: typeof MessagesIndexRoute
+  LovableEmailEventsRoute: typeof LovableEmailEventsRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
@@ -832,6 +845,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TicketsFlagshipRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/lovable/email/events': {
+      id: '/lovable/email/events'
+      path: '/lovable/email/events'
+      fullPath: '/lovable/email/events'
+      preLoaderRoute: typeof LovableEmailEventsRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/auth/preview': {
       id: '/lovable/email/auth/preview'
       path: '/lovable/email/auth/preview'
@@ -895,6 +915,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   LionsIndexRoute: LionsIndexRoute,
   MessagesIndexRoute: MessagesIndexRoute,
+  LovableEmailEventsRoute: LovableEmailEventsRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
