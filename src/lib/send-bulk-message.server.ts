@@ -207,14 +207,6 @@ export async function runSendBulkMessage(authHeader: string, input: BulkMessageI
           }
         }
       }
-    } catch {
-      emailErrorNote = "Email service not configured. Complete email domain setup to enable delivery.";
-      for (const d of deliveryRows) {
-        if (d.channel === "email" && d.status === "queued") {
-          d.status = "failed";
-          d.error = emailErrorNote;
-          emailFailed++;
-        }
 
     } catch {
       emailErrorNote = "Email service not configured. Complete email domain setup to enable delivery.";
