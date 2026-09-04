@@ -196,7 +196,7 @@ export async function runSendBulkMessage(authHeader: string, input: BulkMessageI
           }
         } else if (result.reason === "recipient_suppressed") {
           if (idx >= 0) {
-            deliveryRows[idx]!.status = "suppressed";
+            deliveryRows[idx]!.status = "skipped";
             deliveryRows[idx]!.error = "Recipient is suppressed (bounced, complained or unsubscribed)";
           }
         } else {
