@@ -159,52 +159,63 @@ export async function runSendBulkMessage(authHeader: string, input: BulkMessageI
     await admin.from("notifications").insert(notifRows);
   }
 
-  // Attempt email sending via the send-transactional-email function (still on the backend runtime)
+  // Email sending through Lovable's managed email delivery
   let emailSent = 0;
   let emailFailed = 0;
   let emailErrorNote: string | null = null;
 
   const emailRecipients = recipients.filter((r) => allows(r.id, "email"));
   if (channels.includes("email") && emailRecipients.length > 0) {
+    const { sendAppEmail } = await import("./email-send.server");
     try {
       for (const r of emailRecipients) {
         const token = tokenMap.get(r.id);
         const unsubUrl = origin && token
           ? `${origin}/unsubscribe?token=${token}&category=${category}`
           : "";
-        const { error: sendErr } = await admin.functions.invoke("send-transactional-email", {
-          body: {
-            templateName: "bulk-message",
-            recipientEmail: r.email,
-            idempotencyKey: `bulk-${bulkId}-${r.id}`,
-            templateData: {
-              subject,
-              body: body
-                .replaceAll("{first_name}", r.first_name ?? "")
-                .replaceAll("{last_name}", r.last_name ?? ""),
-              first_name: r.first_name ?? "",
-              unsubscribe_url: unsubUrl,
-              category,
-            },
+        const result = await sendAppEmail(admin, "bulk-message", r.email, {
+          idempotencyKey: `bulk-${bulkId}-${r.id}`,
+          templateData: {
+            subject,
+            body: body
+              .replaceAll("{first_name}", r.first_name ?? "")
+              .replaceAll("{last_name}", r.last_name ?? ""),
+            first_name: r.first_name ?? "",
+            unsubscribe_url: unsubUrl,
+            category,
           },
         });
         const idx = deliveryRows.findIndex(
           (d) => d.channel === "email" && d.recipient_user_id === r.id,
         );
-        if (sendErr) {
-          emailFailed++;
-          if (idx >= 0) {
-            deliveryRows[idx]!.status = "failed";
-            deliveryRows[idx]!.error = String((sendErr as Error).message ?? sendErr);
-          }
-        } else {
+        if (result.sent) {
           emailSent++;
           if (idx >= 0) {
             deliveryRows[idx]!.status = "sent";
             deliveryRows[idx]!.sent_at = new Date().toISOString();
           }
+        } else if (result.reason === "recipient_suppressed") {
+          if (idx >= 0) {
+            deliveryRows[idx]!.status = "suppressed";
+            deliveryRows[idx]!.error = "Recipient is suppressed (bounced, complained or unsubscribed)";
+          }
+        } else {
+          emailFailed++;
+          if (idx >= 0) {
+            deliveryRows[idx]!.status = "failed";
+            deliveryRows[idx]!.error = result.message;
+          }
         }
       }
+    } catch {
+      emailErrorNote = "Email service not configured. Complete email domain setup to enable delivery.";
+      for (const d of deliveryRows) {
+        if (d.channel === "email" && d.status === "queued") {
+          d.status = "failed";
+          d.error = emailErrorNote;
+          emailFailed++;
+        }
+
     } catch {
       emailErrorNote = "Email service not configured. Complete email domain setup to enable delivery.";
       for (const d of deliveryRows) {
