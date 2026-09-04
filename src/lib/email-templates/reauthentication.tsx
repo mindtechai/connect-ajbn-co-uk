@@ -1,3 +1,4 @@
+
 import * as React from 'react'
 
 import {
@@ -9,6 +10,7 @@ import {
   Preview,
   Text,
 } from '@react-email/components'
+import { EmailHeader } from './EmailHeader'
 
 interface ReauthenticationEmailProps {
   token: string
@@ -20,6 +22,7 @@ export const ReauthenticationEmail = ({ token }: ReauthenticationEmailProps) => 
     <Preview>Your verification code</Preview>
     <Body style={main}>
       <Container style={container}>
+        <EmailHeader />
         <Heading style={h1}>Confirm reauthentication</Heading>
         <Text style={text}>Use the code below to confirm your identity:</Text>
         <Text style={codeStyle}>{token}</Text>
@@ -35,24 +38,24 @@ export const ReauthenticationEmail = ({ token }: ReauthenticationEmailProps) => 
 export default ReauthenticationEmail
 
 const main = { backgroundColor: '#ffffff', fontFamily: 'Arial, sans-serif' }
-const container = { padding: '20px 25px' }
+const container = { padding: '0 0 30px', maxWidth: '600px' }
 const h1 = {
   fontSize: '22px',
   fontWeight: 'bold' as const,
-  color: '#000000',
-  margin: '0 0 20px',
+  color: '#0a1e3f',
+  margin: '0 25px 20px',
 }
 const text = {
   fontSize: '14px',
-  color: '#55575d',
+  color: '#3f4a5c',
   lineHeight: '1.5',
-  margin: '0 0 25px',
+  margin: '0 25px 25px',
 }
 const codeStyle = {
   fontFamily: 'Courier, monospace',
   fontSize: '22px',
   fontWeight: 'bold' as const,
-  color: '#000000',
-  margin: '0 0 30px',
+  color: '#0a1e3f',
+  margin: '0 25px 30px',
 }
-const footer = { fontSize: '12px', color: '#999999', margin: '30px 0 0' }
+const footer = { fontSize: '12px', color: '#7a869a', margin: '30px 25px 0' }
