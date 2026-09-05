@@ -52,23 +52,23 @@ export default function EmailUnsubscribePage() {
     setState({ kind: "submitting" });
     try {
       const res = await fetch(
-        `${SUPABASE_URL}/functions/v1/handle-email-unsubscribe`,
+        `${SUPABASE_URL}/functions/v1/handle-unsubscribe`,
         {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
             apikey: SUPABASE_ANON,
           },
-          body: JSON.stringify({ token }),
+          body: JSON.stringify({ token, channel: "email" }),
         },
       );
       const data = await res.json().catch(() => ({}));
       if (!res.ok) {
-        setState({ kind: "error", message: data.error || "Failed to unsubscribe" });
-        return;
-      }
-      if (data.success === false && data.reason === "already_unsubscribed") {
-        setState({ kind: "already" });
+        setState({
+          kind: "error",
+          message:
+            typeof data.error === "string" ? data.error : "Failed to unsubscribe",
+        });
         return;
       }
       setState({ kind: "done" });
