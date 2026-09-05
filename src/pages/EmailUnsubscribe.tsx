@@ -28,17 +28,13 @@ export default function EmailUnsubscribePage() {
       }
       try {
         const res = await fetch(
-          `${SUPABASE_URL}/functions/v1/handle-email-unsubscribe?token=${encodeURIComponent(token)}`,
+          `${SUPABASE_URL}/functions/v1/handle-unsubscribe?token=${encodeURIComponent(token)}`,
           { headers: { apikey: SUPABASE_ANON } },
         );
         const data = await res.json().catch(() => ({}));
         if (cancelled) return;
-        if (!res.ok) {
+        if (!res.ok || data.valid === false) {
           setState({ kind: "invalid" });
-          return;
-        }
-        if (data.valid === false && data.reason === "already_unsubscribed") {
-          setState({ kind: "already" });
           return;
         }
         setState({ kind: "confirm" });
