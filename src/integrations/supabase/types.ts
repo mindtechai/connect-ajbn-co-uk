@@ -209,6 +209,54 @@ export type Database = {
         }
         Relationships: []
       }
+      corporate_members: {
+        Row: {
+          city: string | null
+          company_name: string
+          created_at: string
+          id: string
+          industry: string | null
+          job_title: string | null
+          linkedin_url: string | null
+          logo_filename: string | null
+          membership_tier: string | null
+          short_bio: string | null
+          updated_at: string
+          verified: boolean
+          website: string | null
+        }
+        Insert: {
+          city?: string | null
+          company_name: string
+          created_at?: string
+          id?: string
+          industry?: string | null
+          job_title?: string | null
+          linkedin_url?: string | null
+          logo_filename?: string | null
+          membership_tier?: string | null
+          short_bio?: string | null
+          updated_at?: string
+          verified?: boolean
+          website?: string | null
+        }
+        Update: {
+          city?: string | null
+          company_name?: string
+          created_at?: string
+          id?: string
+          industry?: string | null
+          job_title?: string | null
+          linkedin_url?: string | null
+          logo_filename?: string | null
+          membership_tier?: string | null
+          short_bio?: string | null
+          updated_at?: string
+          verified?: boolean
+          website?: string | null
+        }
+        Relationships: []
+      }
       deal_logs: {
         Row: {
           amount_gbp: number

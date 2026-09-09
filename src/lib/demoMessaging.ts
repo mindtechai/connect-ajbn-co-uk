@@ -42,39 +42,13 @@ function nowShift(minutesAgo: number) {
   return new Date(Date.now() - minutesAgo * 60_000).toISOString();
 }
 
+/**
+ * Chat history starts empty: conversations are only created when a member
+ * actually messages another member. No placeholder threads are seeded.
+ */
 export function ensureSeeded() {
   if (typeof window === "undefined") return;
   if (localStorage.getItem(SEEDED_KEY)) return;
-  const map = read();
-
-  const seeds: DemoConversation[] = [
-    {
-      id: uid(),
-      other_user_id: "demo-russell",
-      other_first_name: "Russell",
-      other_last_name: "Bahar",
-      other_company: "AJBN — Membership",
-      unread_count: 1,
-      messages: [
-        { id: uid(), sender_id: "demo-russell", body: "Welcome to AJBN Connect 👋 great to have you on the platform.", created_at: nowShift(120) },
-        { id: uid(), sender_id: "demo-russell", body: "Any questions on membership, referrals or the next event — just reply here.", created_at: nowShift(115) },
-      ],
-    },
-    {
-      id: uid(),
-      other_user_id: "demo-salil",
-      other_first_name: "Salil",
-      other_last_name: "Patankar",
-      other_company: "Capital Connect — Member Introductions",
-      unread_count: 0,
-      messages: [
-        { id: uid(), sender_id: "demo-salil", body: "Hi 👋 I run Capital Connect for AJBN — happy to introduce you to relevant businesses and professionals in the network when you're ready.", created_at: nowShift(60) },
-      ],
-    },
-  ];
-
-  for (const c of seeds) map[c.id] = c;
-  write(map);
   localStorage.setItem(SEEDED_KEY, "1");
 }
 

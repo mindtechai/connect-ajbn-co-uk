@@ -6,7 +6,7 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { toast } from "sonner";
-import { addDeal } from "@/lib/demoDeals";
+import { supabase } from "@/integrations/supabase/client";
 import { PlusCircle } from "lucide-react";
 
 const DEAL_TYPES = [
@@ -35,12 +35,24 @@ export function LogActivityDialog({ onLogged }: { onLogged?: () => void }) {
       return;
     }
     setBusy(true);
-    addDeal({
+    const { data: auth } = await supabase.auth.getUser();
+    if (!auth?.user) {
+      toast.error("Please sign in again to log activity.");
+      setBusy(false);
+      return;
+    }
+    const { error } = await supabase.from("deal_logs").insert({
+      user_id: auth.user.id,
       deal_type: dealType,
       amount_gbp: value,
       counterparty_name: counterparty || null,
       notes: notes || null,
     });
+    if (error) {
+      toast.error("That could not be saved", { description: error.message });
+      setBusy(false);
+      return;
+    }
     toast.success("Activity Logged Successfully!", {
       description: `${dealType} · £${value.toLocaleString("en-GB")} added to the network ticker.`,
     });

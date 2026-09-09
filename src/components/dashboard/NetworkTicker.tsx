@@ -1,6 +1,6 @@
 import { useEffect, useRef, useState } from "react";
 import { TrendingUp } from "lucide-react";
-import { totals, DEMO_DEALS_EVENT } from "@/lib/demoDeals";
+import { supabase } from "@/integrations/supabase/client";
 
 const fmt = new Intl.NumberFormat("en-GB", { style: "currency", currency: "GBP", maximumFractionDigits: 0 });
 
@@ -11,15 +11,17 @@ export function NetworkTicker({ refreshKey = 0 }: { refreshKey?: number }) {
   const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
-    const load = () => {
-      const t = totals();
-      setTarget(t.total_deal_value_gbp);
-      setCount(t.deal_count);
+    let cancelled = false;
+    (async () => {
+      const { data } = await supabase.rpc("network_totals");
+      const row = Array.isArray(data) ? data[0] : data;
+      if (cancelled || !row) return;
+      setTarget(Number(row.total_deal_value_gbp ?? 0));
+      setCount(Number(row.deal_count ?? 0));
+    })();
+    return () => {
+      cancelled = true;
     };
-    load();
-    const handler = () => load();
-    window.addEventListener(DEMO_DEALS_EVENT, handler);
-    return () => window.removeEventListener(DEMO_DEALS_EVENT, handler);
   }, [refreshKey]);
 
   useEffect(() => {
