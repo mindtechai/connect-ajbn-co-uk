@@ -1,6 +1,6 @@
 {
   "name": "AJBN Connect",
-  "short_name": "AJBN Connect",
+  "short_name": "AJBN",
   "description": "The official AJBN Connect portal for business, property, and finance networking.",
   "start_url": "/",
   "scope": "/",
@@ -10,14 +10,32 @@
   "orientation": "portrait",
   "icons": [
     {
-      "src": "/favicon-192x192.png",
+      "src": "/icon-192.png",
+      "sizes": "192x192",
       "type": "image/png",
-      "sizes": "192x192"
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "/icon-512-maskable.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "/favicon-192x192.png",
+      "sizes": "192x192",
+      "type": "image/png"
     },
     {
       "src": "/favicon-512x512.png",
-      "type": "image/png",
-      "sizes": "512x512"
+      "sizes": "512x512",
+      "type": "image/png"
     }
   ]
 }
