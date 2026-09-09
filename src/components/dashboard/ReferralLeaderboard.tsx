@@ -3,7 +3,7 @@ import { Trophy, TrendingUp, Crown, Award, Loader2 } from "lucide-react";
 import { useEffect, useState } from "react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
-import { DEMO_REFERRAL_LEADERS, isDemoSession } from "@/lib/demoNetwork";
+
 
 type Row = {
   user_id: string;
@@ -34,9 +34,7 @@ export function ReferralLeaderboard() {
   useEffect(() => {
     (async () => {
       const { data } = await supabase.rpc("referral_leaderboard", { _limit: 10 });
-      const live = (data ?? []) as Row[];
-      // Placeholder rows keep this panel meaningful for accounts with no live referrals.
-      setRows(live.length ? live : (isDemoSession() ? (DEMO_REFERRAL_LEADERS as Row[]) : []));
+      setRows((data ?? []) as Row[]);
       setLoading(false);
     })();
   }, []);
