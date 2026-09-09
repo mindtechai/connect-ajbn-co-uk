@@ -1029,15 +1029,6 @@ export type Database = {
           rsvp_id: string
         }[]
       }
-      delete_email: {
-        Args: { message_id: number; queue_name: string }
-        Returns: boolean
-      }
-      email_queue_dispatch: { Args: never; Returns: undefined }
-      enqueue_email: {
-        Args: { payload: Json; queue_name: string }
-        Returns: number
-      }
       generate_referral_code: {
         Args: { _first: string; _last: string }
         Returns: string
@@ -1088,15 +1079,6 @@ export type Database = {
           unread_count: number
         }[]
       }
-      move_to_dlq: {
-        Args: {
-          dlq_name: string
-          message_id: number
-          payload: Json
-          source_queue: string
-        }
-        Returns: number
-      }
       network_totals: {
         Args: never
         Returns: {
@@ -1111,14 +1093,6 @@ export type Database = {
           has_lion: boolean
           industry: string
           member_count: number
-        }[]
-      }
-      read_email_batch: {
-        Args: { batch_size: number; queue_name: string; vt: number }
-        Returns: {
-          message: Json
-          msg_id: number
-          read_ct: number
         }[]
       }
       referral_code_exists: { Args: { _code: string }; Returns: boolean }
