@@ -4,12 +4,15 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Download, Crown, MoreHorizontal, Loader2 } from "lucide-react";
+import { Search, Download, Crown, MoreHorizontal, Loader2, Check, X, Clock } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { decideProfileChange } from "@/lib/member-profile-approvals.functions";
 
 type Role = "super_admin" | "ajbn_member" | "impact_lion" | "prospective_member";
+type PendingField = "logo" | "company_name" | "website";
 type Member = {
   id: string;
   first_name: string | null;
@@ -19,6 +22,14 @@ type Member = {
   industry: string | null;
   created_at: string;
   roles: Role[];
+  website: string | null;
+  logo_url: string | null;
+  pending_company_name: string | null;
+  pending_website: string | null;
+  pending_logo_url: string | null;
+  company_name_status: string;
+  website_status: string;
+  logo_status: string;
 };
 
 const statusColors: Record<string, string> = {
@@ -26,6 +37,21 @@ const statusColors: Record<string, string> = {
   pending: "bg-primary/10 text-primary border-primary/20",
   admin: "bg-destructive/10 text-destructive border-destructive/20",
 };
+
+const pendingFieldsOf = (m: Member): PendingField[] => {
+  const out: PendingField[] = [];
+  if (m.logo_status === "pending") out.push("logo");
+  if (m.company_name_status === "pending") out.push("company_name");
+  if (m.website_status === "pending") out.push("website");
+  return out;
+};
+
+const fieldLabels: Record<PendingField, string> = {
+  logo: "Logo",
+  company_name: "Company name",
+  website: "Website",
+};
+
 
 export function MemberManagement() {
   const [search, setSearch] = useState("");
