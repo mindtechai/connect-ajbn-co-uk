@@ -556,7 +556,10 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          linkedin_url: string | null
           motivation: string
+          payment_ack: boolean
+          referral_experience: string | null
           review_notes: string | null
           reviewed_at: string | null
           reviewed_by: string | null
@@ -567,7 +570,10 @@ export type Database = {
         Insert: {
           created_at?: string
           id?: string
+          linkedin_url?: string | null
           motivation: string
+          payment_ack?: boolean
+          referral_experience?: string | null
           review_notes?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
@@ -578,7 +584,10 @@ export type Database = {
         Update: {
           created_at?: string
           id?: string
+          linkedin_url?: string | null
           motivation?: string
+          payment_ack?: boolean
+          referral_experience?: string | null
           review_notes?: string | null
           reviewed_at?: string | null
           reviewed_by?: string | null
