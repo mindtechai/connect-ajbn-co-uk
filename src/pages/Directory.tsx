@@ -61,7 +61,10 @@ function initials(name: string): string {
 }
 
 export default function DirectoryPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, session, loading: authLoading } = useAuth();
+  // A demo/mock session has no real backend token; querying with it hits the
+  // database as an anonymous caller and is rejected by access rules.
+  const hasRealSession = !!session?.access_token && session.access_token !== "demo";
   const navigate = useNavigate();
   const { isActive: myMessagingActive, activate } = useMessagingProfile();
   const [members, setMembers] = useState<Member[]>([]);
