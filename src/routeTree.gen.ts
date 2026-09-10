@@ -21,6 +21,7 @@ import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MemberPortalRouteImport } from './routes/member-portal'
 import { Route as PrivacyRouteImport } from './routes/privacy'
+import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ReferralRewardsRouteImport } from './routes/referral-rewards'
 import { Route as RegisterRouteImport } from './routes/register'
 import { Route as ResetPasswordRouteImport } from './routes/reset-password'
@@ -112,6 +113,11 @@ const MemberPortalRoute = MemberPortalRouteImport.update({
 const PrivacyRoute = PrivacyRouteImport.update({
   id: '/privacy',
   path: '/privacy',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ProfileRoute = ProfileRouteImport.update({
+  id: '/profile',
+  path: '/profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ReferralRewardsRoute = ReferralRewardsRouteImport.update({
@@ -290,6 +296,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/member-portal': typeof MemberPortalRoute
   '/privacy': typeof PrivacyRoute
+  '/profile': typeof ProfileRoute
   '/referral-rewards': typeof ReferralRewardsRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -336,6 +343,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/member-portal': typeof MemberPortalRoute
   '/privacy': typeof PrivacyRoute
+  '/profile': typeof ProfileRoute
   '/referral-rewards': typeof ReferralRewardsRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -383,6 +391,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/member-portal': typeof MemberPortalRoute
   '/privacy': typeof PrivacyRoute
+  '/profile': typeof ProfileRoute
   '/referral-rewards': typeof ReferralRewardsRoute
   '/register': typeof RegisterRoute
   '/reset-password': typeof ResetPasswordRoute
@@ -431,6 +440,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/member-portal'
     | '/privacy'
+    | '/profile'
     | '/referral-rewards'
     | '/register'
     | '/reset-password'
@@ -477,6 +487,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/member-portal'
     | '/privacy'
+    | '/profile'
     | '/referral-rewards'
     | '/register'
     | '/reset-password'
@@ -523,6 +534,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/member-portal'
     | '/privacy'
+    | '/profile'
     | '/referral-rewards'
     | '/register'
     | '/reset-password'
@@ -570,6 +582,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   MemberPortalRoute: typeof MemberPortalRoute
   PrivacyRoute: typeof PrivacyRoute
+  ProfileRoute: typeof ProfileRoute
   ReferralRewardsRoute: typeof ReferralRewardsRoute
   RegisterRoute: typeof RegisterRoute
   ResetPasswordRoute: typeof ResetPasswordRoute
@@ -688,6 +701,13 @@ declare module '@tanstack/react-router' {
       path: '/privacy'
       fullPath: '/privacy'
       preLoaderRoute: typeof PrivacyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/profile': {
+      id: '/profile'
+      path: '/profile'
+      fullPath: '/profile'
+      preLoaderRoute: typeof ProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/referral-rewards': {
@@ -930,6 +950,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   MemberPortalRoute: MemberPortalRoute,
   PrivacyRoute: PrivacyRoute,
+  ProfileRoute: ProfileRoute,
   ReferralRewardsRoute: ReferralRewardsRoute,
   RegisterRoute: RegisterRoute,
   ResetPasswordRoute: ResetPasswordRoute,
