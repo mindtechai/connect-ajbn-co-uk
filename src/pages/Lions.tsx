@@ -33,7 +33,13 @@ const contributions = [
 ];
 
 export default function LionsPage() {
-  const { user } = useAuth();
+  const { user, roles } = useAuth();
+  // Only active AJBN members can apply for Impact Lions; everyone else joins AJBN first.
+  const isActiveMember =
+    !!user &&
+    (roles.includes("ajbn_member") || roles.includes("impact_lion") || roles.includes("super_admin"));
+  const joinHref = isActiveMember ? "/lions/apply" : "/register?next=/lions/apply";
+
 
   return (
     <div className="min-h-screen bg-background">
@@ -62,7 +68,7 @@ export default function LionsPage() {
               </ScrollReveal>
               <ScrollReveal delay={240}>
                 <div className="flex flex-wrap gap-4 mt-8">
-                  <Link to={user ? "/lions/apply" : "/register?next=/lions/apply"}>
+                  <Link to={joinHref}>
                     <Button variant="gold" size="xl">
                       <Crown className="mr-2" size={18} />
                       Join for £250/year
@@ -75,6 +81,11 @@ export default function LionsPage() {
                     </Button>
                   </a>
                 </div>
+                {!isActiveMember && (
+                  <p className="text-primary-foreground/70 text-sm mt-4 max-w-md">
+                    First join AJBN, then you can apply for Impact Lions for £250/year
+                  </p>
+                )}
               </ScrollReveal>
             </div>
 
@@ -161,12 +172,17 @@ export default function LionsPage() {
               </Link>
               .
             </p>
-            <Link to={user ? "/lions/apply" : "/register?next=/lions/apply"}>
+            <Link to={joinHref}>
               <Button variant="gold" size="xl">
                 <Crown className="mr-2" size={18} />
                 Join Impact Lions Club
               </Button>
             </Link>
+            {!isActiveMember && (
+              <p className="text-sm text-muted-foreground mt-4">
+                First join AJBN, then you can apply for Impact Lions for £250/year
+              </p>
+            )}
           </ScrollReveal>
         </div>
       </section>
