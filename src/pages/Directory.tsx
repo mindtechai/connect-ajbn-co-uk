@@ -61,7 +61,10 @@ function initials(name: string): string {
 }
 
 export default function DirectoryPage() {
-  const { user, loading: authLoading } = useAuth();
+  const { user, session, loading: authLoading } = useAuth();
+  // A demo/mock session has no real backend token; querying with it hits the
+  // database as an anonymous caller and is rejected by access rules.
+  const hasRealSession = !!session?.access_token && session.access_token !== "demo";
   const navigate = useNavigate();
   const { isActive: myMessagingActive, activate } = useMessagingProfile();
   const [members, setMembers] = useState<Member[]>([]);
@@ -75,6 +78,7 @@ export default function DirectoryPage() {
 
   useEffect(() => {
     if (authLoading || !user) return;
+    if (!hasRealSession) { setLoading(false); return; }
     (async () => {
       const [{ data: memberRows }, { data: companyRows }] = await Promise.all([
         (supabase as any).rpc("member_directory_list"),
@@ -89,7 +93,7 @@ export default function DirectoryPage() {
       setCompanies((companyRows ?? []) as CorporateMember[]);
       setLoading(false);
     })();
-  }, [user, authLoading]);
+  }, [user, authLoading, hasRealSession]);
 
   const [blockedIds, setBlockedIds] = useState<string[]>([]);
   useEffect(() => {
