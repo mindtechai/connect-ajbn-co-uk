@@ -875,9 +875,11 @@ export type Database = {
       }
       profiles: {
         Row: {
+          address: string | null
           avatar_url: string | null
           bio: string | null
           company: string | null
+          company_name_status: string
           created_at: string
           email: string | null
           first_name: string | null
@@ -885,6 +887,13 @@ export type Database = {
           industry: string | null
           last_name: string | null
           linkedin: string | null
+          linkedin_url: string | null
+          logo_status: string
+          logo_url: string | null
+          other_socials: string | null
+          pending_company_name: string | null
+          pending_logo_url: string | null
+          pending_website: string | null
           phone: string | null
           referral_code: string | null
           referred_by: string | null
@@ -892,11 +901,15 @@ export type Database = {
           tags: string[]
           title: string | null
           updated_at: string
+          website: string | null
+          website_status: string
         }
         Insert: {
+          address?: string | null
           avatar_url?: string | null
           bio?: string | null
           company?: string | null
+          company_name_status?: string
           created_at?: string
           email?: string | null
           first_name?: string | null
@@ -904,6 +917,13 @@ export type Database = {
           industry?: string | null
           last_name?: string | null
           linkedin?: string | null
+          linkedin_url?: string | null
+          logo_status?: string
+          logo_url?: string | null
+          other_socials?: string | null
+          pending_company_name?: string | null
+          pending_logo_url?: string | null
+          pending_website?: string | null
           phone?: string | null
           referral_code?: string | null
           referred_by?: string | null
@@ -911,11 +931,15 @@ export type Database = {
           tags?: string[]
           title?: string | null
           updated_at?: string
+          website?: string | null
+          website_status?: string
         }
         Update: {
+          address?: string | null
           avatar_url?: string | null
           bio?: string | null
           company?: string | null
+          company_name_status?: string
           created_at?: string
           email?: string | null
           first_name?: string | null
@@ -923,6 +947,13 @@ export type Database = {
           industry?: string | null
           last_name?: string | null
           linkedin?: string | null
+          linkedin_url?: string | null
+          logo_status?: string
+          logo_url?: string | null
+          other_socials?: string | null
+          pending_company_name?: string | null
+          pending_logo_url?: string | null
+          pending_website?: string | null
           phone?: string | null
           referral_code?: string | null
           referred_by?: string | null
@@ -930,6 +961,8 @@ export type Database = {
           tags?: string[]
           title?: string | null
           updated_at?: string
+          website?: string | null
+          website_status?: string
         }
         Relationships: []
       }
