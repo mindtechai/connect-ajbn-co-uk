@@ -78,6 +78,7 @@ export default function DirectoryPage() {
 
   useEffect(() => {
     if (authLoading || !user) return;
+    if (!hasRealSession) { setLoading(false); return; }
     (async () => {
       const [{ data: memberRows }, { data: companyRows }] = await Promise.all([
         (supabase as any).rpc("member_directory_list"),
