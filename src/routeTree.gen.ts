@@ -49,6 +49,7 @@ import { Route as SettingsNotificationsRouteImport } from './routes/settings/not
 import { Route as SettingsProfileRouteImport } from './routes/settings/profile'
 import { Route as TicketsFlagshipRouteImport } from './routes/tickets/flagship'
 import { Route as LovableEmailEventsRouteImport } from './routes/lovable/email/events'
+import { Route as ApiPublicCronAdminDigestRouteImport } from './routes/api/public/cron/admin-digest'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
 import { Route as LovableEmailAuthWebhookRouteImport } from './routes/lovable/email/auth/webhook'
 import { Route as LovableEmailTransactionalPreviewRouteImport } from './routes/lovable/email/transactional/preview'
@@ -253,6 +254,12 @@ const LovableEmailEventsRoute = LovableEmailEventsRouteImport.update({
   path: '/lovable/email/events',
   getParentRoute: () => rootRouteImport,
 } as any)
+const ApiPublicCronAdminDigestRoute =
+  ApiPublicCronAdminDigestRouteImport.update({
+    id: '/api/public/cron/admin-digest',
+    path: '/api/public/cron/admin-digest',
+    getParentRoute: () => rootRouteImport,
+  } as any)
 const LovableEmailAuthPreviewRoute = LovableEmailAuthPreviewRouteImport.update({
   id: '/lovable/email/auth/preview',
   path: '/lovable/email/auth/preview',
@@ -311,6 +318,7 @@ export interface FileRoutesByFullPath {
   '/lions/': typeof LionsIndexRoute
   '/messages/': typeof MessagesIndexRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
+  '/api/public/cron/admin-digest': typeof ApiPublicCronAdminDigestRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -356,6 +364,7 @@ export interface FileRoutesByTo {
   '/lions': typeof LionsIndexRoute
   '/messages': typeof MessagesIndexRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
+  '/api/public/cron/admin-digest': typeof ApiPublicCronAdminDigestRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -402,6 +411,7 @@ export interface FileRoutesById {
   '/lions/': typeof LionsIndexRoute
   '/messages/': typeof MessagesIndexRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
+  '/api/public/cron/admin-digest': typeof ApiPublicCronAdminDigestRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
   '/lovable/email/auth/webhook': typeof LovableEmailAuthWebhookRoute
   '/lovable/email/transactional/preview': typeof LovableEmailTransactionalPreviewRoute
@@ -449,6 +459,7 @@ export interface FileRouteTypes {
     | '/lions/'
     | '/messages/'
     | '/lovable/email/events'
+    | '/api/public/cron/admin-digest'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -494,6 +505,7 @@ export interface FileRouteTypes {
     | '/lions'
     | '/messages'
     | '/lovable/email/events'
+    | '/api/public/cron/admin-digest'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -539,6 +551,7 @@ export interface FileRouteTypes {
     | '/lions/'
     | '/messages/'
     | '/lovable/email/events'
+    | '/api/public/cron/admin-digest'
     | '/lovable/email/auth/preview'
     | '/lovable/email/auth/webhook'
     | '/lovable/email/transactional/preview'
@@ -585,6 +598,7 @@ export interface RootRouteChildren {
   LionsIndexRoute: typeof LionsIndexRoute
   MessagesIndexRoute: typeof MessagesIndexRoute
   LovableEmailEventsRoute: typeof LovableEmailEventsRoute
+  ApiPublicCronAdminDigestRoute: typeof ApiPublicCronAdminDigestRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
   LovableEmailAuthWebhookRoute: typeof LovableEmailAuthWebhookRoute
   LovableEmailTransactionalPreviewRoute: typeof LovableEmailTransactionalPreviewRoute
@@ -872,6 +886,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof LovableEmailEventsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/api/public/cron/admin-digest': {
+      id: '/api/public/cron/admin-digest'
+      path: '/api/public/cron/admin-digest'
+      fullPath: '/api/public/cron/admin-digest'
+      preLoaderRoute: typeof ApiPublicCronAdminDigestRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lovable/email/auth/preview': {
       id: '/lovable/email/auth/preview'
       path: '/lovable/email/auth/preview'
@@ -937,6 +958,7 @@ const rootRouteChildren: RootRouteChildren = {
   LionsIndexRoute: LionsIndexRoute,
   MessagesIndexRoute: MessagesIndexRoute,
   LovableEmailEventsRoute: LovableEmailEventsRoute,
+  ApiPublicCronAdminDigestRoute: ApiPublicCronAdminDigestRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
   LovableEmailAuthWebhookRoute: LovableEmailAuthWebhookRoute,
   LovableEmailTransactionalPreviewRoute: LovableEmailTransactionalPreviewRoute,
