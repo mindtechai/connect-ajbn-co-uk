@@ -61,6 +61,7 @@ export function MemberManagement() {
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [deciding, setDeciding] = useState<string | null>(null);
+  const [promoting, setPromoting] = useState<string | null>(null);
   const [logoUrls, setLogoUrls] = useState<Record<string, string>>({});
   const { toast } = useToast();
   const decide = useServerFn(decideProfileChange);
