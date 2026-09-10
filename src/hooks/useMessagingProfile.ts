@@ -1,31 +1,42 @@
 import { useCallback, useEffect, useState } from "react";
+import { supabase } from "@/integrations/supabase/client";
 
-// Demo mode: messaging is always active locally, no backend calls.
-const KEY = "ajbn_demo_messaging_active";
-
+/**
+ * Reads the signed-in member's messaging profile from the backend.
+ * Activation is persisted server-side so chat works on every device.
+ */
 export function useMessagingProfile() {
-  const [isActive, setIsActive] = useState<boolean>(() => {
-    if (typeof window === "undefined") return true;
-    const v = localStorage.getItem(KEY);
-    if (v === null) {
-      localStorage.setItem(KEY, "1");
-      return true;
+  const [isActive, setIsActive] = useState(false);
+  const [loading, setLoading] = useState(true);
+
+  const refresh = useCallback(async () => {
+    const { data: sessionData } = await supabase.auth.getSession();
+    const uid = sessionData.session?.user?.id;
+    if (!uid) {
+      setIsActive(false);
+      setLoading(false);
+      return;
     }
-    return v === "1";
-  });
+    const { data, error } = await supabase
+      .from("messaging_profiles")
+      .select("is_active")
+      .eq("user_id", uid)
+      .maybeSingle();
+    if (error) console.error("messaging_profiles read failed", error);
+    setIsActive(Boolean(data?.is_active));
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
-    if (typeof window !== "undefined" && localStorage.getItem(KEY) === null) {
-      localStorage.setItem(KEY, "1");
-    }
-  }, []);
+    void refresh();
+  }, [refresh]);
 
   const activate = useCallback(async () => {
-    localStorage.setItem(KEY, "1");
+    const { error } = await supabase.rpc("activate_messaging");
+    if (error) throw error;
     setIsActive(true);
-  }, []);
+    await refresh();
+  }, [refresh]);
 
-  const refresh = useCallback(async () => {}, []);
-
-  return { isActive, loading: false, activate, refresh };
+  return { isActive, loading, activate, refresh };
 }
