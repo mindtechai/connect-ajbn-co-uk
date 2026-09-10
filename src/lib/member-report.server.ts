@@ -1,7 +1,7 @@
 import { createClient } from "@supabase/supabase-js";
 import { sendAppEmail } from "./email-send.server";
 
-const TEAM_EMAIL = "russell@ajbn.co.uk";
+const TEAM_EMAIL = "support@ajbn.co.uk";
 
 export type ReportNotification = {
   reportId: string;

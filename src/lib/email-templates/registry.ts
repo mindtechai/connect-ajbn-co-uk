@@ -16,9 +16,11 @@ export interface TemplateEntry {
 import { template as bulkMessage } from './bulk-message'
 import { template as accountDeletionRequest } from './account-deletion-request'
 import { template as memberReport } from './member-report'
+import { template as adminDailyDigest } from './admin-daily-digest'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'bulk-message': bulkMessage,
   'account-deletion-request': accountDeletionRequest,
   'member-report': memberReport,
+  'admin-daily-digest': adminDailyDigest,
 }
