@@ -93,7 +93,7 @@ export default function DirectoryPage() {
       setCompanies((companyRows ?? []) as CorporateMember[]);
       setLoading(false);
     })();
-  }, [user, authLoading]);
+  }, [user, authLoading, hasRealSession]);
 
   const [blockedIds, setBlockedIds] = useState<string[]>([]);
   useEffect(() => {

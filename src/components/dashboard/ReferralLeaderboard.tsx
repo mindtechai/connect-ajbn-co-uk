@@ -27,17 +27,22 @@ const rankIcons: Record<number, React.ReactNode> = {
 };
 
 export function ReferralLeaderboard() {
-  const { user } = useAuth();
+  const { user, session } = useAuth();
   const [rows, setRows] = useState<Row[]>([]);
   const [loading, setLoading] = useState(true);
+  // Demo/mock sessions carry no real backend token, so the database would
+  // reject the request as anonymous.
+  const hasRealSession = !!session?.access_token && session.access_token !== "demo";
 
   useEffect(() => {
+    if (!hasRealSession) { setRows([]); setLoading(false); return; }
     (async () => {
-      const { data } = await supabase.rpc("referral_leaderboard", { _limit: 10 });
+      const { data, error } = await supabase.rpc("referral_leaderboard", { _limit: 10 });
+      if (error) console.error("referral_leaderboard failed", error.message);
       setRows((data ?? []) as Row[]);
       setLoading(false);
     })();
-  }, []);
+  }, [hasRealSession]);
 
   return (
     <div className="bg-card rounded-xl border p-5 shadow-xs">
