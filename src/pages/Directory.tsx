@@ -153,14 +153,17 @@ export default function DirectoryPage() {
       setPendingRecipient(m);
       return;
     }
-    const { startOrGetConversation } = await import("@/lib/demoMessaging");
-    const id = startOrGetConversation({
-      id: m.id,
-      first_name: m.first_name,
-      last_name: m.last_name,
-      company: m.company,
-    });
-    navigate(`/messages/${id}`);
+    try {
+      const { startOrGetConversation } = await import("@/lib/messaging");
+      const id = await startOrGetConversation(m.id);
+      if (!id) {
+        toast.error("Could not open the chat. Please sign in again.");
+        return;
+      }
+      navigate(`/messages/${id}`);
+    } catch (e: unknown) {
+      toast.error(e instanceof Error ? e.message : "Could not open the chat.");
+    }
   };
 
   return (

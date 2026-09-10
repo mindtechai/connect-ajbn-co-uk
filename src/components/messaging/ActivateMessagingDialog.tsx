@@ -4,7 +4,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription, Di
 import { Button } from "@/components/ui/button";
 import { toast } from "sonner";
 import { MessageCircle, ShieldCheck } from "lucide-react";
-import { startOrGetConversation } from "@/lib/demoMessaging";
+import { startOrGetConversation } from "@/lib/messaging";
 
 interface Props {
   open: boolean;
@@ -26,13 +26,8 @@ export function ActivateMessagingDialog({ open, onOpenChange, recipientName, rec
       toast.success("Chat inbox activated");
       onActivated?.();
       if (recipientId) {
-        const [first, ...rest] = (recipientName ?? "Member").split(" ");
-        const id = startOrGetConversation({
-          id: recipientId,
-          first_name: first ?? null,
-          last_name: rest.join(" "),
-        });
-        navigate(`/messages/${id}`);
+        const id = await startOrGetConversation(recipientId);
+        if (id) navigate(`/messages/${id}`);
       }
       onOpenChange(false);
     } catch (e: any) {
