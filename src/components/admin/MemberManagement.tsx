@@ -370,7 +370,12 @@ export function MemberManagement() {
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">{new Date(m.created_at).toLocaleDateString("en-GB", { month: "short", year: "numeric" })}</TableCell>
                   <TableCell>
-                    <div className="flex justify-end">
+                    <div className="flex justify-end items-center gap-1">
+                      {st === "pending" && (
+                        <Button size="sm" disabled={promoting === m.id} onClick={() => promote(m)}>
+                          {promoting === m.id ? <Loader2 size={14} className="animate-spin" /> : <UserCheck size={14} />} Promote to AJBN Member
+                        </Button>
+                      )}
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="icon" className="h-8 w-8"><MoreHorizontal size={14} /></Button>
