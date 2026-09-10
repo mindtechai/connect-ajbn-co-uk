@@ -124,7 +124,12 @@ export default function ProfilePage() {
 
       <>
         <h1 className="text-2xl md:text-3xl font-display font-bold mb-1">Your profile</h1>
-        <p className="text-sm text-muted-foreground mb-6">Kept private within the AJBN member network.</p>
+        <p className="text-sm text-muted-foreground mb-2">Kept private within the AJBN member network.</p>
+        <p className="text-sm mb-6">
+          <Link to="/member-portal" className="text-primary hover:underline">
+            Manage your business profile in the Member Portal →
+          </Link>
+        </p>
 
         <div className="bg-card border rounded-xl p-6 shadow-xs space-y-5">
           <div className="flex items-center gap-4 pb-4 border-b">

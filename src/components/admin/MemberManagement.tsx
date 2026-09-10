@@ -4,12 +4,15 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Download, Crown, MoreHorizontal, Loader2 } from "lucide-react";
+import { Search, Download, Crown, MoreHorizontal, Loader2, Check, X, Clock } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
+import { useServerFn } from "@tanstack/react-start";
+import { decideProfileChange } from "@/lib/member-profile-approvals.functions";
 
 type Role = "super_admin" | "ajbn_member" | "impact_lion" | "prospective_member";
+type PendingField = "logo" | "company_name" | "website";
 type Member = {
   id: string;
   first_name: string | null;
@@ -19,6 +22,14 @@ type Member = {
   industry: string | null;
   created_at: string;
   roles: Role[];
+  website: string | null;
+  logo_url: string | null;
+  pending_company_name: string | null;
+  pending_website: string | null;
+  pending_logo_url: string | null;
+  company_name_status: string;
+  website_status: string;
+  logo_status: string;
 };
 
 const statusColors: Record<string, string> = {
@@ -27,18 +38,37 @@ const statusColors: Record<string, string> = {
   admin: "bg-destructive/10 text-destructive border-destructive/20",
 };
 
+const pendingFieldsOf = (m: Member): PendingField[] => {
+  const out: PendingField[] = [];
+  if (m.logo_status === "pending") out.push("logo");
+  if (m.company_name_status === "pending") out.push("company_name");
+  if (m.website_status === "pending") out.push("website");
+  return out;
+};
+
+const fieldLabels: Record<PendingField, string> = {
+  logo: "Logo",
+  company_name: "Company name",
+  website: "Website",
+};
+
+
 export function MemberManagement() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [lionsFilter, setLionsFilter] = useState("all");
+  const [changesFilter, setChangesFilter] = useState("all");
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deciding, setDeciding] = useState<string | null>(null);
+  const [logoUrls, setLogoUrls] = useState<Record<string, string>>({});
   const { toast } = useToast();
+  const decide = useServerFn(decideProfileChange);
 
   const load = async () => {
     setLoading(true);
     const [{ data: profs }, { data: roles }] = await Promise.all([
-      supabase.from("profiles").select("id, first_name, last_name, email, company, industry, created_at").order("created_at", { ascending: false }),
+      supabase.from("profiles").select("id, first_name, last_name, email, company, industry, created_at, website, logo_url, pending_company_name, pending_website, pending_logo_url, company_name_status, website_status, logo_status").order("created_at", { ascending: false }),
       supabase.from("user_roles").select("user_id, role"),
     ]);
     const roleMap = new Map<string, Role[]>();
@@ -47,8 +77,18 @@ export function MemberManagement() {
       arr.push(r.role);
       roleMap.set(r.user_id, arr);
     }
-    setMembers(((profs ?? []) as any[]).map((p) => ({ ...p, roles: roleMap.get(p.id) ?? [] })));
+    const list = ((profs ?? []) as any[]).map((p) => ({ ...p, roles: roleMap.get(p.id) ?? [] })) as Member[];
+    setMembers(list);
     setLoading(false);
+
+    // Short-lived signed URLs so pending/live logos can be compared side by side.
+    const paths = list.flatMap((m) => [m.logo_url, m.pending_logo_url].filter(Boolean) as string[]);
+    if (paths.length) {
+      const { data: signed } = await supabase.storage.from("member-logos").createSignedUrls(paths, 600);
+      const map: Record<string, string> = {};
+      for (const s of signed ?? []) if (s.path && s.signedUrl) map[s.path] = s.signedUrl;
+      setLogoUrls(map);
+    }
   };
 
   useEffect(() => { load(); }, []);
@@ -57,6 +97,11 @@ export function MemberManagement() {
     m.roles.includes("super_admin") ? "admin" :
     (m.roles.includes("ajbn_member") || m.roles.includes("impact_lion")) ? "active" :
     "pending";
+
+  const pendingCount = useMemo(
+    () => members.filter((m) => pendingFieldsOf(m).length > 0).length,
+    [members],
+  );
 
   const filtered = useMemo(() => members.filter((m) => {
     const name = `${m.first_name ?? ""} ${m.last_name ?? ""}`.trim();
@@ -71,8 +116,23 @@ export function MemberManagement() {
     const matchesLions = lionsFilter === "all" ||
       (lionsFilter === "lions" && isLion) ||
       (lionsFilter === "standard" && !isLion);
-    return matchesSearch && matchesStatus && matchesLions;
-  }), [members, search, statusFilter, lionsFilter]);
+    const matchesChanges = changesFilter === "all" || pendingFieldsOf(m).length > 0;
+    return matchesSearch && matchesStatus && matchesLions && matchesChanges;
+  }), [members, search, statusFilter, lionsFilter, changesFilter]);
+
+  const handleDecision = async (m: Member, field: PendingField, decision: "approve" | "reject") => {
+    setDeciding(`${m.id}-${field}`);
+    try {
+      await decide({ data: { memberId: m.id, field, decision } });
+      toast({ title: decision === "approve" ? `${fieldLabels[field]} approved` : `${fieldLabels[field]} change rejected` });
+      await load();
+    } catch (e) {
+      toast({ title: "Could not update", description: e instanceof Error ? e.message : "Please try again.", variant: "destructive" });
+    } finally {
+      setDeciding(null);
+    }
+  };
+
 
   const handleExportCSV = () => {
     const rows = [
@@ -159,7 +219,79 @@ export function MemberManagement() {
             <SelectItem value="standard">Standard Only</SelectItem>
           </SelectContent>
         </Select>
+        <Select value={changesFilter} onValueChange={setChangesFilter}>
+          <SelectTrigger className="w-full sm:w-56">
+            <SelectValue placeholder="Profile changes" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All profile changes</SelectItem>
+            <SelectItem value="pending">
+              Pending logo/name changes{pendingCount > 0 ? ` (${pendingCount})` : ""}
+            </SelectItem>
+          </SelectContent>
+        </Select>
       </div>
+
+      {filtered.some((m) => pendingFieldsOf(m).length > 0) && (
+        <div className="bg-card rounded-xl border shadow-xs p-4 space-y-4">
+          <div className="flex items-center gap-2">
+            <Clock size={15} className="text-gold" />
+            <h2 className="font-semibold text-sm">Pending profile changes</h2>
+            <Badge className="text-xs bg-gold/10 text-gold border-gold/20">{pendingCount}</Badge>
+          </div>
+          {filtered.filter((m) => pendingFieldsOf(m).length > 0).map((m) => (
+            <div key={`pending-${m.id}`} className="border rounded-lg p-3 space-y-3">
+              <p className="text-sm font-medium">
+                {m.first_name} {m.last_name}
+                <span className="text-xs text-muted-foreground ml-2">{m.email}</span>
+              </p>
+              {pendingFieldsOf(m).map((field) => (
+                <div key={field} className="flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
+                  <div className="text-sm">
+                    <p className="text-xs text-muted-foreground mb-1">{fieldLabels[field]}</p>
+                    {field === "logo" ? (
+                      <div className="flex items-center gap-3">
+                        <div className="h-12 w-12 border rounded bg-muted overflow-hidden flex items-center justify-center">
+                          {m.logo_url && logoUrls[m.logo_url]
+                            ? <img src={logoUrls[m.logo_url]} alt="Current logo" className="h-full w-full object-contain" />
+                            : <span className="text-[10px] text-muted-foreground">None</span>}
+                        </div>
+                        <span className="text-muted-foreground text-xs">→</span>
+                        <div className="h-12 w-12 border border-gold/40 rounded bg-muted overflow-hidden flex items-center justify-center">
+                          {m.pending_logo_url && logoUrls[m.pending_logo_url]
+                            ? <img src={logoUrls[m.pending_logo_url]} alt="Proposed logo" className="h-full w-full object-contain" />
+                            : <span className="text-[10px] text-muted-foreground">?</span>}
+                        </div>
+                      </div>
+                    ) : (
+                      <p>
+                        <span className="text-muted-foreground line-through">
+                          {(field === "company_name" ? m.company : m.website) ?? "—"}
+                        </span>
+                        <span className="mx-2 text-muted-foreground">→</span>
+                        <span className="font-medium">
+                          {(field === "company_name" ? m.pending_company_name : m.pending_website) ?? "—"}
+                        </span>
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <Button size="sm" disabled={deciding === `${m.id}-${field}`}
+                      onClick={() => handleDecision(m, field, "approve")}>
+                      <Check size={14} /> Approve
+                    </Button>
+                    <Button size="sm" variant="outline" disabled={deciding === `${m.id}-${field}`}
+                      onClick={() => handleDecision(m, field, "reject")}>
+                      <X size={14} /> Reject
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
+
 
       <div className="md:hidden space-y-3">
         {filtered.map((m) => {

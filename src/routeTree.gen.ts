@@ -19,6 +19,7 @@ import { Route as EsgRouteImport } from './routes/esg'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as MemberPortalRouteImport } from './routes/member-portal'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ReferralRewardsRouteImport } from './routes/referral-rewards'
 import { Route as RegisterRouteImport } from './routes/register'
@@ -100,6 +101,11 @@ const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MemberPortalRoute = MemberPortalRouteImport.update({
+  id: '/member-portal',
+  path: '/member-portal',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -275,6 +281,7 @@ export interface FileRoutesByFullPath {
   '/events': typeof EventsRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/member-portal': typeof MemberPortalRoute
   '/privacy': typeof PrivacyRoute
   '/referral-rewards': typeof ReferralRewardsRoute
   '/register': typeof RegisterRoute
@@ -319,6 +326,7 @@ export interface FileRoutesByTo {
   '/events': typeof EventsRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/member-portal': typeof MemberPortalRoute
   '/privacy': typeof PrivacyRoute
   '/referral-rewards': typeof ReferralRewardsRoute
   '/register': typeof RegisterRoute
@@ -364,6 +372,7 @@ export interface FileRoutesById {
   '/events': typeof EventsRoute
   '/forgot-password': typeof ForgotPasswordRoute
   '/login': typeof LoginRoute
+  '/member-portal': typeof MemberPortalRoute
   '/privacy': typeof PrivacyRoute
   '/referral-rewards': typeof ReferralRewardsRoute
   '/register': typeof RegisterRoute
@@ -410,6 +419,7 @@ export interface FileRouteTypes {
     | '/events'
     | '/forgot-password'
     | '/login'
+    | '/member-portal'
     | '/privacy'
     | '/referral-rewards'
     | '/register'
@@ -454,6 +464,7 @@ export interface FileRouteTypes {
     | '/events'
     | '/forgot-password'
     | '/login'
+    | '/member-portal'
     | '/privacy'
     | '/referral-rewards'
     | '/register'
@@ -498,6 +509,7 @@ export interface FileRouteTypes {
     | '/events'
     | '/forgot-password'
     | '/login'
+    | '/member-portal'
     | '/privacy'
     | '/referral-rewards'
     | '/register'
@@ -543,6 +555,7 @@ export interface RootRouteChildren {
   EventsRoute: typeof EventsRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   LoginRoute: typeof LoginRoute
+  MemberPortalRoute: typeof MemberPortalRoute
   PrivacyRoute: typeof PrivacyRoute
   ReferralRewardsRoute: typeof ReferralRewardsRoute
   RegisterRoute: typeof RegisterRoute
@@ -647,6 +660,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/member-portal': {
+      id: '/member-portal'
+      path: '/member-portal'
+      fullPath: '/member-portal'
+      preLoaderRoute: typeof MemberPortalRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -887,6 +907,7 @@ const rootRouteChildren: RootRouteChildren = {
   EventsRoute: EventsRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
   LoginRoute: LoginRoute,
+  MemberPortalRoute: MemberPortalRoute,
   PrivacyRoute: PrivacyRoute,
   ReferralRewardsRoute: ReferralRewardsRoute,
   RegisterRoute: RegisterRoute,
