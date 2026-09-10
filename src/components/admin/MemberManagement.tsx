@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Download, Crown, MoreHorizontal, Loader2, Check, X, Clock } from "lucide-react";
+import { Search, Download, Crown, MoreHorizontal, Loader2, Check, X, Clock, UserCheck } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -61,6 +61,7 @@ export function MemberManagement() {
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
   const [deciding, setDeciding] = useState<string | null>(null);
+  const [promoting, setPromoting] = useState<string | null>(null);
   const [logoUrls, setLogoUrls] = useState<Record<string, string>>({});
   const { toast } = useToast();
   const decide = useServerFn(decideProfileChange);
@@ -163,6 +164,23 @@ export function MemberManagement() {
       toast({ title: "Added to Impact Lions" });
     }
     load();
+  };
+
+  // One click: prospective → approved AJBN member (role swap + audit trail).
+  const promote = async (m: Member) => {
+    setPromoting(m.id);
+    try {
+      const { error } = await supabase.from("user_roles").insert({ user_id: m.id, role: "ajbn_member" });
+      if (error && !/duplicate key/i.test(error.message)) throw error;
+      await supabase.from("user_roles").delete().eq("user_id", m.id).eq("role", "prospective_member");
+      await logAudit("promote_to_ajbn_member", m);
+      toast({ title: "Member approved", description: `${m.first_name ?? "Member"} is now an AJBN member.` });
+      await load();
+    } catch (e) {
+      toast({ title: "Could not promote", description: e instanceof Error ? e.message : "Please try again.", variant: "destructive" });
+    } finally {
+      setPromoting(null);
+    }
   };
 
   const suspend = async (m: Member) => {
@@ -308,6 +326,11 @@ export function MemberManagement() {
               </div>
               <p className="text-xs text-muted-foreground">{[m.company, m.industry].filter(Boolean).join(" · ") || "—"}</p>
               <p className="text-xs text-muted-foreground">Joined {new Date(m.created_at).toLocaleDateString("en-GB", { month: "short", year: "numeric" })}</p>
+              {st === "pending" && (
+                <Button size="sm" className="w-full" disabled={promoting === m.id} onClick={() => promote(m)}>
+                  {promoting === m.id ? <Loader2 size={14} className="animate-spin" /> : <UserCheck size={14} />} Promote to AJBN Member
+                </Button>
+              )}
             </div>
           );
         })}
@@ -347,7 +370,12 @@ export function MemberManagement() {
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">{new Date(m.created_at).toLocaleDateString("en-GB", { month: "short", year: "numeric" })}</TableCell>
                   <TableCell>
-                    <div className="flex justify-end">
+                    <div className="flex justify-end items-center gap-1">
+                      {st === "pending" && (
+                        <Button size="sm" disabled={promoting === m.id} onClick={() => promote(m)}>
+                          {promoting === m.id ? <Loader2 size={14} className="animate-spin" /> : <UserCheck size={14} />} Promote to AJBN Member
+                        </Button>
+                      )}
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" size="icon" className="h-8 w-8"><MoreHorizontal size={14} /></Button>
