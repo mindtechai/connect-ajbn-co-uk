@@ -57,14 +57,18 @@ export function MemberManagement() {
   const [search, setSearch] = useState("");
   const [statusFilter, setStatusFilter] = useState("all");
   const [lionsFilter, setLionsFilter] = useState("all");
+  const [changesFilter, setChangesFilter] = useState("all");
   const [members, setMembers] = useState<Member[]>([]);
   const [loading, setLoading] = useState(true);
+  const [deciding, setDeciding] = useState<string | null>(null);
+  const [logoUrls, setLogoUrls] = useState<Record<string, string>>({});
   const { toast } = useToast();
+  const decide = useServerFn(decideProfileChange);
 
   const load = async () => {
     setLoading(true);
     const [{ data: profs }, { data: roles }] = await Promise.all([
-      supabase.from("profiles").select("id, first_name, last_name, email, company, industry, created_at").order("created_at", { ascending: false }),
+      supabase.from("profiles").select("id, first_name, last_name, email, company, industry, created_at, website, logo_url, pending_company_name, pending_website, pending_logo_url, company_name_status, website_status, logo_status").order("created_at", { ascending: false }),
       supabase.from("user_roles").select("user_id, role"),
     ]);
     const roleMap = new Map<string, Role[]>();
@@ -73,8 +77,18 @@ export function MemberManagement() {
       arr.push(r.role);
       roleMap.set(r.user_id, arr);
     }
-    setMembers(((profs ?? []) as any[]).map((p) => ({ ...p, roles: roleMap.get(p.id) ?? [] })));
+    const list = ((profs ?? []) as any[]).map((p) => ({ ...p, roles: roleMap.get(p.id) ?? [] })) as Member[];
+    setMembers(list);
     setLoading(false);
+
+    // Short-lived signed URLs so pending/live logos can be compared side by side.
+    const paths = list.flatMap((m) => [m.logo_url, m.pending_logo_url].filter(Boolean) as string[]);
+    if (paths.length) {
+      const { data: signed } = await supabase.storage.from("member-logos").createSignedUrls(paths, 600);
+      const map: Record<string, string> = {};
+      for (const s of signed ?? []) if (s.path && s.signedUrl) map[s.path] = s.signedUrl;
+      setLogoUrls(map);
+    }
   };
 
   useEffect(() => { load(); }, []);
@@ -83,6 +97,11 @@ export function MemberManagement() {
     m.roles.includes("super_admin") ? "admin" :
     (m.roles.includes("ajbn_member") || m.roles.includes("impact_lion")) ? "active" :
     "pending";
+
+  const pendingCount = useMemo(
+    () => members.filter((m) => pendingFieldsOf(m).length > 0).length,
+    [members],
+  );
 
   const filtered = useMemo(() => members.filter((m) => {
     const name = `${m.first_name ?? ""} ${m.last_name ?? ""}`.trim();
@@ -97,8 +116,23 @@ export function MemberManagement() {
     const matchesLions = lionsFilter === "all" ||
       (lionsFilter === "lions" && isLion) ||
       (lionsFilter === "standard" && !isLion);
-    return matchesSearch && matchesStatus && matchesLions;
-  }), [members, search, statusFilter, lionsFilter]);
+    const matchesChanges = changesFilter === "all" || pendingFieldsOf(m).length > 0;
+    return matchesSearch && matchesStatus && matchesLions && matchesChanges;
+  }), [members, search, statusFilter, lionsFilter, changesFilter]);
+
+  const handleDecision = async (m: Member, field: PendingField, decision: "approve" | "reject") => {
+    setDeciding(`${m.id}-${field}`);
+    try {
+      await decide({ data: { memberId: m.id, field, decision } });
+      toast({ title: decision === "approve" ? `${fieldLabels[field]} approved` : `${fieldLabels[field]} change rejected` });
+      await load();
+    } catch (e) {
+      toast({ title: "Could not update", description: e instanceof Error ? e.message : "Please try again.", variant: "destructive" });
+    } finally {
+      setDeciding(null);
+    }
+  };
+
 
   const handleExportCSV = () => {
     const rows = [
