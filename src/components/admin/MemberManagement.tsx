@@ -326,6 +326,11 @@ export function MemberManagement() {
               </div>
               <p className="text-xs text-muted-foreground">{[m.company, m.industry].filter(Boolean).join(" · ") || "—"}</p>
               <p className="text-xs text-muted-foreground">Joined {new Date(m.created_at).toLocaleDateString("en-GB", { month: "short", year: "numeric" })}</p>
+              {st === "pending" && (
+                <Button size="sm" className="w-full" disabled={promoting === m.id} onClick={() => promote(m)}>
+                  {promoting === m.id ? <Loader2 size={14} className="animate-spin" /> : <UserCheck size={14} />} Promote to AJBN Member
+                </Button>
+              )}
             </div>
           );
         })}
