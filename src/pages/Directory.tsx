@@ -61,7 +61,7 @@ function initials(name: string): string {
 }
 
 export default function DirectoryPage() {
-  const { user, session, loading: authLoading } = useAuth();
+  const { user, session, roles, loading: authLoading } = useAuth();
   // A demo/mock session has no real backend token; querying with it hits the
   // database as an anonymous caller and is rejected by access rules.
   const hasRealSession = !!session?.access_token && session.access_token !== "demo";
@@ -75,6 +75,9 @@ export default function DirectoryPage() {
   const [pendingRecipient, setPendingRecipient] = useState<Member | null>(null);
 
   const canAccess = !!user;
+  // Only approved membership levels can see listings; prospective sign-ups see a teaser.
+  const isApprovedMember =
+    roles.includes("ajbn_member") || roles.includes("impact_lion") || roles.includes("super_admin");
 
   useEffect(() => {
     if (authLoading || !user) return;
@@ -177,7 +180,29 @@ export default function DirectoryPage() {
         <div className="py-16 flex justify-center">
           <Loader2 className="animate-spin text-muted-foreground" />
         </div>
+      ) : !isApprovedMember ? (
+        <div className="bg-card border rounded-xl p-8 text-center space-y-5">
+          <p className="text-sm text-muted-foreground max-w-md mx-auto">
+            Live from the AJBN member directory. Full profiles available to active members after
+            sign-in.
+          </p>
+          <div className="grid grid-cols-3 gap-4 max-w-md mx-auto select-none" aria-hidden="true">
+            {["AJ", "BN", "CC"].map((tile) => (
+              <div
+                key={tile}
+                className="h-20 rounded-xl bg-muted border flex items-center justify-center blur-[3px] opacity-70"
+              >
+                <span className="text-sm font-semibold text-muted-foreground">{tile}</span>
+              </div>
+            ))}
+          </div>
+          <p className="text-xs text-muted-foreground">
+            Your membership is awaiting approval. You'll see the full directory as soon as it's
+            active.
+          </p>
+        </div>
       ) : (
+
         <>
           <div className="mb-6 flex flex-col md:flex-row gap-3">
             <div className="relative flex-1">

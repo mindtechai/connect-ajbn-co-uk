@@ -181,8 +181,9 @@ export const Route = createRootRouteWithContext<{ queryClient: QueryClient }>()(
           "https://connect.ajbn.co.uk/__l5e/assets-v1/314cab37-47ab-4d26-a5f8-5ae1ca6bc1a8/ajbn-email-banner-v2.jpg",
       },
       { name: "theme-color", content: "#174164" },
+      { name: "mobile-web-app-capable", content: "yes" },
       { name: "apple-mobile-web-app-capable", content: "yes" },
-      { name: "apple-mobile-web-app-status-bar-style", content: "default" },
+      { name: "apple-mobile-web-app-status-bar-style", content: "black-translucent" },
       { name: "apple-mobile-web-app-title", content: "AJBN Connect" },
     ],
     links: [
