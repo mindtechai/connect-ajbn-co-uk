@@ -165,6 +165,23 @@ export function MemberManagement() {
     load();
   };
 
+  // One click: prospective → approved AJBN member (role swap + audit trail).
+  const promote = async (m: Member) => {
+    setPromoting(m.id);
+    try {
+      const { error } = await supabase.from("user_roles").insert({ user_id: m.id, role: "ajbn_member" });
+      if (error && !/duplicate key/i.test(error.message)) throw error;
+      await supabase.from("user_roles").delete().eq("user_id", m.id).eq("role", "prospective_member");
+      await logAudit("promote_to_ajbn_member", m);
+      toast({ title: "Member approved", description: `${m.first_name ?? "Member"} is now an AJBN member.` });
+      await load();
+    } catch (e) {
+      toast({ title: "Could not promote", description: e instanceof Error ? e.message : "Please try again.", variant: "destructive" });
+    } finally {
+      setPromoting(null);
+    }
+  };
+
   const suspend = async (m: Member) => {
     await supabase.from("user_roles").delete().eq("user_id", m.id).in("role", ["ajbn_member", "impact_lion"]);
     await logAudit("suspend_member", m);
