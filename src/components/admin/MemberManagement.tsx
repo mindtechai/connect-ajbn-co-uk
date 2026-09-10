@@ -219,7 +219,79 @@ export function MemberManagement() {
             <SelectItem value="standard">Standard Only</SelectItem>
           </SelectContent>
         </Select>
+        <Select value={changesFilter} onValueChange={setChangesFilter}>
+          <SelectTrigger className="w-full sm:w-56">
+            <SelectValue placeholder="Profile changes" />
+          </SelectTrigger>
+          <SelectContent>
+            <SelectItem value="all">All profile changes</SelectItem>
+            <SelectItem value="pending">
+              Pending logo/name changes{pendingCount > 0 ? ` (${pendingCount})` : ""}
+            </SelectItem>
+          </SelectContent>
+        </Select>
       </div>
+
+      {filtered.some((m) => pendingFieldsOf(m).length > 0) && (
+        <div className="bg-card rounded-xl border shadow-xs p-4 space-y-4">
+          <div className="flex items-center gap-2">
+            <Clock size={15} className="text-gold" />
+            <h2 className="font-semibold text-sm">Pending profile changes</h2>
+            <Badge className="text-xs bg-gold/10 text-gold border-gold/20">{pendingCount}</Badge>
+          </div>
+          {filtered.filter((m) => pendingFieldsOf(m).length > 0).map((m) => (
+            <div key={`pending-${m.id}`} className="border rounded-lg p-3 space-y-3">
+              <p className="text-sm font-medium">
+                {m.first_name} {m.last_name}
+                <span className="text-xs text-muted-foreground ml-2">{m.email}</span>
+              </p>
+              {pendingFieldsOf(m).map((field) => (
+                <div key={field} className="flex flex-col sm:flex-row sm:items-center gap-3 justify-between">
+                  <div className="text-sm">
+                    <p className="text-xs text-muted-foreground mb-1">{fieldLabels[field]}</p>
+                    {field === "logo" ? (
+                      <div className="flex items-center gap-3">
+                        <div className="h-12 w-12 border rounded bg-muted overflow-hidden flex items-center justify-center">
+                          {m.logo_url && logoUrls[m.logo_url]
+                            ? <img src={logoUrls[m.logo_url]} alt="Current logo" className="h-full w-full object-contain" />
+                            : <span className="text-[10px] text-muted-foreground">None</span>}
+                        </div>
+                        <span className="text-muted-foreground text-xs">→</span>
+                        <div className="h-12 w-12 border border-gold/40 rounded bg-muted overflow-hidden flex items-center justify-center">
+                          {m.pending_logo_url && logoUrls[m.pending_logo_url]
+                            ? <img src={logoUrls[m.pending_logo_url]} alt="Proposed logo" className="h-full w-full object-contain" />
+                            : <span className="text-[10px] text-muted-foreground">?</span>}
+                        </div>
+                      </div>
+                    ) : (
+                      <p>
+                        <span className="text-muted-foreground line-through">
+                          {(field === "company_name" ? m.company : m.website) ?? "—"}
+                        </span>
+                        <span className="mx-2 text-muted-foreground">→</span>
+                        <span className="font-medium">
+                          {(field === "company_name" ? m.pending_company_name : m.pending_website) ?? "—"}
+                        </span>
+                      </p>
+                    )}
+                  </div>
+                  <div className="flex gap-2">
+                    <Button size="sm" disabled={deciding === `${m.id}-${field}`}
+                      onClick={() => handleDecision(m, field, "approve")}>
+                      <Check size={14} /> Approve
+                    </Button>
+                    <Button size="sm" variant="outline" disabled={deciding === `${m.id}-${field}`}
+                      onClick={() => handleDecision(m, field, "reject")}>
+                      <X size={14} /> Reject
+                    </Button>
+                  </div>
+                </div>
+              ))}
+            </div>
+          ))}
+        </div>
+      )}
+
 
       <div className="md:hidden space-y-3">
         {filtered.map((m) => {
