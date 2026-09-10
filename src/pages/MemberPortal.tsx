@@ -87,7 +87,7 @@ export default function MemberPortalPage() {
 
   const saveInstant = async (patch: Partial<ProfileRow>) => {
     if (!user) return;
-    const { error } = await supabase.from("profiles").update(patch).eq("id", user.id);
+    const { error } = await supabase.from("profiles").update(patch as never).eq("id", user.id);
     if (error) toast({ title: "Could not save", description: error.message, variant: "destructive" });
   };
 
@@ -145,7 +145,7 @@ export default function MemberPortalPage() {
     }
     if (row.logo_status === "pending") pendingLabels.push("logo");
 
-    const { error } = await supabase.from("profiles").update(patch).eq("id", user.id);
+    const { error } = await supabase.from("profiles").update(patch as never).eq("id", user.id);
     setSaving(false);
     if (error) {
       toast({ title: "Could not save", description: error.message, variant: "destructive" });
