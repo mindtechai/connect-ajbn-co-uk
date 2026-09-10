@@ -61,7 +61,7 @@ function initials(name: string): string {
 }
 
 export default function DirectoryPage() {
-  const { user, session, loading: authLoading } = useAuth();
+  const { user, session, roles, loading: authLoading } = useAuth();
   // A demo/mock session has no real backend token; querying with it hits the
   // database as an anonymous caller and is rejected by access rules.
   const hasRealSession = !!session?.access_token && session.access_token !== "demo";
@@ -75,6 +75,9 @@ export default function DirectoryPage() {
   const [pendingRecipient, setPendingRecipient] = useState<Member | null>(null);
 
   const canAccess = !!user;
+  // Only approved membership levels can see listings; prospective sign-ups see a teaser.
+  const isApprovedMember =
+    roles.includes("ajbn_member") || roles.includes("impact_lion") || roles.includes("super_admin");
 
   useEffect(() => {
     if (authLoading || !user) return;
