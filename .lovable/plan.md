@@ -5,7 +5,7 @@ A new signed-in page at `/member-portal` where approved members maintain their b
 ## Member experience (`/member-portal`)
 
 - Only reachable when signed in as an approved member (AJBN member, Impact Lion, or admin). Prospective members see a short "awaiting approval" notice instead of the form.
-- Fields that save instantly (auto-save on blur, plus a "Save changes" button): bio, phone, address, LinkedIn, other socials.
+- Fields that save instantly (auto-save on blur, plus a "Save changes" button): bio, phone, address, LinkedIn, other socials — each stored in its own column (`bio`, `phone`, `address`, `linkedin_url`, `other_socials`) and live immediately with no approval.
 - Fields that need approval: company name, website, logo upload (JPG/PNG, max 2MB, with instant local preview).
 - When one of those three is edited, it is stored as a proposed value and marked pending; a gold "Pending admin approval" badge sits next to that field, showing what was submitted versus what is currently live.
 - Saving shows a toast: "Profile updated — logo pending approval" (wording adapts to which fields are pending).
@@ -24,11 +24,11 @@ Extend the existing member profile table rather than adding a second `members` t
 - `logo_url`, `pending_logo_url`, `logo_status` (`approved` | `pending`)
 - `pending_company_name`, `company_name_status`
 - `website`, `pending_website`, `website_status`
-- `address`
+- `bio`, `phone`, `address`, `linkedin_url`, `other_socials` — the instant-save fields, live with no approval
 
 Access rules: a member can read and write their own row and may only set the pending columns and instant fields — the live company name, website and logo can only be changed by an admin (enforced by a database trigger, so the approval gate cannot be bypassed from the browser). Approved members keep read access to other members for the directory. Admins can read and update all rows.
 
-A private-by-default `member-logos` storage bucket holds uploads under `<user-id>/…`; members can upload and replace their own files, approved members and admins can read them. Reads use short-lived signed URLs, so no public bucket is required.
+A private-by-default `member-logos` storage bucket holds uploads under `<user-id>/…`; members can upload and replace their own files, approved members and admins can read them. The bucket enforces a 2MB size cap and accepts only `image/jpeg` and `image/png`. Reads use short-lived signed URLs, so no public bucket is required.
 
 ## Technical notes
 
@@ -36,7 +36,7 @@ A private-by-default `member-logos` storage bucket holds uploads under `<user-id
 - Instant fields update through the browser Supabase client; the three gated fields write only to `pending_*` + `*_status`.
 - Approve/reject run through a `createServerFn` with `requireSupabaseAuth` that verifies the caller holds `super_admin` via `has_role` before promoting the pending value, and logs to `admin_audit_log`.
 - `src/components/admin/MemberManagement.tsx` gains the pending filter, the comparison cells and the two action buttons; existing search, role and export behaviour is untouched.
-- Logo validation is enforced both client-side (type/size) and by the bucket's 2MB file-size limit.
+- Logo validation is enforced both client-side (type/size) and by the bucket's 2MB file-size limit and JPEG/PNG mime restriction.
 
 ## Out of scope
 
