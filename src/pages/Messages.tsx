@@ -1,35 +1,44 @@
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import { Link } from "@/lib/router-compat";
 import { AppLayout } from "@/components/AppLayout";
 import { useMessagingProfile } from "@/hooks/useMessagingProfile";
 import { ActivateMessagingDialog } from "@/components/messaging/ActivateMessagingDialog";
-import { MessageCircle, ChevronRight, ShieldCheck } from "lucide-react";
+import { MessageCircle, ChevronRight, ShieldCheck, Loader2 } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
-import { listInbox, type DemoConversation } from "@/lib/demoMessaging";
+import { listInbox, type InboxRow } from "@/lib/messaging";
 import { isBlocked, syncBlocked } from "@/lib/moderation";
 
 export default function MessagesPage() {
-  const { isActive, activate } = useMessagingProfile();
-  const [rows, setRows] = useState<DemoConversation[]>([]);
+  const { isActive, loading: profileLoading, activate } = useMessagingProfile();
+  const [rows, setRows] = useState<InboxRow[]>([]);
+  const [loading, setLoading] = useState(true);
   const [showActivate, setShowActivate] = useState(false);
 
-  const load = () => setRows(listInbox().filter((c) => !isBlocked(c.other_user_id)));
+  const load = useCallback(async () => {
+    const inbox = await listInbox();
+    setRows(inbox.filter((c) => !isBlocked(c.other_user_id)));
+    setLoading(false);
+  }, []);
 
   useEffect(() => {
-    if (!isActive) { setShowActivate(true); return; }
-    load();
-    const h = () => load();
-    window.addEventListener("ajbn-demo-message", h);
+    if (profileLoading) return;
+    if (!isActive) {
+      setLoading(false);
+      setShowActivate(true);
+      return;
+    }
+    void load();
     void syncBlocked();
+    const h = () => void load();
     window.addEventListener("ajbn-moderation-changed", h);
+    const poll = window.setInterval(() => void load(), 15000);
     return () => {
-      window.removeEventListener("ajbn-demo-message", h);
       window.removeEventListener("ajbn-moderation-changed", h);
+      window.clearInterval(poll);
     };
-  }, [isActive]);
-
+  }, [isActive, profileLoading, load]);
 
   return (
     <AppLayout maxWidth="3xl">
@@ -46,7 +55,11 @@ export default function MessagesPage() {
         </div>
       </div>
 
-      {!isActive ? (
+      {profileLoading || loading ? (
+        <div className="py-16 flex justify-center">
+          <Loader2 className="animate-spin text-muted-foreground" />
+        </div>
+      ) : !isActive ? (
         <div className="bg-card border rounded-xl p-8 text-center">
           <p className="text-sm text-muted-foreground mb-4">Activate your chat inbox to start receiving direct messages from other AJBN members.</p>
           <Button onClick={() => setShowActivate(true)}>Activate My Chat Inbox</Button>
@@ -57,12 +70,11 @@ export default function MessagesPage() {
         </div>
       ) : (
         <div className="bg-card border rounded-xl divide-y">
-          {rows.map((r) => {
-            const last = r.messages[r.messages.length - 1];
-            return (
+          {rows.map((r) => (
             <Link
-              key={r.id}
-              to={`/messages/${r.id}`}
+              key={r.conversation_id}
+              to={`/messages/${r.conversation_id}`}
+              onClick={() => console.log("Opening conversation", r.conversation_id)}
               className="flex items-center gap-3 p-4 hover:bg-muted/50 transition-colors"
             >
               <div className="rounded-full bg-primary/10 text-primary w-10 h-10 grid place-items-center font-semibold text-sm shrink-0">
@@ -73,20 +85,19 @@ export default function MessagesPage() {
                   <p className="text-sm font-semibold truncate">
                     {r.other_first_name} {r.other_last_name}
                   </p>
-                  {last && (
+                  {r.last_message_at && (
                     <span className="text-[10px] text-muted-foreground shrink-0">
-                      {formatDistanceToNow(new Date(last.created_at), { addSuffix: true })}
+                      {formatDistanceToNow(new Date(r.last_message_at), { addSuffix: true })}
                     </span>
                   )}
                 </div>
                 {r.other_company && <p className="text-[11px] text-muted-foreground truncate">{r.other_company}</p>}
-                <p className="text-xs text-muted-foreground truncate mt-0.5">{last?.body ?? "No messages yet"}</p>
+                <p className="text-xs text-muted-foreground truncate mt-0.5">{r.last_message_body ?? "No messages yet"}</p>
               </div>
               {r.unread_count > 0 && <Badge className="bg-gold text-primary">{r.unread_count}</Badge>}
               <ChevronRight size={16} className="text-muted-foreground shrink-0" />
             </Link>
-            );
-          })}
+          ))}
         </div>
       )}
 
@@ -94,7 +105,7 @@ export default function MessagesPage() {
         open={showActivate}
         onOpenChange={setShowActivate}
         activate={activate}
-        onActivated={load}
+        onActivated={() => void load()}
       />
     </AppLayout>
   );

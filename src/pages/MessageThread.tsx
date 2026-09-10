@@ -1,75 +1,90 @@
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import { useParams, Link } from "@/lib/router-compat";
 import { AppLayout } from "@/components/AppLayout";
 import { useAuth } from "@/hooks/useAuth";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { Send, ShieldCheck, Ban } from "lucide-react";
+import { Send, ShieldCheck, Ban, Loader2 } from "lucide-react";
+import { toast } from "sonner";
 import { MemberSafetyMenu } from "@/components/safety/MemberSafetyMenu";
 import { isBlocked, syncBlocked } from "@/lib/moderation";
-
 import {
-  getConversation,
-  sendMessage as sendDemoMessage,
-  markRead,
-  type DemoConversation,
-  type DemoMsg,
-} from "@/lib/demoMessaging";
+  loadThread,
+  lookupMember,
+  markConversationRead,
+  sendMessage,
+  type ChatMessage,
+} from "@/lib/messaging";
 
 export default function MessageThreadPage() {
   const { conversationId } = useParams<{ conversationId: string }>();
   const { user } = useAuth();
-  const [convo, setConvo] = useState<DemoConversation | null>(null);
-  const [messages, setMessages] = useState<DemoMsg[]>([]);
+  const [messages, setMessages] = useState<ChatMessage[]>([]);
+  const [otherUserId, setOtherUserId] = useState<string | null>(null);
+  const [other, setOther] = useState<{ first_name: string | null; last_name: string | null; company: string | null } | null>(null);
+  const [loading, setLoading] = useState(true);
+  const [notFound, setNotFound] = useState(false);
+  const [sending, setSending] = useState(false);
   const [body, setBody] = useState("");
   const endRef = useRef<HTMLDivElement>(null);
-  const meId = user?.id ?? "demo-me";
 
-  const refresh = () => {
+  const refresh = useCallback(async () => {
     if (!conversationId) return;
-    const c = getConversation(conversationId);
-    if (c) {
-      setConvo(c);
-      setMessages(c.messages);
+    const thread = await loadThread(conversationId);
+    if (!thread) {
+      setNotFound(true);
+      setLoading(false);
+      return;
     }
-  };
+    setOtherUserId(thread.otherUserId);
+    setMessages(thread.messages);
+    setLoading(false);
+  }, [conversationId]);
 
   useEffect(() => {
-    refresh();
-    if (conversationId) markRead(conversationId);
-    const h = (e: Event) => {
-      const d = (e as CustomEvent).detail;
-      if (d?.conversationId === conversationId) refresh();
-    };
-    window.addEventListener("ajbn-demo-message", h);
-    return () => window.removeEventListener("ajbn-demo-message", h);
-  }, [conversationId]);
+    void refresh();
+    if (conversationId) void markConversationRead(conversationId);
+    const poll = window.setInterval(() => void refresh(), 8000);
+    return () => window.clearInterval(poll);
+  }, [conversationId, refresh]);
+
+  useEffect(() => {
+    if (!otherUserId) return;
+    void lookupMember(otherUserId).then(setOther);
+  }, [otherUserId]);
 
   const [blocked, setBlocked] = useState(false);
   useEffect(() => {
-    const sync = () => setBlocked(isBlocked(convo?.other_user_id));
+    const sync = () => setBlocked(isBlocked(otherUserId ?? undefined));
     sync();
     void syncBlocked();
     window.addEventListener("ajbn-moderation-changed", sync);
     return () => window.removeEventListener("ajbn-moderation-changed", sync);
-  }, [convo?.other_user_id]);
+  }, [otherUserId]);
 
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages]);
 
-  const send = () => {
+  const send = async () => {
     const text = body.trim();
-    if (!text || !conversationId || blocked) return;
-    sendDemoMessage(conversationId, meId, text);
-    setBody("");
-    refresh();
+    if (!text || !conversationId || blocked || sending) return;
+    setSending(true);
+    try {
+      await sendMessage(conversationId, text);
+      setBody("");
+      await refresh();
+    } catch (e: unknown) {
+      const msg = e instanceof Error ? e.message : "Could not send message";
+      toast.error(msg);
+    } finally {
+      setSending(false);
+    }
   };
 
-  const other = convo
-    ? { first_name: convo.other_first_name, last_name: convo.other_last_name, company: convo.other_company }
-    : null;
-  const loading = false;
+  const displayName = other
+    ? `${other.first_name ?? ""} ${other.last_name ?? ""}`.trim() || "Member"
+    : "Conversation";
 
   return (
     <AppLayout maxWidth="3xl" back={{ to: "/messages", label: "Inbox" }}>
@@ -78,17 +93,11 @@ export default function MessageThreadPage() {
           {(other?.first_name?.[0] ?? "?").toUpperCase()}
         </div>
         <div className="flex-1 min-w-0">
-          <h1 className="text-lg font-display font-bold leading-tight">
-            {other ? `${other.first_name ?? ""} ${other.last_name ?? ""}`.trim() : "Conversation"}
-          </h1>
+          <h1 className="text-lg font-display font-bold leading-tight">{displayName}</h1>
           {other?.company && <p className="text-xs text-muted-foreground">{other.company}</p>}
         </div>
-        {convo && (
-          <MemberSafetyMenu
-            memberId={convo.other_user_id}
-            memberName={`${convo.other_first_name ?? ""} ${convo.other_last_name ?? ""}`.trim() || "this member"}
-            context="chat"
-          />
+        {otherUserId && (
+          <MemberSafetyMenu memberId={otherUserId} memberName={displayName} context="chat" />
         )}
       </div>
 
@@ -106,10 +115,13 @@ export default function MessageThreadPage() {
         </div>
       )}
 
-
       <div className="bg-card border rounded-xl flex flex-col h-[70vh]">
         <div className="flex-1 overflow-y-auto p-4 space-y-3">
-          {messages.length === 0 ? (
+          {loading ? (
+            <div className="py-12 flex justify-center">
+              <Loader2 className="animate-spin text-muted-foreground" />
+            </div>
+          ) : messages.length === 0 ? (
             <p className="text-center text-sm text-muted-foreground py-12">Say hello 👋</p>
           ) : (
             messages.map((m) => {
@@ -132,20 +144,19 @@ export default function MessageThreadPage() {
           <Textarea
             value={body}
             onChange={(e) => setBody(e.target.value)}
-            onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } }}
+            onKeyDown={(e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); void send(); } }}
             placeholder={blocked ? "You've blocked this member" : "Write a message…"}
             rows={2}
             disabled={blocked}
             className="resize-none"
           />
-          <Button onClick={send} disabled={!body.trim() || blocked} size="icon" aria-label="Send message">
+          <Button onClick={() => void send()} disabled={!body.trim() || blocked || sending} size="icon" aria-label="Send message">
             <Send size={16} />
           </Button>
         </div>
-
       </div>
 
-      {!convo && !loading && (
+      {notFound && (
         <p className="text-center text-sm text-muted-foreground mt-6">
           Conversation not found. <Link to="/messages" className="underline text-primary">Back to inbox</Link>
         </p>
