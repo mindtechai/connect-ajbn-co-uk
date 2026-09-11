@@ -1,5 +1,6 @@
 import { useNavigate, useLocation } from "@/lib/router-compat";
-import { Bell, LogOut, Shield } from "lucide-react";
+import { Link } from "@/lib/router-compat";
+import { LogOut, Settings, Shield } from "lucide-react";
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
 import { assetUrl } from "@/lib/asset";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
@@ -57,6 +58,9 @@ export default function AdminPage() {
             </div>
             <div className="flex items-center gap-3">
               <NotificationsBell />
+              <Link to="/settings" className="text-muted-foreground hover:text-foreground" aria-label="Account settings" title="Account settings">
+                <Settings size={18} />
+              </Link>
               <button
                 onClick={async () => { await signOut(); navigate("/login"); }}
                 className="text-muted-foreground hover:text-foreground"

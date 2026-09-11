@@ -78,6 +78,13 @@ export function AdminSidebar() {
       {/* Back to dashboard */}
       <div className="p-2 border-t border-sidebar-border">
         <Link
+          to="/settings"
+          className="mb-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-primary-foreground/60 hover:text-primary-foreground hover:bg-sidebar-accent/50 transition-colors"
+        >
+          <Settings size={18} className="shrink-0" />
+          {!collapsed && <span>Account Settings</span>}
+        </Link>
+        <Link
           to="/dashboard"
           className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-primary-foreground/60 hover:text-primary-foreground hover:bg-sidebar-accent/50 transition-colors"
         >

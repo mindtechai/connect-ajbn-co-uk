@@ -1,6 +1,6 @@
 import { Link, useLocation } from "@/lib/router-compat";
 import { Button } from "@/components/ui/button";
-import { Menu, X, LayoutDashboard, LogOut, User as UserIcon } from "lucide-react";
+import { Menu, X, LayoutDashboard, LogOut, Settings } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
@@ -105,6 +105,11 @@ export function Navbar() {
                   <LayoutDashboard size={16} className="mr-1.5" /> Dashboard
                 </Button>
               </Link>
+              <Link to="/settings" aria-label="Account settings" title="Account settings">
+                <Button variant={showSolid ? "outline" : "heroOutline"} size="icon">
+                  <Settings size={16} />
+                </Button>
+              </Link>
               <Button variant={showSolid ? "default" : "hero"} size="sm" onClick={() => signOut()}>
                 <LogOut size={16} className="mr-1.5" /> Sign Out
               </Button>
@@ -178,6 +183,11 @@ export function Navbar() {
               <Link to="/dashboard" onClick={() => setOpen(false)}>
                 <Button variant="outline" size="sm" className="w-full">
                   <LayoutDashboard size={16} className="mr-1.5" /> Dashboard
+                </Button>
+              </Link>
+              <Link to="/settings" onClick={() => setOpen(false)}>
+                <Button variant="outline" size="sm" className="w-full">
+                  <Settings size={16} className="mr-1.5" /> Account Settings
                 </Button>
               </Link>
               <Button size="sm" className="w-full" onClick={() => { setOpen(false); signOut(); }}>
