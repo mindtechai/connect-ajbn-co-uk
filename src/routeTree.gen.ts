@@ -46,6 +46,7 @@ import { Route as LionsIndexRouteImport } from './routes/lions/index'
 import { Route as LionsApplyRouteImport } from './routes/lions/apply'
 import { Route as MessagesIndexRouteImport } from './routes/messages/index'
 import { Route as MessagesConversationIdRouteImport } from './routes/messages/$conversationId'
+import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as SettingsNotificationsRouteImport } from './routes/settings/notifications'
 import { Route as SettingsProfileRouteImport } from './routes/settings/profile'
 import { Route as TicketsFlagshipRouteImport } from './routes/tickets/flagship'
@@ -240,6 +241,11 @@ const MessagesConversationIdRoute = MessagesConversationIdRouteImport.update({
   path: '/messages/$conversationId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const SettingsIndexRoute = SettingsIndexRouteImport.update({
+  id: '/settings/',
+  path: '/settings/',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const SettingsNotificationsRoute = SettingsNotificationsRouteImport.update({
   id: '/settings/notifications',
   path: '/settings/notifications',
@@ -324,6 +330,7 @@ export interface FileRoutesByFullPath {
   '/admin/': typeof AdminIndexRoute
   '/lions/': typeof LionsIndexRoute
   '/messages/': typeof MessagesIndexRoute
+  '/settings/': typeof SettingsIndexRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/api/public/cron/admin-digest': typeof ApiPublicCronAdminDigestRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -371,6 +378,7 @@ export interface FileRoutesByTo {
   '/admin': typeof AdminIndexRoute
   '/lions': typeof LionsIndexRoute
   '/messages': typeof MessagesIndexRoute
+  '/settings': typeof SettingsIndexRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/api/public/cron/admin-digest': typeof ApiPublicCronAdminDigestRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -419,6 +427,7 @@ export interface FileRoutesById {
   '/admin/': typeof AdminIndexRoute
   '/lions/': typeof LionsIndexRoute
   '/messages/': typeof MessagesIndexRoute
+  '/settings/': typeof SettingsIndexRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/api/public/cron/admin-digest': typeof ApiPublicCronAdminDigestRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -468,6 +477,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/lions/'
     | '/messages/'
+    | '/settings/'
     | '/lovable/email/events'
     | '/api/public/cron/admin-digest'
     | '/lovable/email/auth/preview'
@@ -515,6 +525,7 @@ export interface FileRouteTypes {
     | '/admin'
     | '/lions'
     | '/messages'
+    | '/settings'
     | '/lovable/email/events'
     | '/api/public/cron/admin-digest'
     | '/lovable/email/auth/preview'
@@ -562,6 +573,7 @@ export interface FileRouteTypes {
     | '/admin/'
     | '/lions/'
     | '/messages/'
+    | '/settings/'
     | '/lovable/email/events'
     | '/api/public/cron/admin-digest'
     | '/lovable/email/auth/preview'
@@ -610,6 +622,7 @@ export interface RootRouteChildren {
   AdminIndexRoute: typeof AdminIndexRoute
   LionsIndexRoute: typeof LionsIndexRoute
   MessagesIndexRoute: typeof MessagesIndexRoute
+  SettingsIndexRoute: typeof SettingsIndexRoute
   LovableEmailEventsRoute: typeof LovableEmailEventsRoute
   ApiPublicCronAdminDigestRoute: typeof ApiPublicCronAdminDigestRoute
   LovableEmailAuthPreviewRoute: typeof LovableEmailAuthPreviewRoute
@@ -878,6 +891,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof MessagesConversationIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/settings/': {
+      id: '/settings/'
+      path: '/settings'
+      fullPath: '/settings/'
+      preLoaderRoute: typeof SettingsIndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/settings/notifications': {
       id: '/settings/notifications'
       path: '/settings/notifications'
@@ -978,6 +998,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminIndexRoute: AdminIndexRoute,
   LionsIndexRoute: LionsIndexRoute,
   MessagesIndexRoute: MessagesIndexRoute,
+  SettingsIndexRoute: SettingsIndexRoute,
   LovableEmailEventsRoute: LovableEmailEventsRoute,
   ApiPublicCronAdminDigestRoute: ApiPublicCronAdminDigestRoute,
   LovableEmailAuthPreviewRoute: LovableEmailAuthPreviewRoute,
