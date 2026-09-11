@@ -1,0 +1,1 @@
+GRANT UPDATE ON public.lion_applications TO authenticated;
