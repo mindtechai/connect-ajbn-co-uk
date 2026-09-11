@@ -99,10 +99,10 @@ export default function DashboardPage() {
               <User size={18} />
             </Link>
             <Link
-              to="/settings/notifications"
+              to="/settings"
               className="text-muted-foreground hover:text-foreground"
-              aria-label="Notification preferences"
-              title="Notification preferences"
+              aria-label="Account settings"
+              title="Account settings"
             >
               <Settings size={18} />
             </Link>

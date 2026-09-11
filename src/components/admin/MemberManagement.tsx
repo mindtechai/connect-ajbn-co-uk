@@ -4,12 +4,13 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Download, Crown, MoreHorizontal, Loader2, Check, X, Clock, UserCheck } from "lucide-react";
+import { Search, Download, Crown, MoreHorizontal, Loader2, Check, X, Clock, UserCheck, KeyRound } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
 import { decideProfileChange } from "@/lib/member-profile-approvals.functions";
+import { resetMemberPassword } from "@/lib/admin-password.functions";
 
 type Role = "super_admin" | "ajbn_member" | "impact_lion" | "prospective_member";
 type PendingField = "logo" | "company_name" | "website";
@@ -62,9 +63,11 @@ export function MemberManagement() {
   const [loading, setLoading] = useState(true);
   const [deciding, setDeciding] = useState<string | null>(null);
   const [promoting, setPromoting] = useState<string | null>(null);
+  const [resetting, setResetting] = useState<string | null>(null);
   const [logoUrls, setLogoUrls] = useState<Record<string, string>>({});
   const { toast } = useToast();
   const decide = useServerFn(decideProfileChange);
+  const resetPassword = useServerFn(resetMemberPassword);
 
   const load = async () => {
     setLoading(true);
@@ -188,6 +191,18 @@ export function MemberManagement() {
     await logAudit("suspend_member", m);
     toast({ title: "Access suspended", description: `${m.first_name ?? "Member"} moved to prospective.` });
     load();
+  };
+
+  const handlePasswordReset = async (m: Member) => {
+    setResetting(m.id);
+    try {
+      await resetPassword({ data: { memberId: m.id } });
+      toast({ title: "Password reset", description: `${m.email ?? "This member"} can now sign in with the temporary password.` });
+    } catch (e) {
+      toast({ title: "Could not reset password", description: e instanceof Error ? e.message : "Please try again.", variant: "destructive" });
+    } finally {
+      setResetting(null);
+    }
   };
 
   const logAudit = async (action: string, m: Member) => {
@@ -331,6 +346,9 @@ export function MemberManagement() {
                   {promoting === m.id ? <Loader2 size={14} className="animate-spin" /> : <UserCheck size={14} />} Promote to AJBN Member
                 </Button>
               )}
+              <Button variant="outline" size="sm" className="w-full" disabled={resetting === m.id} onClick={() => handlePasswordReset(m)}>
+                {resetting === m.id ? <Loader2 size={14} className="animate-spin" /> : <KeyRound size={14} />} Reset Password
+              </Button>
             </div>
           );
         })}
@@ -383,6 +401,9 @@ export function MemberManagement() {
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem onClick={() => toggleLion(m)}>
                             {isLion ? "Remove from Impact Lions" : "Add to Impact Lions"}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem disabled={resetting === m.id} onClick={() => handlePasswordReset(m)}>
+                            <KeyRound size={14} className="mr-2" /> Reset Password
                           </DropdownMenuItem>
                           {st === "active" && (
                             <DropdownMenuItem className="text-destructive" onClick={() => suspend(m)}>
