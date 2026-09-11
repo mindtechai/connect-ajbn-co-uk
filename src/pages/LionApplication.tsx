@@ -83,15 +83,30 @@ export default function LionApplicationPage() {
   const submit = async () => {
     if (!user || !motivation.trim() || !payAck) return;
     setSaving(true);
-    const { data, error } = await supabase
-      .from("lion_applications")
-      .insert({
-        user_id: user.id,
-        motivation: motivation.trim(),
-        linkedin_url: linkedin.trim() || null,
-        referral_experience: experience.trim() || null,
-        payment_ack: true,
-      } as never)
+    const fields = {
+      motivation: motivation.trim(),
+      linkedin_url: linkedin.trim() || null,
+      referral_experience: experience.trim() || null,
+      payment_ack: true,
+    };
+    // A member only ever has one application row (unique per user), so a
+    // re-submission after rejection must update that row back to pending.
+    const isResubmit = !!existing?.id && existing.status === "rejected";
+    const query = isResubmit
+      ? supabase
+          .from("lion_applications")
+          .update({
+            ...fields,
+            status: "pending",
+            reviewed_by: null,
+            reviewed_at: null,
+            review_notes: null,
+          } as never)
+          .eq("id", existing.id!)
+      : supabase
+          .from("lion_applications")
+          .insert({ user_id: user.id, ...fields } as never);
+    const { data, error } = await query
       .select("id, status, motivation, linkedin_url, referral_experience, payment_ack, review_notes, created_at")
       .maybeSingle();
 
