@@ -6,7 +6,7 @@ import { ScrollReveal } from "@/components/ScrollReveal";
 import {
   Users, CalendarDays, Award, Link2, Bell, Crown,
   Copy, ArrowRight, LogOut, Shield, Settings, User, BookUser, HeartHandshake, Briefcase,
-  HandHeart, CalendarClock
+  HandHeart, CalendarClock, Moon
 } from "lucide-react";
 import lionsEmblem from "@/assets/lions-emblem.png";
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
@@ -22,6 +22,7 @@ import { MessagingOnboardingCard } from "@/components/dashboard/MessagingOnboard
 import { MessageCircle } from "lucide-react";
 import { NetworkTicker } from "@/components/dashboard/NetworkTicker";
 import { LogActivityDialog } from "@/components/dashboard/LogActivityDialog";
+import { useQuietHours } from "@/hooks/useQuietHours";
 
 import { EVENTS } from "@/lib/publicEvents";
 
@@ -31,12 +32,25 @@ type UpcomingEvent = { id: string; title: string; starts_at: string; location: s
 export default function DashboardPage() {
   const navigate = useNavigate();
   const { user, isSuperAdmin, signOut } = useAuth();
+  const { appliesNow: quietHoursAppliesNow } = useQuietHours();
   const [profile, setProfile] = useState<any | null>(null);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [upcomingEvents, setUpcomingEvents] = useState<UpcomingEvent[]>([]);
   const [referralCount, setReferralCount] = useState(0);
   const [tickerKey, setTickerKey] = useState(0);
   const [oneToOneCount, setOneToOneCount] = useState(0);
+  const [quietHoursCardDismissed, setQuietHoursCardDismissed] = useState(true);
+
+  useEffect(() => {
+    if (!user) return;
+    setQuietHoursCardDismissed(localStorage.getItem(quietHoursCardStorageKey(user.id)) === "dismissed");
+  }, [user?.id]);
+
+  const dismissQuietHoursCard = () => {
+    if (!user) return;
+    localStorage.setItem(quietHoursCardStorageKey(user.id), "dismissed");
+    setQuietHoursCardDismissed(true);
+  };
 
   // "Book 1-2-1" clicks logged by this member since the start of the month.
   useEffect(() => {
@@ -140,6 +154,33 @@ export default function DashboardPage() {
       </header>
 
       <main className="container mx-auto px-4 lg:px-8 py-8 max-w-5xl pb-[calc(env(safe-area-inset-bottom)+72px)] md:pb-8">
+        {!quietHoursCardDismissed && (
+          <ScrollReveal>
+            <section className="mb-4 rounded-xl border border-gold/30 bg-card p-5 shadow-xs" aria-labelledby="quiet-hours-education-title">
+              <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+                <div className="flex gap-3">
+                  <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-gold/10 text-gold">
+                    <Moon size={20} aria-hidden="true" />
+                  </div>
+                  <div>
+                    <h2 id="quiet-hours-education-title" className="font-display text-lg font-bold">New: Respect Mode - Quiet Hours</h2>
+                    <p className="mt-1 text-sm text-muted-foreground">
+                      Fri 6pm-Sat 10pm: bells muted, messages emailed with respect note. Inspired by Shabbat rest - for focus &amp; family time. Admin can set for you, or you can set in Settings.
+                    </p>
+                  </div>
+                </div>
+                <Button variant="outline" size="sm" onClick={dismissQuietHoursCard} className="shrink-0">Got it</Button>
+              </div>
+            </section>
+          </ScrollReveal>
+        )}
+
+        {quietHoursAppliesNow && (
+          <div className="mb-6 rounded-xl border border-gold/40 bg-gold-muted px-4 py-3 text-sm font-medium text-foreground" role="status">
+            You are in Quiet Hours till Sat 10pm. Messages coming via email.
+          </div>
+        )}
+
         {/* Premium hero banner */}
         <div className="mb-6 overflow-hidden rounded-xl border border-gold/20 bg-hero-pattern text-primary-foreground shadow-xs">
           <div className="p-6 md:p-8">
@@ -421,6 +462,10 @@ function DashboardCard({
       {children}
     </div>
   );
+}
+
+function quietHoursCardStorageKey(userId: string): string {
+  return `ajbn_quiet_hours_education_${userId}`;
 }
 
 function fallbackUpcomingEvents(): UpcomingEvent[] {

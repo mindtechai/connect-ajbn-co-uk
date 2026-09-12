@@ -48,5 +48,5 @@ export function useQuietHours() {
     };
   }, [user?.id]);
 
-  return { enabled, activeNow: enabled && inWindow };
+  return { enabled, inWindow, activeNow: enabled && inWindow, appliesNow: enabled || inWindow };
 }
