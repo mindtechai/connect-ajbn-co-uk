@@ -256,6 +256,7 @@ export type Database = {
           linkedin_url: string | null
           logo_filename: string | null
           membership_tier: string | null
+          owner_user_id: string | null
           short_bio: string | null
           updated_at: string
           verified: boolean
@@ -271,6 +272,7 @@ export type Database = {
           linkedin_url?: string | null
           logo_filename?: string | null
           membership_tier?: string | null
+          owner_user_id?: string | null
           short_bio?: string | null
           updated_at?: string
           verified?: boolean
@@ -286,12 +288,21 @@ export type Database = {
           linkedin_url?: string | null
           logo_filename?: string | null
           membership_tier?: string | null
+          owner_user_id?: string | null
           short_bio?: string | null
           updated_at?: string
           verified?: boolean
           website?: string | null
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "corporate_members_owner_user_id_fkey"
+            columns: ["owner_user_id"]
+            isOneToOne: false
+            referencedRelation: "profiles"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       deal_logs: {
         Row: {
@@ -1227,6 +1238,24 @@ export type Database = {
           title: string
         }[]
       }
+      member_profile_detail: {
+        Args: { _member_id: string }
+        Returns: {
+          bio: string
+          calendly_url: string
+          company: string
+          first_name: string
+          id: string
+          industry: string
+          is_lion: boolean
+          is_messaging_active: boolean
+          last_name: string
+          linkedin: string
+          quiet_hours_enabled: boolean
+          tags: string[]
+          title: string
+        }[]
+      }
       messaging_inbox: {
         Args: never
         Returns: {
@@ -1276,6 +1305,17 @@ export type Database = {
           id: string
           last_name: string
         }[]
+      }
+      reveal_member_contact: {
+        Args: { _member_id: string }
+        Returns: {
+          email: string
+          phone: string
+        }[]
+      }
+      set_corporate_member_owner: {
+        Args: { _company_id: string; _owner_user_id: string }
+        Returns: undefined
       }
       start_or_get_conversation: { Args: { _other: string }; Returns: string }
       top_network_ambassador: { Args: never; Returns: string }
