@@ -43,8 +43,10 @@ import { Route as AdminLionsRouteImport } from './routes/admin/lions'
 import { Route as AdminMembersRouteImport } from './routes/admin/members'
 import { Route as AdminReportsRouteImport } from './routes/admin/reports'
 import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
+import { Route as CompanyCompanyIdRouteImport } from './routes/company/$companyId'
 import { Route as LionsIndexRouteImport } from './routes/lions/index'
 import { Route as LionsApplyRouteImport } from './routes/lions/apply'
+import { Route as MemberMemberIdRouteImport } from './routes/member/$memberId'
 import { Route as MessagesIndexRouteImport } from './routes/messages/index'
 import { Route as MessagesConversationIdRouteImport } from './routes/messages/$conversationId'
 import { Route as SettingsIndexRouteImport } from './routes/settings/index'
@@ -227,6 +229,11 @@ const AdminSettingsRoute = AdminSettingsRouteImport.update({
   path: '/admin/settings',
   getParentRoute: () => rootRouteImport,
 } as any)
+const CompanyCompanyIdRoute = CompanyCompanyIdRouteImport.update({
+  id: '/company/$companyId',
+  path: '/company/$companyId',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LionsIndexRoute = LionsIndexRouteImport.update({
   id: '/lions/',
   path: '/lions/',
@@ -235,6 +242,11 @@ const LionsIndexRoute = LionsIndexRouteImport.update({
 const LionsApplyRoute = LionsApplyRouteImport.update({
   id: '/lions/apply',
   path: '/lions/apply',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const MemberMemberIdRoute = MemberMemberIdRouteImport.update({
+  id: '/member/$memberId',
+  path: '/member/$memberId',
   getParentRoute: () => rootRouteImport,
 } as any)
 const MessagesIndexRoute = MessagesIndexRouteImport.update({
@@ -329,7 +341,9 @@ export interface FileRoutesByFullPath {
   '/admin/members': typeof AdminMembersRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/settings': typeof AdminSettingsRoute
+  '/company/$companyId': typeof CompanyCompanyIdRoute
   '/lions/apply': typeof LionsApplyRoute
+  '/member/$memberId': typeof MemberMemberIdRoute
   '/messages/$conversationId': typeof MessagesConversationIdRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/settings/profile': typeof SettingsProfileRoute
@@ -378,7 +392,9 @@ export interface FileRoutesByTo {
   '/admin/members': typeof AdminMembersRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/settings': typeof AdminSettingsRoute
+  '/company/$companyId': typeof CompanyCompanyIdRoute
   '/lions/apply': typeof LionsApplyRoute
+  '/member/$memberId': typeof MemberMemberIdRoute
   '/messages/$conversationId': typeof MessagesConversationIdRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/settings/profile': typeof SettingsProfileRoute
@@ -428,7 +444,9 @@ export interface FileRoutesById {
   '/admin/members': typeof AdminMembersRoute
   '/admin/reports': typeof AdminReportsRoute
   '/admin/settings': typeof AdminSettingsRoute
+  '/company/$companyId': typeof CompanyCompanyIdRoute
   '/lions/apply': typeof LionsApplyRoute
+  '/member/$memberId': typeof MemberMemberIdRoute
   '/messages/$conversationId': typeof MessagesConversationIdRoute
   '/settings/notifications': typeof SettingsNotificationsRoute
   '/settings/profile': typeof SettingsProfileRoute
@@ -479,7 +497,9 @@ export interface FileRouteTypes {
     | '/admin/members'
     | '/admin/reports'
     | '/admin/settings'
+    | '/company/$companyId'
     | '/lions/apply'
+    | '/member/$memberId'
     | '/messages/$conversationId'
     | '/settings/notifications'
     | '/settings/profile'
@@ -528,7 +548,9 @@ export interface FileRouteTypes {
     | '/admin/members'
     | '/admin/reports'
     | '/admin/settings'
+    | '/company/$companyId'
     | '/lions/apply'
+    | '/member/$memberId'
     | '/messages/$conversationId'
     | '/settings/notifications'
     | '/settings/profile'
@@ -577,7 +599,9 @@ export interface FileRouteTypes {
     | '/admin/members'
     | '/admin/reports'
     | '/admin/settings'
+    | '/company/$companyId'
     | '/lions/apply'
+    | '/member/$memberId'
     | '/messages/$conversationId'
     | '/settings/notifications'
     | '/settings/profile'
@@ -627,7 +651,9 @@ export interface RootRouteChildren {
   AdminMembersRoute: typeof AdminMembersRoute
   AdminReportsRoute: typeof AdminReportsRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
+  CompanyCompanyIdRoute: typeof CompanyCompanyIdRoute
   LionsApplyRoute: typeof LionsApplyRoute
+  MemberMemberIdRoute: typeof MemberMemberIdRoute
   MessagesConversationIdRoute: typeof MessagesConversationIdRoute
   SettingsNotificationsRoute: typeof SettingsNotificationsRoute
   SettingsProfileRoute: typeof SettingsProfileRoute
@@ -883,6 +909,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminSettingsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/company/$companyId': {
+      id: '/company/$companyId'
+      path: '/company/$companyId'
+      fullPath: '/company/$companyId'
+      preLoaderRoute: typeof CompanyCompanyIdRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/lions/': {
       id: '/lions/'
       path: '/lions'
@@ -895,6 +928,13 @@ declare module '@tanstack/react-router' {
       path: '/lions/apply'
       fullPath: '/lions/apply'
       preLoaderRoute: typeof LionsApplyRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/member/$memberId': {
+      id: '/member/$memberId'
+      path: '/member/$memberId'
+      fullPath: '/member/$memberId'
+      preLoaderRoute: typeof MemberMemberIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/messages/': {
@@ -1011,7 +1051,9 @@ const rootRouteChildren: RootRouteChildren = {
   AdminMembersRoute: AdminMembersRoute,
   AdminReportsRoute: AdminReportsRoute,
   AdminSettingsRoute: AdminSettingsRoute,
+  CompanyCompanyIdRoute: CompanyCompanyIdRoute,
   LionsApplyRoute: LionsApplyRoute,
+  MemberMemberIdRoute: MemberMemberIdRoute,
   MessagesConversationIdRoute: MessagesConversationIdRoute,
   SettingsNotificationsRoute: SettingsNotificationsRoute,
   SettingsProfileRoute: SettingsProfileRoute,

@@ -18,6 +18,7 @@ import {
 } from "@/components/ui/select";
 import { toast } from "sonner";
 import { HandHeart, Loader2, Trash2, Clock } from "lucide-react";
+import { openMemberConversation } from "@/components/member/MemberActions";
 
 const CATEGORIES = ["Property", "Finance", "Legal", "Tax", "Other"] as const;
 type Category = (typeof CATEGORIES)[number];
@@ -138,12 +139,8 @@ export default function BoardPage() {
 
   const help = async (post: BoardPost) => {
     try {
-      const { startOrGetConversation, sendMessage } = await import("@/lib/messaging");
-      const conversationId = await startOrGetConversation(post.author_id);
-      if (!conversationId) {
-        toast.error("Could not open the chat. Please sign in again.");
-        return;
-      }
+      const { sendMessage } = await import("@/lib/messaging");
+      const conversationId = await openMemberConversation(post.author_id);
       await sendMessage(
         conversationId,
         `Hi — I can help with your ${post.kind === "need" ? "NEED" : "OFFER"} post "${post.title}" (${post.category}).`,

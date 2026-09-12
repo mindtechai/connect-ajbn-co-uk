@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Crown, Loader2, Building2, Linkedin, Send, Globe, BadgeCheck, CalendarClock, Moon } from "lucide-react";
+import { Search, Crown, Loader2, Building2, Linkedin, Globe, BadgeCheck, Moon } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -12,13 +12,11 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useNavigate } from "@/lib/router-compat";
-import { useMessagingProfile } from "@/hooks/useMessagingProfile";
-import { ActivateMessagingDialog } from "@/components/messaging/ActivateMessagingDialog";
-import { toast } from "sonner";
+import { useNavigate } from "@tanstack/react-router";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { MemberBadges } from "@/components/badges/MemberBadges";
 import { MemberSafetyMenu } from "@/components/safety/MemberSafetyMenu";
+import { MemberActions } from "@/components/member/MemberActions";
 import { listBlocked, syncBlocked } from "@/lib/moderation";
 import { useUkQuietHoursWindow } from "@/hooks/useQuietHours";
 
@@ -52,6 +50,7 @@ type CorporateMember = {
   website: string | null;
   linkedin_url: string | null;
   verified: boolean;
+  owner_user_id: string | null;
 };
 
 function initials(name: string): string {
@@ -59,7 +58,7 @@ function initials(name: string): string {
     .split(/\s+/)
     .filter(Boolean)
     .slice(0, 2)
-    .map((w) => w[0]!.toUpperCase())
+    .map((w) => w[0]?.toUpperCase() ?? "")
     .join("");
 }
 
@@ -69,13 +68,11 @@ export default function DirectoryPage() {
   // database as an anonymous caller and is rejected by access rules.
   const hasRealSession = !!session?.access_token && session.access_token !== "demo";
   const navigate = useNavigate();
-  const { isActive: myMessagingActive, activate } = useMessagingProfile();
   const [members, setMembers] = useState<Member[]>([]);
   const [companies, setCompanies] = useState<CorporateMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
   const [industry, setIndustry] = useState<string>("all");
-  const [pendingRecipient, setPendingRecipient] = useState<Member | null>(null);
   const inQuietHoursWindow = useUkQuietHoursWindow();
 
   const canAccess = !!user;
@@ -92,7 +89,7 @@ export default function DirectoryPage() {
         supabase
           .from("corporate_members")
           .select(
-            "id,company_name,industry,city,membership_tier,job_title,short_bio,website,linkedin_url,verified",
+            "id,company_name,industry,city,membership_tier,job_title,short_bio,website,linkedin_url,verified,owner_user_id",
           )
           .order("company_name", { ascending: true }),
       ]);
@@ -147,43 +144,6 @@ export default function DirectoryPage() {
 
   const shownTotal = filteredMembers.length + filteredCompanies.length;
   const total = members.length + companies.length;
-
-  const openChatWith = async (m: Member) => {
-    if (!m.is_messaging_active) {
-      toast.info(`${m.first_name ?? "This member"} hasn't enabled messaging yet.`);
-      return;
-    }
-    if (!myMessagingActive) {
-      setPendingRecipient(m);
-      return;
-    }
-    try {
-      const { startOrGetConversation } = await import("@/lib/messaging");
-      const id = await startOrGetConversation(m.id);
-      if (!id) {
-        toast.error("Could not open the chat. Please sign in again.");
-        return;
-      }
-      navigate(`/messages/${id}`);
-    } catch (e: unknown) {
-      toast.error(e instanceof Error ? e.message : "Could not open the chat.");
-    }
-  };
-
-  // Opens the member's own booking link and logs the click so the dashboard
-  // can show how many 1-2-1s the member has arranged this month.
-  const bookOneToOne = async (m: Member) => {
-    const url = m.calendly_url ?? "";
-    if (!/^https?:\/\//i.test(url)) return;
-    window.open(url, "_blank", "noopener,noreferrer");
-    const { error } = await supabase.from("one_to_ones").insert({
-      requester_id: user!.id,
-      target_id: m.id,
-      target_name: `${m.first_name ?? ""} ${m.last_name ?? ""}`.trim() || null,
-    } as never);
-    if (error) console.error("one_to_ones insert failed", error);
-    else window.dispatchEvent(new Event("ajbn-one-to-one-logged"));
-  };
 
   return (
     <AppLayout maxWidth="6xl">
@@ -259,8 +219,23 @@ export default function DirectoryPage() {
             <>
               <h2 className="text-sm font-semibold mb-3">Members on AJBN Connect</h2>
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 mb-8">
-                {filteredMembers.map((m) => (
-                  <div key={m.id} className="bg-card border rounded-xl p-5 shadow-xs space-y-2">
+                {filteredMembers.map((m) => {
+                  const name = `${m.first_name ?? ""} ${m.last_name ?? ""}`.trim() || "AJBN member";
+                  return (
+                  <div
+                    key={m.id}
+                    role="link"
+                    tabIndex={0}
+                    onClick={() => void navigate({ to: "/member/$memberId", params: { memberId: m.id } })}
+                    onKeyDown={(event) => {
+                      if (event.key === "Enter" || event.key === " ") {
+                        event.preventDefault();
+                        void navigate({ to: "/member/$memberId", params: { memberId: m.id } });
+                      }
+                    }}
+                    className="bg-card border rounded-lg p-5 shadow-xs space-y-2 cursor-pointer transition-colors hover:border-primary/50 hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                    aria-label={`View ${name}'s profile`}
+                  >
                     <div className="flex items-start justify-between gap-2">
                       <div className="min-w-0">
                         <div className="flex items-center gap-1.5 min-w-0">
@@ -301,35 +276,9 @@ export default function DirectoryPage() {
                       </div>
                     )}
                     {m.bio && <p className="text-xs text-muted-foreground line-clamp-3 pt-1">{m.bio}</p>}
-                    <div className="flex gap-2 pt-2 border-t items-center">
-                      {m.id !== user?.id &&
-                        (m.is_messaging_active ? (
-                          <button
-                            onClick={() => openChatWith(m)}
-                            className="text-xs text-primary hover:text-primary/80 flex items-center gap-1 font-medium"
-                            aria-label={`Send message to ${m.first_name ?? "member"}`}
-                          >
-                            <Send size={12} /> Send Message
-                          </button>
-                        ) : (
-                          <Tooltip>
-                            <TooltipTrigger asChild>
-                              <span className="text-xs text-muted-foreground/60 flex items-center gap-1 cursor-not-allowed">
-                                <Send size={12} /> Message
-                              </span>
-                            </TooltipTrigger>
-                            <TooltipContent>This member hasn't enabled messaging yet.</TooltipContent>
-                          </Tooltip>
-                        ))}
-                      {m.id !== user?.id && m.calendly_url && /^https?:\/\//i.test(m.calendly_url) && (
-                        <button
-                          onClick={() => void bookOneToOne(m)}
-                          className="text-xs text-teal hover:text-teal/80 flex items-center gap-1 font-medium"
-                          aria-label={`Book a 1-2-1 with ${m.first_name ?? "member"}`}
-                        >
-                          <CalendarClock size={12} /> Book 1-2-1
-                        </button>
-                      )}
+                    <div className="pt-2 border-t space-y-2" onClick={(event) => event.stopPropagation()} onKeyDown={(event) => event.stopPropagation()}>
+                      {m.id !== user?.id && <MemberActions member={{ id: m.id, name, calendlyUrl: m.calendly_url, messagingActive: m.is_messaging_active }} compact />}
+                      <div className="flex gap-2 items-center">
                       {m.linkedin && /^https?:\/\//i.test(m.linkedin) && (
                         <a
                           href={m.linkedin}
@@ -350,17 +299,34 @@ export default function DirectoryPage() {
                           />
                         </div>
                       )}
+                      </div>
                     </div>
                   </div>
-                ))}
+                );})}
               </div>
             </>
           )}
 
           <h2 className="text-sm font-semibold mb-3">Corporate members</h2>
           <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
-            {filteredCompanies.map((c) => (
-              <div key={c.id} className="bg-card border rounded-xl p-5 shadow-xs space-y-2">
+            {filteredCompanies.map((c) => {
+              const owner = c.owner_user_id ? members.find((member) => member.id === c.owner_user_id) : undefined;
+              const ownerName = owner ? `${owner.first_name ?? ""} ${owner.last_name ?? ""}`.trim() || c.company_name : c.company_name;
+              return (
+              <div
+                key={c.id}
+                role="link"
+                tabIndex={0}
+                onClick={() => void navigate({ to: "/company/$companyId", params: { companyId: c.id } })}
+                onKeyDown={(event) => {
+                  if (event.key === "Enter" || event.key === " ") {
+                    event.preventDefault();
+                    void navigate({ to: "/company/$companyId", params: { companyId: c.id } });
+                  }
+                }}
+                className="bg-card border rounded-lg p-5 shadow-xs space-y-2 cursor-pointer transition-colors hover:border-primary/50 hover:bg-muted/30 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring"
+                aria-label={`View ${c.company_name}`}
+              >
                 <div className="flex items-start gap-3">
                   <div className="w-10 h-10 rounded-lg bg-muted border flex items-center justify-center shrink-0">
                     <span className="text-xs font-semibold text-muted-foreground">
@@ -396,8 +362,10 @@ export default function DirectoryPage() {
                   )}
                 </div>
                 {c.short_bio && <p className="text-xs text-muted-foreground line-clamp-3 pt-1">{c.short_bio}</p>}
-                {(c.website || c.linkedin_url) && (
-                  <div className="flex gap-3 pt-2 border-t items-center">
+                {(c.website || c.linkedin_url || owner) && (
+                  <div className="pt-2 border-t space-y-2" onClick={(event) => event.stopPropagation()} onKeyDown={(event) => event.stopPropagation()}>
+                    {owner && owner.id !== user?.id && <MemberActions member={{ id: owner.id, name: ownerName, calendlyUrl: owner.calendly_url, messagingActive: owner.is_messaging_active }} compact />}
+                    <div className="flex gap-3 items-center">
                     {c.website && /^https?:\/\//i.test(c.website) && (
                       <a
                         href={c.website}
@@ -418,10 +386,11 @@ export default function DirectoryPage() {
                         <Linkedin size={12} /> LinkedIn
                       </a>
                     )}
+                    </div>
                   </div>
                 )}
               </div>
-            ))}
+            );})}
             {shownTotal === 0 && (
               <p className="col-span-full text-center text-sm text-muted-foreground py-12">
                 No members match your filters.
@@ -431,19 +400,6 @@ export default function DirectoryPage() {
         </>
       )}
 
-      <ActivateMessagingDialog
-        open={!!pendingRecipient}
-        onOpenChange={(v) => {
-          if (!v) setPendingRecipient(null);
-        }}
-        recipientName={
-          pendingRecipient
-            ? `${pendingRecipient.first_name ?? ""} ${pendingRecipient.last_name ?? ""}`.trim()
-            : undefined
-        }
-        recipientId={pendingRecipient?.id}
-        activate={activate}
-      />
     </AppLayout>
   );
 }

@@ -4,7 +4,7 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Download, Crown, MoreHorizontal, Loader2, Check, X, Clock, UserCheck, KeyRound, Moon } from "lucide-react";
+import { Search, Download, Crown, MoreHorizontal, Loader2, Check, X, Clock, UserCheck, KeyRound, Moon, Building2 } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
@@ -34,6 +34,7 @@ type Member = {
   logo_status: string;
   quiet_hours_enabled: boolean;
 };
+type CompanyLink = { id: string; company_name: string; owner_user_id: string | null };
 
 const statusColors: Record<string, string> = {
   active: "bg-teal/10 text-teal border-teal/20",
@@ -62,11 +63,13 @@ export function MemberManagement() {
   const [lionsFilter, setLionsFilter] = useState("all");
   const [changesFilter, setChangesFilter] = useState("all");
   const [members, setMembers] = useState<Member[]>([]);
+  const [companies, setCompanies] = useState<CompanyLink[]>([]);
   const [loading, setLoading] = useState(true);
   const [deciding, setDeciding] = useState<string | null>(null);
   const [promoting, setPromoting] = useState<string | null>(null);
   const [resetting, setResetting] = useState<string | null>(null);
   const [quieting, setQuieting] = useState<string | null>(null);
+  const [linking, setLinking] = useState<string | null>(null);
   const [logoUrls, setLogoUrls] = useState<Record<string, string>>({});
   const { toast } = useToast();
   const decide = useServerFn(decideProfileChange);
@@ -75,9 +78,10 @@ export function MemberManagement() {
 
   const load = async () => {
     setLoading(true);
-    const [{ data: profs }, { data: roles }] = await Promise.all([
+    const [{ data: profs }, { data: roles }, { data: companyRows }] = await Promise.all([
       supabase.from("profiles").select("id, first_name, last_name, email, company, industry, created_at, website, logo_url, pending_company_name, pending_website, pending_logo_url, company_name_status, website_status, logo_status, quiet_hours_enabled").order("created_at", { ascending: false }),
       supabase.from("user_roles").select("user_id, role"),
+      supabase.from("corporate_members").select("id, company_name, owner_user_id").order("company_name"),
     ]);
     const roleMap = new Map<string, Role[]>();
     for (const r of (roles ?? []) as { user_id: string; role: Role }[]) {
@@ -87,6 +91,7 @@ export function MemberManagement() {
     }
     const list = ((profs ?? []) as any[]).map((p) => ({ ...p, roles: roleMap.get(p.id) ?? [] })) as Member[];
     setMembers(list);
+    setCompanies((companyRows ?? []) as CompanyLink[]);
     setLoading(false);
 
     // Short-lived signed URLs so pending/live logos can be compared side by side.
@@ -221,6 +226,44 @@ export function MemberManagement() {
     } finally {
       setQuieting(null);
     }
+  };
+
+  const handleCompanyLink = async (m: Member, companyId: string) => {
+    setLinking(m.id);
+    try {
+      const current = companies.find((company) => company.owner_user_id === m.id);
+      if (current && current.id !== companyId) {
+        const { error } = await (supabase.rpc as any)("set_corporate_member_owner", { _company_id: current.id, _owner_user_id: null });
+        if (error) throw error;
+      }
+      if (companyId !== "none") {
+        const { error } = await (supabase.rpc as any)("set_corporate_member_owner", { _company_id: companyId, _owner_user_id: m.id });
+        if (error) throw error;
+      }
+      toast({ title: companyId === "none" ? "Company unlinked" : "Company linked", description: `${m.first_name ?? "Member"}'s company listing has been updated.` });
+      await load();
+    } catch (e) {
+      toast({ title: "Could not link company", description: e instanceof Error ? e.message : "Please try again.", variant: "destructive" });
+    } finally {
+      setLinking(null);
+    }
+  };
+
+  const companyLinkControl = (m: Member, className?: string) => {
+    const linked = companies.find((company) => company.owner_user_id === m.id);
+    const available = companies.filter((company) => !company.owner_user_id || company.owner_user_id === m.id);
+    return (
+      <Select value={linked?.id ?? "none"} onValueChange={(value) => void handleCompanyLink(m, value)} disabled={linking === m.id}>
+        <SelectTrigger className={className ?? "w-52 h-8"} aria-label={`Link company for ${m.first_name ?? "member"}`}>
+          {linking === m.id ? <Loader2 size={14} className="animate-spin" /> : <Building2 size={14} />}
+          <SelectValue placeholder="Link company" />
+        </SelectTrigger>
+        <SelectContent>
+          <SelectItem value="none">No linked company</SelectItem>
+          {available.map((company) => <SelectItem key={company.id} value={company.id}>{company.company_name}</SelectItem>)}
+        </SelectContent>
+      </Select>
+    );
   };
 
   const logAudit = async (action: string, m: Member) => {
@@ -362,6 +405,7 @@ export function MemberManagement() {
               </div>
               <p className="text-xs text-muted-foreground">{[m.company, m.industry].filter(Boolean).join(" · ") || "—"}</p>
               <p className="text-xs text-muted-foreground">Joined {new Date(m.created_at).toLocaleDateString("en-GB", { month: "short", year: "numeric" })}</p>
+              {companyLinkControl(m, "w-full")}
               {st === "pending" && (
                 <Button size="sm" className="w-full" disabled={promoting === m.id} onClick={() => promote(m)}>
                   {promoting === m.id ? <Loader2 size={14} className="animate-spin" /> : <UserCheck size={14} />} Promote to AJBN Member
@@ -416,6 +460,7 @@ export function MemberManagement() {
                   <TableCell className="text-sm text-muted-foreground">{new Date(m.created_at).toLocaleDateString("en-GB", { month: "short", year: "numeric" })}</TableCell>
                   <TableCell>
                     <div className="flex justify-end items-center gap-1">
+                      {companyLinkControl(m)}
                       {st === "pending" && (
                         <Button size="sm" disabled={promoting === m.id} onClick={() => promote(m)}>
                           {promoting === m.id ? <Loader2 size={14} className="animate-spin" /> : <UserCheck size={14} />} Promote to AJBN Member
