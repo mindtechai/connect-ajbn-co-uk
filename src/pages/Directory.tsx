@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Crown, Loader2, Building2, Linkedin, Send, Globe, BadgeCheck } from "lucide-react";
+import { Search, Crown, Loader2, Building2, Linkedin, Send, Globe, BadgeCheck, CalendarClock } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -36,6 +36,7 @@ type Member = {
   enquiry_count: number | null;
   is_verified_connector: boolean | null;
   is_top_ambassador: boolean | null;
+  calendly_url?: string | null;
 };
 
 type CorporateMember = {
