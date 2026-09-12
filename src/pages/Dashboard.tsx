@@ -32,12 +32,25 @@ type UpcomingEvent = { id: string; title: string; starts_at: string; location: s
 export default function DashboardPage() {
   const navigate = useNavigate();
   const { user, isSuperAdmin, signOut } = useAuth();
+  const { appliesNow: quietHoursAppliesNow } = useQuietHours();
   const [profile, setProfile] = useState<any | null>(null);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
   const [upcomingEvents, setUpcomingEvents] = useState<UpcomingEvent[]>([]);
   const [referralCount, setReferralCount] = useState(0);
   const [tickerKey, setTickerKey] = useState(0);
   const [oneToOneCount, setOneToOneCount] = useState(0);
+  const [quietHoursCardDismissed, setQuietHoursCardDismissed] = useState(true);
+
+  useEffect(() => {
+    if (!user) return;
+    setQuietHoursCardDismissed(localStorage.getItem(quietHoursCardStorageKey(user.id)) === "dismissed");
+  }, [user?.id]);
+
+  const dismissQuietHoursCard = () => {
+    if (!user) return;
+    localStorage.setItem(quietHoursCardStorageKey(user.id), "dismissed");
+    setQuietHoursCardDismissed(true);
+  };
 
   // "Book 1-2-1" clicks logged by this member since the start of the month.
   useEffect(() => {
