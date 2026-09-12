@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { Link, useNavigate, useSearchParams } from "@/lib/router-compat";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -27,9 +27,51 @@ export default function LoginPage() {
   const [referredBy, setReferredBy] = useState<string | null>(null);
 
   const [loading, setLoading] = useState(false);
+  const [needsVerification, setNeedsVerification] = useState(false);
+  const [resending, setResending] = useState(false);
+  const [resendCooldown, setResendCooldown] = useState(0);
   const navigate = useNavigate();
   const [params] = useSearchParams();
   const next = params.get("next") || "/dashboard";
+
+  useEffect(() => {
+    const verificationEmail = params.get("email");
+    if (params.get("verification") === "1") setNeedsVerification(true);
+    if (verificationEmail) setEmail(verificationEmail);
+  }, [params]);
+
+  useEffect(() => {
+    if (resendCooldown <= 0) return;
+    const timer = window.setInterval(() => setResendCooldown((seconds) => Math.max(0, seconds - 1)), 1000);
+    return () => window.clearInterval(timer);
+  }, [resendCooldown]);
+
+  const resendVerification = async () => {
+    const targetEmail = email.trim();
+    if (!targetEmail) {
+      toast({ title: "Enter your email", description: "Add the email address you registered with first.", variant: "destructive" });
+      return;
+    }
+    setResending(true);
+    const { error } = await supabase.auth.resend({
+      type: "signup",
+      email: targetEmail,
+      options: { emailRedirectTo: `${window.location.origin}/login` },
+    });
+    setResending(false);
+    if (error) {
+      const seconds = Number(error.message.match(/after\s+(\d+)\s+seconds?/i)?.[1] ?? 60);
+      if (error.code === "over_email_send_rate_limit" || /rate limit|request this after/i.test(error.message)) {
+        setResendCooldown(seconds);
+        toast({ title: "Please wait before trying again", description: `You can request another verification email in ${seconds} seconds.` });
+        return;
+      }
+      toast({ title: "Could not resend email", description: error.message, variant: "destructive" });
+      return;
+    }
+    setResendCooldown(60);
+    toast({ title: "Verification email sent", description: "Check your inbox and spam folder, then use the link to confirm your account." });
+  };
 
   const handleSignIn = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -41,6 +83,11 @@ export default function LoginPage() {
     });
     if (error) {
       setLoading(false);
+      if (error.code === "email_not_confirmed" || /email not confirmed/i.test(error.message)) {
+        setNeedsVerification(true);
+        toast({ title: "Verify your email to sign in", description: "Use the link in your verification email, or request a new one below." });
+        return;
+      }
       toast({ title: "Sign in failed", description: error.message, variant: "destructive" });
       return;
     }
@@ -64,6 +111,7 @@ export default function LoginPage() {
       email: email.trim(),
       password,
       options: {
+        emailRedirectTo: `${window.location.origin}/login`,
         data: {
           first_name: firstName.trim(),
           last_name: lastName.trim(),
@@ -82,6 +130,7 @@ export default function LoginPage() {
         title: "Check your email",
         description: "Use the verification link we sent before signing in.",
       });
+      setNeedsVerification(true);
       setMode("signin");
       return;
     }
@@ -212,6 +261,18 @@ export default function LoginPage() {
               <Button className="w-full" size="lg" disabled={loading}>
                 {loading ? "Signing in…" : "Sign In"}
               </Button>
+
+              {needsVerification && (
+                <div className="rounded-md border bg-muted/40 p-4 space-y-3" role="status">
+                  <div>
+                    <p className="text-sm font-medium">Email verification required</p>
+                    <p className="mt-1 text-xs text-muted-foreground">Check your inbox and spam folder for the verification link. If it has expired or is missing, request a new one.</p>
+                  </div>
+                  <Button type="button" variant="outline" className="w-full" onClick={() => void resendVerification()} disabled={resending || resendCooldown > 0}>
+                    {resending ? "Sending…" : resendCooldown > 0 ? `Resend available in ${resendCooldown}s` : "Resend verification email"}
+                  </Button>
+                </div>
+              )}
 
               <p className="text-sm text-muted-foreground text-center">
                 Need to create an account?{" "}
