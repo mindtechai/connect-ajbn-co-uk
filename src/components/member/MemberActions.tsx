@@ -13,7 +13,7 @@ import { startOrGetConversation } from "@/lib/messaging";
 type MemberTarget = {
   id: string;
   name: string;
-  calendlyUrl?: string | null;
+  calendlyUrl: string | null | undefined;
   messagingActive: boolean;
 };
 
@@ -63,14 +63,14 @@ export function MemberActions({ member, showContact = false, compact = false }: 
   };
 
   const bookOrRequest = async () => {
-    if (isSelf) return;
+    if (isSelf || !user) return;
     if (!bookingUrl) {
       await openChat();
       return;
     }
     window.open(bookingUrl, "_blank", "noopener,noreferrer");
     const { error } = await supabase.from("one_to_ones").insert({
-      requester_id: user?.id,
+      requester_id: user.id,
       target_id: member.id,
       target_name: member.name,
     });
