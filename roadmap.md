@@ -7,4 +7,4 @@
 - [ ] Add admin company linking controls with audit logging
 - [ ] Verify database security, build, and desktop/mobile interactions
 
-- [ ] Review and resolve email-confirmation sign-in recovery finding
+- [x] Review and resolve email-confirmation sign-in recovery finding
