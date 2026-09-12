@@ -1,6 +1,6 @@
 import { useEffect, useState } from "react";
 import { Link } from "@/lib/router-compat";
-import { KeyRound, Loader2, ArrowLeft, Moon } from "lucide-react";
+import { KeyRound, Loader2, ArrowLeft, Moon, Bell } from "lucide-react";
 import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -140,6 +140,23 @@ export default function AccountSettingsPage() {
               disabled={savingQuietHours}
               aria-label="Quiet Hours"
             />
+          </div>
+        </section>
+
+        <section className="border-b py-6" aria-labelledby="notification-preferences-heading">
+          <div className="flex items-start gap-3">
+            <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-primary/10 text-primary">
+              <Bell size={20} aria-hidden="true" />
+            </div>
+            <div className="min-w-0">
+              <h2 id="notification-preferences-heading" className="font-semibold">Notification preferences</h2>
+              <p className="mt-1 text-sm text-muted-foreground">
+                Choose which emails you receive, including event updates and member messages.
+              </p>
+              <Button asChild variant="outline" size="sm" className="mt-3">
+                <Link to="/settings/notifications">Manage notification preferences</Link>
+              </Button>
+            </div>
           </div>
         </section>
 
