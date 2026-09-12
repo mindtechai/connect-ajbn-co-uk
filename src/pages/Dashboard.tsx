@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import {
   Users, CalendarDays, Award, Link2, Bell, Crown,
-  Copy, ArrowRight, LogOut, Shield, Settings, User, BookUser, HeartHandshake, Briefcase
+  Copy, ArrowRight, LogOut, Shield, Settings, User, BookUser, HeartHandshake, Briefcase,
+  HandHeart, CalendarClock
 } from "lucide-react";
 import lionsEmblem from "@/assets/lions-emblem.png";
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
@@ -208,6 +209,10 @@ export default function DashboardPage() {
             <Link to="/events" className="bg-card border rounded-xl p-4 shadow-xs hover:border-primary/40 transition-colors flex items-center gap-3">
               <div className="rounded-lg bg-teal/10 w-10 h-10 grid place-items-center"><CalendarDays size={18} className="text-teal" /></div>
               <div><p className="text-sm font-semibold">Events</p><p className="text-xs text-muted-foreground">RSVP to upcoming events</p></div>
+            </Link>
+            <Link to="/board" className="bg-card border rounded-xl p-4 shadow-xs hover:border-teal/40 transition-colors flex items-center gap-3">
+              <div className="rounded-lg bg-teal/10 w-10 h-10 grid place-items-center"><HandHeart size={18} className="text-teal" /></div>
+              <div><p className="text-sm font-semibold">Needs &amp; Offers</p><p className="text-xs text-muted-foreground">Post a need or offer help</p></div>
             </Link>
             <Link to="/esg" className="bg-card border rounded-xl p-4 shadow-xs hover:border-primary/40 transition-colors flex items-center gap-3">
               <div className="rounded-lg bg-gold/10 w-10 h-10 grid place-items-center"><HeartHandshake size={18} className="text-gold" /></div>
