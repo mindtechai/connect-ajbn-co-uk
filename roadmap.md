@@ -6,3 +6,5 @@
 - [ ] Update directory cards and board messaging to shared flows
 - [ ] Add admin company linking controls with audit logging
 - [ ] Verify database security, build, and desktop/mobile interactions
+
+- [ ] Review and resolve email-confirmation sign-in recovery finding
