@@ -124,6 +124,7 @@ export default function AccountSettingsPage() {
               </div>
               <div>
                 <h2 id="quiet-hours-heading" className="font-semibold">Quiet Hours</h2>
+                <p className="mt-1 text-sm font-medium">Enable my Quiet Hours auto Fri 6pm-Sat 10pm</p>
                 <p className="mt-1 text-sm text-muted-foreground">{QUIET_HOURS_SCHEDULE}</p>
                 <p className="mt-2 text-sm">Inspired by Shabbat — time to rest &amp; recharge.</p>
                 <p className="mt-1 text-xs text-muted-foreground">
