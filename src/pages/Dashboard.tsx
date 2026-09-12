@@ -254,6 +254,23 @@ export default function DashboardPage() {
           </ScrollReveal>
 
           {/* Referrals */}
+          {/* 1-2-1s booked this month */}
+          <ScrollReveal delay={40}>
+            <DashboardCard title="1-2-1s this month" icon={CalendarClock}>
+              <div className="space-y-3">
+                <p className="text-2xl font-bold tabular-nums">{oneToOneCount}</p>
+                <p className="text-xs text-muted-foreground">
+                  Book 1-2-1s from a member's directory listing to build the habit.
+                </p>
+                <Link to="/directory">
+                  <Button variant="ghost" size="sm" className="text-xs">
+                    Find a member <ArrowRight size={14} />
+                  </Button>
+                </Link>
+              </div>
+            </DashboardCard>
+          </ScrollReveal>
+
           <ScrollReveal delay={80}>
             <DashboardCard title="My Referrals" icon={Award}>
               <div className="space-y-3">
