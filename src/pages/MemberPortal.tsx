@@ -28,6 +28,7 @@ type ProfileRow = {
   address: string | null;
   linkedin_url: string | null;
   other_socials: string | null;
+  calendly_url: string | null;
 };
 
 function PendingBadge() {
@@ -48,7 +49,7 @@ export default function MemberPortalPage() {
   const [liveLogo, setLiveLogo] = useState<string | null>(null);
   const [form, setForm] = useState({
     company: "", website: "", bio: "", phone: "",
-    address: "", linkedin_url: "", other_socials: "",
+    address: "", linkedin_url: "", other_socials: "", calendly_url: "",
   });
 
   const isApproved = roles.some((r) =>
@@ -65,7 +66,7 @@ export default function MemberPortalPage() {
     (async () => {
       const { data } = await supabase
         .from("profiles")
-        .select("company, website, logo_url, pending_company_name, pending_website, pending_logo_url, company_name_status, website_status, logo_status, bio, phone, address, linkedin_url, other_socials")
+        .select("company, website, logo_url, pending_company_name, pending_website, pending_logo_url, company_name_status, website_status, logo_status, bio, phone, address, linkedin_url, other_socials, calendly_url")
         .eq("id", user.id)
         .maybeSingle();
       const r = (data ?? null) as ProfileRow | null;
@@ -78,6 +79,7 @@ export default function MemberPortalPage() {
         address: r?.address ?? "",
         linkedin_url: r?.linkedin_url ?? "",
         other_socials: r?.other_socials ?? "",
+        calendly_url: r?.calendly_url ?? "",
       });
       setLiveLogo(await signedUrl(r?.logo_url ?? null));
       setLogoPreview(await signedUrl(r?.pending_logo_url ?? null));
@@ -128,6 +130,7 @@ export default function MemberPortalPage() {
       address: form.address || null,
       linkedin_url: form.linkedin_url || null,
       other_socials: form.other_socials || null,
+      calendly_url: form.calendly_url.trim() || null,
     };
     const pendingLabels: string[] = [];
 
@@ -263,6 +266,15 @@ export default function MemberPortalPage() {
             <Input id="linkedin" value={form.linkedin_url} placeholder="https://linkedin.com/in/…"
               onChange={(e) => setForm({ ...form, linkedin_url: e.target.value })}
               onBlur={() => saveInstant({ linkedin_url: form.linkedin_url || null })} />
+          </div>
+          <div className="space-y-1.5 sm:col-span-2">
+            <Label htmlFor="calendly">Booking link (for "Book 1-2-1")</Label>
+            <Input id="calendly" value={form.calendly_url} placeholder="https://calendly.com/your-name/30min"
+              onChange={(e) => setForm({ ...form, calendly_url: e.target.value })}
+              onBlur={() => saveInstant({ calendly_url: form.calendly_url.trim() || null })} />
+            <p className="text-xs text-muted-foreground">
+              Members see a "Book 1-2-1" button on your directory listing when this is set.
+            </p>
           </div>
           <div className="space-y-1.5 sm:col-span-2">
             <Label htmlFor="address">Address</Label>

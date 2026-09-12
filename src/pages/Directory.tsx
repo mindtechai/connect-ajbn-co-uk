@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Crown, Loader2, Building2, Linkedin, Send, Globe, BadgeCheck } from "lucide-react";
+import { Search, Crown, Loader2, Building2, Linkedin, Send, Globe, BadgeCheck, CalendarClock } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -36,6 +36,7 @@ type Member = {
   enquiry_count: number | null;
   is_verified_connector: boolean | null;
   is_top_ambassador: boolean | null;
+  calendly_url?: string | null;
 };
 
 type CorporateMember = {
@@ -164,6 +165,21 @@ export default function DirectoryPage() {
     } catch (e: unknown) {
       toast.error(e instanceof Error ? e.message : "Could not open the chat.");
     }
+  };
+
+  // Opens the member's own booking link and logs the click so the dashboard
+  // can show how many 1-2-1s the member has arranged this month.
+  const bookOneToOne = async (m: Member) => {
+    const url = m.calendly_url ?? "";
+    if (!/^https?:\/\//i.test(url)) return;
+    window.open(url, "_blank", "noopener,noreferrer");
+    const { error } = await supabase.from("one_to_ones").insert({
+      requester_id: user!.id,
+      target_id: m.id,
+      target_name: `${m.first_name ?? ""} ${m.last_name ?? ""}`.trim() || null,
+    } as never);
+    if (error) console.error("one_to_ones insert failed", error);
+    else window.dispatchEvent(new Event("ajbn-one-to-one-logged"));
   };
 
   return (
@@ -297,6 +313,15 @@ export default function DirectoryPage() {
                             <TooltipContent>This member hasn't enabled messaging yet.</TooltipContent>
                           </Tooltip>
                         ))}
+                      {m.id !== user?.id && m.calendly_url && /^https?:\/\//i.test(m.calendly_url) && (
+                        <button
+                          onClick={() => void bookOneToOne(m)}
+                          className="text-xs text-teal hover:text-teal/80 flex items-center gap-1 font-medium"
+                          aria-label={`Book a 1-2-1 with ${m.first_name ?? "member"}`}
+                        >
+                          <CalendarClock size={12} /> Book 1-2-1
+                        </button>
+                      )}
                       {m.linkedin && /^https?:\/\//i.test(m.linkedin) && (
                         <a
                           href={m.linkedin}

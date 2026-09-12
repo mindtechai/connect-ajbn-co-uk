@@ -5,7 +5,8 @@ import { Button } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import {
   Users, CalendarDays, Award, Link2, Bell, Crown,
-  Copy, ArrowRight, LogOut, Shield, Settings, User, BookUser, HeartHandshake, Briefcase
+  Copy, ArrowRight, LogOut, Shield, Settings, User, BookUser, HeartHandshake, Briefcase,
+  HandHeart, CalendarClock
 } from "lucide-react";
 import lionsEmblem from "@/assets/lions-emblem.png";
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
@@ -34,6 +35,26 @@ export default function DashboardPage() {
   const [upcomingEvents, setUpcomingEvents] = useState<UpcomingEvent[]>([]);
   const [referralCount, setReferralCount] = useState(0);
   const [tickerKey, setTickerKey] = useState(0);
+  const [oneToOneCount, setOneToOneCount] = useState(0);
+
+  // "Book 1-2-1" clicks logged by this member since the start of the month.
+  useEffect(() => {
+    if (!user) return;
+    const loadOneToOnes = async () => {
+      const now = new Date();
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+      const { count } = await supabase
+        .from("one_to_ones")
+        .select("*", { count: "exact", head: true })
+        .eq("requester_id", user.id)
+        .gte("clicked_at", monthStart);
+      setOneToOneCount(count ?? 0);
+    };
+    void loadOneToOnes();
+    const onLogged = () => { void loadOneToOnes(); };
+    window.addEventListener("ajbn-one-to-one-logged", onLogged);
+    return () => window.removeEventListener("ajbn-one-to-one-logged", onLogged);
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;
@@ -189,6 +210,10 @@ export default function DashboardPage() {
               <div className="rounded-lg bg-teal/10 w-10 h-10 grid place-items-center"><CalendarDays size={18} className="text-teal" /></div>
               <div><p className="text-sm font-semibold">Events</p><p className="text-xs text-muted-foreground">RSVP to upcoming events</p></div>
             </Link>
+            <Link to="/board" className="bg-card border rounded-xl p-4 shadow-xs hover:border-teal/40 transition-colors flex items-center gap-3">
+              <div className="rounded-lg bg-teal/10 w-10 h-10 grid place-items-center"><HandHeart size={18} className="text-teal" /></div>
+              <div><p className="text-sm font-semibold">Needs &amp; Offers</p><p className="text-xs text-muted-foreground">Post a need or offer help</p></div>
+            </Link>
             <Link to="/esg" className="bg-card border rounded-xl p-4 shadow-xs hover:border-primary/40 transition-colors flex items-center gap-3">
               <div className="rounded-lg bg-gold/10 w-10 h-10 grid place-items-center"><HeartHandshake size={18} className="text-gold" /></div>
               <div><p className="text-sm font-semibold">ESG Report</p><p className="text-xs text-muted-foreground">Your social-impact summary</p></div>
@@ -229,6 +254,23 @@ export default function DashboardPage() {
           </ScrollReveal>
 
           {/* Referrals */}
+          {/* 1-2-1s booked this month */}
+          <ScrollReveal delay={40}>
+            <DashboardCard title="1-2-1s this month" icon={CalendarClock}>
+              <div className="space-y-3">
+                <p className="text-2xl font-bold tabular-nums">{oneToOneCount}</p>
+                <p className="text-xs text-muted-foreground">
+                  Book 1-2-1s from a member's directory listing to build the habit.
+                </p>
+                <Link to="/directory">
+                  <Button variant="ghost" size="sm" className="text-xs">
+                    Find a member <ArrowRight size={14} />
+                  </Button>
+                </Link>
+              </div>
+            </DashboardCard>
+          </ScrollReveal>
+
           <ScrollReveal delay={80}>
             <DashboardCard title="My Referrals" icon={Award}>
               <div className="space-y-3">

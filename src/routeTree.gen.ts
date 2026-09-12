@@ -11,6 +11,7 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountDeletionRouteImport } from './routes/account-deletion'
+import { Route as BoardRouteImport } from './routes/board'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DirectoryRouteImport } from './routes/directory'
@@ -64,6 +65,11 @@ const IndexRoute = IndexRouteImport.update({
 const AccountDeletionRoute = AccountDeletionRouteImport.update({
   id: '/account-deletion',
   path: '/account-deletion',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BoardRoute = BoardRouteImport.update({
+  id: '/board',
+  path: '/board',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -292,6 +298,7 @@ const LovableEmailTransactionalPreviewRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account-deletion': typeof AccountDeletionRoute
+  '/board': typeof BoardRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/directory': typeof DirectoryRoute
@@ -340,6 +347,7 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account-deletion': typeof AccountDeletionRoute
+  '/board': typeof BoardRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/directory': typeof DirectoryRoute
@@ -389,6 +397,7 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/account-deletion': typeof AccountDeletionRoute
+  '/board': typeof BoardRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/directory': typeof DirectoryRoute
@@ -439,6 +448,7 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/account-deletion'
+    | '/board'
     | '/contact'
     | '/dashboard'
     | '/directory'
@@ -487,6 +497,7 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/account-deletion'
+    | '/board'
     | '/contact'
     | '/dashboard'
     | '/directory'
@@ -535,6 +546,7 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/account-deletion'
+    | '/board'
     | '/contact'
     | '/dashboard'
     | '/directory'
@@ -584,6 +596,7 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountDeletionRoute: typeof AccountDeletionRoute
+  BoardRoute: typeof BoardRoute
   ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRoute
   DirectoryRoute: typeof DirectoryRoute
@@ -644,6 +657,13 @@ declare module '@tanstack/react-router' {
       path: '/account-deletion'
       fullPath: '/account-deletion'
       preLoaderRoute: typeof AccountDeletionRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/board': {
+      id: '/board'
+      path: '/board'
+      fullPath: '/board'
+      preLoaderRoute: typeof BoardRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -960,6 +980,7 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountDeletionRoute: AccountDeletionRoute,
+  BoardRoute: BoardRoute,
   ContactRoute: ContactRoute,
   DashboardRoute: DashboardRoute,
   DirectoryRoute: DirectoryRoute,

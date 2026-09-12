@@ -143,6 +143,42 @@ export type Database = {
         }
         Relationships: []
       }
+      board_posts: {
+        Row: {
+          author_id: string
+          category: string
+          created_at: string
+          description: string
+          expires_at: string
+          id: string
+          kind: string
+          title: string
+          updated_at: string
+        }
+        Insert: {
+          author_id: string
+          category: string
+          created_at?: string
+          description: string
+          expires_at?: string
+          id?: string
+          kind: string
+          title: string
+          updated_at?: string
+        }
+        Update: {
+          author_id?: string
+          category?: string
+          created_at?: string
+          description?: string
+          expires_at?: string
+          id?: string
+          kind?: string
+          title?: string
+          updated_at?: string
+        }
+        Relationships: []
+      }
       bulk_messages: {
         Row: {
           body: string
@@ -882,11 +918,39 @@ export type Database = {
           },
         ]
       }
+      one_to_ones: {
+        Row: {
+          clicked_at: string
+          created_at: string
+          id: string
+          requester_id: string
+          target_id: string | null
+          target_name: string | null
+        }
+        Insert: {
+          clicked_at?: string
+          created_at?: string
+          id?: string
+          requester_id: string
+          target_id?: string | null
+          target_name?: string | null
+        }
+        Update: {
+          clicked_at?: string
+          created_at?: string
+          id?: string
+          requester_id?: string
+          target_id?: string | null
+          target_name?: string | null
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           address: string | null
           avatar_url: string | null
           bio: string | null
+          calendly_url: string | null
           company: string | null
           company_name_status: string
           created_at: string
@@ -917,6 +981,7 @@ export type Database = {
           address?: string | null
           avatar_url?: string | null
           bio?: string | null
+          calendly_url?: string | null
           company?: string | null
           company_name_status?: string
           created_at?: string
@@ -947,6 +1012,7 @@ export type Database = {
           address?: string | null
           avatar_url?: string | null
           bio?: string | null
+          calendly_url?: string | null
           company?: string | null
           company_name_status?: string
           created_at?: string
@@ -1141,6 +1207,7 @@ export type Database = {
         Args: never
         Returns: {
           bio: string
+          calendly_url: string
           company: string
           enquiry_count: number
           first_name: string
