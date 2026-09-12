@@ -34,6 +34,26 @@ export default function DashboardPage() {
   const [upcomingEvents, setUpcomingEvents] = useState<UpcomingEvent[]>([]);
   const [referralCount, setReferralCount] = useState(0);
   const [tickerKey, setTickerKey] = useState(0);
+  const [oneToOneCount, setOneToOneCount] = useState(0);
+
+  // "Book 1-2-1" clicks logged by this member since the start of the month.
+  useEffect(() => {
+    if (!user) return;
+    const loadOneToOnes = async () => {
+      const now = new Date();
+      const monthStart = new Date(now.getFullYear(), now.getMonth(), 1).toISOString();
+      const { count } = await supabase
+        .from("one_to_ones")
+        .select("*", { count: "exact", head: true })
+        .eq("requester_id", user.id)
+        .gte("clicked_at", monthStart);
+      setOneToOneCount(count ?? 0);
+    };
+    void loadOneToOnes();
+    const onLogged = () => { void loadOneToOnes(); };
+    window.addEventListener("ajbn-one-to-one-logged", onLogged);
+    return () => window.removeEventListener("ajbn-one-to-one-logged", onLogged);
+  }, [user]);
 
   useEffect(() => {
     if (!user) return;
