@@ -4,13 +4,14 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Search, Download, Crown, MoreHorizontal, Loader2, Check, X, Clock, UserCheck, KeyRound } from "lucide-react";
+import { Search, Download, Crown, MoreHorizontal, Loader2, Check, X, Clock, UserCheck, KeyRound, Moon } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
 import { decideProfileChange } from "@/lib/member-profile-approvals.functions";
 import { resetMemberPassword } from "@/lib/admin-password.functions";
+import { setMemberQuietHours } from "@/lib/quiet-hours.functions";
 
 type Role = "super_admin" | "ajbn_member" | "impact_lion" | "prospective_member";
 type PendingField = "logo" | "company_name" | "website";
@@ -31,6 +32,7 @@ type Member = {
   company_name_status: string;
   website_status: string;
   logo_status: string;
+  quiet_hours_enabled: boolean;
 };
 
 const statusColors: Record<string, string> = {
@@ -64,15 +66,17 @@ export function MemberManagement() {
   const [deciding, setDeciding] = useState<string | null>(null);
   const [promoting, setPromoting] = useState<string | null>(null);
   const [resetting, setResetting] = useState<string | null>(null);
+  const [quieting, setQuieting] = useState<string | null>(null);
   const [logoUrls, setLogoUrls] = useState<Record<string, string>>({});
   const { toast } = useToast();
   const decide = useServerFn(decideProfileChange);
   const resetPassword = useServerFn(resetMemberPassword);
+  const toggleQuiet = useServerFn(setMemberQuietHours);
 
   const load = async () => {
     setLoading(true);
     const [{ data: profs }, { data: roles }] = await Promise.all([
-      supabase.from("profiles").select("id, first_name, last_name, email, company, industry, created_at, website, logo_url, pending_company_name, pending_website, pending_logo_url, company_name_status, website_status, logo_status").order("created_at", { ascending: false }),
+      supabase.from("profiles").select("id, first_name, last_name, email, company, industry, created_at, website, logo_url, pending_company_name, pending_website, pending_logo_url, company_name_status, website_status, logo_status, quiet_hours_enabled").order("created_at", { ascending: false }),
       supabase.from("user_roles").select("user_id, role"),
     ]);
     const roleMap = new Map<string, Role[]>();
@@ -202,6 +206,20 @@ export function MemberManagement() {
       toast({ title: "Could not reset password", description: e instanceof Error ? e.message : "Please try again.", variant: "destructive" });
     } finally {
       setResetting(null);
+    }
+  };
+
+  const handleQuietHours = async (m: Member) => {
+    setQuieting(m.id);
+    const next = !m.quiet_hours_enabled;
+    try {
+      await toggleQuiet({ data: { memberId: m.id, enabled: next } });
+      setMembers((prev) => prev.map((x) => (x.id === m.id ? { ...x, quiet_hours_enabled: next } : x)));
+      toast({ title: next ? "Quiet Hours on" : "Quiet Hours off", description: next ? "In-app alerts are muted Fri 6pm–Sat 10pm; messages are emailed instead." : "In-app alerts resume as normal." });
+    } catch (e) {
+      toast({ title: "Could not update Quiet Hours", description: e instanceof Error ? e.message : "Please try again.", variant: "destructive" });
+    } finally {
+      setQuieting(null);
     }
   };
 
@@ -336,6 +354,9 @@ export function MemberManagement() {
                 <div className="flex items-center gap-2">
                   <p className="font-semibold text-sm">{m.first_name} {m.last_name}</p>
                   {isLion && <Crown size={14} className="text-gold" />}
+                  {m.quiet_hours_enabled && (
+                    <Badge className="text-xs bg-navy/10 text-navy border-navy/20"><Moon size={11} className="mr-1" /> Quiet Hours</Badge>
+                  )}
                 </div>
                 <Badge className={`text-xs ${statusColors[st]}`}>{st}</Badge>
               </div>
@@ -348,6 +369,9 @@ export function MemberManagement() {
               )}
               <Button variant="outline" size="sm" className="w-full" disabled={resetting === m.id} onClick={() => handlePasswordReset(m)}>
                 {resetting === m.id ? <Loader2 size={14} className="animate-spin" /> : <KeyRound size={14} />} Reset Password
+              </Button>
+              <Button variant="outline" size="sm" className="w-full" disabled={quieting === m.id} onClick={() => handleQuietHours(m)}>
+                {quieting === m.id ? <Loader2 size={14} className="animate-spin" /> : <Moon size={14} />} {m.quiet_hours_enabled ? "Turn off Quiet Hours" : "Turn on Quiet Hours"}
               </Button>
             </div>
           );
@@ -385,6 +409,9 @@ export function MemberManagement() {
                     {isLion ? (
                       <Badge className="text-xs bg-gold/10 text-gold border-gold/20"><Crown size={12} className="mr-1" /> Impact Lion</Badge>
                     ) : <span className="text-sm text-muted-foreground">Standard</span>}
+                    {m.quiet_hours_enabled && (
+                      <Badge className="text-xs bg-navy/10 text-navy border-navy/20 mt-1"><Moon size={11} className="mr-1" /> Quiet Hours</Badge>
+                    )}
                   </TableCell>
                   <TableCell className="text-sm text-muted-foreground">{new Date(m.created_at).toLocaleDateString("en-GB", { month: "short", year: "numeric" })}</TableCell>
                   <TableCell>
@@ -401,6 +428,9 @@ export function MemberManagement() {
                         <DropdownMenuContent align="end">
                           <DropdownMenuItem onClick={() => toggleLion(m)}>
                             {isLion ? "Remove from Impact Lions" : "Add to Impact Lions"}
+                          </DropdownMenuItem>
+                          <DropdownMenuItem disabled={quieting === m.id} onClick={() => handleQuietHours(m)}>
+                            <Moon size={14} className="mr-2" /> {m.quiet_hours_enabled ? "Turn off Quiet Hours" : "Turn on Quiet Hours"}
                           </DropdownMenuItem>
                           <DropdownMenuItem disabled={resetting === m.id} onClick={() => handlePasswordReset(m)}>
                             <KeyRound size={14} className="mr-2" /> Reset Password
