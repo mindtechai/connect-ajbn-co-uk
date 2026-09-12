@@ -86,6 +86,14 @@ export async function sendMessage(conversationId: string, body: string) {
     body,
   });
   if (error) throw error;
+
+  // If the recipient is in Quiet Hours, email them instead of the in-app bell.
+  try {
+    const { notifyQuietHoursMessage } = await import("@/lib/quiet-hours.functions");
+    await notifyQuietHoursMessage({ data: { conversationId, body } });
+  } catch (e) {
+    console.error("quiet hours notification failed", e);
+  }
 }
 
 export async function markConversationRead(conversationId: string) {
