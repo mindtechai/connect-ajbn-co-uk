@@ -1222,6 +1222,7 @@ export type Database = {
           is_verified_connector: boolean
           last_name: string
           linkedin: string
+          quiet_hours_enabled: boolean
           tags: string[]
           title: string
         }[]
@@ -1253,12 +1254,6 @@ export type Database = {
           has_lion: boolean
           industry: string
           member_count: number
-        }[]
-      }
-      quiet_hours_member_ids: {
-        Args: never
-        Returns: {
-          user_id: string
         }[]
       }
       referral_code_exists: { Args: { _code: string }; Returns: boolean }
