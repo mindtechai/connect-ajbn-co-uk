@@ -3,10 +3,23 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { isUkQuietHours } from "@/lib/quietHours";
 
+export function useUkQuietHoursWindow() {
+  const [active, setActive] = useState(() => isUkQuietHours());
+
+  useEffect(() => {
+    const refresh = () => setActive(isUkQuietHours());
+    refresh();
+    const timer = window.setInterval(refresh, 60_000);
+    return () => window.clearInterval(timer);
+  }, []);
+
+  return active;
+}
+
 export function useQuietHours() {
   const { user } = useAuth();
   const [enabled, setEnabled] = useState(false);
-  const [activeNow, setActiveNow] = useState(false);
+  const inWindow = useUkQuietHoursWindow();
 
   useEffect(() => {
     if (!user) {
@@ -35,12 +48,5 @@ export function useQuietHours() {
     };
   }, [user?.id]);
 
-  useEffect(() => {
-    const refresh = () => setActiveNow(enabled && isUkQuietHours());
-    refresh();
-    const timer = window.setInterval(refresh, 60_000);
-    return () => window.clearInterval(timer);
-  }, [enabled]);
-
-  return { enabled, activeNow };
+  return { enabled, activeNow: enabled && inWindow };
 }

@@ -20,7 +20,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { MemberBadges } from "@/components/badges/MemberBadges";
 import { MemberSafetyMenu } from "@/components/safety/MemberSafetyMenu";
 import { listBlocked, syncBlocked } from "@/lib/moderation";
-import { isUkQuietHours } from "@/lib/quietHours";
+import { useUkQuietHoursWindow } from "@/hooks/useQuietHours";
 
 type Member = {
   id: string;
@@ -76,6 +76,7 @@ export default function DirectoryPage() {
   const [q, setQ] = useState("");
   const [industry, setIndustry] = useState<string>("all");
   const [pendingRecipient, setPendingRecipient] = useState<Member | null>(null);
+  const inQuietHoursWindow = useUkQuietHoursWindow();
 
   const canAccess = !!user;
   // Only approved membership levels can see listings; prospective sign-ups see a teaser.
@@ -270,7 +271,7 @@ export default function DirectoryPage() {
                             verifiedConnector={!!m.is_verified_connector}
                             topAmbassador={!!m.is_top_ambassador}
                           />
-                          {m.quiet_hours_enabled && isUkQuietHours() && (
+                          {m.quiet_hours_enabled && inQuietHoursWindow && (
                             <Badge variant="secondary" className="gap-1 text-[10px] whitespace-nowrap">
                               <Moon size={10} aria-hidden="true" /> In Quiet Hours
                             </Badge>
