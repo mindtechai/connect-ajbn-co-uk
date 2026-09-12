@@ -464,6 +464,10 @@ function DashboardCard({
   );
 }
 
+function quietHoursCardStorageKey(userId: string): string {
+  return `ajbn_quiet_hours_education_${userId}`;
+}
+
 function fallbackUpcomingEvents(): UpcomingEvent[] {
   const now = Date.now();
   return EVENTS
