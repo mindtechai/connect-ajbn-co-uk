@@ -6,7 +6,7 @@ import { ScrollReveal } from "@/components/ScrollReveal";
 import {
   Users, CalendarDays, Award, Link2, Bell, Crown,
   Copy, ArrowRight, LogOut, Shield, Settings, User, BookUser, HeartHandshake, Briefcase,
-  HandHeart, CalendarClock
+  HandHeart, CalendarClock, Moon
 } from "lucide-react";
 import lionsEmblem from "@/assets/lions-emblem.png";
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
@@ -22,6 +22,7 @@ import { MessagingOnboardingCard } from "@/components/dashboard/MessagingOnboard
 import { MessageCircle } from "lucide-react";
 import { NetworkTicker } from "@/components/dashboard/NetworkTicker";
 import { LogActivityDialog } from "@/components/dashboard/LogActivityDialog";
+import { useQuietHours } from "@/hooks/useQuietHours";
 
 import { EVENTS } from "@/lib/publicEvents";
 
