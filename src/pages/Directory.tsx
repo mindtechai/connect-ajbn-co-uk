@@ -4,7 +4,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
-import { Search, Crown, Loader2, Building2, Linkedin, Send, Globe, BadgeCheck, CalendarClock } from "lucide-react";
+import { Search, Crown, Loader2, Building2, Linkedin, Send, Globe, BadgeCheck, CalendarClock, Moon } from "lucide-react";
 import {
   Select,
   SelectContent,
@@ -20,6 +20,7 @@ import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip
 import { MemberBadges } from "@/components/badges/MemberBadges";
 import { MemberSafetyMenu } from "@/components/safety/MemberSafetyMenu";
 import { listBlocked, syncBlocked } from "@/lib/moderation";
+import { useUkQuietHoursWindow } from "@/hooks/useQuietHours";
 
 type Member = {
   id: string;
@@ -37,6 +38,7 @@ type Member = {
   is_verified_connector: boolean | null;
   is_top_ambassador: boolean | null;
   calendly_url?: string | null;
+  quiet_hours_enabled?: boolean;
 };
 
 type CorporateMember = {
@@ -74,6 +76,7 @@ export default function DirectoryPage() {
   const [q, setQ] = useState("");
   const [industry, setIndustry] = useState<string>("all");
   const [pendingRecipient, setPendingRecipient] = useState<Member | null>(null);
+  const inQuietHoursWindow = useUkQuietHoursWindow();
 
   const canAccess = !!user;
   // Only approved membership levels can see listings; prospective sign-ups see a teaser.
@@ -268,6 +271,11 @@ export default function DirectoryPage() {
                             verifiedConnector={!!m.is_verified_connector}
                             topAmbassador={!!m.is_top_ambassador}
                           />
+                          {m.quiet_hours_enabled && inQuietHoursWindow && (
+                            <Badge variant="secondary" className="gap-1 text-[10px] whitespace-nowrap">
+                              <Moon size={10} aria-hidden="true" /> In Quiet Hours
+                            </Badge>
+                          )}
                         </div>
                         {m.title && <p className="text-xs text-muted-foreground truncate">{m.title}</p>}
                       </div>

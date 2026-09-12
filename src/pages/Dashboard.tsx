@@ -15,6 +15,7 @@ import { ReferralLeaderboard } from "@/components/dashboard/ReferralLeaderboard"
 import { LionsReferralLeaderboard } from "@/components/dashboard/LionsReferralLeaderboard";
 import { useAuth } from "@/hooks/useAuth";
 import { NotificationsBell } from "@/components/NotificationsBell";
+import { QuietHoursStatus } from "@/components/QuietHoursStatus";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { MessagingOnboardingCard } from "@/components/dashboard/MessagingOnboardingCard";
@@ -102,6 +103,7 @@ export default function DashboardPage() {
             <span className="font-display text-lg font-bold text-primary">AJBN</span>
           </Link>
           <div className="flex items-center gap-3">
+            <QuietHoursStatus />
             {isSuperAdmin && (
               <Link to="/admin">
                 <Button variant="outline" size="sm" className="gap-1.5">

@@ -6,6 +6,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
+import { useQuietHours } from "@/hooks/useQuietHours";
 
 interface Notification {
   id: string;
@@ -19,8 +20,9 @@ export function NotificationsBell() {
   const { user } = useAuth();
   const [items, setItems] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
+  const { activeNow } = useQuietHours();
 
-  const unread = items.filter((n) => !n.read_at).length;
+  const unread = activeNow ? 0 : items.filter((n) => !n.read_at).length;
 
   const load = async () => {
     if (!user) return;
@@ -41,10 +43,12 @@ export function NotificationsBell() {
       .on("postgres_changes", {
         event: "INSERT", schema: "public", table: "notifications",
         filter: `user_id=eq.${user.id}`,
-      }, () => load())
+      }, () => {
+        if (!activeNow) void load();
+      })
       .subscribe();
     return () => { supabase.removeChannel(ch); };
-  }, [user?.id]);
+  }, [user?.id, activeNow]);
 
   const markAllRead = async () => {
     if (!user || unread === 0) return;
@@ -57,7 +61,7 @@ export function NotificationsBell() {
     <Popover open={open} onOpenChange={setOpen}>
       <PopoverTrigger asChild>
         <button className="relative text-muted-foreground hover:text-foreground">
-          <Bell size={18} />
+          <Bell size={18} className={activeNow ? "opacity-50" : undefined} />
           {unread > 0 && (
             <span className="absolute -top-1 -right-1 min-w-4 h-4 px-1 bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full flex items-center justify-center">
               {unread > 9 ? "9+" : unread}
@@ -75,6 +79,11 @@ export function NotificationsBell() {
           )}
         </div>
         <div className="max-h-96 overflow-y-auto">
+          {activeNow && (
+            <div className="border-b bg-muted/50 px-4 py-2 text-xs text-muted-foreground">
+              In Quiet Hours — alerts resume Saturday at 10:00 PM.
+            </div>
+          )}
           {items.length === 0 && (
             <div className="p-6 text-center text-sm text-muted-foreground">No notifications yet.</div>
           )}

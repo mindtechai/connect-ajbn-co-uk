@@ -968,6 +968,7 @@ export type Database = {
           pending_logo_url: string | null
           pending_website: string | null
           phone: string | null
+          quiet_hours_enabled: boolean
           referral_code: string | null
           referred_by: string | null
           referred_by_code: string | null
@@ -999,6 +1000,7 @@ export type Database = {
           pending_logo_url?: string | null
           pending_website?: string | null
           phone?: string | null
+          quiet_hours_enabled?: boolean
           referral_code?: string | null
           referred_by?: string | null
           referred_by_code?: string | null
@@ -1030,6 +1032,7 @@ export type Database = {
           pending_logo_url?: string | null
           pending_website?: string | null
           phone?: string | null
+          quiet_hours_enabled?: boolean
           referral_code?: string | null
           referred_by?: string | null
           referred_by_code?: string | null
@@ -1219,6 +1222,7 @@ export type Database = {
           is_verified_connector: boolean
           last_name: string
           linkedin: string
+          quiet_hours_enabled: boolean
           tags: string[]
           title: string
         }[]

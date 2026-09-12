@@ -6,6 +6,7 @@ import { useAuth } from "@/hooks/useAuth";
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
 import impactLionsLogo from "@/assets/impact-lions-logo.png.asset.json";
 import { assetUrl } from "@/lib/asset";
+import { QuietHoursStatus } from "@/components/QuietHoursStatus";
 
 export function Navbar() {
   const [open, setOpen] = useState(false);
@@ -92,6 +93,7 @@ export function Navbar() {
           </Link>
           {user ? (
             <div className="flex items-center gap-3">
+              <QuietHoursStatus />
               <div className={`flex items-center gap-2 ${showSolid ? "text-foreground" : "text-primary-foreground"}`}>
                 <div className="h-9 w-9 rounded-full bg-gold/90 text-primary grid place-items-center font-semibold ring-2 ring-gold/60 shadow-xs">
                   {initial}
@@ -179,6 +181,7 @@ export function Navbar() {
                   {initial}
                 </div>
                 <span className="font-medium truncate">{displayName}</span>
+                <QuietHoursStatus />
               </div>
               <Link to="/dashboard" onClick={() => setOpen(false)}>
                 <Button variant="outline" size="sm" className="w-full">
