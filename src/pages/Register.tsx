@@ -32,6 +32,7 @@ export default function RegisterPage() {
       email: email.trim(),
       password,
       options: {
+        emailRedirectTo: `${window.location.origin}/login`,
         data: {
           first_name: firstName.trim(),
           last_name: lastName.trim(),
@@ -51,7 +52,7 @@ export default function RegisterPage() {
         title: "Check your email",
         description: "Use the verification link we sent before signing in.",
       });
-      navigate("/login");
+      navigate(`/login?verification=1&email=${encodeURIComponent(email.trim())}`);
       return;
     }
     toast({ title: "Welcome to AJBN Connect", description: "Your account is ready." });
