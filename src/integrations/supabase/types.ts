@@ -968,6 +968,7 @@ export type Database = {
           pending_logo_url: string | null
           pending_website: string | null
           phone: string | null
+          quiet_hours_enabled: boolean
           referral_code: string | null
           referred_by: string | null
           referred_by_code: string | null
@@ -999,6 +1000,7 @@ export type Database = {
           pending_logo_url?: string | null
           pending_website?: string | null
           phone?: string | null
+          quiet_hours_enabled?: boolean
           referral_code?: string | null
           referred_by?: string | null
           referred_by_code?: string | null
@@ -1030,6 +1032,7 @@ export type Database = {
           pending_logo_url?: string | null
           pending_website?: string | null
           phone?: string | null
+          quiet_hours_enabled?: boolean
           referral_code?: string | null
           referred_by?: string | null
           referred_by_code?: string | null
@@ -1250,6 +1253,12 @@ export type Database = {
           has_lion: boolean
           industry: string
           member_count: number
+        }[]
+      }
+      quiet_hours_member_ids: {
+        Args: never
+        Returns: {
+          user_id: string
         }[]
       }
       referral_code_exists: { Args: { _code: string }; Returns: boolean }
