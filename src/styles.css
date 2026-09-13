@@ -244,3 +244,17 @@
     transform: translateY(0);
   }
 }
+
+/* Download ribbon positioning — sits above the mobile tab bar on small screens */
+.ajbn-ribbon-bottom {
+  bottom: env(safe-area-inset-bottom);
+}
+.ajbn-ribbon-bottom-with-tabbar {
+  bottom: calc(env(safe-area-inset-bottom) + 56px);
+}
+@media (min-width: 768px) {
+  .ajbn-ribbon-bottom,
+  .ajbn-ribbon-bottom-with-tabbar {
+    bottom: env(safe-area-inset-bottom);
+  }
+}

@@ -19,6 +19,7 @@ import { Route as EmailUnsubscribeRouteImport } from './routes/email-unsubscribe
 import { Route as EsgRouteImport } from './routes/esg'
 import { Route as EventsRouteImport } from './routes/events'
 import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
+import { Route as InstallRouteImport } from './routes/install'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MemberPortalRouteImport } from './routes/member-portal'
 import { Route as PrivacyRouteImport } from './routes/privacy'
@@ -107,6 +108,11 @@ const EventsRoute = EventsRouteImport.update({
 const ForgotPasswordRoute = ForgotPasswordRouteImport.update({
   id: '/forgot-password',
   path: '/forgot-password',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const InstallRoute = InstallRouteImport.update({
+  id: '/install',
+  path: '/install',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -318,6 +324,7 @@ export interface FileRoutesByFullPath {
   '/esg': typeof EsgRoute
   '/events': typeof EventsRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/install': typeof InstallRoute
   '/login': typeof LoginRoute
   '/member-portal': typeof MemberPortalRoute
   '/privacy': typeof PrivacyRoute
@@ -369,6 +376,7 @@ export interface FileRoutesByTo {
   '/esg': typeof EsgRoute
   '/events': typeof EventsRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/install': typeof InstallRoute
   '/login': typeof LoginRoute
   '/member-portal': typeof MemberPortalRoute
   '/privacy': typeof PrivacyRoute
@@ -421,6 +429,7 @@ export interface FileRoutesById {
   '/esg': typeof EsgRoute
   '/events': typeof EventsRoute
   '/forgot-password': typeof ForgotPasswordRoute
+  '/install': typeof InstallRoute
   '/login': typeof LoginRoute
   '/member-portal': typeof MemberPortalRoute
   '/privacy': typeof PrivacyRoute
@@ -474,6 +483,7 @@ export interface FileRouteTypes {
     | '/esg'
     | '/events'
     | '/forgot-password'
+    | '/install'
     | '/login'
     | '/member-portal'
     | '/privacy'
@@ -525,6 +535,7 @@ export interface FileRouteTypes {
     | '/esg'
     | '/events'
     | '/forgot-password'
+    | '/install'
     | '/login'
     | '/member-portal'
     | '/privacy'
@@ -576,6 +587,7 @@ export interface FileRouteTypes {
     | '/esg'
     | '/events'
     | '/forgot-password'
+    | '/install'
     | '/login'
     | '/member-portal'
     | '/privacy'
@@ -628,6 +640,7 @@ export interface RootRouteChildren {
   EsgRoute: typeof EsgRoute
   EventsRoute: typeof EventsRoute
   ForgotPasswordRoute: typeof ForgotPasswordRoute
+  InstallRoute: typeof InstallRoute
   LoginRoute: typeof LoginRoute
   MemberPortalRoute: typeof MemberPortalRoute
   PrivacyRoute: typeof PrivacyRoute
@@ -739,6 +752,13 @@ declare module '@tanstack/react-router' {
       path: '/forgot-password'
       fullPath: '/forgot-password'
       preLoaderRoute: typeof ForgotPasswordRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/install': {
+      id: '/install'
+      path: '/install'
+      fullPath: '/install'
+      preLoaderRoute: typeof InstallRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -1028,6 +1048,7 @@ const rootRouteChildren: RootRouteChildren = {
   EsgRoute: EsgRoute,
   EventsRoute: EventsRoute,
   ForgotPasswordRoute: ForgotPasswordRoute,
+  InstallRoute: InstallRoute,
   LoginRoute: LoginRoute,
   MemberPortalRoute: MemberPortalRoute,
   PrivacyRoute: PrivacyRoute,
