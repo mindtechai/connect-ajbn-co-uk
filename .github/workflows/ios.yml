@@ -23,20 +23,21 @@ jobs:
         
       - name: Setup CocoaPods - optional
         run: |
-          echo "Checking for Podfile..."
           find ios -name "Podfile" -type f
-          if [ -f ios/App/Podfile ]; then
-            cd ios/App && pod install
-          elif [ -f ios/Podfile ]; then
-            cd ios && pod install
-          else
-            echo "No Podfile - Capacitor 6 uses SPM, skipping pods - OK"
-          fi
+          if [ -f ios/App/Podfile ]; then cd ios/App && pod install; fi
+          echo "Pods check done"
+          
+      - name: List Xcode projects
+        run: |
+          cd ios/App
+          ls -la
+          xcodebuild -list || true
           
       - name: Build IPA unsigned
         run: |
           cd ios/App
-          xcodebuild -workspace App.xcworkspace -scheme App -configuration Release -sdk iphoneos -archivePath $PWD/build/App.xcarchive archive CODE_SIGNING_ALLOWED=NO || xcodebuild -project App.xcodeproj -scheme App -configuration Release -sdk iphoneos -archivePath $PWD/build/App.xcarchive archive CODE_SIGNING_ALLOWED=NO
+          xcodebuild -workspace App.xcworkspace -scheme App -configuration Release -sdk iphoneos -archivePath $PWD/build/App.xcarchive archive CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" -allowProvisioningUpdates || \
+          xcodebuild -project App.xcodeproj -scheme App -configuration Release -sdk iphoneos -archivePath $PWD/build/App.xcarchive archive CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
           
       - name: Upload IPA Artifact
         if: always()
