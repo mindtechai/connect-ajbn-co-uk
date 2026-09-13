@@ -1,16 +1,24 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "@/lib/router-compat";
+import { useAuth } from "@/hooks/useAuth";
 import { Play, Apple, X } from "lucide-react";
 
 const STORAGE_KEY = "downloadRibbonDismissed";
 const DISMISS_TTL_MS = 24 * 60 * 60 * 1000;
 const AJBN_BLUE = "#0E3A7B";
 
+const TABBAR_HIDE_ON = [/^\/login/, /^\/register/, /^\/reset-password/, /^\/forgot-password/, /^\/admin/];
+
 export function DownloadRibbon() {
   const navigate = useNavigate();
   const { pathname } = useLocation();
+  const { user } = useAuth();
   const [visible, setVisible] = useState(false);
   const deferredPrompt = useRef<BeforeInstallPromptEvent | null>(null);
+
+  const tabBarVisible = Boolean(
+    user && !TABBAR_HIDE_ON.some((r) => r.test(pathname))
+  );
 
   useEffect(() => {
     // Only run in the browser.
@@ -72,30 +80,20 @@ export function DownloadRibbon() {
 
   return (
     <div
-      className="fixed inset-x-0 z-50 shadow-lg px-3 py-3 md:px-4 md:py-3"
+      className={`fixed inset-x-0 z-50 shadow-lg px-3 py-3 md:px-4 md:py-3 ${
+        tabBarVisible ? "ajbn-ribbon-bottom-with-tabbar" : "ajbn-ribbon-bottom"
+      }`}
       style={{
         backgroundColor: AJBN_BLUE,
         color: "#ffffff",
-        bottom: "calc(env(safe-area-inset-bottom) + 56px)",
       }}
     >
-      {/* Desktop: bottom-0 above safe area */}
-      <style>{`
-        @media (min-width: 768px) {
-          [data-download-ribbon] {
-            bottom: env(safe-area-inset-bottom) !important;
-          }
-        }
-      `}</style>
-      <div
-        data-download-ribbon
-        className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-3 relative"
-      >
+      <div className="container mx-auto flex flex-col md:flex-row items-center justify-between gap-3 relative">
         <button
           type="button"
           onClick={handleDismiss}
           aria-label="Dismiss download banner"
-          className="absolute top-0 right-0 md:relative md:order-3 md:top-auto md:right-auto p-1.5 rounded-md hover:bg-white/10 transition-colors focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+          className="absolute top-0 right-0 md:relative md:order-3 md:top-auto md:right-auto p-1.5 rounded-md hover:bg-white/10 transition-colors focus:outline-hidden focus-visible:ring-2 focus-visible:ring-white/70"
         >
           <X size={18} aria-hidden="true" />
         </button>
@@ -108,7 +106,7 @@ export function DownloadRibbon() {
           <button
             type="button"
             onClick={handleInstall}
-            className="inline-flex items-center gap-1.5 h-9 px-3 rounded-md text-xs font-semibold whitespace-nowrap transition-transform active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+            className="inline-flex items-center gap-1.5 h-9 px-3 rounded-md text-xs font-semibold whitespace-nowrap transition-transform active:scale-95 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-white/70"
             style={{ backgroundColor: AJBN_BLUE, color: "#ffffff", border: "1px solid rgba(255,255,255,0.35)" }}
           >
             <Play size={16} fill="currentColor" aria-hidden="true" />
@@ -117,7 +115,7 @@ export function DownloadRibbon() {
           <button
             type="button"
             onClick={handleInstall}
-            className="inline-flex items-center gap-1.5 h-9 px-3 rounded-md text-xs font-semibold whitespace-nowrap transition-transform active:scale-95 focus:outline-none focus-visible:ring-2 focus-visible:ring-white/70"
+            className="inline-flex items-center gap-1.5 h-9 px-3 rounded-md text-xs font-semibold whitespace-nowrap transition-transform active:scale-95 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-white/70"
             style={{ backgroundColor: AJBN_BLUE, color: "#ffffff", border: "1px solid rgba(255,255,255,0.35)" }}
           >
             <Apple size={16} aria-hidden="true" />
@@ -128,3 +126,4 @@ export function DownloadRibbon() {
     </div>
   );
 }
+
