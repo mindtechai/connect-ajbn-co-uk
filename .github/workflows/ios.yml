@@ -6,42 +6,32 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v5
-      
-      - name: Setup Bun
-        uses: oven-sh/setup-bun@v2
+      - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-          
-      - name: Install deps
-        run: bun install
-        
-      - name: Build web
-        run: bun run build
-        
-      - name: Sync Capacitor iOS
-        run: bunx @capacitor/cli sync ios
-        
-      - name: Setup CocoaPods - optional
-        run: |
-          find ios -name "Podfile" -type f
-          if [ -f ios/App/Podfile ]; then cd ios/App && pod install; fi
-          echo "Pods check done"
-          
-      - name: List Xcode projects
+      - run: bun install
+      - run: bun run build
+      - run: bunx @capacitor/cli sync ios
+      
+      - name: Build unsigned .app
         run: |
           cd ios/App
-          ls -la
-          xcodebuild -list || true
+          xcodebuild -workspace App.xcworkspace -scheme App -configuration Release -sdk iphoneos -derivedDataPath $PWD/build/derivedData CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" build
+          ls -R build/derivedData/Build/Products/ || true
           
-      - name: Build IPA unsigned
+      - name: Make IPA from .app
         run: |
           cd ios/App
-          xcodebuild -workspace App.xcworkspace -scheme App -configuration Release -sdk iphoneos -archivePath $PWD/build/App.xcarchive archive CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" -allowProvisioningUpdates || \
-          xcodebuild -project App.xcodeproj -scheme App -configuration Release -sdk iphoneos -archivePath $PWD/build/App.xcarchive archive CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
+          mkdir -p build/ipa
+          APP_PATH=$(find build/derivedData -name "App.app" -type d | head -1)
+          echo "Found: $APP_PATH"
+          mkdir -p Payload
+          cp -r "$APP_PATH" Payload/
+          zip -r build/ipa/AJBN-Connect-unsigned.ipa Payload
+          ls -lh build/ipa/
           
-      - name: Upload IPA Artifact
-        if: always()
-        uses: actions/upload-artifact@v4
+      - uses: actions/upload-artifact@v5
         with:
           name: AJBN-iOS-build
-          path: ios/App/build/
+          path: ios/App/build/ipa/
+          if-no-files-found: error
