@@ -6,25 +6,31 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v4
-      - name: Setup Node
-        uses: actions/setup-node@v4
+      
+      - name: Setup Bun
+        uses: oven-sh/setup-bun@v2
         with:
-          node-version: 20
-          cache: npm
+          bun-version: latest
+          
       - name: Install deps
-        run: npm ci
+        run: bun install
+        
       - name: Build web
-        run: npm run build
+        run: bun run build
+        
       - name: Sync Capacitor iOS
-        run: npx cap sync ios
+        run: bunx cap sync ios
+        
       - name: Setup CocoaPods
         run: |
           cd ios/App
           pod install
+          
       - name: Build IPA unsigned
         run: |
           cd ios/App
           xcodebuild -workspace App.xcworkspace -scheme App -configuration Release -sdk iphoneos -archivePath $PWD/build/App.xcarchive archive CODE_SIGNING_ALLOWED=NO
+          
       - name: Upload IPA Artifact
         uses: actions/upload-artifact@v4
         with:
