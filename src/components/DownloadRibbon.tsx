@@ -128,7 +128,6 @@ export function DownloadRibbon() {
             style={{
               backgroundColor: AJBN_BLUE,
               color: "#ffffff",
-              border: "1px solid rgba(255,255,255,0.35)",
             }}
           >
             <Play size={16} fill="currentColor" aria-hidden="true" />
@@ -141,7 +140,6 @@ export function DownloadRibbon() {
             style={{
               backgroundColor: AJBN_BLUE,
               color: "#ffffff",
-              border: "1px solid rgba(255,255,255,0.35)",
             }}
           >
             <Apple size={16} aria-hidden="true" />
