@@ -7,7 +7,22 @@ const STORAGE_KEY = "downloadRibbonDismissed";
 const DISMISS_TTL_MS = 24 * 60 * 60 * 1000;
 const AJBN_BLUE = "#0E3A7B";
 
-const TABBAR_HIDE_ON = [/^\/login/, /^\/register/, /^\/reset-password/, /^\/forgot-password/, /^\/admin/];
+const TABBAR_HIDE_ON = [
+  /^\/login/,
+  /^\/register/,
+  /^\/reset-password/,
+  /^\/forgot-password/,
+  /^\/admin/,
+];
+
+interface BeforeInstallPromptEvent extends Event {
+  readonly platforms: string[];
+  readonly userChoice: Promise<{
+    outcome: "accepted" | "dismissed";
+    platform: string;
+  }>;
+  prompt(): Promise<void>;
+}
 
 export function DownloadRibbon() {
   const navigate = useNavigate();
@@ -62,10 +77,10 @@ export function DownloadRibbon() {
         deferredPrompt.current = null;
       } catch {
         // Fall through to the install page if the prompt fails.
-        navigate({ to: "/install" });
+        navigate("/install");
       }
     } else {
-      navigate({ to: "/install" });
+      navigate("/install");
     }
   };
 
@@ -81,7 +96,9 @@ export function DownloadRibbon() {
   return (
     <div
       className={`fixed inset-x-0 z-50 shadow-lg px-3 py-3 md:px-4 md:py-3 ${
-        tabBarVisible ? "ajbn-ribbon-bottom-with-tabbar" : "ajbn-ribbon-bottom"
+        tabBarVisible
+          ? "ajbn-ribbon-bottom-with-tabbar"
+          : "ajbn-ribbon-bottom"
       }`}
       style={{
         backgroundColor: AJBN_BLUE,
@@ -107,7 +124,11 @@ export function DownloadRibbon() {
             type="button"
             onClick={handleInstall}
             className="inline-flex items-center gap-1.5 h-9 px-3 rounded-md text-xs font-semibold whitespace-nowrap transition-transform active:scale-95 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-white/70"
-            style={{ backgroundColor: AJBN_BLUE, color: "#ffffff", border: "1px solid rgba(255,255,255,0.35)" }}
+            style={{
+              backgroundColor: AJBN_BLUE,
+              color: "#ffffff",
+              border: "1px solid rgba(255,255,255,0.35)",
+            }}
           >
             <Play size={16} fill="currentColor" aria-hidden="true" />
             Get it on Google Play
@@ -116,7 +137,11 @@ export function DownloadRibbon() {
             type="button"
             onClick={handleInstall}
             className="inline-flex items-center gap-1.5 h-9 px-3 rounded-md text-xs font-semibold whitespace-nowrap transition-transform active:scale-95 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-white/70"
-            style={{ backgroundColor: AJBN_BLUE, color: "#ffffff", border: "1px solid rgba(255,255,255,0.35)" }}
+            style={{
+              backgroundColor: AJBN_BLUE,
+              color: "#ffffff",
+              border: "1px solid rgba(255,255,255,0.35)",
+            }}
           >
             <Apple size={16} aria-hidden="true" />
             Download on App Store
@@ -126,4 +151,3 @@ export function DownloadRibbon() {
     </div>
   );
 }
-
