@@ -13,6 +13,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { AuthProvider } from "@/hooks/useAuth";
 import { ReferralSideRibbon } from "@/components/ReferralSideRibbon";
+import { DownloadRibbon } from "@/components/DownloadRibbon";
 import { OfflineFallback } from "@/components/OfflineFallback";
 import { ScrollToTop } from "@/components/ScrollToTop";
 import { MobileTabBar } from "@/components/MobileTabBar";
@@ -241,6 +242,7 @@ function RootComponent() {
           <OfflineFallback />
           <ScrollToTop />
           <Outlet />
+          <DownloadRibbon />
           <MobileTabBar />
         </AuthProvider>
       </TooltipProvider>
