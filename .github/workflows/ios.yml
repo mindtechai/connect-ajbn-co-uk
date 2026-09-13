@@ -6,32 +6,30 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v5
+      
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
+          
       - run: bun install
       - run: bun run build
       - run: bunx @capacitor/cli sync ios
-      
-      - name: Build unsigned .app
+        
+      - name: Fix SceneDelegate if needed
+        run: |
+          cat ios/App/App/SceneDelegate.swift | head -20
+
+      - name: Build Archive unsigned
         run: |
           cd ios/App
-          xcodebuild -workspace App.xcworkspace -scheme App -configuration Release -sdk iphoneos -derivedDataPath $PWD/build/derivedData CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" build
-          ls -R build/derivedData/Build/Products/ || true
+          ls -la
+          xcodebuild -workspace App.xcworkspace -scheme App -configuration Release -sdk iphoneos -archivePath $PWD/build/App.xcarchive archive CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" || \
+          xcodebuild -project App.xcodeproj -scheme App -configuration Release -sdk iphoneos -archivePath $PWD/build/App.xcarchive archive CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
+          ls -lh build/
           
-      - name: Make IPA from .app
-        run: |
-          cd ios/App
-          mkdir -p build/ipa
-          APP_PATH=$(find build/derivedData -name "App.app" -type d | head -1)
-          echo "Found: $APP_PATH"
-          mkdir -p Payload
-          cp -r "$APP_PATH" Payload/
-          zip -r build/ipa/AJBN-Connect-unsigned.ipa Payload
-          ls -lh build/ipa/
-          
-      - uses: actions/upload-artifact@v5
+      - name: Upload Artifact
+        uses: actions/upload-artifact@v5
         with:
           name: AJBN-iOS-build
-          path: ios/App/build/ipa/
+          path: ios/App/build/
           if-no-files-found: error
