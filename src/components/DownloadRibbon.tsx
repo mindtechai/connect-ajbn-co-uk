@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "@/lib/router-compat";
 import { useAuth } from "@/hooks/useAuth";
-import { Play, Apple, X } from "lucide-react";
+import { Play, Apple, X, Smartphone } from "lucide-react";
 
 const STORAGE_KEY = "downloadRibbonDismissed";
 const DISMISS_TTL_MS = 24 * 60 * 60 * 1000;
@@ -115,8 +115,9 @@ export function DownloadRibbon() {
           <X size={18} aria-hidden="true" />
         </button>
 
-        <span className="text-sm font-semibold text-center md:text-left pr-8 md:pr-0">
-          📲 Download AJBN Connect App
+        <span className="text-sm font-semibold text-center md:text-left pr-8 md:pr-0 flex items-center gap-2">
+          <Smartphone size={16} aria-hidden="true" />
+          Download AJBN Connect App
         </span>
 
         <div className="flex items-center gap-2 flex-wrap justify-center">
