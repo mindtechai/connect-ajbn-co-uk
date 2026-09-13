@@ -5,7 +5,7 @@ jobs:
   build-ios:
     runs-on: macos-latest
     steps:
-      - uses: actions/checkout@v4
+      - uses: actions/checkout@v5
       
       - name: Setup Bun
         uses: oven-sh/setup-bun@v2
@@ -19,7 +19,9 @@ jobs:
         run: bun run build
         
       - name: Sync Capacitor iOS
-        run: bunx cap sync ios
+        run: |
+          bunx @capacitor/cli sync ios
+          ls -la ios/App/
         
       - name: Setup CocoaPods
         run: |
