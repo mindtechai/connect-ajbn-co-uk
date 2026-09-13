@@ -19,21 +19,27 @@ jobs:
         run: bun run build
         
       - name: Sync Capacitor iOS
-        run: |
-          bunx @capacitor/cli sync ios
-          ls -la ios/App/
+        run: bunx @capacitor/cli sync ios
         
-      - name: Setup CocoaPods
+      - name: Setup CocoaPods - optional
         run: |
-          cd ios/App
-          pod install
+          echo "Checking for Podfile..."
+          find ios -name "Podfile" -type f
+          if [ -f ios/App/Podfile ]; then
+            cd ios/App && pod install
+          elif [ -f ios/Podfile ]; then
+            cd ios && pod install
+          else
+            echo "No Podfile - Capacitor 6 uses SPM, skipping pods - OK"
+          fi
           
       - name: Build IPA unsigned
         run: |
           cd ios/App
-          xcodebuild -workspace App.xcworkspace -scheme App -configuration Release -sdk iphoneos -archivePath $PWD/build/App.xcarchive archive CODE_SIGNING_ALLOWED=NO
+          xcodebuild -workspace App.xcworkspace -scheme App -configuration Release -sdk iphoneos -archivePath $PWD/build/App.xcarchive archive CODE_SIGNING_ALLOWED=NO || xcodebuild -project App.xcodeproj -scheme App -configuration Release -sdk iphoneos -archivePath $PWD/build/App.xcarchive archive CODE_SIGNING_ALLOWED=NO
           
       - name: Upload IPA Artifact
+        if: always()
         uses: actions/upload-artifact@v4
         with:
           name: AJBN-iOS-build
