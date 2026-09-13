@@ -6,30 +6,35 @@ jobs:
     runs-on: macos-latest
     steps:
       - uses: actions/checkout@v5
-      
       - uses: oven-sh/setup-bun@v2
         with:
           bun-version: latest
-          
       - run: bun install
       - run: bun run build
       - run: bunx @capacitor/cli sync ios
         
-      - name: Fix SceneDelegate if needed
-        run: |
-          cat ios/App/App/SceneDelegate.swift | head -20
-
       - name: Build Archive unsigned
         run: |
           cd ios/App
-          ls -la
-          xcodebuild -workspace App.xcworkspace -scheme App -configuration Release -sdk iphoneos -archivePath $PWD/build/App.xcarchive archive CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" || \
-          xcodebuild -project App.xcodeproj -scheme App -configuration Release -sdk iphoneos -archivePath $PWD/build/App.xcarchive archive CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
+          xcodebuild -workspace App.xcworkspace -scheme App -configuration Release -sdk iphoneos -archivePath $PWD/build/App.xcarchive archive CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY=""
           ls -lh build/
+
+      - name: Make IPA you can open on Windows
+        run: |
+          cd ios/App
+          APP_PATH=$(find build/App.xcarchive -name "App.app" -type d | head -1)
+          echo "Found: $APP_PATH"
+          mkdir -p build/ipa/Payload
+          cp -r "$APP_PATH" build/ipa/Payload/
+          cd build/ipa
+          zip -r AJBN-Connect-unsigned.ipa Payload
+          ls -lh
           
       - name: Upload Artifact
         uses: actions/upload-artifact@v5
         with:
           name: AJBN-iOS-build
-          path: ios/App/build/
+          path: |
+            ios/App/build/App.xcarchive
+            ios/App/build/ipa/
           if-no-files-found: error
