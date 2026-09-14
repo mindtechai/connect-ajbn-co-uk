@@ -9,4 +9,4 @@
 
 - [x] Review and resolve email-confirmation sign-in recovery finding
 - [x] Replace every web, Android, and iOS app icon with the supplied dark-blue AJBN Connect icon
-- [ ] Publish the verified web/PWA update (native projects synced; Android release package awaits an Android SDK)
+- [ ] Publish the verified web/PWA update (native projects synced; Android release bundle now builds via the GitHub Actions "Build Android AAB" workflow — add keystore secrets to sign it)
