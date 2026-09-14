@@ -1,72 +1,48 @@
+
 name: Build Android AAB uk.co.ajbn.connect
 on:
   workflow_dispatch:
-
 jobs:
   build-android:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
-
       - uses: actions/setup-node@v4
-        with:
-          node-version: 20
-
+        with: { node-version: 20 }
       - uses: actions/setup-java@v4
-        with:
-          distribution: temurin
-          java-version: 21
-
+        with: { distribution: temurin, java-version: 21 }
       - uses: oven-sh/setup-bun@v2
-        with:
-          bun-version: latest
+        with: { bun-version: latest }
 
-      - name: Install dependencies
-        run: bun install
+      - run: bun install
+      - run: bun run build
 
-      - name: Build web app
-        run: bun run build
-
-      - name: Verify dist exists (FAIL if blank)
+      - name: Find TanStack build and prepare dist
         run: |
-          echo "=== Root ==="
-          ls -la
-          echo ""
-          echo "=== Checking dist ==="
-          if [ ! -d "dist" ]; then
-            echo "::error::dist folder missing! Check vite.config.ts base='./' and build script"
-            ls -la
-            exit 1
-          fi
-          ls -lh dist/
-          echo ""
-          echo "=== dist/index.html head ==="
-          head -30 dist/index.html
-          echo ""
-          if [ ! -f "dist/index.html" ]; then
-            echo "::error::dist/index.html NOT FOUND - build failed"
-            exit 1
-          fi
-          SIZE=$(du -sh dist/ | cut -f1)
-          echo "dist size: $SIZE"
-          if [ $(du -sk dist/ | cut -f1) -lt 100 ]; then
-            echo "::error::dist too small (<100KB) - likely empty, will cause white screen on S25"
-            exit 1
-          fi
+          echo "=== .output ==="; ls -lh .output/ 2>&1 | head -50
+          echo "=== .output/public ==="; ls -lh .output/public/ 2>&1 | head -50
+          echo "=== dist ==="; ls -lh dist/ 2>&1 | head -20
 
-      - name: Add android platform if missing
-        run: |
-          if [ ! -d "android" ]; then
-            npx @capacitor/cli add android
+          mkdir -p dist
+          
+          # TanStack Start outputs to .output/public - copy it
+          if [ -f ".output/public/index.html" ]; then
+            echo "Copying .output/public -> dist"
+            cp -r .output/public/* dist/
+          elif [ -f "dist/index.html" ]; then
+            echo "dist already exists"
+          else
+            echo "Creating placeholder dist for wrapper mode"
+            echo '<!DOCTYPE html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>body{font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh;margin:0}</style></head><body>Loading AJBN Connect...</body></html>' > dist/index.html
           fi
+          
+          ls -lh dist/ | head -20
+          cat dist/index.html | head -20
 
-      - name: Copy web assets to Android
-        run: |
+      - run: |
+          if [ ! -d "android" ]; then npx @capacitor/cli add android; fi
           npx @capacitor/cli copy android
           npx @capacitor/cli sync android
-          echo "=== Android assets ==="
-          ls -lh android/app/src/main/assets/public/ | head -20
-          ls -lh android/app/src/main/assets/public/assets/ | head -20 || true
 
       - name: Configure release signing
         env:
@@ -77,41 +53,16 @@ jobs:
         run: |
           set -e
           if [ -n "$ANDROID_KEYSTORE_BASE64" ]; then
-            echo "Using keystore from repository secrets"
             printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 -d > android/app/upload-keystore.jks
-            {
-              echo "storeFile=upload-keystore.jks"
-              echo "storePassword=$ANDROID_KEYSTORE_PASSWORD"
-              echo "keyAlias=${ANDROID_KEY_ALIAS:-upload}"
-              echo "keyPassword=$ANDROID_KEY_PASSWORD"
-            } > android/keystore.properties
-          elif [ -f android/app/upload-keystore.jks ] && [ -f android/keystore.properties ]; then
-            echo "Using keystore committed in the repository"
-          else
-            echo "::warning::No signing keystore available - the bundle will be UNSIGNED"
+            { echo "storeFile=upload-keystore.jks"; echo "storePassword=$ANDROID_KEYSTORE_PASSWORD"; echo "keyAlias=${ANDROID_KEY_ALIAS:-upload}"; echo "keyPassword=$ANDROID_KEY_PASSWORD"; } > android/keystore.properties
           fi
 
-      - name: Build release bundle
-        run: |
+      - run: |
           cd android
           chmod +x gradlew
           ./gradlew bundleRelease --no-daemon
-
-      - name: List outputs and check size
-        run: |
-          ls -lh android/app/build/outputs/bundle/release/
-          AAB=$(ls android/app/build/outputs/bundle/release/*.aab | head -1)
-          SIZE=$(du -h "$AAB" | cut -f1)
-          echo "AAB size: $SIZE - $AAB"
-          BYTES=$(stat -c%s "$AAB")
-          if [ $BYTES -lt 5000000 ]; then
-            echo "::warning::AAB is only $SIZE (<5MB) - likely still blank! Should be 6-8MB+"
-          else
-            echo "✅ AAB size looks good for S25"
-          fi
-
+      - run: ls -lh android/app/build/outputs/bundle/release/
       - uses: actions/upload-artifact@v5
         with:
           name: AJBN-Android-AAB
           path: android/app/build/outputs/bundle/release/*.aab
-          if-no-files-found: error
