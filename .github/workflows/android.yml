@@ -22,6 +22,48 @@ jobs:
 
       - run: bun install
       - run: bun run build
+
+      - name: Prepare dist for Capacitor
+        run: |
+          set -e
+          if [ ! -d dist ]; then
+            for candidate in .output/public dist/client build/client build out; do
+              if [ -d "$candidate" ]; then
+                echo "Copying $candidate -> dist"
+                mkdir -p dist
+                cp -r "$candidate"/. dist/
+                break
+              fi
+            done
+          fi
+          mkdir -p dist
+          if [ ! -f dist/index.html ]; then
+            echo "No index.html in build output - writing redirect shell"
+            cat > dist/index.html <<'HTML'
+          <!doctype html>
+          <html lang="en">
+            <head>
+              <meta charset="utf-8" />
+              <meta name="viewport" content="width=device-width, initial-scale=1" />
+              <title>AJBN Connect</title>
+              <script>window.location.replace('https://connect.ajbn.co.uk');</script>
+            </head>
+            <body></body>
+          </html>
+          HTML
+          fi
+          ls -la
+          ls -la dist || true
+
+      - name: Ensure Android project
+        run: |
+          set -e
+          mkdir -p android/app/src/main/assets
+          if [ ! -f android/settings.gradle ]; then
+            echo "Android project missing - adding it"
+            npx @capacitor/cli add android
+          fi
+
       - run: npx @capacitor/cli sync android
 
       - name: Configure release signing
