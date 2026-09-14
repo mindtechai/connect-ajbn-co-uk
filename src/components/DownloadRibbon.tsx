@@ -69,6 +69,9 @@ export function DownloadRibbon() {
 
   if (!visible) return null;
 
+  // Never show the install banner on the install page itself (or sub-routes).
+  if (pathname === "/install" || pathname.startsWith("/install/")) return null;
+
   const handleInstall = async () => {
     const prompt = deferredPrompt.current;
     if (prompt) {
