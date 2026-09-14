@@ -35,8 +35,6 @@ export function DownloadRibbon() {
     user && !TABBAR_HIDE_ON.some((r) => r.test(pathname))
   );
 
-  // Never show the install banner on the install page itself (or sub-routes).
-  if (pathname === "/install" || pathname.startsWith("/install/")) return null;
 
   useEffect(() => {
     // Only run in the browser.
