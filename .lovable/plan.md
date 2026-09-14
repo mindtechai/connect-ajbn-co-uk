@@ -5,7 +5,7 @@ Use the existing dark-blue square **AJBN CONNECT** artwork as the sole icon acro
 
 ## Changes
 1. **Create one canonical icon source**
-   - Treat the current `public/icon-512.png` artwork as the approved source; it visually matches the supplied dark-blue **AJBN CONNECT** icon.
+   - Use the newly uploaded `icon-512-maskable.png` as the exact approved source for every generated icon.
    - Generate each required size from that source with high-quality square scaling, without changing its colour, typography, crop, or adding platform-specific artwork.
 
 2. **Replace every web/PWA icon variant**
