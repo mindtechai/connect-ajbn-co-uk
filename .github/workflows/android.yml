@@ -35,12 +35,12 @@ jobs:
           if [ -n "$ANDROID_KEYSTORE_BASE64" ]; then
             echo "Using keystore from repository secrets"
             printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 -d > android/app/upload-keystore.jks
-            cat > android/keystore.properties <<EOF
-          storeFile=upload-keystore.jks
-          storePassword=$ANDROID_KEYSTORE_PASSWORD
-          keyAlias=${ANDROID_KEY_ALIAS:-upload}
-          keyPassword=$ANDROID_KEY_PASSWORD
-          EOF
+            {
+              echo "storeFile=upload-keystore.jks"
+              echo "storePassword=$ANDROID_KEYSTORE_PASSWORD"
+              echo "keyAlias=${ANDROID_KEY_ALIAS:-upload}"
+              echo "keyPassword=$ANDROID_KEY_PASSWORD"
+            } > android/keystore.properties
           elif [ -f android/app/upload-keystore.jks ] && [ -f android/keystore.properties ]; then
             echo "Using keystore committed in the repository"
           else
