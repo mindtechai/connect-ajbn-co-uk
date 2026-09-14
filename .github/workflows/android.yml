@@ -23,46 +23,23 @@ jobs:
       - run: bun install
       - run: bun run build
 
-      - name: Prepare dist for Capacitor
+      - name: Ensure web assets exist
         run: |
-          set -e
-          if [ ! -d dist ]; then
-            for candidate in .output/public dist/client build/client build out; do
-              if [ -d "$candidate" ]; then
-                echo "Copying $candidate -> dist"
-                mkdir -p dist
-                cp -r "$candidate"/. dist/
-                break
-              fi
-            done
-          fi
-          mkdir -p dist
-          if [ ! -f dist/index.html ]; then
-            echo "No index.html in build output - writing redirect shell"
-            cat > dist/index.html <<'HTML'
-          <!doctype html>
-          <html lang="en">
-            <head>
-              <meta charset="utf-8" />
-              <meta name="viewport" content="width=device-width, initial-scale=1" />
-              <title>AJBN Connect</title>
-              <script>window.location.replace('https://connect.ajbn.co.uk');</script>
-            </head>
-            <body></body>
-          </html>
-          HTML
-          fi
+          echo "Checking build output..."
           ls -la
-          ls -la dist || true
-
-      - name: Ensure Android project
-        run: |
-          set -e
-          mkdir -p android/app/src/main/assets
-          if [ ! -f android/settings.gradle ]; then
-            echo "Android project missing - adding it"
-            npx @capacitor/cli add android
+          # Create dist from whatever build produced
+          if [ ! -d "dist" ]; then
+            if [ -d "build" ]; then cp -r build dist; 
+            elif [ -d "out" ]; then cp -r out dist;
+            else mkdir -p dist; fi
           fi
+          # Fallback page if dist is still empty - opens live site
+          if [ ! -f "dist/index.html" ]; then
+            echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0;url=https://connect.ajbn.co.uk"></head><body style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh">Opening AJBN Connect...</body></html>' > dist/index.html
+          fi
+          mkdir -p android/app/src/main/assets
+          if [ ! -d "android" ]; then npx @capacitor/cli add android; fi
+          ls -lh dist/
 
       - run: npx @capacitor/cli sync android
 
@@ -86,7 +63,7 @@ jobs:
           elif [ -f android/app/upload-keystore.jks ] && [ -f android/keystore.properties ]; then
             echo "Using keystore committed in the repository"
           else
-            echo "::warning::No signing keystore available - the bundle will be UNSIGNED and cannot be uploaded to Play Console"
+            echo "::warning::No signing keystore available - the bundle will be UNSIGNED"
           fi
 
       - name: Build release bundle
