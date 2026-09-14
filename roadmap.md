@@ -8,5 +8,5 @@
 - [x] Verify database security, build, and desktop/mobile interactions
 
 - [x] Review and resolve email-confirmation sign-in recovery finding
-- [ ] Replace every web, Android, and iOS app icon with the supplied dark-blue AJBN Connect icon
-- [ ] Verify icon references and dimensions, build, sync native projects, and publish
+- [x] Replace every web, Android, and iOS app icon with the supplied dark-blue AJBN Connect icon
+- [ ] Publish the verified web/PWA update (native projects synced; Android release package awaits an Android SDK)
