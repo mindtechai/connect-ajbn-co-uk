@@ -3,7 +3,22 @@ apply plugin: 'com.android.application'
 def keystorePropertiesFile = rootProject.file("keystore.properties")
 def keystoreProperties = new Properties()
 if (keystorePropertiesFile.exists()) {
-    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+    keystorePropertiesFile.withInputStream { keystoreProperties.load(it) }
+}
+
+// Only treat signing as configured when every field is present and the keystore file exists.
+def hasReleaseSigning = false
+if (keystorePropertiesFile.exists()) {
+    def storeFileName = keystoreProperties['storeFile']
+    def resolvedStore = storeFileName ? file(storeFileName) : null
+    hasReleaseSigning = resolvedStore != null &&
+        resolvedStore.exists() &&
+        keystoreProperties['storePassword'] &&
+        keystoreProperties['keyAlias'] &&
+        keystoreProperties['keyPassword']
+    if (!hasReleaseSigning) {
+        logger.warn("keystore.properties found but incomplete - release build will be UNSIGNED")
+    }
 }
 
 
