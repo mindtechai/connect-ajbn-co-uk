@@ -1,6 +1,6 @@
 {
   "name": "AJBN Connect",
-  "short_name": "AJBN",
+  "short_name": "AJBN Connect",
   "description": "The official AJBN Connect portal for business, property, and finance networking.",
   "start_url": "/",
   "scope": "/",
