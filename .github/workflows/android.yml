@@ -24,6 +24,29 @@ jobs:
       - run: bun run build
       - run: bunx cap sync android
 
+      - name: Configure release signing
+        env:
+          ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+        run: |
+          set -e
+          if [ -n "$ANDROID_KEYSTORE_BASE64" ]; then
+            echo "Using keystore from repository secrets"
+            printf '%s' "$ANDROID_KEYSTORE_BASE64" | base64 -d > android/app/upload-keystore.jks
+            {
+              echo "storeFile=upload-keystore.jks"
+              echo "storePassword=$ANDROID_KEYSTORE_PASSWORD"
+              echo "keyAlias=${ANDROID_KEY_ALIAS:-upload}"
+              echo "keyPassword=$ANDROID_KEY_PASSWORD"
+            } > android/keystore.properties
+          elif [ -f android/app/upload-keystore.jks ] && [ -f android/keystore.properties ]; then
+            echo "Using keystore committed in the repository"
+          else
+            echo "::warning::No signing keystore available - the bundle will be UNSIGNED and cannot be uploaded to Play Console"
+          fi
+
       - name: Build release bundle
         run: |
           cd android
