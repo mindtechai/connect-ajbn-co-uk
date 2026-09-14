@@ -2,7 +2,7 @@ import type { CapacitorConfig } from '@capacitor/cli';
 
 const config: CapacitorConfig = {
   appId: 'uk.co.ajbn.connect',
-  appName: 'AJBN Connect: B2B Network',
+  appName: 'AJBN Connect',
   webDir: 'dist',
   server: {
     // The app is a wrapper around the live AJBN Connect site, so all
