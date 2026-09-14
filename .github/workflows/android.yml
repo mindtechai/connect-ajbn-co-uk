@@ -1,6 +1,7 @@
 name: Build Android AAB uk.co.ajbn.connect
 on:
   workflow_dispatch:
+
 jobs:
   build-android:
     runs-on: ubuntu-latest
@@ -20,28 +21,52 @@ jobs:
         with:
           bun-version: latest
 
-      - run: bun install
-      - run: bun run build
+      - name: Install dependencies
+        run: bun install
 
-      - name: Ensure web assets exist
+      - name: Build web app
+        run: bun run build
+
+      - name: Verify dist exists (FAIL if blank)
         run: |
-          echo "Checking build output..."
+          echo "=== Root ==="
           ls -la
-          # Create dist from whatever build produced
+          echo ""
+          echo "=== Checking dist ==="
           if [ ! -d "dist" ]; then
-            if [ -d "build" ]; then cp -r build dist; 
-            elif [ -d "out" ]; then cp -r out dist;
-            else mkdir -p dist; fi
+            echo "::error::dist folder missing! Check vite.config.ts base='./' and build script"
+            ls -la
+            exit 1
           fi
-          # Fallback page if dist is still empty - opens live site
-          if [ ! -f "dist/index.html" ]; then
-            echo '<!DOCTYPE html><html><head><meta http-equiv="refresh" content="0;url=https://connect.ajbn.co.uk"></head><body style="font-family:sans-serif;display:flex;align-items:center;justify-content:center;height:100vh">Opening AJBN Connect...</body></html>' > dist/index.html
-          fi
-          mkdir -p android/app/src/main/assets
-          if [ ! -d "android" ]; then npx @capacitor/cli add android; fi
           ls -lh dist/
+          echo ""
+          echo "=== dist/index.html head ==="
+          head -30 dist/index.html
+          echo ""
+          if [ ! -f "dist/index.html" ]; then
+            echo "::error::dist/index.html NOT FOUND - build failed"
+            exit 1
+          fi
+          SIZE=$(du -sh dist/ | cut -f1)
+          echo "dist size: $SIZE"
+          if [ $(du -sk dist/ | cut -f1) -lt 100 ]; then
+            echo "::error::dist too small (<100KB) - likely empty, will cause white screen on S25"
+            exit 1
+          fi
 
-      - run: npx @capacitor/cli sync android
+      - name: Add android platform if missing
+        run: |
+          if [ ! -d "android" ]; then
+            npx @capacitor/cli add android
+          fi
+
+      - name: Copy web assets to Android
+        run: |
+          npx @capacitor/cli copy android
+          npx @capacitor/cli sync android
+          echo "=== Android assets ==="
+          ls -lh android/app/src/main/assets/public/ | head -20
+          ls -lh android/app/src/main/assets/public/assets/ | head -20 || true
 
       - name: Configure release signing
         env:
@@ -72,8 +97,18 @@ jobs:
           chmod +x gradlew
           ./gradlew bundleRelease --no-daemon
 
-      - name: List outputs
-        run: ls -lh android/app/build/outputs/bundle/release/
+      - name: List outputs and check size
+        run: |
+          ls -lh android/app/build/outputs/bundle/release/
+          AAB=$(ls android/app/build/outputs/bundle/release/*.aab | head -1)
+          SIZE=$(du -h "$AAB" | cut -f1)
+          echo "AAB size: $SIZE - $AAB"
+          BYTES=$(stat -c%s "$AAB")
+          if [ $BYTES -lt 5000000 ]; then
+            echo "::warning::AAB is only $SIZE (<5MB) - likely still blank! Should be 6-8MB+"
+          else
+            echo "✅ AAB size looks good for S25"
+          fi
 
       - uses: actions/upload-artifact@v5
         with:
