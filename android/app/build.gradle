@@ -1,5 +1,13 @@
 apply plugin: 'com.android.application'
 
+def keystorePropertiesFile = rootProject.file("keystore.properties")
+def keystoreProperties = new Properties()
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
+
+
 android {
     namespace = "uk.co.ajbn.connect"
     compileSdk = rootProject.ext.compileSdkVersion
