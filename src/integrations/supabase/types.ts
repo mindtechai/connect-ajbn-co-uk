@@ -1211,6 +1211,7 @@ export type Database = {
           rsvp_id: string
         }[]
       }
+      claim_referral_reward: { Args: never; Returns: number }
       generate_referral_code: {
         Args: { _first: string; _last: string }
         Returns: string
