@@ -260,23 +260,20 @@
 }
 /* === FIX: Yellow ribbon invisible on phone app - Laura issue === */
 @media (max-width: 768px) {
-  /* Hide the thin vertical edge version */
-  /* This targets the element you see on right edge in Screenshot_650.png */
+  /* Only target the fixed side-ribbon component, never generic referral links. */
+  .referral-side-ribbon,
   [style*="writing-mode: vertical"],
-  [style*="writing-mode:vertical"],
-  .referral-ribbon,
-  .members-referral,
-  a[href*="referral"] {
+  [style*="writing-mode:vertical"] {
     writing-mode: horizontal-tb !important;
     transform: none !important;
-    
+
     /* Turn it into a big floating pill button */
     position: fixed !important;
     bottom: 20px !important;
     right: 16px !important;
     top: auto !important;
     left: auto !important;
-    
+
     background: #FFC107 !important;
     color: #0A1931 !important;
     width: auto !important;
