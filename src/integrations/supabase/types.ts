@@ -962,18 +962,22 @@ export type Database = {
           avatar_url: string | null
           bio: string | null
           calendly_url: string | null
+          city: string | null
           company: string | null
           company_name_status: string
           created_at: string
+          deleted_at: string | null
           email: string | null
           first_name: string | null
           id: string
           industry: string | null
+          is_approved: boolean
           last_name: string | null
           linkedin: string | null
           linkedin_url: string | null
           logo_status: string
           logo_url: string | null
+          membership_tier: string
           other_socials: string | null
           pending_company_name: string | null
           pending_logo_url: string | null
@@ -994,18 +998,22 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           calendly_url?: string | null
+          city?: string | null
           company?: string | null
           company_name_status?: string
           created_at?: string
+          deleted_at?: string | null
           email?: string | null
           first_name?: string | null
           id: string
           industry?: string | null
+          is_approved?: boolean
           last_name?: string | null
           linkedin?: string | null
           linkedin_url?: string | null
           logo_status?: string
           logo_url?: string | null
+          membership_tier?: string
           other_socials?: string | null
           pending_company_name?: string | null
           pending_logo_url?: string | null
@@ -1026,18 +1034,22 @@ export type Database = {
           avatar_url?: string | null
           bio?: string | null
           calendly_url?: string | null
+          city?: string | null
           company?: string | null
           company_name_status?: string
           created_at?: string
+          deleted_at?: string | null
           email?: string | null
           first_name?: string | null
           id?: string
           industry?: string | null
+          is_approved?: boolean
           last_name?: string | null
           linkedin?: string | null
           linkedin_url?: string | null
           logo_status?: string
           logo_url?: string | null
+          membership_tier?: string
           other_socials?: string | null
           pending_company_name?: string | null
           pending_logo_url?: string | null
