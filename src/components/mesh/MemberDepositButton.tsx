@@ -21,29 +21,12 @@ export function MemberDepositButton({ userId, onSuccess, onError }: MemberDeposi
     }
     setIsLoading(true);
     try {
-      // Count referrals to compute the current credit (£50 per recruit, capped at £250)
-      const { data: me } = await supabase
-        .from('profiles')
-        .select('referral_code')
-        .eq('id', userId)
-        .maybeSingle();
-
-      let credit = 0;
-      if (me?.referral_code) {
-        const { count } = await supabase
-          .from('profiles')
-          .select('*', { count: 'exact', head: true })
-          .eq('referred_by_code', me.referral_code);
-        credit = Math.min((count ?? 0) * 50, 250);
-      }
-
-      const { error } = await supabase.from('reward_deposits').insert({
-        user_id: userId,
-        amount: credit,
-        source: 'lions_referral',
-        notes: `Impact Lions referral credit claim (£${credit})`,
-      });
+      // The credit (£50 per referral, capped at £250) is computed and recorded
+      // server-side so it cannot be tampered with from the client.
+      const { data, error } = await supabase.rpc('claim_referral_reward');
       if (error) throw error;
+      const credit = Number(data ?? 0);
+
 
       toast.success(
         credit > 0
