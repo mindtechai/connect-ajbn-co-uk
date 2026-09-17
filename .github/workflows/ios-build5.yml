@@ -18,7 +18,7 @@ jobs:
       - name: Create Xcode project for uk.co.ajbn.connect Build 5
         run: |
           set -e
-          rm -rf AJBNConnect
+          rm -rf AJBNConnect build
           mkdir -p AJBNConnect/AJBNConnect
           
           cat > AJBNConnect/AJBNConnect/AJBNConnectApp.swift << 'SWIFT'
@@ -79,8 +79,6 @@ jobs:
                   <key>CFBundleIdentifier</key><string>uk.co.ajbn.connect</string>
                   <key>CFBundleVersion</key><string>5</string>
                   <key>CFBundleShortVersionString</key><string>1.0.2</string>
-                  <key>NSCameraUsageDescription</key><string>For profile photos</string>
-                  <key>NSPhotoLibraryUsageDescription</key><string>For profile photos</string>
                   <key>UILaunchStoryboardName</key><string>LaunchScreen</string>
                   <key>UISupportedInterfaceOrientations</key><array><string>UIInterfaceOrientationPortrait</string></array>
           </dict>
@@ -111,7 +109,7 @@ jobs:
                   INFOPLIST_FILE: AJBNConnect/AJBNConnect/Info.plist
           EOF
           xcodegen generate
-          ls -la *.xcodeproj
+          ls -la AJBNConnect.xcodeproj
 
       - name: Setup App Store Connect API Key
         env:
@@ -123,19 +121,19 @@ jobs:
           chmod 600 ~/.appstoreconnect/private_keys/AuthKey_${API_KEY_ID}.p8
           ls -la ~/.appstoreconnect/private_keys/
 
-      - name: Build Archive WITHOUT signing (bypass device error)
+      - name: Build Archive WITHOUT signing
         run: |
           set -e
-          echo "Archiving WITHOUT signing to avoid 'no devices' error..."
+          echo "Archiving WITHOUT signing - this bypasses 'no devices' error (like your old Codemagic unsigned build)"
           xcodebuild -project AJBNConnect.xcodeproj -scheme AJBNConnect -configuration Release -destination 'generic/platform=iOS' -archivePath $PWD/build/AJBNConnect.xcarchive archive CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" CODE_SIGN_STYLE=Manual
+          echo "Archive created without signing - will sign during export as App Store"
 
-      - name: Export IPA with App Store signing
+      - name: Export IPA with App Store signing (no device needed)
         env:
           API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
         run: |
           set -e
-          # Use exportOptions from your repo
           if [ -f "ios/exportOptions.plist" ]; then cp ios/exportOptions.plist ./exportOptions.plist; fi
           if [ ! -f "exportOptions.plist" ]; then
             cat > exportOptions.plist << 'EOP'
@@ -154,7 +152,7 @@ jobs:
           fi
           cat exportOptions.plist
           KEY_PATH="$HOME/.appstoreconnect/private_keys/AuthKey_${API_KEY_ID}.p8"
-          echo "Exporting with API Key auth - this WILL create App Store profile (no device needed)..."
+          echo "Exporting with App Store signing - this creates App Store profile (NOT Development, so no device needed)..."
           xcodebuild -exportArchive -archivePath $PWD/build/AJBNConnect.xcarchive -exportPath $PWD/build -exportOptionsPlist exportOptions.plist -allowProvisioningUpdates -authenticationKeyPath "$KEY_PATH" -authenticationKeyID "$API_KEY_ID" -authenticationKeyIssuerID "$API_ISSUER_ID"
           ls -lh build/
 
@@ -164,5 +162,14 @@ jobs:
           API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
         run: |
           echo "Uploading Build 5 uk.co.ajbn.connect to TestFlight..."
-          xcrun altool --upload-app -f $PWD/build/AJBNConnect.ipa --apiKey $API_KEY_ID --apiIssuer $API_ISSUER_ID --verbose
-          echo "✅ SUCCESS: Check App Store Connect - Build 5 should appear"
+          echo "=== Finding IPA ==="
+          find $PWD/build -name "*.ipa" -type f -exec ls -lh {} \;
+          IPA_PATH=$(find $PWD/build -name "*.ipa" -type f | head -n 1)
+          if [ -z "$IPA_PATH" ]; then
+            echo "ERROR: No IPA found in build folder!"
+            ls -laR $PWD/build
+            exit 1
+          fi
+          echo "Found IPA: $IPA_PATH"
+          xcrun altool --upload-app -f "$IPA_PATH" --apiKey $API_KEY_ID --apiIssuer $API_ISSUER_ID --verbose
+          echo "✅ SUCCESS: Build 5 uploaded - check App Store Connect -> TestFlight in 2-3 mins"
