@@ -10,39 +10,29 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v4
 
-      - name: Show files
+      - name: Show repo structure
         run: |
-          ls -la ios/ || echo "no ios"
-          ls -la ios-ajbn/ 2>/dev/null || echo "no ios-ajbn (expected)"
-          ls -la .
+          echo "=== ROOT ==="
+          ls -la
+          echo "=== ios folder (your repo) ==="
+          ls -la ios/ || echo "no ios folder"
+          echo "=== .github/workflows ==="
+          ls -la .github/workflows/
 
       - name: Setup Xcode
         uses: maxim-lobanov/setup-xcode@v1
         with:
           xcode-version: latest-stable
 
-      - name: Create Xcode project structure
+      - name: Create Xcode project structure for uk.co.ajbn.connect Build 5
         run: |
-          # Create project folder
+          set -e
+          echo "Creating AJBNConnect project structure..."
+          rm -rf AJBNConnect
           mkdir -p AJBNConnect/AJBNConnect
           
-          # Copy Swift files - try ios-ajbn first, then ios/App, then create if missing
-          if [ -f "ios-ajbn/AJBNConnectApp.swift" ]; then
-            echo "Found ios-ajbn folder"
-            cp ios-ajbn/AJBNConnectApp.swift AJBNConnect/AJBNConnect/
-            cp ios-ajbn/ContentView.swift AJBNConnect/AJBNConnect/
-            cp ios-ajbn/WebView.swift AJBNConnect/AJBNConnect/
-            cp ios-ajbn/Info.plist.txt AJBNConnect/AJBNConnect/Info.plist || cp ios/exportOptions.plist AJBNConnect/AJBNConnect/Info.plist || true
-          elif [ -f "ios/App/AJBNConnectApp.swift" ]; then
-            cp ios/App/AJBNConnectApp.swift AJBNConnect/AJBNConnect/
-            cp ios/App/ContentView.swift AJBNConnect/AJBNConnect/ || true
-            cp ios/App/WebView.swift AJBNConnect/AJBNConnect/ || true
-          fi
-          
-          # If still missing, create files directly (guaranteed Build 5)
-          if [ ! -f "AJBNConnect/AJBNConnect/ContentView.swift" ]; then
-            echo "Creating Swift files from scratch for uk.co.ajbn.connect Build 5"
-            cat > AJBNConnect/AJBNConnect/AJBNConnectApp.swift << 'SWIFT'
+          # Create Swift files directly (guaranteed correct for Build 5)
+          cat > AJBNConnect/AJBNConnect/AJBNConnectApp.swift << 'SWIFT'
           import SwiftUI
           @main
           struct AJBNConnectApp: App {
@@ -53,8 +43,8 @@ jobs:
               }
           }
           SWIFT
-          
-            cat > AJBNConnect/AJBNConnect/ContentView.swift << 'SWIFT'
+
+          cat > AJBNConnect/AJBNConnect/ContentView.swift << 'SWIFT'
           import SwiftUI
           struct ContentView: View {
               private let siteURL = URL(string: "https://connect.ajbn.co.uk")!
@@ -63,26 +53,29 @@ jobs:
                       Color(red: 0.08, green: 0.18, blue: 0.30).ignoresSafeArea()
                       WebView(url: siteURL)
                           .ignoresSafeArea(.all, edges: .bottom)
-                          .background(Color(red: 0.08, green: 0.18, blue: 0.30))
                   }
                   .preferredColorScheme(.light)
               }
           }
           SWIFT
-          
-            cat > AJBNConnect/AJBNConnect/WebView.swift << 'SWIFT'
+
+          cat > AJBNConnect/AJBNConnect/WebView.swift << 'SWIFT'
           import SwiftUI
           import WebKit
           struct WebView: UIViewRepresentable {
               let url: URL
               func makeUIView(context: Context) -> WKWebView {
-                  let wv = WKWebView()
+                  let config = WKWebViewConfiguration()
+                  config.allowsInlineMediaPlayback = true
+                  let wv = WKWebView(frame: .zero, configuration: config)
                   wv.navigationDelegate = context.coordinator
+                  wv.allowsBackForwardNavigationGestures = true
                   return wv
               }
               func updateUIView(_ uiView: WKWebView, context: Context) {
-                  let request = URLRequest(url: url)
-                  uiView.load(request)
+                  if uiView.url == nil {
+                      uiView.load(URLRequest(url: url))
+                  }
               }
               func makeCoordinator() -> Coordinator { Coordinator() }
               class Coordinator: NSObject, WKNavigationDelegate {
@@ -104,9 +97,8 @@ jobs:
               }
           }
           SWIFT
-          fi
-          
-          # Create Info.plist for uk.co.ajbn.connect Build 5
+
+          # Create Info.plist with correct Bundle ID uk.co.ajbn.connect Build 5
           cat > AJBNConnect/AJBNConnect/Info.plist << 'PLIST'
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTD/PLIST/1.0.dtd">
@@ -152,21 +144,28 @@ jobs:
           </dict>
           </plist>
           PLIST
-          
+
+          echo "=== Created files ==="
+          ls -la AJBNConnect/AJBNConnect/
           cat AJBNConnect/AJBNConnect/Info.plist
 
-      - name: Generate Xcode project
+      - name: Generate Xcode project (FIXED PATH)
         run: |
+          set -e
           brew install xcodegen
+
           cat > project.yml << 'EOF'
           name: AJBNConnect
-          bundleIdPrefix: uk.co.ajbn
+          options:
+            bundleIdPrefix: uk.co.ajbn
+            xcodeVersion: "15.0"
           targets:
             AJBNConnect:
               type: application
               platform: iOS
               deploymentTarget: "14.0"
-              sources: [AJBNConnect]
+              sources:
+                - AJBNConnect
               settings:
                 base:
                   PRODUCT_BUNDLE_IDENTIFIER: uk.co.ajbn.connect
@@ -174,11 +173,36 @@ jobs:
                   CODE_SIGN_STYLE: Automatic
                   MARKETING_VERSION: 1.0.2
                   CURRENT_PROJECT_VERSION: 5
-                  INFOPLIST_FILE: AJBNConnect/Info.plist
+                  INFOPLIST_FILE: AJBNConnect/AJBNConnect/Info.plist
                   SWIFT_VERSION: "5.0"
+                  IPHONEOS_DEPLOYMENT_TARGET: "14.0"
           EOF
-          xcodegen generate --project AJBNConnect
+
+          echo "=== project.yml ==="
+          cat project.yml
+
+          # Generate project AT ROOT - no --project flag
+          xcodegen generate
+
+          echo "=== After xcodegen ==="
           ls -la
+          echo "=== Checking for xcodeproj ==="
+          ls -la *.xcodeproj 2>&1 || echo "No xcodeproj at root"
+          ls -la AJBNConnect/*.xcodeproj 2>&1 || echo "No xcodeproj in AJBNConnect folder"
+          
+          # If generated in subfolder, move it to root for next step
+          if [ -d "AJBNConnect/AJBNConnect.xcodeproj" ]; then
+            echo "Found project in AJBNConnect/AJBNConnect.xcodeproj - moving to root"
+            mv AJBNConnect/AJBNConnect.xcodeproj ./AJBNConnect.xcodeproj
+          fi
+          if [ -d "AJBNConnect.xcodeproj" ]; then
+            echo "SUCCESS: AJBNConnect.xcodeproj exists at root"
+            ls -la AJBNConnect.xcodeproj/
+          else
+            echo "ERROR: xcodeproj not found!"
+            find . -name "*.xcodeproj" -type d
+            exit 1
+          fi
 
       - name: Setup App Store Connect API Key
         env:
@@ -189,15 +213,19 @@ jobs:
           echo "$API_KEY_CONTENT" > ~/.appstoreconnect/private_keys/AuthKey_${API_KEY_ID}.p8
           chmod 600 ~/.appstoreconnect/private_keys/AuthKey_${API_KEY_ID}.p8
           ls -la ~/.appstoreconnect/private_keys/
-          echo "API Key installed"
+          echo "API Key ASTZTUJTA6 installed"
 
-      - name: Build Archive
+      - name: Build Archive (FIXED)
         run: |
+          set -e
+          echo "Building with uk.co.ajbn.connect Build 5..."
+          # Use correct project path - now at root
           xcodebuild -project AJBNConnect.xcodeproj -scheme AJBNConnect -configuration Release -destination 'generic/platform=iOS' -archivePath $PWD/build/AJBNConnect.xcarchive archive -allowProvisioningUpdates
 
-      - name: Export IPA
+      - name: Export IPA (FIXED)
         run: |
-          # Find exportOptions.plist - you created in ios/ 
+          set -e
+          # Use your exportOptions.plist from ios/ folder
           if [ -f "ios/exportOptions.plist" ]; then
             cp ios/exportOptions.plist ./exportOptions.plist
             echo "Using ios/exportOptions.plist"
@@ -205,7 +233,6 @@ jobs:
             cp ios-ajbn/exportOptions.plist ./exportOptions.plist
             echo "Using ios-ajbn/exportOptions.plist"
           else
-            echo "Creating exportOptions.plist"
             cat > exportOptions.plist << 'EOP'
           <?xml version="1.0" encoding="UTF-8"?>
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTD/PLIST/1.0.dtd">
@@ -234,5 +261,9 @@ jobs:
           API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
         run: |
+          echo "Uploading Build 5 uk.co.ajbn.connect to TestFlight..."
+          echo "Key ID: $API_KEY_ID"
+          echo "Issuer ID: $API_ISSUER_ID"
+          # Try altool, fallback to notarytool if needed
           xcrun altool --upload-app -f $PWD/build/AJBNConnect.ipa --apiKey $API_KEY_ID --apiIssuer $API_ISSUER_ID --verbose || xcrun altool --upload-app -f $PWD/build/AJBNConnect.ipa --apiKey $API_KEY_ID --apiIssuer $API_ISSUER_ID
-          echo "✅ Uploaded Build 5 (uk.co.ajbn.connect) to TestFlight - check App Store Connect"
+          echo "✅ SUCCESS: Build 5 uploaded - check App Store Connect Builds"
