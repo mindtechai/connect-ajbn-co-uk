@@ -82,7 +82,9 @@ jobs:
                   <key>CFBundleShortVersionString</key><string>1.0.2</string>
                   <key>CFBundlePackageType</key><string>APPL</string>
                   <key>UILaunchStoryboardName</key><string>LaunchScreen</string>
-                  <key>UISupportedInterfaceOrientations</key><array><string>UIInterfaceOrientationPortrait</string></array>
+                  <key>UISupportedInterfaceOrientations</key><array><string>UIInterfaceOrientationPortrait</string><string>UIInterfaceOrientationPortraitUpsideDown</string><string>UIInterfaceOrientationLandscapeLeft</string><string>UIInterfaceOrientationLandscapeRight</string></array>
+                  <key>UISupportedInterfaceOrientations~ipad</key><array><string>UIInterfaceOrientationPortrait</string><string>UIInterfaceOrientationPortraitUpsideDown</string><string>UIInterfaceOrientationLandscapeLeft</string><string>UIInterfaceOrientationLandscapeRight</string></array>
+                  <key>UIRequiresFullScreen</key><true/>
           </dict>
           </plist>
           PLIST
@@ -99,7 +101,7 @@ jobs:
             AJBNConnect:
               type: application
               platform: iOS
-              deploymentTarget: "14.0"
+              deploymentTarget: "15.0"
               sources: [AJBNConnect]
               settings:
                 base:
@@ -160,8 +162,24 @@ jobs:
         env:
           API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
+          API_KEY_CONTENT: ${{ secrets.APPLE_API_KEY_CONTENT }}
         run: |
           set -e
           IPA_PATH=$(find $PWD/build -name "*.ipa" -type f | head -n 1)
           echo "Uploading $IPA_PATH"
-          xcrun altool --upload-app -f "$IPA_PATH" --apiKey $API_KEY_ID --apiIssuer $API_ISSUER_ID --verbose
+          ls -lh "$IPA_PATH"
+          # Try new transporter method first, fallback to altool
+          echo "=== Trying xcrun altool upload ==="
+          set +e
+          xcrun altool --upload-app -f "$IPA_PATH" --apiKey $API_KEY_ID --apiIssuer $API_ISSUER_ID --verbose 2>&1 | tee upload.log
+          EXIT_CODE=${PIPESTATUS[0]}
+          if [ $EXIT_CODE -ne 0 ]; then
+            echo "altool failed, showing full log:"
+            cat upload.log
+            echo "=== Trying alternative: iTMSTransporter with API key ==="
+            mkdir -p ~/.appstoreconnect/private_keys/
+            echo "$API_KEY_CONTENT" > ~/.appstoreconnect/private_keys/AuthKey_${API_KEY_ID}.p8
+            xcrun iTMSTransporter -m upload -f "$IPA_PATH" -k 100000 --apiKey $API_KEY_ID --apiIssuer $API_ISSUER_ID --verbose 2>&1 | tee upload2.log
+            cat upload2.log
+            exit ${PIPESTATUS[0]}
+          fi
