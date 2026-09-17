@@ -74,11 +74,13 @@ jobs:
           <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTD/PLIST/1.0.dtd">
           <plist version="1.0">
           <dict>
-                  <key>CFBundleName</key><string>AJBN Connect</string>
+                  <key>CFBundleName</key><string>AJBNConnect</string>
                   <key>CFBundleDisplayName</key><string>AJBN Connect</string>
+                  <key>CFBundleExecutable</key><string>AJBNConnect</string>
                   <key>CFBundleIdentifier</key><string>uk.co.ajbn.connect</string>
                   <key>CFBundleVersion</key><string>5</string>
                   <key>CFBundleShortVersionString</key><string>1.0.2</string>
+                  <key>CFBundlePackageType</key><string>APPL</string>
                   <key>UILaunchStoryboardName</key><string>LaunchScreen</string>
                   <key>UISupportedInterfaceOrientations</key><array><string>UIInterfaceOrientationPortrait</string></array>
           </dict>
@@ -102,8 +104,9 @@ jobs:
               settings:
                 base:
                   PRODUCT_BUNDLE_IDENTIFIER: uk.co.ajbn.connect
+                  PRODUCT_NAME: AJBNConnect
                   DEVELOPMENT_TEAM: WR8R9QALMK
-                  CODE_SIGN_STYLE: Manual
+                  CODE_SIGN_STYLE: Automatic
                   MARKETING_VERSION: 1.0.2
                   CURRENT_PROJECT_VERSION: 5
                   INFOPLIST_FILE: AJBNConnect/AJBNConnect/Info.plist
@@ -119,16 +122,17 @@ jobs:
           mkdir -p ~/.appstoreconnect/private_keys/
           echo "$API_KEY_CONTENT" > ~/.appstoreconnect/private_keys/AuthKey_${API_KEY_ID}.p8
           chmod 600 ~/.appstoreconnect/private_keys/AuthKey_${API_KEY_ID}.p8
-          ls -la ~/.appstoreconnect/private_keys/
 
-      - name: Build Archive WITHOUT signing
+      - name: Build Archive WITH signing
+        env:
+          API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
         run: |
           set -e
-          echo "Archiving WITHOUT signing - this bypasses 'no devices' error (like your old Codemagic unsigned build)"
-          xcodebuild -project AJBNConnect.xcodeproj -scheme AJBNConnect -configuration Release -destination 'generic/platform=iOS' -archivePath $PWD/build/AJBNConnect.xcarchive archive CODE_SIGNING_ALLOWED=NO CODE_SIGNING_REQUIRED=NO CODE_SIGN_IDENTITY="" CODE_SIGN_STYLE=Manual
-          echo "Archive created without signing - will sign during export as App Store"
+          KEY_PATH="$HOME/.appstoreconnect/private_keys/AuthKey_${API_KEY_ID}.p8"
+          xcodebuild -project AJBNConnect.xcodeproj -scheme AJBNConnect -configuration Release -destination 'generic/platform=iOS' -archivePath $PWD/build/AJBNConnect.xcarchive archive -allowProvisioningUpdates -authenticationKeyPath "$KEY_PATH" -authenticationKeyID "$API_KEY_ID" -authenticationKeyIssuerID "$API_ISSUER_ID"
 
-      - name: Export IPA with App Store signing (no device needed)
+      - name: Export IPA with App Store signing
         env:
           API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
@@ -144,32 +148,20 @@ jobs:
                   <key>method</key><string>app-store</string>
                   <key>teamID</key><string>WR8R9QALMK</string>
                   <key>signingStyle</key><string>automatic</string>
-                  <key>stripSwiftSymbols</key><true/>
-                  <key>uploadSymbols</key><true/>
           </dict>
           </plist>
           EOP
           fi
-          cat exportOptions.plist
           KEY_PATH="$HOME/.appstoreconnect/private_keys/AuthKey_${API_KEY_ID}.p8"
-          echo "Exporting with App Store signing - this creates App Store profile (NOT Development, so no device needed)..."
           xcodebuild -exportArchive -archivePath $PWD/build/AJBNConnect.xcarchive -exportPath $PWD/build -exportOptionsPlist exportOptions.plist -allowProvisioningUpdates -authenticationKeyPath "$KEY_PATH" -authenticationKeyID "$API_KEY_ID" -authenticationKeyIssuerID "$API_ISSUER_ID"
-          ls -lh build/
+          find $PWD/build -name "*.ipa" -exec ls -lh {} \;
 
       - name: Upload to TestFlight
         env:
           API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
           API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
         run: |
-          echo "Uploading Build 5 uk.co.ajbn.connect to TestFlight..."
-          echo "=== Finding IPA ==="
-          find $PWD/build -name "*.ipa" -type f -exec ls -lh {} \;
+          set -e
           IPA_PATH=$(find $PWD/build -name "*.ipa" -type f | head -n 1)
-          if [ -z "$IPA_PATH" ]; then
-            echo "ERROR: No IPA found in build folder!"
-            ls -laR $PWD/build
-            exit 1
-          fi
-          echo "Found IPA: $IPA_PATH"
+          echo "Uploading $IPA_PATH"
           xcrun altool --upload-app -f "$IPA_PATH" --apiKey $API_KEY_ID --apiIssuer $API_ISSUER_ID --verbose
-          echo "✅ SUCCESS: Build 5 uploaded - check App Store Connect -> TestFlight in 2-3 mins"
