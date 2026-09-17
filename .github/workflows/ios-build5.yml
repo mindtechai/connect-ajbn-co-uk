@@ -1,0 +1,90 @@
+name: iOS Build 5 - AJBN Connect (No Mac Needed)
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build-and-upload:
+    runs-on: macos-latest
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Show files
+        run: ls -la ios-ajbn/
+
+      - name: Setup Xcode
+        uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+
+      - name: Create Xcode project structure
+        run: |
+          # Create project folder
+          mkdir -p AJBNConnect/AJBNConnect
+          
+          # Copy Swift files
+          cp ios-ajbn/AJBNConnectApp.swift AJBNConnect/AJBNConnect/
+          cp ios-ajbn/ContentView.swift AJBNConnect/AJBNConnect/
+          cp ios-ajbn/WebView.swift AJBNConnect/AJBNConnect/
+          cp ios-ajbn/Info.plist.txt AJBNConnect/AJBNConnect/Info.plist
+          
+          # Fix bundle ID to uk.co.ajbn.connect Build 5
+          plutil -replace CFBundleIdentifier -string uk.co.ajbn.connect AJBNConnect/AJBNConnect/Info.plist
+          plutil -replace CFBundleVersion -string 5 AJBNConnect/AJBNConnect/Info.plist
+          plutil -replace CFBundleShortVersionString -string 1.0.2 AJBNConnect/AJBNConnect/Info.plist
+          
+          cat AJBNConnect/AJBNConnect/Info.plist
+
+      - name: Generate Xcode project with xcodegen or manual
+        run: |
+          # Install xcodegen
+          brew install xcodegen
+          
+          cat > project.yml << 'EOF'
+          name: AJBNConnect
+          bundleIdPrefix: uk.co.ajbn
+          targets:
+            AJBNConnect:
+              type: application
+              platform: iOS
+              deploymentTarget: "14.0"
+              sources: [AJBNConnect]
+              settings:
+                base:
+                  PRODUCT_BUNDLE_IDENTIFIER: uk.co.ajbn.connect
+                  DEVELOPMENT_TEAM: WR8R9QALMK
+                  CODE_SIGN_STYLE: Automatic
+                  MARKETING_VERSION: 1.0.2
+                  CURRENT_PROJECT_VERSION: 5
+          EOF
+          
+          xcodegen generate --project AJBNConnect
+
+      - name: Setup App Store Connect API Key
+        env:
+          API_KEY_CONTENT: ${{ secrets.APPLE_API_KEY_CONTENT }}
+          API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+        run: |
+          mkdir -p ~/.appstoreconnect/private_keys/
+          echo "$API_KEY_CONTENT" > ~/.appstoreconnect/private_keys/AuthKey_${API_KEY_ID}.p8
+          ls -la ~/.appstoreconnect/private_keys/
+          echo "API Key installed"
+
+      - name: Build Archive
+        run: |
+          xcodebuild -project AJBNConnect.xcodeproj -scheme AJBNConnect -configuration Release -destination 'generic/platform=iOS' -archivePath $PWD/build/AJBNConnect.xcarchive archive -allowProvisioningUpdates
+
+      - name: Export IPA
+        run: |
+          cp ios-ajbn/exportOptions.plist .
+          xcodebuild -exportArchive -archivePath $PWD/build/AJBNConnect.xcarchive -exportPath $PWD/build -exportOptionsPlist exportOptions.plist -allowProvisioningUpdates
+          ls -lh build/
+
+      - name: Upload to TestFlight
+        env:
+          API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
+        run: |
+          xcrun altool --upload-app -f $PWD/build/AJBNConnect.ipa --apiKey $API_KEY_ID --apiIssuer $API_ISSUER_ID --verbose
+          echo "Uploaded Build 5 to TestFlight - check App Store Connect"
