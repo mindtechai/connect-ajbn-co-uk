@@ -215,17 +215,29 @@ jobs:
           ls -la ~/.appstoreconnect/private_keys/
           echo "API Key ASTZTUJTA6 installed"
 
-      - name: Build Archive (FIXED)
+      - name: Build Archive (FIXED - with API Key Auth)
+        env:
+          API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
+          API_KEY_CONTENT: ${{ secrets.APPLE_API_KEY_CONTENT }}
         run: |
           set -e
           echo "Building with uk.co.ajbn.connect Build 5..."
-          # Use correct project path - now at root
-          xcodebuild -project AJBNConnect.xcodeproj -scheme AJBNConnect -configuration Release -destination 'generic/platform=iOS' -archivePath $PWD/build/AJBNConnect.xcarchive archive -allowProvisioningUpdates
+          echo "Key ID: $API_KEY_ID"
+          echo "Issuer ID: $API_ISSUER_ID"
+          # Ensure API key exists at expected path
+          KEY_PATH="$HOME/.appstoreconnect/private_keys/AuthKey_${API_KEY_ID}.p8"
+          echo "Key path: $KEY_PATH"
+          ls -la "$KEY_PATH"
+          # Build with API key auth for automatic provisioning
+          xcodebuild -project AJBNConnect.xcodeproj -scheme AJBNConnect -configuration Release -destination 'generic/platform=iOS' -archivePath $PWD/build/AJBNConnect.xcarchive archive -allowProvisioningUpdates -authenticationKeyPath "$KEY_PATH" -authenticationKeyID "$API_KEY_ID" -authenticationKeyIssuerID "$API_ISSUER_ID"
 
       - name: Export IPA (FIXED)
+        env:
+          API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
         run: |
           set -e
-          # Use your exportOptions.plist from ios/ folder
           if [ -f "ios/exportOptions.plist" ]; then
             cp ios/exportOptions.plist ./exportOptions.plist
             echo "Using ios/exportOptions.plist"
@@ -253,7 +265,8 @@ jobs:
           EOP
           fi
           cat exportOptions.plist
-          xcodebuild -exportArchive -archivePath $PWD/build/AJBNConnect.xcarchive -exportPath $PWD/build -exportOptionsPlist exportOptions.plist -allowProvisioningUpdates
+          KEY_PATH="$HOME/.appstoreconnect/private_keys/AuthKey_${API_KEY_ID}.p8"
+          xcodebuild -exportArchive -archivePath $PWD/build/AJBNConnect.xcarchive -exportPath $PWD/build -exportOptionsPlist exportOptions.plist -allowProvisioningUpdates -authenticationKeyPath "$KEY_PATH" -authenticationKeyID "$API_KEY_ID" -authenticationKeyIssuerID "$API_ISSUER_ID"
           ls -lh build/
 
       - name: Upload to TestFlight
