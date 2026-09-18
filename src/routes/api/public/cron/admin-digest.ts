@@ -16,13 +16,14 @@ function section(
   title: string,
   items: string[],
   actionLabel: string,
+  path: string,
 ): DigestSection | null {
   if (items.length === 0) return null;
   return {
     title,
     count: items.length,
     items: items.slice(0, MAX_ITEMS),
-    action_url: ADMIN_URL,
+    action_url: `${APP_URL}${path}`,
     action_label: actionLabel,
   };
 }
