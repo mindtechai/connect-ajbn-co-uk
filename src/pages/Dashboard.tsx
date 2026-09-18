@@ -6,8 +6,9 @@ import { ScrollReveal } from "@/components/ScrollReveal";
 import {
   Users, CalendarDays, Award, Link2, Bell, Crown,
   Copy, ArrowRight, LogOut, Shield, Settings, User, BookUser, HeartHandshake, Briefcase,
-  HandHeart, CalendarClock, Moon, Sparkles
+  HandHeart, CalendarClock, Moon, Sparkles, Clock, Lock
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import lionsEmblem from "@/assets/lions-emblem.png";
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
 import { assetUrl } from "@/lib/asset";
