@@ -202,7 +202,7 @@ export function MemberApprovals({ pendingCount }: { pendingCount?: number }) {
               <TableRow key={m.id}>
                 <TableCell>
                   <p className="font-medium text-sm">{m.first_name} {m.last_name}</p>
-                  <p className="text-xs text-muted-foreground">{m.email}</p>
+                  {isFull && <p className="text-xs text-muted-foreground">{m.email}</p>}
                 </TableCell>
                 <TableCell className="text-sm">{m.company ?? "—"}</TableCell>
                 <TableCell className="text-sm">{m.industry ?? "—"}</TableCell>
@@ -217,11 +217,15 @@ export function MemberApprovals({ pendingCount }: { pendingCount?: number }) {
                     <Button size="sm" variant="outline" asChild>
                       <Link to={`/admin/members/${m.id}`}><Eye size={14} /></Link>
                     </Button>
-                    <Button size="sm" disabled={busy === m.id} onClick={() => approve(m)}><Check size={14} /> Approve</Button>
-                    <Button size="sm" variant="outline" disabled={busy === m.id} onClick={() => approve(m, true)} title="Approve + Impact Lion">
-                      <Crown size={14} className="text-gold" />
-                    </Button>
-                    <Button size="sm" variant="destructive" disabled={busy === m.id} onClick={() => setRejecting(m)}><X size={14} /></Button>
+                    {isFull && (
+                      <>
+                        <Button size="sm" disabled={busy === m.id} onClick={() => approve(m)}><Check size={14} /> Approve</Button>
+                        <Button size="sm" variant="outline" disabled={busy === m.id} onClick={() => approve(m, true)} title="Approve + Impact Lion">
+                          <Crown size={14} className="text-gold" />
+                        </Button>
+                        <Button size="sm" variant="destructive" disabled={busy === m.id} onClick={() => setRejecting(m)}><X size={14} /></Button>
+                      </>
+                    )}
                   </div>
                 </TableCell>
               </TableRow>
