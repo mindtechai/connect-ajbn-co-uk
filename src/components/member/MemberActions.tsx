@@ -8,6 +8,9 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useMessagingProfile } from "@/hooks/useMessagingProfile";
+import { useReviewerMode } from "@/hooks/useReviewerMode";
+import { MemberSafetyActions } from "@/components/safety/MemberSafetyActions";
+import { revealMemberContact } from "@/lib/member-contact.functions";
 import { startOrGetConversation } from "@/lib/messaging";
 
 type MemberTarget = {
