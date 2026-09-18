@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { useServerFn } from "@/hooks/useServerFn";
+import { useServerFn } from "@tanstack/react-start";
 import { getDashboardCounts, getSignupSeries, getActivityFeed, type ActivityItem } from "@/lib/admin-dashboard.functions";
 import { Users, UserCheck, UserPlus, Ban, TrendingUp, Loader2, AlertCircle } from "lucide-react";
 import { Link } from "@/lib/router-compat";
