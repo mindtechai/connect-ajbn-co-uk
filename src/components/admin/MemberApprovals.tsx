@@ -95,7 +95,7 @@ export function MemberApprovals({ pendingCount }: { pendingCount?: number }) {
   const approve = async (m: Applicant, asLion = false) => {
     setBusy(m.id);
     try {
-      await setMemberApproved({ data: { memberId: m.id, approved: true, sendWelcome: true } });
+      await approveFn({ data: { memberId: m.id, approved: true, sendWelcome: true } });
       if (asLion) {
         await supabase.from("user_roles").insert({ user_id: m.id, role: "impact_lion" });
       }
