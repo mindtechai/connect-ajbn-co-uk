@@ -25,6 +25,7 @@ import { Route as InstallRouteImport } from './routes/install'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MemberPortalRouteImport } from './routes/member-portal'
 import { Route as NeedsOffersRouteImport } from './routes/needs-offers'
+import { Route as PendingRouteImport } from './routes/pending'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ReferralRewardsRouteImport } from './routes/referral-rewards'
@@ -141,6 +142,11 @@ const MemberPortalRoute = MemberPortalRouteImport.update({
 const NeedsOffersRoute = NeedsOffersRouteImport.update({
   id: '/needs-offers',
   path: '/needs-offers',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const PendingRoute = PendingRouteImport.update({
+  id: '/pending',
+  path: '/pending',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -348,6 +354,7 @@ export interface FileRoutesByFullPath {
   '/login': typeof LoginRoute
   '/member-portal': typeof MemberPortalRoute
   '/needs-offers': typeof NeedsOffersRoute
+  '/pending': typeof PendingRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/referral-rewards': typeof ReferralRewardsRoute
@@ -403,6 +410,7 @@ export interface FileRoutesByTo {
   '/login': typeof LoginRoute
   '/member-portal': typeof MemberPortalRoute
   '/needs-offers': typeof NeedsOffersRoute
+  '/pending': typeof PendingRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/referral-rewards': typeof ReferralRewardsRoute
@@ -459,6 +467,7 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/member-portal': typeof MemberPortalRoute
   '/needs-offers': typeof NeedsOffersRoute
+  '/pending': typeof PendingRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/referral-rewards': typeof ReferralRewardsRoute
@@ -516,6 +525,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/member-portal'
     | '/needs-offers'
+    | '/pending'
     | '/privacy'
     | '/profile'
     | '/referral-rewards'
@@ -571,6 +581,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/member-portal'
     | '/needs-offers'
+    | '/pending'
     | '/privacy'
     | '/profile'
     | '/referral-rewards'
@@ -626,6 +637,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/member-portal'
     | '/needs-offers'
+    | '/pending'
     | '/privacy'
     | '/profile'
     | '/referral-rewards'
@@ -682,6 +694,7 @@ export interface RootRouteChildren {
   LoginRoute: typeof LoginRoute
   MemberPortalRoute: typeof MemberPortalRoute
   NeedsOffersRoute: typeof NeedsOffersRoute
+  PendingRoute: typeof PendingRoute
   PrivacyRoute: typeof PrivacyRoute
   ProfileRoute: typeof ProfileRoute
   ReferralRewardsRoute: typeof ReferralRewardsRoute
@@ -833,6 +846,13 @@ declare module '@tanstack/react-router' {
       path: '/needs-offers'
       fullPath: '/needs-offers'
       preLoaderRoute: typeof NeedsOffersRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/pending': {
+      id: '/pending'
+      path: '/pending'
+      fullPath: '/pending'
+      preLoaderRoute: typeof PendingRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -1114,6 +1134,7 @@ const rootRouteChildren: RootRouteChildren = {
   LoginRoute: LoginRoute,
   MemberPortalRoute: MemberPortalRoute,
   NeedsOffersRoute: NeedsOffersRoute,
+  PendingRoute: PendingRoute,
   PrivacyRoute: PrivacyRoute,
   ProfileRoute: ProfileRoute,
   ReferralRewardsRoute: ReferralRewardsRoute,
