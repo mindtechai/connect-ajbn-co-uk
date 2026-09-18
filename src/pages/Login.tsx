@@ -32,7 +32,9 @@ export default function LoginPage() {
   const [resendCooldown, setResendCooldown] = useState(0);
   const navigate = useNavigate();
   const [params] = useSearchParams();
-  const next = params.get("next") || "/dashboard";
+  // "redirect" is accepted as an alias so links written either way work.
+  const requestedNext = params.get("next") || params.get("redirect") || "";
+  const next = requestedNext.startsWith("/") ? requestedNext : "/dashboard";
 
   useEffect(() => {
     const verificationEmail = params.get("email");
