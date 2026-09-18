@@ -92,88 +92,63 @@ jobs:
           }
           JSON
 
-          # Use Android icon if present in repo, otherwise generate AJBN CONNECT matching Android
+          # FIX: Install Pillow first
+          pip3 install Pillow -q
           echo "Looking for Android icon in repo..."
           ls -la
-          FOUND_ICON=""
-          if [ -f "AppIcon-1024.png" ]; then FOUND_ICON="AppIcon-1024.png"; fi
-          if [ -f "icon-512-maskable.png" ]; then FOUND_ICON="icon-512-maskable.png"; fi
-          if [ -f "ios-ajbn/AppIcon-1024.png" ]; then FOUND_ICON="ios-ajbn/AppIcon-1024.png"; fi
-          if [ -f "ios/AppIcon-1024.png" ]; then FOUND_ICON="ios/AppIcon-1024.png"; fi
-          
-          if [ -n "$FOUND_ICON" ]; then
-            echo "Found icon: $FOUND_ICON - converting to 1024"
-            python3 - << PY
+          ls -lh AppIcon-1024.png || echo "No AppIcon-1024.png in root"
+
+          python3 << 'PY'
           from PIL import Image
-          import os
-          src = os.environ.get('FOUND_ICON','')
-          # We need to get FOUND_ICON from shell - use env var
-          PY
-            # Use python with the found file
-            python3 << PY
-          from PIL import Image
-          import pathlib, os
-          # Find the icon file
-          candidates = ["AppIcon-1024.png", "icon-512-maskable.png", "ios-ajbn/AppIcon-1024.png", "ios/AppIcon-1024.png"]
+          import pathlib
+          # Find Android icon - you uploaded AppIcon-1024.png to repo root
+          candidates = ["AppIcon-1024.png", "icon-512-maskable.png", "android/app/src/main/res/mipmap-xxxhdpi/ic_launcher.png"]
           src=None
           for c in candidates:
-              if pathlib.Path(c).exists():
-                  src=pathlib.Path(c)
+              p=pathlib.Path(c)
+              if p.exists():
+                  src=p
                   break
-          print(f"Using src {src}")
-          if src:
+          # Search any 1024 png
+          if src is None:
+              for p in pathlib.Path(".").rglob("*1024*.png"):
+                  if "AJBNConnect" not in str(p):
+                      src=p
+                      break
+          print(f"Found icon source: {src}")
+          if src and src.exists():
               im=Image.open(src)
-              # Convert to 1024x1024 RGB
+              print(f"Original: {im.size} mode {im.mode}")
               im=im.convert('RGB')
               im1024=im.resize((1024,1024), Image.LANCZOS)
-              im1024.save("AJBNConnect/AJBNConnect/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png")
-              print("Converted Android icon to iOS 1024")
-          PY
-          else
-            echo "No Android icon file found in repo - generating AJBN CONNECT matching Android"
-            python3 - << 'PY'
-          from PIL import Image, ImageDraw, ImageFont
-          import os, glob
-          size=1024
-          bg=(22, 65, 100)  # Android dark blue from icon-512-maskable.png
-          fg=(255,255,255)
-          img=Image.new('RGB',(size,size), bg)
-          draw=ImageDraw.Draw(img)
-          # Try to find bold font
-          font_ajbn=None
-          font_connect=None
-          candidates = [
-              "/System/Library/Fonts/Helvetica.ttc",
-              "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
-              "/System/Library/Fonts/Supplemental/Helvetica Bold.ttf",
-              "/System/Library/Fonts/HelveticaNeue.ttc",
-          ] + glob.glob("/System/Library/Fonts/*.ttf") + glob.glob("/System/Library/Fonts/Supplemental/*.ttf")
-          for fp in candidates:
-              try:
-                  if not os.path.exists(fp):
+              out="AJBNConnect/AJBNConnect/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png"
+              im1024.save(out)
+              print(f"Saved iOS icon to {out}")
+          else:
+              print("No icon found - generating fallback AJBN CONNECT")
+              from PIL import ImageDraw, ImageFont
+              import os, glob
+              size=1024
+              bg=(22, 65, 100)
+              fg=(255,255,255)
+              img=Image.new('RGB',(size,size), bg)
+              draw=ImageDraw.Draw(img)
+              font_ajbn=None
+              for fp in glob.glob("/System/Library/Fonts/**/*.ttf", recursive=True):
+                  try:
+                      font_ajbn=ImageFont.truetype(fp, 300)
+                      break
+                  except:
                       continue
-                  font_ajbn = ImageFont.truetype(fp, 300)
-                  font_connect = ImageFont.truetype(fp, 72)
-                  print(f"Using font {fp}")
-                  break
+              if font_ajbn is None:
+                  font_ajbn=ImageFont.load_default()
+              try:
+                  draw.text((size//2, size//2), "AJBN\nCONNECT", fill=fg, font=font_ajbn, anchor="mm", align="center")
               except:
-                  continue
-          if font_ajbn is None:
-              font_ajbn = ImageFont.load_default()
-              font_connect = ImageFont.load_default()
-          try:
-              draw.text((size//2, size//2 - 30), "AJBN", fill=fg, font=font_ajbn, anchor="mm")
-              draw.text((size//2 + 90, size//2 + 130), "CONNECT", fill=fg, font=font_connect, anchor="mm")
-          except:
-              # fallback positioning
-              bbox = draw.textbbox((0,0), "AJBN", font=font_ajbn)
-              w=bbox[2]-bbox[0]
-              draw.text(((size-w)//2, size//2 - 50), "AJBN", fill=fg, font=font_ajbn)
-              draw.text((size//2 + 50, size//2 + 100), "CONNECT", fill=fg, font=font_connect)
-          img.save("AJBNConnect/AJBNConnect/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png")
-          print("Generated AJBN CONNECT icon matching Android")
+                  draw.text((200,400), "AJBN CONNECT", fill=fg, font=font_ajbn)
+              img.save("AJBNConnect/AJBNConnect/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png")
           PY
-          fi
+          ls -lh AJBNConnect/AJBNConnect/Assets.xcassets/AppIcon.appiconset/
 
           cat > AJBNConnect/AJBNConnect/AJBNConnectApp.swift << 'SWIFT'
           import SwiftUI
