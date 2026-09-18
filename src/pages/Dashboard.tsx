@@ -6,8 +6,9 @@ import { ScrollReveal } from "@/components/ScrollReveal";
 import {
   Users, CalendarDays, Award, Link2, Bell, Crown,
   Copy, ArrowRight, LogOut, Shield, Settings, User, BookUser, HeartHandshake, Briefcase,
-  HandHeart, CalendarClock, Moon, Sparkles
+  HandHeart, CalendarClock, Moon, Sparkles, Clock, Lock
 } from "lucide-react";
+import type { LucideIcon } from "lucide-react";
 import lionsEmblem from "@/assets/lions-emblem.png";
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
 import { assetUrl } from "@/lib/asset";
@@ -31,9 +32,49 @@ import { aiMatcherEnabledFor } from "@/lib/ai-matcher-flag";
 type Announcement = { id: string; title: string; body: string; priority: string; published_at: string; pinned: boolean };
 type UpcomingEvent = { id: string; title: string; starts_at: string; location: string | null };
 
+const TONE_CLASSES: Record<"primary" | "teal" | "gold", { bg: string; text: string; hover: string }> = {
+  primary: { bg: "bg-primary/10", text: "text-primary", hover: "hover:border-primary/40" },
+  teal: { bg: "bg-teal/10", text: "text-teal", hover: "hover:border-teal/40" },
+  gold: { bg: "bg-gold/10", text: "text-gold", hover: "hover:border-gold/40" },
+};
+
+/** Dashboard shortcut. Member-only destinations render locked until approval. */
+function QuickTile({
+  to, icon: Icon, tone, title, hint, locked = false,
+}: { to: string; icon: LucideIcon; tone: "primary" | "teal" | "gold"; title: string; hint: string; locked?: boolean }) {
+  const t = TONE_CLASSES[tone];
+  const inner = (
+    <>
+      <div className={`rounded-lg ${t.bg} w-10 h-10 grid place-items-center`}>
+        {locked ? <Lock size={18} className="text-muted-foreground" /> : <Icon size={18} className={t.text} />}
+      </div>
+      <div>
+        <p className="text-sm font-semibold">{title}</p>
+        <p className="text-xs text-muted-foreground">{locked ? "Awaiting approval" : hint}</p>
+      </div>
+    </>
+  );
+  if (locked) {
+    return (
+      <button
+        type="button"
+        onClick={() => toast({ title: "Awaiting approval", description: `${title} unlocks once AJBN admin approves your membership.` })}
+        className="bg-card border rounded-xl p-4 shadow-xs flex items-center gap-3 text-left opacity-60"
+      >
+        {inner}
+      </button>
+    );
+  }
+  return (
+    <Link to={to} className={`bg-card border rounded-xl p-4 shadow-xs ${t.hover} transition-colors flex items-center gap-3`}>
+      {inner}
+    </Link>
+  );
+}
+
 export default function DashboardPage() {
   const navigate = useNavigate();
-  const { user, isSuperAdmin, signOut } = useAuth();
+  const { user, isSuperAdmin, isApprovedMember, signOut } = useAuth();
   const { appliesNow: quietHoursAppliesNow } = useQuietHours();
   const [profile, setProfile] = useState<any | null>(null);
   const [announcements, setAnnouncements] = useState<Announcement[]>([]);
@@ -183,6 +224,25 @@ export default function DashboardPage() {
           </div>
         )}
 
+        {!isApprovedMember && (
+          <section className="mb-6 rounded-xl border border-gold/40 bg-gold-muted p-5 shadow-xs" aria-labelledby="pending-approval-title">
+            <div className="flex flex-col gap-4 sm:flex-row sm:items-start sm:justify-between">
+              <div className="flex gap-3">
+                <div className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-gold/20 text-gold">
+                  <Clock size={20} aria-hidden="true" />
+                </div>
+                <div>
+                  <h2 id="pending-approval-title" className="font-display text-lg font-bold">Your membership is awaiting approval</h2>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    You'll get full access to the Member Directory, 1-2-1 Messaging, Referral Rewards and Needs &amp; Offers once approved by admin. We'll email you as soon as it's done.
+                  </p>
+                </div>
+              </div>
+              <Button asChild variant="outline" size="sm" className="shrink-0"><Link to="/pending">See details</Link></Button>
+            </div>
+          </section>
+        )}
+
         {/* Premium hero banner */}
         <div className="mb-6 overflow-hidden rounded-xl border border-gold/20 bg-hero-pattern text-primary-foreground shadow-xs">
           <div className="p-6 md:p-8">
@@ -243,43 +303,16 @@ export default function DashboardPage() {
         {/* Quick nav */}
         <ScrollReveal>
           <div className="grid sm:grid-cols-2 lg:grid-cols-4 gap-3 mb-6">
-            <Link to="/directory" className="bg-card border rounded-xl p-4 shadow-xs hover:border-primary/40 transition-colors flex items-center gap-3">
-              <div className="rounded-lg bg-primary/10 w-10 h-10 grid place-items-center"><BookUser size={18} className="text-primary" /></div>
-              <div><p className="text-sm font-semibold">Member Directory</p><p className="text-xs text-muted-foreground">Search & filter by industry</p></div>
-            </Link>
-            <Link to="/messages" className="bg-card border rounded-xl p-4 shadow-xs hover:border-teal/40 transition-colors flex items-center gap-3">
-              <div className="rounded-lg bg-teal/10 w-10 h-10 grid place-items-center"><MessageCircle size={18} className="text-teal" /></div>
-              <div><p className="text-sm font-semibold">Messages</p><p className="text-xs text-muted-foreground">Chat privately with members</p></div>
-            </Link>
-            <Link to="/events" className="bg-card border rounded-xl p-4 shadow-xs hover:border-primary/40 transition-colors flex items-center gap-3">
-              <div className="rounded-lg bg-teal/10 w-10 h-10 grid place-items-center"><CalendarDays size={18} className="text-teal" /></div>
-              <div><p className="text-sm font-semibold">Events</p><p className="text-xs text-muted-foreground">RSVP to upcoming events</p></div>
-            </Link>
-            <Link to="/board" className="bg-card border rounded-xl p-4 shadow-xs hover:border-teal/40 transition-colors flex items-center gap-3">
-              <div className="rounded-lg bg-teal/10 w-10 h-10 grid place-items-center"><HandHeart size={18} className="text-teal" /></div>
-              <div><p className="text-sm font-semibold">Needs &amp; Offers</p><p className="text-xs text-muted-foreground">Post a need or offer help</p></div>
-            </Link>
-            <Link to="/needs-offers" className="bg-card border rounded-xl p-4 shadow-xs hover:border-teal/40 transition-colors flex items-center gap-3">
-              <div className="rounded-lg bg-teal/10 w-10 h-10 grid place-items-center"><HandHeart size={18} className="text-teal" /></div>
-              <div><p className="text-sm font-semibold">Browse All Needs &amp; Offers</p><p className="text-xs text-muted-foreground">See every live member post</p></div>
-            </Link>
-            <Link to="/esg" className="bg-card border rounded-xl p-4 shadow-xs hover:border-primary/40 transition-colors flex items-center gap-3">
-              <div className="rounded-lg bg-gold/10 w-10 h-10 grid place-items-center"><HeartHandshake size={18} className="text-gold" /></div>
-              <div><p className="text-sm font-semibold">ESG Report</p><p className="text-xs text-muted-foreground">Your social-impact summary</p></div>
-            </Link>
-            <Link to="/lions/apply" className="bg-card border rounded-xl p-4 shadow-xs hover:border-gold/40 transition-colors flex items-center gap-3">
-              <div className="rounded-lg bg-gold/10 w-10 h-10 grid place-items-center"><Crown size={18} className="text-gold" /></div>
-              <div><p className="text-sm font-semibold">Impact Lions</p><p className="text-xs text-muted-foreground">Join the charitable arm</p></div>
-            </Link>
-            <Link to="/services#capital-connect" className="bg-card border rounded-xl p-4 shadow-xs hover:border-gold/40 transition-colors flex items-center gap-3">
-              <div className="rounded-lg bg-gold/10 w-10 h-10 grid place-items-center"><Briefcase size={18} className="text-gold" /></div>
-              <div><p className="text-sm font-semibold">Services</p><p className="text-xs text-muted-foreground">Introductions, advisory & more</p></div>
-            </Link>
+            <QuickTile to="/directory" locked={!isApprovedMember} icon={BookUser} tone="primary" title="Member Directory" hint="Search & filter by industry" />
+            <QuickTile to="/messages" locked={!isApprovedMember} icon={MessageCircle} tone="teal" title="Messages" hint="Chat privately with members" />
+            <QuickTile to="/events" icon={CalendarDays} tone="teal" title="Events" hint="RSVP to upcoming events" />
+            <QuickTile to="/board" locked={!isApprovedMember} icon={HandHeart} tone="teal" title="Needs & Offers" hint="Post a need or offer help" />
+            <QuickTile to="/needs-offers" locked={!isApprovedMember} icon={HandHeart} tone="teal" title="Browse All Needs & Offers" hint="See every live member post" />
+            <QuickTile to="/esg" icon={HeartHandshake} tone="gold" title="ESG Report" hint="Your social-impact summary" />
+            <QuickTile to="/lions/apply" locked={!isApprovedMember} icon={Crown} tone="gold" title="Impact Lions" hint="Join the charitable arm" />
+            <QuickTile to="/services#capital-connect" locked={!isApprovedMember} icon={Briefcase} tone="gold" title="Services" hint="Introductions, advisory & more" />
             {aiMatcherEnabledFor(user?.email ?? null) && (
-              <Link to="/ai-matcher" className="bg-card border rounded-xl p-4 shadow-xs hover:border-primary/40 transition-colors flex items-center gap-3">
-                <div className="rounded-lg bg-primary/10 w-10 h-10 grid place-items-center"><Sparkles size={18} className="text-primary" /></div>
-                <div><p className="text-sm font-semibold">AI Matcher</p><p className="text-xs text-muted-foreground">Match your business need</p></div>
-              </Link>
+              <QuickTile to="/ai-matcher" locked={!isApprovedMember} icon={Sparkles} tone="primary" title="AI Matcher" hint="Match your business need" />
             )}
           </div>
         </ScrollReveal>
