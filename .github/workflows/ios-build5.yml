@@ -93,7 +93,7 @@ jobs:
           JSON
 
           # FIX: Install Pillow first
-          pip3 install Pillow -q
+          python3 -m pip install Pillow --break-system-packages -q || pip3 install Pillow --break-system-packages -q || brew install pillow || true
           echo "Looking for Android icon in repo..."
           ls -la
           ls -lh AppIcon-1024.png || echo "No AppIcon-1024.png in root"
