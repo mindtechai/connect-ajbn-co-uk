@@ -2,9 +2,9 @@ import { createFileRoute } from "@tanstack/react-router";
 import AccountDeletionPage from "@/pages/AccountDeletion";
 
 const BASE = "https://connect.ajbn.co.uk";
-const TITLE = "Request Account Deletion | AJBN Connect";
+const TITLE = "Delete Account - AJBN Connect";
 const DESCRIPTION =
-  "Request permanent deletion of your AJBN Connect account and all associated data. Requests are confirmed by email and processed within 30 days.";
+  "Request permanent deletion of your AJBN Connect account and all associated data. Verified within 24 hours and deleted within 30 days.";
 
 export const Route = createFileRoute("/account-deletion")({
   component: AccountDeletionPage,

@@ -1,173 +1,321 @@
 import { useState } from "react";
-import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
-import { toast } from "@/hooks/use-toast";
 import { Link } from "@tanstack/react-router";
 import { requestAccountDeletion } from "@/lib/account-deletion-request.functions";
-import { CheckCircle2, Loader2, ShieldAlert, Trash2 } from "lucide-react";
+import { assetUrl } from "@/lib/asset";
+import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
+import { CheckCircle2, Loader2, Mail, Shield, Trash2 } from "lucide-react";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+const AJBN_BLUE = "#164164";
+
+const ACCOUNT_TYPES = [
+  "Approved AJBN Member",
+  "Registered but not approved",
+  "Not sure",
+];
+const REASONS = [
+  "No longer a member",
+  "Privacy concern",
+  "Duplicate account",
+  "Other",
+];
+
+const DATA_TYPES =
+  "Name, Email, Phone Number, Physical Address (business address), Profile Photos, Emails/Text Messages (121 messages), Other User Content, User ID";
+
+const selectClass =
+  "flex h-10 w-full rounded-md border border-input bg-background px-3 py-2 text-sm ring-offset-background focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-50";
+
+type Errors = Partial<
+  Record<"fullName" | "email" | "accountType" | "reason" | "acknowledged" | "form", string>
+>;
 
 export default function AccountDeletionPage() {
+  const [fullName, setFullName] = useState("");
   const [email, setEmail] = useState("");
+  const [accountType, setAccountType] = useState("");
   const [reason, setReason] = useState("");
+  const [details, setDetails] = useState("");
   const [acknowledged, setAcknowledged] = useState(false);
   const [busy, setBusy] = useState(false);
-  const [done, setDone] = useState<{ reference: string; dueBy: string } | null>(null);
-  const [error, setError] = useState<string | null>(null);
-
-  const emailValid = EMAIL_RE.test(email.trim());
-  const canSubmit = emailValid && acknowledged && !busy;
+  const [errors, setErrors] = useState<Errors>({});
+  const [done, setDone] = useState(false);
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    setError(null);
-    if (!emailValid) { setError("Please enter a valid email address."); return; }
-    if (!acknowledged) { setError("Please confirm you understand this is permanent."); return; }
+    if (busy) return;
+
+    const next: Errors = {};
+    if (!fullName.trim()) next.fullName = "Please enter your full name.";
+    if (!EMAIL_RE.test(email.trim())) next.email = "Please enter a valid email address.";
+    if (!accountType) next.accountType = "Please select your account type.";
+    if (!reason) next.reason = "Please select a reason.";
+    if (!acknowledged) next.acknowledged = "Please confirm you want to delete your account.";
+    setErrors(next);
+    if (Object.keys(next).length > 0) return;
+
     setBusy(true);
     try {
-      const res = await requestAccountDeletion({
-        data: { email: email.trim(), reason: reason.trim(), acknowledged: true },
+      await requestAccountDeletion({
+        data: {
+          fullName: fullName.trim(),
+          email: email.trim(),
+          accountType,
+          reason,
+          details: details.trim(),
+          acknowledged: true,
+        },
       });
-      setDone({ reference: res.reference, dueBy: res.dueBy });
-      toast({
-        title: "Deletion request received",
-        description: res.emailed
-          ? "We've emailed you a confirmation."
-          : "We've logged your request and will be in touch.",
-      });
+      setDone(true);
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Something went wrong. Please try again.";
-      setError(message);
-      toast({ title: "Request failed", description: message, variant: "destructive" });
+      setErrors({ form: message });
     } finally {
       setBusy(false);
     }
   };
 
   return (
-    <AppLayout back={{ to: "/", label: "Home" }} maxWidth="2xl">
-      <header className="mb-6 border-b pb-6">
-        <h1 className="font-display text-3xl md:text-4xl font-bold text-primary mb-2">
-          Request account deletion
-        </h1>
-        <p className="text-sm text-muted-foreground">
-          Ask us to permanently delete your AJBN Connect account and all associated data.
-          Requests are processed within 30 days.
-        </p>
+    <div className="min-h-screen bg-white text-slate-900">
+      <header className="border-b" style={{ backgroundColor: AJBN_BLUE }}>
+        <div className="mx-auto flex max-w-[800px] items-center gap-3 px-4 py-4">
+          <img
+            src={assetUrl(ajbnLogo)}
+            alt="AJBN Connect logo"
+            className="h-10 w-10 rounded-md object-cover"
+          />
+          <span className="font-display text-lg font-semibold text-white">AJBN Connect</span>
+        </div>
       </header>
 
-      {done ? (
-        <div className="bg-card border rounded-xl p-6 shadow-xs space-y-3">
-          <div className="flex items-center gap-2 text-primary">
-            <CheckCircle2 className="w-5 h-5" aria-hidden="true" />
-            <h2 className="font-display text-xl font-semibold">Request received</h2>
-          </div>
-          <p className="text-sm text-foreground/90">
-            We have logged your deletion request and sent a confirmation email to{" "}
-            <span className="font-medium">{email.trim()}</span>. Your account and data will be
-            permanently deleted by <span className="font-medium">{done.dueBy}</span>.
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Reference: <span className="font-mono">{done.reference}</span>
-          </p>
-          <p className="text-sm text-muted-foreground">
-            Changed your mind? Email{" "}
-            <a className="underline underline-offset-2" href="mailto:russell@ajbn.co.uk">
-              russell@ajbn.co.uk
-            </a>{" "}
-            and we will cancel it.
-          </p>
-        </div>
-      ) : (
-        <form onSubmit={submit} className="bg-card border rounded-xl p-6 shadow-xs space-y-5">
-          <div className="space-y-2">
-            <Label htmlFor="deletion-email">Email address</Label>
-            <Input
-              id="deletion-email"
-              type="email"
-              required
-              maxLength={255}
-              autoComplete="email"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="you@company.com"
-            />
-            <p className="text-xs text-muted-foreground">
-              Use the email address linked to your AJBN Connect account.
+      <main className="mx-auto max-w-[800px] px-4 py-8 md:py-12">
+        <h1
+          className="font-display text-3xl font-bold md:text-4xl"
+          style={{ color: AJBN_BLUE }}
+        >
+          Delete Your AJBN Connect Account
+        </h1>
+        <p className="mt-4 text-sm leading-relaxed text-slate-700">
+          AJBN Connect is a closed network. Only approved AJBN members can access Directory,
+          1-2-1 Messaging, Referral Rewards. Non-members can register but have limited access
+          until approved. Charitable activities via AJBN Impact Lions Club District 105A are
+          restricted to existing AJBN members only. You can delete your account anytime —
+          approved member or non-approved registrant.
+        </p>
+
+        {done ? (
+          <div
+            role="status"
+            className="mt-8 rounded-xl border border-green-200 bg-green-50 p-6"
+          >
+            <div className="flex items-center gap-2" style={{ color: AJBN_BLUE }}>
+              <CheckCircle2 className="h-5 w-5" aria-hidden="true" />
+              <h2 className="font-display text-xl font-semibold">Request received</h2>
+            </div>
+            <p className="mt-3 text-sm leading-relaxed text-slate-700">
+              Request received. We will verify within 24 hours and delete within 30 days.
+              Confirmation will be sent to your email. Backups purged within 90 days.
             </p>
           </div>
+        ) : (
+          <form
+            onSubmit={submit}
+            noValidate
+            className="mt-8 space-y-5 rounded-xl border bg-white p-6 shadow-sm"
+          >
+            <div className="space-y-2">
+              <Label htmlFor="del-name">Full Name</Label>
+              <Input
+                id="del-name"
+                value={fullName}
+                maxLength={160}
+                autoComplete="name"
+                aria-invalid={!!errors.fullName}
+                aria-describedby={errors.fullName ? "del-name-err" : undefined}
+                onChange={(e) => setFullName(e.target.value)}
+              />
+              {errors.fullName && (
+                <p id="del-name-err" className="text-sm text-red-600">
+                  {errors.fullName}
+                </p>
+              )}
+            </div>
 
-          <div className="space-y-2">
-            <Label htmlFor="deletion-reason">Reason (optional)</Label>
-            <Textarea
-              id="deletion-reason"
-              rows={4}
-              maxLength={1000}
-              value={reason}
-              onChange={(e) => setReason(e.target.value)}
-              placeholder="Tell us why you're leaving — this helps us improve."
-            />
+            <div className="space-y-2">
+              <Label htmlFor="del-email">Registered Email</Label>
+              <Input
+                id="del-email"
+                type="email"
+                value={email}
+                maxLength={255}
+                autoComplete="email"
+                placeholder="you@company.com"
+                aria-invalid={!!errors.email}
+                aria-describedby={errors.email ? "del-email-err" : "del-email-hint"}
+                onChange={(e) => setEmail(e.target.value)}
+              />
+              <p id="del-email-hint" className="text-xs text-slate-500">
+                Must match the email on your AJBN Connect account.
+              </p>
+              {errors.email && (
+                <p id="del-email-err" className="text-sm text-red-600">
+                  {errors.email}
+                </p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="del-type">Account Type</Label>
+              <select
+                id="del-type"
+                className={selectClass}
+                value={accountType}
+                aria-invalid={!!errors.accountType}
+                onChange={(e) => setAccountType(e.target.value)}
+              >
+                <option value="">Select an option</option>
+                {ACCOUNT_TYPES.map((t) => (
+                  <option key={t} value={t}>
+                    {t}
+                  </option>
+                ))}
+              </select>
+              {errors.accountType && (
+                <p className="text-sm text-red-600">{errors.accountType}</p>
+              )}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="del-reason">Reason for deletion</Label>
+              <select
+                id="del-reason"
+                className={selectClass}
+                value={reason}
+                aria-invalid={!!errors.reason}
+                onChange={(e) => setReason(e.target.value)}
+              >
+                <option value="">Select a reason</option>
+                {REASONS.map((r) => (
+                  <option key={r} value={r}>
+                    {r}
+                  </option>
+                ))}
+              </select>
+              {errors.reason && <p className="text-sm text-red-600">{errors.reason}</p>}
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="del-details">Other details (optional)</Label>
+              <Textarea
+                id="del-details"
+                rows={4}
+                maxLength={2000}
+                value={details}
+                onChange={(e) => setDetails(e.target.value)}
+              />
+            </div>
+
+            <div className="flex items-start gap-3 rounded-lg border border-red-200 bg-red-50 p-4">
+              <Checkbox
+                id="del-ack"
+                checked={acknowledged}
+                onCheckedChange={(v) => setAcknowledged(v === true)}
+                className="mt-0.5"
+              />
+              <Label
+                htmlFor="del-ack"
+                className="text-sm font-normal leading-relaxed text-slate-700"
+              >
+                I confirm I want to permanently delete my account and all associated data:{" "}
+                {DATA_TYPES}. I understand this cannot be undone.
+              </Label>
+            </div>
+            {errors.acknowledged && (
+              <p className="text-sm text-red-600">{errors.acknowledged}</p>
+            )}
+
+            {errors.form && (
+              <p className="flex items-center gap-1.5 text-sm text-red-600">
+                <Shield className="h-4 w-4" aria-hidden="true" /> {errors.form}
+              </p>
+            )}
+
+            <Button
+              type="submit"
+              disabled={busy}
+              className="gap-1.5 text-white hover:opacity-90"
+              style={{ backgroundColor: AJBN_BLUE }}
+            >
+              {busy ? (
+                <Loader2 className="h-4 w-4 animate-spin" />
+              ) : (
+                <Trash2 className="h-4 w-4" />
+              )}
+              Request Account Deletion
+            </Button>
+          </form>
+        )}
+
+        <section className="mt-10">
+          <h2 className="font-display text-xl font-semibold" style={{ color: AJBN_BLUE }}>
+            What happens after
+          </h2>
+          <ul className="mt-3 list-disc space-y-1 pl-5 text-sm text-slate-700">
+            <li>Verification within 24 hours</li>
+            <li>
+              Deletion within 30 days: Name, Email Address, Phone Number, Physical Address,
+              Emails or Text Messages, Photos or Videos, Other User Content, User ID (the 8
+              types declared in App Store Connect)
+            </li>
+            <li>Directory listing, referral rewards, 121 messages removed</li>
+            <li>Backup deletion within 90 days</li>
+            <li>Minimal legal record (email + deletion date) retained 12 months for audit</li>
+          </ul>
+        </section>
+
+        <section className="mt-8">
+          <h2 className="font-display text-xl font-semibold" style={{ color: AJBN_BLUE }}>
+            Alternative
+          </h2>
+          <p className="mt-3 text-sm text-slate-700">
+            Email directly: admin@ajbn.co.uk with subject &quot;Delete my AJBN Connect account
+            - [your email]&quot;
+          </p>
+          <div className="mt-4 flex flex-wrap gap-3">
+            <Button
+              asChild
+              variant="outline"
+              className="gap-1.5"
+              style={{ borderColor: AJBN_BLUE, color: AJBN_BLUE }}
+            >
+              <a href="mailto:admin@ajbn.co.uk?subject=Delete my AJBN Connect account">
+                <Mail className="h-4 w-4" aria-hidden="true" />
+                Email Deletion Request
+              </a>
+            </Button>
+            <Button
+              asChild
+              variant="outline"
+              className="gap-1.5"
+              style={{ borderColor: AJBN_BLUE, color: AJBN_BLUE }}
+            >
+              <Link to="/privacy">Privacy Policy</Link>
+            </Button>
           </div>
+        </section>
+      </main>
 
-          <div className="flex items-start gap-3 rounded-lg border border-destructive/40 bg-destructive/5 p-4">
-            <Checkbox
-              id="deletion-ack"
-              checked={acknowledged}
-              onCheckedChange={(v) => setAcknowledged(v === true)}
-              className="mt-0.5"
-            />
-            <Label htmlFor="deletion-ack" className="text-sm font-normal leading-relaxed">
-              I understand this will permanently delete my account and all associated data.
-            </Label>
-          </div>
-
-          {error && (
-            <p className="text-sm text-destructive flex items-center gap-1.5">
-              <ShieldAlert className="w-4 h-4" aria-hidden="true" /> {error}
-            </p>
-          )}
-
-          <Button type="submit" variant="destructive" disabled={!canSubmit} className="gap-1.5">
-            {busy ? <Loader2 size={14} className="animate-spin" /> : <Trash2 size={14} />}
-            Submit deletion request
-          </Button>
-        </form>
-      )}
-
-      <section className="mt-8 space-y-2 text-sm text-muted-foreground">
-        <h2 className="font-semibold text-foreground">What happens next</h2>
-        <ul className="list-disc pl-5 space-y-1">
-          <li>We email you a confirmation as soon as the request is received.</li>
-          <li>
-            Your profile, direct messages, event registrations and activity records are
-            permanently erased within 30 days.
-          </li>
-          <li>
-            Records we are legally required to keep (for example finance records) are retained
-            only for as long as UK law requires.
-          </li>
-          <li>
-            Signed in already? You can delete instantly from{" "}
-            <Link to="/settings/profile" className="underline underline-offset-2">
-              Account settings
-            </Link>
-            .
-          </li>
-          <li>
-            See our{" "}
-            <Link to="/privacy" className="underline underline-offset-2">
-              Privacy Policy
-            </Link>{" "}
-            for full details on data retention and your rights.
-          </li>
-        </ul>
-      </section>
-    </AppLayout>
+      <footer className="mt-12 border-t py-6">
+        <p className="mx-auto max-w-[800px] px-4 text-xs text-slate-500">
+          AJBNetwork Limited 2026
+        </p>
+      </footer>
+    </div>
   );
 }

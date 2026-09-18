@@ -16,30 +16,39 @@ export type Database = {
     Tables: {
       account_deletion_requests: {
         Row: {
+          account_type: string | null
           acknowledged: boolean
           created_at: string
+          details: string | null
           due_by: string
           email: string
+          full_name: string | null
           id: string
           processed_at: string | null
           reason: string | null
           status: string
         }
         Insert: {
+          account_type?: string | null
           acknowledged?: boolean
           created_at?: string
+          details?: string | null
           due_by?: string
           email: string
+          full_name?: string | null
           id?: string
           processed_at?: string | null
           reason?: string | null
           status?: string
         }
         Update: {
+          account_type?: string | null
           acknowledged?: boolean
           created_at?: string
+          details?: string | null
           due_by?: string
           email?: string
+          full_name?: string | null
           id?: string
           processed_at?: string | null
           reason?: string | null
