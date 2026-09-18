@@ -1,6 +1,9 @@
 # Real Admin Portal — live approvals, member records, moderation
 
-Replaces the "check the daily email" workflow. The daily summary email stays, but the portal becomes the source of truth. Web only — nothing here touches the Build 8 submission.
+Replaces the "check the daily email" workflow. The daily summary email stays, but the portal becomes the source of truth. Web only — nothing here touches the Build 8 (v1.0.3) submission.
+
+Apple reviewer lens: when `apple-review@ajbn.co.uk` signs in, moderation must be obvious straight away — the Blocks and Reports screens with working unblock/dismiss actions, plus visible counts.
+
 
 ## 1. Live dashboard (/admin)
 
