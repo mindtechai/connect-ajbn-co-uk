@@ -14,10 +14,22 @@ import { StatsSection } from "@/components/landing/StatsSection";
 import { CTASection } from "@/components/landing/CTASection";
 import { Footer } from "@/components/landing/Footer";
 import { useEffect } from "react";
-import { useLocation } from "@/lib/router-compat";
+import { useLocation, useNavigate } from "@/lib/router-compat";
+import { useAuth } from "@/hooks/useAuth";
+
+const REVIEWER_EMAIL = "apple-review@ajbn.co.uk";
 
 const Index = () => {
   const { hash } = useLocation();
+  const navigate = useNavigate();
+  const { user, loading } = useAuth();
+
+  // App Store reviewer signs in and lands straight on the moderation tools.
+  useEffect(() => {
+    if (loading) return;
+    if (user?.email === REVIEWER_EMAIL) navigate("/admin/blocks", { replace: true });
+  }, [loading, user?.email, navigate]);
+
   useEffect(() => {
     if (!hash) return;
     const id = hash.slice(1);
