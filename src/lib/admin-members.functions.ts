@@ -337,7 +337,10 @@ export const getAdminMemberDetail = createServerFn({ method: "GET" })
         .order("created_at", { ascending: false })
         .limit(20),
       profile.company
-        ? supabaseAdmin.from("corporate_members").select("id, company_name").ilike("company_name", profile.company.trim())
+        ? supabaseAdmin
+            .from("corporate_members")
+            .select("id, company_name, owner_user_id")
+            .ilike("company_name", profile.company.trim())
         : Promise.resolve({ data: [] }),
     ]);
 
