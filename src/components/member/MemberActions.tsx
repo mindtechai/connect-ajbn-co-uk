@@ -42,6 +42,8 @@ export function MemberActions({ member, showContact = false, compact = false }: 
   const [contactOpen, setContactOpen] = useState(false);
   const [contact, setContact] = useState<Contact | null>(null);
   const [revealing, setRevealing] = useState(false);
+  const reviewerMode = useReviewerMode();
+  const reveal = useServerFn(revealMemberContact);
   const isSelf = user?.id === member.id;
   const bookingUrl = member.calendlyUrl && /^https?:\/\//i.test(member.calendlyUrl)
     ? member.calendlyUrl
