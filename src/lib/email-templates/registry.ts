@@ -20,6 +20,8 @@ import { template as adminDailyDigest } from './admin-daily-digest'
 import { template as lionApplication } from './lion-application'
 import { template as quietHoursMessage } from './quiet-hours-message'
 import { template as memberWelcome } from './member-welcome'
+import { template as adminNewSignup } from './admin-new-signup'
+import { template as registrationPending } from './registration-pending'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'bulk-message': bulkMessage,
@@ -29,4 +31,6 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'lion-application': lionApplication,
   'quiet-hours-message': quietHoursMessage,
   'member-welcome': memberWelcome,
+  'admin-new-signup': adminNewSignup,
+  'registration-pending': registrationPending,
 }
