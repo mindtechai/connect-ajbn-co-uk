@@ -128,20 +128,21 @@ export function MemberSafetyActions({ memberId, memberName, context, compact = f
   };
 
   const size = compact ? "sm" : "lg";
+  const buttonClassName = compact ? "h-auto min-h-9 whitespace-normal px-2 text-xs" : undefined;
 
   return (
     <>
       <div className="grid grid-cols-2 gap-2">
         {blocked ? (
-          <Button type="button" size={size} variant="outline" onClick={() => { void doUnblock(); }}>
+          <Button type="button" size={size} variant="outline" className={buttonClassName} onClick={() => { void doUnblock(); }}>
             <ShieldOff size={16} /> Unblock user
           </Button>
         ) : (
-          <Button type="button" size={size} variant="outline" onClick={() => setConfirmBlock(true)}>
+          <Button type="button" size={size} variant="outline" className={buttonClassName} onClick={() => setConfirmBlock(true)}>
             <Ban size={16} /> Block user
           </Button>
         )}
-        <Button type="button" size={size} variant="destructive" onClick={() => setReportOpen(true)}>
+        <Button type="button" size={size} variant="destructive" className={buttonClassName} onClick={() => setReportOpen(true)}>
           <Flag size={16} /> Report user
         </Button>
       </div>

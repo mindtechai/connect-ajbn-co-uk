@@ -99,6 +99,7 @@ export function MemberActions({ member, showContact = false, compact = false }: 
   };
 
   const buttonSize = compact ? "sm" : "default";
+  const buttonClassName = compact ? "h-auto min-h-9 whitespace-normal px-2 text-xs" : undefined;
 
   if (isSelf) return null;
 
@@ -117,14 +118,14 @@ export function MemberActions({ member, showContact = false, compact = false }: 
   return (
     <>
       <div className="grid grid-cols-2 gap-2">
-        <Button type="button" size={buttonSize} variant="outline" onClick={() => void bookOrRequest()}>
+        <Button type="button" size={buttonSize} variant="outline" className={buttonClassName} onClick={() => void bookOrRequest()}>
           <CalendarClock size={16} /> {bookingUrl ? "Book 1-2-1" : "Request 1-2-1"}
         </Button>
-        <Button type="button" size={buttonSize} variant="outline" onClick={() => void openChat()}>
+        <Button type="button" size={buttonSize} variant="outline" className={buttonClassName} onClick={() => void openChat()}>
           <MessageCircle size={16} /> Message
         </Button>
         {showContact && (
-          <Button type="button" size={buttonSize} variant="outline" disabled={revealing} onClick={() => void revealContact()}>
+          <Button type="button" size={buttonSize} variant="outline" className={buttonClassName} disabled={revealing} onClick={() => void revealContact()}>
             {revealing ? <Loader2 size={16} className="animate-spin" /> : <Eye size={16} />} Reveal Contact
           </Button>
         )}
