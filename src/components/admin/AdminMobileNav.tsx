@@ -1,6 +1,5 @@
 import { Link, useLocation } from "@/lib/router-compat";
 import { BarChart3, UserCheck, Users, Flag, Ban } from "lucide-react";
-// UserCheck already imported
 import { cn } from "@/lib/utils";
 import { useAdminScope } from "@/components/RequireSuperAdmin";
 
