@@ -128,7 +128,7 @@ export function MemberActions({ member, showContact = false, compact = false }: 
             {revealing ? <Loader2 size={16} className="animate-spin" /> : <Eye size={16} />} Reveal Contact
           </Button>
         )}
-        <div className={showContact ? "col-span-2" : "contents"}>
+        <div className="col-span-2">
           <MemberSafetyActions
             memberId={member.id}
             memberName={member.name}

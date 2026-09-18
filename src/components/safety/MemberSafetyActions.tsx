@@ -131,7 +131,7 @@ export function MemberSafetyActions({ memberId, memberName, context, compact = f
 
   return (
     <>
-      <div className={compact ? "flex flex-wrap gap-2" : "grid gap-2 sm:grid-cols-2"}>
+      <div className="grid grid-cols-2 gap-2">
         {blocked ? (
           <Button type="button" size={size} variant="outline" onClick={() => { void doUnblock(); }}>
             <ShieldOff size={16} /> Unblock user
