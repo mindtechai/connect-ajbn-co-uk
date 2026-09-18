@@ -23,7 +23,7 @@ type MemberDetail = {
 
 export default function MemberProfilePage() {
   const { memberId } = useParams({ from: "/member/$memberId" });
-  const { roles, isApprovedMember, loading: authLoading } = useAuth();
+  const { user, isApprovedMember, loading: authLoading } = useAuth();
   const [member, setMember] = useState<MemberDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const inQuietHours = useUkQuietHoursWindow();
@@ -44,6 +44,7 @@ export default function MemberProfilePage() {
   if (!approved || !member) return <AppLayout maxWidth="4xl"><div className="py-16 text-center"><h1 className="text-2xl font-display font-bold">Member unavailable</h1><p className="mt-2 text-sm text-muted-foreground">This profile is unavailable or your membership is awaiting approval.</p></div></AppLayout>;
 
   const name = `${member.first_name ?? ""} ${member.last_name ?? ""}`.trim() || "AJBN member";
+  const isSelf = user?.id === member.id;
   return (
     <AppLayout maxWidth="4xl">
       {reviewerMode && (
@@ -65,12 +66,12 @@ export default function MemberProfilePage() {
               {member.title && <p className="mt-1 text-muted-foreground">{member.title}</p>}
               {member.company && <p className="mt-2 flex items-center gap-2 text-sm"><Building2 size={15} /> {member.company}</p>}
             </div>
-            {!reviewerMode && <MemberSafetyMenu memberId={member.id} memberName={name} context="profile" />}
+            {!reviewerMode && !isSelf && <MemberSafetyMenu memberId={member.id} memberName={name} context="profile" />}
           </div>
         </header>
-        {reviewerMode
+        {!isSelf && (reviewerMode
           ? <MemberSafetyActions memberId={member.id} memberName={name} context="profile" />
-          : <MemberActions member={{ id: member.id, name, calendlyUrl: member.calendly_url, messagingActive: member.is_messaging_active }} showContact />}
+          : <MemberActions member={{ id: member.id, name, calendlyUrl: member.calendly_url, messagingActive: member.is_messaging_active }} showContact />)}
         <section className="space-y-3">
           {member.industry && <Badge variant="outline">{member.industry}</Badge>}
           {member.bio && <p className="text-sm leading-6 text-muted-foreground whitespace-pre-line">{member.bio}</p>}

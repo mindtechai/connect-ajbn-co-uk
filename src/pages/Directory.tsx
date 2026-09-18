@@ -19,6 +19,7 @@ import { MemberSafetyMenu } from "@/components/safety/MemberSafetyMenu";
 import { MemberActions } from "@/components/member/MemberActions";
 import { listBlocked, syncBlocked } from "@/lib/moderation";
 import { useUkQuietHoursWindow } from "@/hooks/useQuietHours";
+import { useReviewerMode } from "@/hooks/useReviewerMode";
 
 type Member = {
   id: string;
@@ -74,6 +75,7 @@ export default function DirectoryPage() {
   const [q, setQ] = useState("");
   const [industry, setIndustry] = useState<string>("all");
   const inQuietHoursWindow = useUkQuietHoursWindow();
+  const reviewerMode = useReviewerMode();
 
   const canAccess = !!user;
   // Only approved membership levels can see listings; prospective sign-ups see a teaser.
@@ -292,7 +294,7 @@ export default function DirectoryPage() {
                           <Linkedin size={12} /> LinkedIn
                         </a>
                       )}
-                      {m.id !== user?.id && (
+                      {m.id !== user?.id && !reviewerMode && (
                         <div className="ml-auto">
                           <MemberSafetyMenu
                             memberId={m.id}
