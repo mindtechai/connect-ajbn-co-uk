@@ -1,4 +1,4 @@
-import { AppLayout } from "@/components/AppLayout";
+import { PublicHeader } from "@/components/PublicHeader";
 import {
   Building2,
   Database,
@@ -21,7 +21,9 @@ const ICON = "w-5 h-5 text-[hsl(var(--lions-gold))] shrink-0";
 
 export default function PrivacyPage() {
   return (
-    <AppLayout back={{ to: "/", label: "Home" }} maxWidth="3xl">
+    <div className="min-h-screen bg-white text-slate-900">
+      <PublicHeader />
+      <main className="mx-auto max-w-[800px] px-4 py-8 md:py-12">
       <article className="max-w-none">
         <header className="mb-8 border-b pb-6">
           <h1 className="font-display text-3xl md:text-4xl font-bold text-primary mb-2">
@@ -253,6 +255,13 @@ export default function PrivacyPage() {
           </p>
         </div>
       </article>
-    </AppLayout>
+      </main>
+
+      <footer className="border-t border-slate-200 py-6">
+        <p className="mx-auto max-w-[800px] px-4 text-xs text-slate-500">
+          AJBNetwork Limited 2026
+        </p>
+      </footer>
+    </div>
   );
 }
