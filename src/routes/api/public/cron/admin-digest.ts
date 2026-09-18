@@ -111,7 +111,7 @@ async function buildAndSend() {
     "New members signed up",
     (signups ?? []).map((p) => `${fullName(p)}${p.company ? ` — ${p.company}` : ""}`),
     "Review new members",
-    "/admin/approvals",
+    "/admin/members?filter=pending",
   );
   if (s5) sections.push(s5);
 
