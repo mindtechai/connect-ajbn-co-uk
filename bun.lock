@@ -12,7 +12,7 @@
         "@lovable.dev/cloud-auth-js": "^1.1.2",
         "@lovable.dev/email-js": "0.1.0",
         "@lovable.dev/webhooks-js": "^0.0.1",
-        "@meshconnect/web-link-sdk": "^3.10.2",
+        "@meshconnect/web-link-sdk": "^3.13.0",
         "@radix-ui/react-accordion": "^1.2.12",
         "@radix-ui/react-alert-dialog": "^1.1.15",
         "@radix-ui/react-aspect-ratio": "^1.1.8",
@@ -279,9 +279,9 @@
 
     "@meshconnect/node-api": ["@meshconnect/node-api@2.0.28", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@meshconnect/node-api/-/node-api-2.0.28.tgz", { "dependencies": { "axios": "1.18.0" } }, "sha512-cqgwruq3HVu/p7MsQRxmWvhKxHNeVmXpB/iJvxs2hCMcazigoTsD92ZhlG3nSI9uwEFcVteMnU6aDBG89Psx8Q=="],
 
-    "@meshconnect/uwc-bridge-parent": ["@meshconnect/uwc-bridge-parent@1.6.0", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@meshconnect/uwc-bridge-parent/-/uwc-bridge-parent-1.6.0.tgz", { "dependencies": { "@solana/wallet-adapter-base": "^0.9.23", "@solana/wallet-standard-wallet-adapter-base": "^1.1.5", "@solana/web3.js": "^1.98.4", "@wallet-standard/app": "^1.1.1", "@wallet-standard/base": "^1.1.1", "comlink": "^4.4.1" } }, "sha512-k+KY9sFlajdG15DmwM1bE3/l6030GWCs/OCldX+dye043JEaaChEpdSmARaqZWDFVtsre911Ba7rIGd7izCHfw=="],
+    "@meshconnect/uwc-bridge-parent": ["@meshconnect/uwc-bridge-parent@1.7.0", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@meshconnect/uwc-bridge-parent/-/uwc-bridge-parent-1.7.0.tgz", { "dependencies": { "@solana/wallet-adapter-base": "^0.9.23", "@solana/wallet-standard-wallet-adapter-base": "^1.1.5", "@solana/web3.js": "^1.98.4", "@wallet-standard/app": "^1.1.1", "@wallet-standard/base": "^1.1.1", "comlink": "^4.4.1" } }, "sha512-xEFc3lZvvgFN5VApLURKlQ68y9N/ieQFyfLLLpIogEsd9ksKGLNj5jpFA+2oeTOeTrYLhhu+OoNCp5giLmCSLw=="],
 
-    "@meshconnect/web-link-sdk": ["@meshconnect/web-link-sdk@3.12.0", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@meshconnect/web-link-sdk/-/web-link-sdk-3.12.0.tgz", { "dependencies": { "@meshconnect/node-api": "^2.0.28", "@meshconnect/uwc-bridge-parent": "1.6.0" } }, "sha512-doVzb0zQPH1K5gkY+XGSBhB+/I6M3jeg0u1aTW7V9QZoxZVptPYDkZSavIhpwZlsQrt0GtNEkAh2MRaXkfgovg=="],
+    "@meshconnect/web-link-sdk": ["@meshconnect/web-link-sdk@3.13.0", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@meshconnect/web-link-sdk/-/web-link-sdk-3.13.0.tgz", { "dependencies": { "@meshconnect/node-api": "^2.0.28", "@meshconnect/uwc-bridge-parent": "1.7.0" } }, "sha512-f6DloQFEdPYg/+JmY46PKisanTd/zZGBovlowbwN1BgMDtvQXQnyPklZZZ3c/3ITQGjMae5r+3OPqFocuyWAuw=="],
 
     "@napi-rs/lzma-linux-x64-gnu": ["@napi-rs/lzma-linux-x64-gnu@1.5.1", "https://europe-west1-npm.pkg.dev/lovable-core-prod/sandbox-npm-cache/@napi-rs/lzma-linux-x64-gnu/-/lzma-linux-x64-gnu-1.5.1.tgz", { "os": "linux", "cpu": "x64" }, "sha512-oTXEIha4SsuXdTA4Iyskj0kpdx2yVXdhd75c2v3xGrHFfVMsbhTPZU/nMPL4sWKo4pBHm3aucLaqGlF696dTyQ=="],
 
