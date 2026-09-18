@@ -1,4 +1,4 @@
-name: iOS Build 6 - AJBN Connect (No Mac Needed)
+name: iOS Build 8 - AJBN Connect (No Mac Needed)
 
 on:
   workflow_dispatch:
@@ -15,13 +15,12 @@ jobs:
         with:
           xcode-version: latest-stable
 
-      - name: Create Xcode project for uk.co.ajbn.connect Build 6
+      - name: Create Xcode project for uk.co.ajbn.connect Build 8
         run: |
           set -e
           rm -rf AJBNConnect build
           mkdir -p AJBNConnect/AJBNConnect/Assets.xcassets/AppIcon.appiconset
           
-          # AppIcon Contents.json
           cat > AJBNConnect/AJBNConnect/Assets.xcassets/AppIcon.appiconset/Contents.json << 'JSON'
           {
             "images" : [
@@ -93,46 +92,88 @@ jobs:
           }
           JSON
 
-          # Generate 1024x1024 AppIcon PNG
-          python3 - << 'PY'
-          try:
-              from PIL import Image, ImageDraw
-              size=1024
-              img=Image.new('RGB',(size,size),(20,46,77))
-              draw=ImageDraw.Draw(img)
-              # Simple AJBN text block
-              draw.rectangle([size*0.1,size*0.35,size*0.9,size*0.65], fill=(255,255,255))
-              # Add blue letters inside white block by drawing
-              try:
-                  draw.text((size//2, size//2), "AJBN", fill=(20,46,77), anchor="mm")
-              except:
-                  pass
-              img.save("AJBNConnect/AJBNConnect/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png")
-              print("Icon created with PIL")
-          except Exception as e:
-              print(f"PIL failed {e}, creating blank")
-              # fallback: create empty file via python without PIL using raw bytes?
-              # Use simple PPM then convert? Just create placeholder via sips alternative
-              # Create a simple blue PNG via built-in
-              import struct, zlib, os
-              def create_png():
-                  width=1024
-                  height=1024
-                  # solid color
-                  r,g,b=20,46,77
-                  raw=b''
-                  for y in range(height):
-                      raw+=b'\x00' + bytes([r,g,b])*width
-                  def chunk(ct, data):
-                      c=struct.pack('>I', len(data)) + ct + data
-                      crc=struct.pack('>I', zlib.crc32(ct+data) & 0xffffffff)
-                      return c+crc
-                  sig=b'\x89PNG\r\n\x1a\n'
-                  ihdr=struct.pack('>IIBBBBB', width, height, 8, 2, 0, 0, 0)
-                  png=sig+chunk(b'IHDR', ihdr)+chunk(b'IDAT', zlib.compress(raw))+chunk(b'IEND', b'')
-                  open("AJBNConnect/AJBNConnect/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png","wb").write(png)
-              create_png()
+          # Use Android icon if present in repo, otherwise generate AJBN CONNECT matching Android
+          echo "Looking for Android icon in repo..."
+          ls -la
+          FOUND_ICON=""
+          if [ -f "AppIcon-1024.png" ]; then FOUND_ICON="AppIcon-1024.png"; fi
+          if [ -f "icon-512-maskable.png" ]; then FOUND_ICON="icon-512-maskable.png"; fi
+          if [ -f "ios-ajbn/AppIcon-1024.png" ]; then FOUND_ICON="ios-ajbn/AppIcon-1024.png"; fi
+          if [ -f "ios/AppIcon-1024.png" ]; then FOUND_ICON="ios/AppIcon-1024.png"; fi
+          
+          if [ -n "$FOUND_ICON" ]; then
+            echo "Found icon: $FOUND_ICON - converting to 1024"
+            python3 - << PY
+          from PIL import Image
+          import os
+          src = os.environ.get('FOUND_ICON','')
+          # We need to get FOUND_ICON from shell - use env var
           PY
+            # Use python with the found file
+            python3 << PY
+          from PIL import Image
+          import pathlib, os
+          # Find the icon file
+          candidates = ["AppIcon-1024.png", "icon-512-maskable.png", "ios-ajbn/AppIcon-1024.png", "ios/AppIcon-1024.png"]
+          src=None
+          for c in candidates:
+              if pathlib.Path(c).exists():
+                  src=pathlib.Path(c)
+                  break
+          print(f"Using src {src}")
+          if src:
+              im=Image.open(src)
+              # Convert to 1024x1024 RGB
+              im=im.convert('RGB')
+              im1024=im.resize((1024,1024), Image.LANCZOS)
+              im1024.save("AJBNConnect/AJBNConnect/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png")
+              print("Converted Android icon to iOS 1024")
+          PY
+          else
+            echo "No Android icon file found in repo - generating AJBN CONNECT matching Android"
+            python3 - << 'PY'
+          from PIL import Image, ImageDraw, ImageFont
+          import os, glob
+          size=1024
+          bg=(22, 65, 100)  # Android dark blue from icon-512-maskable.png
+          fg=(255,255,255)
+          img=Image.new('RGB',(size,size), bg)
+          draw=ImageDraw.Draw(img)
+          # Try to find bold font
+          font_ajbn=None
+          font_connect=None
+          candidates = [
+              "/System/Library/Fonts/Helvetica.ttc",
+              "/System/Library/Fonts/Supplemental/Arial Bold.ttf",
+              "/System/Library/Fonts/Supplemental/Helvetica Bold.ttf",
+              "/System/Library/Fonts/HelveticaNeue.ttc",
+          ] + glob.glob("/System/Library/Fonts/*.ttf") + glob.glob("/System/Library/Fonts/Supplemental/*.ttf")
+          for fp in candidates:
+              try:
+                  if not os.path.exists(fp):
+                      continue
+                  font_ajbn = ImageFont.truetype(fp, 300)
+                  font_connect = ImageFont.truetype(fp, 72)
+                  print(f"Using font {fp}")
+                  break
+              except:
+                  continue
+          if font_ajbn is None:
+              font_ajbn = ImageFont.load_default()
+              font_connect = ImageFont.load_default()
+          try:
+              draw.text((size//2, size//2 - 30), "AJBN", fill=fg, font=font_ajbn, anchor="mm")
+              draw.text((size//2 + 90, size//2 + 130), "CONNECT", fill=fg, font=font_connect, anchor="mm")
+          except:
+              # fallback positioning
+              bbox = draw.textbbox((0,0), "AJBN", font=font_ajbn)
+              w=bbox[2]-bbox[0]
+              draw.text(((size-w)//2, size//2 - 50), "AJBN", fill=fg, font=font_ajbn)
+              draw.text((size//2 + 50, size//2 + 100), "CONNECT", fill=fg, font=font_connect)
+          img.save("AJBNConnect/AJBNConnect/Assets.xcassets/AppIcon.appiconset/AppIcon-1024.png")
+          print("Generated AJBN CONNECT icon matching Android")
+          PY
+          fi
 
           cat > AJBNConnect/AJBNConnect/AJBNConnectApp.swift << 'SWIFT'
           import SwiftUI
@@ -191,8 +232,8 @@ jobs:
                   <key>CFBundleDisplayName</key><string>AJBN Connect</string>
                   <key>CFBundleExecutable</key><string>AJBNConnect</string>
                   <key>CFBundleIdentifier</key><string>uk.co.ajbn.connect</string>
-                  <key>CFBundleVersion</key><string>6</string>
-                  <key>CFBundleShortVersionString</key><string>1.0.2</string>
+                  <key>CFBundleVersion</key><string>8</string>
+                  <key>CFBundleShortVersionString</key><string>1.0.3</string>
                   <key>CFBundlePackageType</key><string>APPL</string>
                   <key>CFBundleIcons</key><dict><key>CFBundlePrimaryIcon</key><dict><key>CFBundleIconName</key><string>AppIcon</string><key>CFBundleIconFiles</key><array><string>AppIcon</string></array></dict></dict>
                   <key>CFBundleIconName</key><string>AppIcon</string>
@@ -225,15 +266,14 @@ jobs:
                   PRODUCT_NAME: AJBNConnect
                   DEVELOPMENT_TEAM: WR8R9QALMK
                   CODE_SIGN_STYLE: Automatic
-                  MARKETING_VERSION: 1.0.2
-                  CURRENT_PROJECT_VERSION: 6
+                  MARKETING_VERSION: 1.0.3
+                  CURRENT_PROJECT_VERSION: 8
                   INFOPLIST_FILE: AJBNConnect/AJBNConnect/Info.plist
                   ASSETCATALOG_COMPILER_APPICON_NAME: AppIcon
-                  ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME: AccentColor
           EOF
           xcodegen generate
           ls -la AJBNConnect.xcodeproj
-          ls -la AJBNConnect/AJBNConnect/Assets.xcassets/AppIcon.appiconset/
+          ls -lh AJBNConnect/AJBNConnect/Assets.xcassets/AppIcon.appiconset/
 
       - name: Setup App Store Connect API Key
         env:
