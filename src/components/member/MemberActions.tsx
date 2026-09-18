@@ -82,19 +82,33 @@ export function MemberActions({ member, showContact = false, compact = false }: 
   };
 
   const revealContact = async () => {
-    if (isSelf) return;
+    if (isSelf || reviewerMode) return;
     setRevealing(true);
-    const { data, error } = await supabase.rpc("reveal_member_contact", { _member_id: member.id });
-    setRevealing(false);
-    if (error) {
+    try {
+      const details = await reveal({ data: { memberId: member.id } });
+      setContact({ email: details.email, phone: details.phone });
+      setContactOpen(true);
+    } catch {
       toast.error("Contact details could not be revealed.");
-      return;
+    } finally {
+      setRevealing(false);
     }
-    setContact((data?.[0] as Contact | undefined) ?? { email: null, phone: null });
-    setContactOpen(true);
   };
 
   const buttonSize = compact ? "sm" : "default";
+
+  // Reviewer mode: no contact details or private introductions — moderation only.
+  if (reviewerMode) {
+    if (isSelf) return null;
+    return (
+      <MemberSafetyActions
+        memberId={member.id}
+        memberName={member.name}
+        context="profile"
+        compact={compact}
+      />
+    );
+  }
 
   return (
     <>
