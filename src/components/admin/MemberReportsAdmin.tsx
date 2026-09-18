@@ -4,6 +4,8 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { Loader2, Flag, CheckCircle2 } from "lucide-react";
+import { Link } from "@/lib/router-compat";
+import { useAdminScope } from "@/components/RequireSuperAdmin";
 
 type Row = {
   id: string;
@@ -26,6 +28,8 @@ const statusStyles: Record<string, string> = {
 };
 
 export function MemberReportsAdmin() {
+  const scope = useAdminScope();
+  const isFull = scope === "full";
   const [rows, setRows] = useState<Row[]>([]);
   const [people, setPeople] = useState<Record<string, Person>>({});
   const [loading, setLoading] = useState(true);
@@ -52,11 +56,11 @@ export function MemberReportsAdmin() {
     if (ids.length) {
       const { data: profs } = await supabase
         .from("profiles")
-        .select("id, first_name, last_name, email")
+        .select("id, first_name, last_name" + (isFull ? ", email" : ""))
         .in("id", ids);
       const map: Record<string, Person> = {};
       (profs ?? []).forEach((p: any) => {
-        map[p.id] = { first_name: p.first_name, last_name: p.last_name, email: p.email };
+        map[p.id] = { first_name: p.first_name, last_name: p.last_name, email: isFull ? p.email : null };
       });
       setPeople(map);
     }
@@ -91,6 +95,12 @@ export function MemberReportsAdmin() {
         </Badge>
       </div>
 
+      {!isFull && (
+        <p className="text-xs text-amber-700 dark:text-amber-300 bg-amber-50 dark:bg-amber-950/30 border border-amber-200 dark:border-amber-800 rounded-lg p-2">
+          Reviewer view: reporter contact details are hidden.
+        </p>
+      )}
+
       {loading ? (
         <div className="py-16 flex justify-center">
           <Loader2 className="animate-spin text-muted-foreground" size={20} />
@@ -106,14 +116,21 @@ export function MemberReportsAdmin() {
               <div className="flex items-start justify-between gap-3 flex-wrap">
                 <div className="min-w-0">
                   <p className="text-sm font-semibold">
-                    {nameOf(r.reporter_id, null)} reported {nameOf(r.target_id, r.target_name)}
+                    {nameOf(r.reporter_id, null)} reported{" "}
+                    {r.target_id ? (
+                      <Link to={`/admin/members/${r.target_id}`} className="hover:underline">
+                        {nameOf(r.target_id, r.target_name)}
+                      </Link>
+                    ) : (
+                      nameOf(r.target_id, r.target_name)
+                    )}
                   </p>
                   <p className="text-xs text-muted-foreground mt-0.5">
                     {r.reason} · from {r.context === "chat" ? "chat" : "directory"} ·{" "}
                     {new Date(r.created_at).toLocaleString("en-GB")}
                   </p>
                   {r.details ? <p className="text-sm mt-2 whitespace-pre-wrap">{r.details}</p> : null}
-                  {people[r.reporter_id]?.email ? (
+                  {isFull && people[r.reporter_id]?.email ? (
                     <p className="text-[11px] text-muted-foreground mt-2">
                       Reporter: {people[r.reporter_id]?.email}
                     </p>
