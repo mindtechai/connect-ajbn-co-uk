@@ -95,7 +95,7 @@ export default function AdminPage() {
 
   return (
     <div className="min-h-screen bg-background flex">
-      <AdminSidebar pendingCount={pendingCount} />
+      <AdminSidebar pendingCount={pendingCount} reportCount={reportCount} blockCount={blockCount} />
 
       <div className="flex-1 flex flex-col min-w-0">
         <header className="bg-card border-b sticky top-0 z-40">
@@ -146,7 +146,7 @@ export default function AdminPage() {
         {scope === "moderation" && (
           <div className="bg-amber-50 dark:bg-amber-950/30 border-b border-amber-200 dark:border-amber-800 px-4 lg:px-8 py-2 flex items-center gap-2 text-amber-800 dark:text-amber-300 text-sm">
             <AlertTriangle size={16} />
-            <span>Reviewer view: member contact details and admin actions are hidden.</span>
+            <span>Reviewer mode — moderation tools visible, contact details hidden for privacy.</span>
           </div>
         )}
 
@@ -155,7 +155,7 @@ export default function AdminPage() {
         </main>
       </div>
 
-      <AdminMobileNav pendingCount={pendingCount} />
+      <AdminMobileNav pendingCount={pendingCount} reportCount={reportCount} blockCount={blockCount} />
     </div>
   );
 }
