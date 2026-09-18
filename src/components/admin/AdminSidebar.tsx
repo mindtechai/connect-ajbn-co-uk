@@ -35,13 +35,22 @@ const moderationNavItems = [
 
 interface Props {
   pendingCount?: number;
+  reportCount?: number;
+  blockCount?: number;
 }
 
-export function AdminSidebar({ pendingCount = 0 }: Props) {
+export function AdminSidebar({ pendingCount = 0, reportCount = 0, blockCount = 0 }: Props) {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const scope = useAdminScope();
   const navItems = scope === "moderation" ? moderationNavItems : fullNavItems;
+
+  const badgeFor = (path: string) => {
+    if (path === "/admin/reports") return reportCount;
+    if (path === "/admin/blocks") return blockCount;
+    if (path === "/admin/approvals" || path === "/admin/members") return pendingCount;
+    return 0;
+  };
 
   return (
     <aside
@@ -75,7 +84,7 @@ export function AdminSidebar({ pendingCount = 0 }: Props) {
             item.path === "/admin"
               ? location.pathname === "/admin"
               : location.pathname.startsWith(item.path);
-          const isPending = item.path === "/admin/approvals" || item.path === "/admin/members" || item.path === "/admin/blocks";
+          const badge = badgeFor(item.path);
           return (
             <Link
               key={item.path}
@@ -91,9 +100,9 @@ export function AdminSidebar({ pendingCount = 0 }: Props) {
               {!collapsed && (
                 <span className="flex-1 flex items-center justify-between gap-2">
                   {item.label}
-                  {isPending && pendingCount > 0 && (
+                  {badge > 0 && (
                     <span className="min-w-5 h-5 px-1 flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold">
-                      {pendingCount > 99 ? "99+" : pendingCount}
+                      {badge > 99 ? "99+" : badge}
                     </span>
                   )}
                 </span>

@@ -19,44 +19,38 @@ import {
   SelectTrigger,
   SelectValue,
 } from "@/components/ui/select";
-import { useAuth } from "@/hooks/useAuth";
-import { aiMatcherEnabledFor } from "@/lib/ai-matcher-flag";
 import { REPORT_REASONS, reportMember } from "@/lib/moderation";
-import type { BoardPost } from "@/lib/board-posts";
 
-/**
- * Report flag for a Needs & Offers post (App Store UGC requirement).
- * Hidden for the store-review account, matching the AI matcher rule.
- */
-export function BoardPostReportButton({
-  post,
-  authorName,
-}: {
-  post: BoardPost;
-  authorName: string;
-}) {
-  const { user } = useAuth();
+type Props = {
+  /** What is being reported, shown to the member and stored with the report. */
+  subject: string;
+  /** Member this content belongs to, when known. */
+  targetId?: string | null;
+  /** Prefix stored in the report details so the team knows the surface. */
+  detailsPrefix?: string;
+  label?: string;
+};
+
+/** Reusable report control for non-profile content (services, enquiries, listings). */
+export function ReportContentButton({ subject, targetId, detailsPrefix, label = "Report" }: Props) {
   const [open, setOpen] = useState(false);
   const [reason, setReason] = useState<string>(REPORT_REASONS[0]);
   const [details, setDetails] = useState("");
   const [busy, setBusy] = useState(false);
 
-  if (!aiMatcherEnabledFor(user?.email ?? null)) return null;
-  if (post.author_id === user?.id) return null;
-
   const submit = async () => {
     setBusy(true);
     try {
       await reportMember({
-        target_id: post.author_id,
-        target_name: authorName,
+        target_id: targetId ?? "",
+        target_name: subject,
         reason,
-        details: `${post.kind === "need" ? "NEED" : "OFFER"} post "${post.title}" (${post.category}). ${details.trim()}`.trim(),
+        details: `${detailsPrefix ? `${detailsPrefix} ` : ""}${subject}. ${details.trim()}`.trim(),
         context: "profile",
       });
       setOpen(false);
       setDetails("");
-      toast.success("Thank you — our team will review this post.");
+      toast.success("Reported — our team will review this.");
     } catch (error) {
       toast.error(error instanceof Error ? error.message : "The report could not be sent.");
     } finally {
@@ -66,22 +60,23 @@ export function BoardPostReportButton({
 
   return (
     <>
-      <button
+      <Button
         type="button"
+        variant="ghost"
+        size="sm"
+        className="gap-1.5 text-muted-foreground hover:text-destructive"
         onClick={() => setOpen(true)}
-        aria-label={`Report post: ${post.title}`}
-        title="Report this post"
-        className="text-muted-foreground hover:text-destructive transition-colors"
+        aria-label={`Report: ${subject}`}
       >
-        <Flag size={13} />
-      </button>
+        <Flag size={13} /> {label}
+      </Button>
 
       <Dialog open={open} onOpenChange={setOpen}>
         <DialogContent className="sm:max-w-md">
           <DialogHeader>
-            <DialogTitle>Report this post</DialogTitle>
+            <DialogTitle>Report this content</DialogTitle>
             <DialogDescription>
-              “{post.title}” by {authorName}. Reports go to the AJBN team only.
+              “{subject}”. Reports go to the AJBN team only.
             </DialogDescription>
           </DialogHeader>
           <div className="space-y-4">
@@ -99,9 +94,9 @@ export function BoardPostReportButton({
               </Select>
             </div>
             <div className="space-y-1.5">
-              <Label htmlFor="board-report-details">Details (optional)</Label>
+              <Label htmlFor="content-report-details">Details (optional)</Label>
               <Textarea
-                id="board-report-details"
+                id="content-report-details"
                 rows={3}
                 value={details}
                 maxLength={1000}

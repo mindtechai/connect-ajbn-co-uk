@@ -48,5 +48,10 @@ export function RequireSuperAdmin({ children }: { children: ReactNode }) {
     return <Navigate to="/dashboard" replace />;
   }
 
+  // App Store reviewer lands straight on the moderation tools.
+  if (scope === "moderation" && (location.pathname === "/admin" || location.pathname === "/admin/")) {
+    return <Navigate to="/admin/blocks" replace />;
+  }
+
   return <AdminScopeCtx.Provider value={scope}>{children}</AdminScopeCtx.Provider>;
 }
