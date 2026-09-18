@@ -42,8 +42,8 @@ export async function runSignupNotify(memberId: string) {
       member_email: profile.email,
       member_phone: profile.phone ?? "",
       signed_up_on: signedUpOn,
-      member_url: `${APP_URL}/admin/members?member=${profile.id}`,
-      approvals_url: `${APP_URL}/admin/approvals`,
+      member_url: `${APP_URL}/admin/members/${profile.id}`,
+      approvals_url: `${APP_URL}/admin/members?filter=pending`,
     },
   });
 

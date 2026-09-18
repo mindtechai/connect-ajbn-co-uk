@@ -24,6 +24,30 @@ async function audit(context: Ctx, action: string, targetId: string, details: Re
   });
 }
 
+const REVIEWER_EMAIL = "apple-review@ajbn.co.uk";
+
+async function getAdminScope(context: Ctx): Promise<"full" | "moderation"> {
+  const [{ data: isSuper }, { data: profile }] = await Promise.all([
+    context.supabase.rpc("has_role", { _user_id: context.userId, _role: "super_admin" }),
+    context.supabase.from("profiles").select("email").eq("id", context.userId).maybeSingle(),
+  ]);
+  if (isSuper) return "full";
+  if (profile?.email === REVIEWER_EMAIL) return "moderation";
+  throw new Error("Only admins can access this area.");
+}
+
+async function assertAdmin(context: Ctx, required: "full" | "moderation" = "full") {
+  const scope = await getAdminScope(context);
+  if (required === "full" && scope !== "full") {
+    throw new Error("You do not have permission to perform this action.");
+  }
+}
+
+function displayName(first?: string | null, last?: string | null, email?: string | null) {
+  const name = [first ?? "", last ?? ""].join(" ").trim();
+  return name || email || "Unnamed";
+}
+
 /* ---------- inline field edits ---------- */
 
 const UpdateFieldsSchema = z.object({
@@ -99,7 +123,10 @@ export const setMemberApproved = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data) => ApprovedSchema.parse(data))
   .handler(async ({ data, context }) => {
-    await assertSuperAdmin(context);
+    const scope = await getAdminScope(context);
+    if (scope !== "full" && !data.approved) {
+      throw new Error("Only full admins can remove approval.");
+    }
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     if (data.approved) {
@@ -253,4 +280,162 @@ export const createMemberAccount = createServerFn({ method: "POST" })
 
     await audit(context, "create_member", userId, { email: data.email, role: data.role });
     return { ok: true as const, memberId: userId };
+  });
+
+/* ---------- member detail for admin ---------- */
+
+export type AdminMemberDetail = {
+  id: string;
+  scope: "full" | "moderation";
+  email?: string | null;
+  phone?: string | null;
+  first_name: string | null;
+  last_name: string | null;
+  company: string | null;
+  title: string | null;
+  industry: string | null;
+  city: string | null;
+  bio: string | null;
+  linkedin: string | null;
+  website: string | null;
+  membership_tier: string;
+  is_approved: boolean;
+  roles: string[];
+  created_at: string;
+  hasCompanyMatch: boolean;
+  corporateOwnerName?: string | null;
+  posts: { id: string; kind: string; title: string; category: string; created_at: string }[];
+  audit: { action: string; details: any; created_at: string }[];
+};
+
+export const getAdminMemberDetail = createServerFn({ method: "GET" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) => z.object({ memberId: z.string().uuid() }).parse(data))
+  .handler(async ({ data, context }) => {
+    const scope = await getAdminScope(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { data: profile } = await supabaseAdmin
+      .from("profiles")
+      .select(
+        "id, email, phone, first_name, last_name, company, title, industry, city, bio, linkedin, website, membership_tier, is_approved, created_at"
+      )
+      .eq("id", data.memberId)
+      .maybeSingle();
+
+    if (!profile) throw new Error("Member not found.");
+
+    const [{ data: roles }, { data: auditRows }, { data: posts }, { data: companies }] = await Promise.all([
+      supabaseAdmin.from("user_roles").select("role").eq("user_id", data.memberId),
+      supabaseAdmin
+        .from("admin_audit_log")
+        .select("action, details, created_at")
+        .eq("target_id", data.memberId)
+        .order("created_at", { ascending: false })
+        .limit(50),
+      supabaseAdmin
+        .from("board_posts")
+        .select("id, kind, title, category, created_at")
+        .eq("author_id", data.memberId)
+        .order("created_at", { ascending: false })
+        .limit(20),
+      profile.company
+        ? supabaseAdmin
+            .from("corporate_members")
+            .select("id, company_name, owner_user_id")
+            .ilike("company_name", profile.company.trim())
+        : Promise.resolve({ data: [] }),
+    ]);
+
+    const hasCompanyMatch = Boolean(companies && companies.length > 0);
+
+    let corporateOwnerName: string | null = null;
+    const companyMatch = companies?.[0];
+    if (companyMatch?.owner_user_id) {
+      const ownerId: string = companyMatch.owner_user_id;
+      const { data: owners } = await supabaseAdmin
+        .from("profiles")
+        .select("first_name, last_name")
+        .eq("id", ownerId)
+        .maybeSingle();
+      if (owners) corporateOwnerName = displayName(owners.first_name, owners.last_name);
+    }
+
+    const safe: AdminMemberDetail = {
+      id: profile.id,
+      scope,
+      first_name: profile.first_name,
+      last_name: profile.last_name,
+      company: profile.company,
+      title: profile.title,
+      industry: profile.industry,
+      city: profile.city,
+      bio: profile.bio,
+      linkedin: profile.linkedin,
+      website: profile.website,
+      membership_tier: profile.membership_tier,
+      is_approved: profile.is_approved,
+      roles: (roles ?? []).map((r: any) => r.role),
+      created_at: profile.created_at,
+      hasCompanyMatch,
+      posts: (posts ?? []).map((p: any) => p),
+      audit: (auditRows ?? []).map((a: any) => a),
+    };
+
+    if (scope === "full") {
+      safe.email = profile.email;
+      safe.phone = profile.phone;
+      safe.corporateOwnerName = corporateOwnerName;
+    }
+
+    return safe;
+  });
+
+/* ---------- reject member ---------- */
+
+const RejectSchema = z.object({
+  memberId: z.string().uuid(),
+  reason: z.string().max(500).optional(),
+});
+
+export const rejectMember = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) => RejectSchema.parse(data))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context, "moderation");
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { data: profile } = await supabaseAdmin
+      .from("profiles")
+      .select("email, first_name, is_approved")
+      .eq("id", data.memberId)
+      .maybeSingle();
+
+    await supabaseAdmin
+      .from("user_roles")
+      .delete()
+      .eq("user_id", data.memberId)
+      .in("role", ["ajbn_member", "impact_lion"]);
+
+    const { error: roleError } = await supabaseAdmin
+      .from("user_roles")
+      .insert({ user_id: data.memberId, role: "prospective_member" } as never);
+    if (roleError && !/duplicate key/i.test(roleError.message)) throw new Error("Could not reject this member.");
+
+    await supabaseAdmin
+      .from("profiles")
+      .update({ is_approved: false } as never)
+      .eq("id", data.memberId);
+
+    let emailSent = false;
+    if (profile?.email) {
+      const { sendAppEmail } = await import("@/lib/email-send.server");
+      const result = await sendAppEmail(supabaseAdmin, "member-not-approved", profile.email, {
+        templateData: { member_name: profile.first_name ?? "there", reason: data.reason },
+      });
+      emailSent = result.sent;
+    }
+
+    await audit(context, "reject_member", data.memberId, { reason: data.reason ?? "", email_sent: emailSent });
+    return { ok: true as const, emailSent };
   });

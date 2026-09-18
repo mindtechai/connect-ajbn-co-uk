@@ -1,6 +1,6 @@
-import { useNavigate, useLocation } from "@/lib/router-compat";
-import { Link } from "@/lib/router-compat";
-import { LogOut, Settings, Shield } from "lucide-react";
+import { useEffect, useState } from "react";
+import { useNavigate, useLocation, useParams, Link } from "@/lib/router-compat";
+import { LogOut, Settings, Shield, ShieldCheck, Bell, AlertTriangle } from "lucide-react";
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
 import { assetUrl } from "@/lib/asset";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
@@ -8,6 +8,8 @@ import { AdminMobileNav } from "@/components/admin/AdminMobileNav";
 import { AnalyticsOverview } from "@/components/admin/AnalyticsOverview";
 import { MemberApprovals } from "@/components/admin/MemberApprovals";
 import { MemberManagement } from "@/components/admin/MemberManagement";
+import { MemberDetail } from "@/components/admin/MemberDetail";
+import { BlocksAdmin } from "@/components/admin/BlocksAdmin";
 import { BulkActionsPanel } from "@/components/admin/BulkActionsPanel";
 import { AdminSettings } from "@/components/admin/AdminSettings";
 import { EventsManagement } from "@/components/admin/EventsManagement";
@@ -20,15 +22,44 @@ import { EnquiriesAdmin } from "@/components/admin/EnquiriesAdmin";
 import { MemberReportsAdmin } from "@/components/admin/MemberReportsAdmin";
 import { useAuth } from "@/hooks/useAuth";
 import { NotificationsBell } from "@/components/NotificationsBell";
+import { useAdminScope } from "@/components/RequireSuperAdmin";
+import { supabase } from "@/integrations/supabase/client";
 
 export default function AdminPage() {
   const navigate = useNavigate();
   const location = useLocation();
+  const params = useParams<{ memberId?: string }>();
   const { signOut } = useAuth();
+  const scope = useAdminScope();
+  const [pendingCount, setPendingCount] = useState(0);
+
+  const loadPendingCount = async () => {
+    const { count } = await supabase
+      .from("profiles")
+      .select("id", { count: "exact", head: true })
+      .eq("is_approved", false)
+      .is("deleted_at", null);
+    setPendingCount(count ?? 0);
+  };
+
+  useEffect(() => {
+    loadPendingCount();
+    const ch = supabase
+      .channel("admin-pending-count")
+      .on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, () => {
+        void loadPendingCount();
+      })
+      .subscribe();
+    return () => { supabase.removeChannel(ch); };
+  }, []);
 
   const getContent = () => {
+    if (location.pathname.startsWith("/admin/members/") && params.memberId) {
+      return <MemberDetail memberId={params.memberId} />;
+    }
     if (location.pathname === "/admin/members") return <MemberManagement />;
-    if (location.pathname === "/admin/approvals") return <MemberApprovals />;
+    if (location.pathname === "/admin/approvals") return <MemberApprovals pendingCount={pendingCount} />;
+    if (location.pathname === "/admin/blocks") return <BlocksAdmin />;
     if (location.pathname === "/admin/communications") return <BulkActionsPanel />;
     if (location.pathname === "/admin/bulk-actions") return <BulkActionsPanel />;
     if (location.pathname === "/admin/events") return <EventsManagement />;
@@ -40,27 +71,49 @@ export default function AdminPage() {
     if (location.pathname === "/admin/reports") return <MemberReportsAdmin />;
     if (location.pathname === "/admin/audit") return <AuditLog />;
     if (location.pathname === "/admin/settings") return <AdminSettings />;
-    return <AnalyticsOverview />;
+    return <AnalyticsOverview pendingCount={pendingCount} />;
   };
 
   return (
     <div className="min-h-screen bg-background flex">
-      <AdminSidebar />
+      <AdminSidebar pendingCount={pendingCount} />
 
       <div className="flex-1 flex flex-col min-w-0">
-        {/* Top bar */}
         <header className="bg-card border-b sticky top-0 z-40">
           <div className="px-4 lg:px-8 h-14 flex items-center justify-between">
             <div className="flex items-center gap-2">
               <img src={assetUrl(ajbnLogo)} alt="AJBN" className="h-8 w-8 rounded-md object-cover" />
-              <Shield size={14} className="text-primary" />
-              <span className="font-display text-sm font-bold text-primary">AJBN Admin</span>
+              {scope === "moderation" ? (
+                <>
+                  <ShieldCheck size={14} className="text-amber-500" />
+                  <span className="font-display text-sm font-bold text-foreground">AJBN Reviewer</span>
+                </>
+              ) : (
+                <>
+                  <Shield size={14} className="text-primary" />
+                  <span className="font-display text-sm font-bold text-primary">AJBN Admin</span>
+                </>
+              )}
             </div>
             <div className="flex items-center gap-3">
-              <NotificationsBell />
-              <Link to="/settings" className="text-muted-foreground hover:text-foreground" aria-label="Account settings" title="Account settings">
-                <Settings size={18} />
+              <Link
+                to="/admin/members?filter=pending"
+                className="relative text-muted-foreground hover:text-foreground"
+                aria-label="Pending approvals"
+              >
+                <Bell size={18} />
+                {pendingCount > 0 && (
+                  <span className="absolute -top-1.5 -right-1.5 min-w-4 h-4 px-1 bg-destructive text-destructive-foreground text-[10px] font-bold rounded-full flex items-center justify-center">
+                    {pendingCount > 9 ? "9+" : pendingCount}
+                  </span>
+                )}
               </Link>
+              <NotificationsBell />
+              {scope === "full" && (
+                <Link to="/settings" className="text-muted-foreground hover:text-foreground" aria-label="Account settings" title="Account settings">
+                  <Settings size={18} />
+                </Link>
+              )}
               <button
                 onClick={async () => { await signOut(); navigate("/login"); }}
                 className="text-muted-foreground hover:text-foreground"
@@ -71,13 +124,19 @@ export default function AdminPage() {
           </div>
         </header>
 
-        {/* Content */}
+        {scope === "moderation" && (
+          <div className="bg-amber-50 dark:bg-amber-950/30 border-b border-amber-200 dark:border-amber-800 px-4 lg:px-8 py-2 flex items-center gap-2 text-amber-800 dark:text-amber-300 text-sm">
+            <AlertTriangle size={16} />
+            <span>Reviewer view: member contact details and admin actions are hidden.</span>
+          </div>
+        )}
+
         <main className="flex-1 p-4 lg:p-8 pb-20 md:pb-8 overflow-auto">
           {getContent()}
         </main>
       </div>
 
-      <AdminMobileNav />
+      <AdminMobileNav pendingCount={pendingCount} />
     </div>
   );
 }

@@ -37,6 +37,7 @@ import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminApprovalsRouteImport } from './routes/admin/approvals'
 import { Route as AdminAuditRouteImport } from './routes/admin/audit'
+import { Route as AdminBlocksRouteImport } from './routes/admin/blocks'
 import { Route as AdminBulkActionsRouteImport } from './routes/admin/bulk-actions'
 import { Route as AdminCheckinRouteImport } from './routes/admin/checkin'
 import { Route as AdminCommunicationsRouteImport } from './routes/admin/communications'
@@ -58,6 +59,7 @@ import { Route as SettingsIndexRouteImport } from './routes/settings/index'
 import { Route as SettingsNotificationsRouteImport } from './routes/settings/notifications'
 import { Route as SettingsProfileRouteImport } from './routes/settings/profile'
 import { Route as TicketsFlagshipRouteImport } from './routes/tickets/flagship'
+import { Route as AdminMembersMemberIdRouteImport } from './routes/admin/members.$memberId'
 import { Route as LovableEmailEventsRouteImport } from './routes/lovable/email/events'
 import { Route as ApiPublicCronAdminDigestRouteImport } from './routes/api/public/cron/admin-digest'
 import { Route as LovableEmailAuthPreviewRouteImport } from './routes/lovable/email/auth/preview'
@@ -204,6 +206,11 @@ const AdminAuditRoute = AdminAuditRouteImport.update({
   path: '/admin/audit',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminBlocksRoute = AdminBlocksRouteImport.update({
+  id: '/admin/blocks',
+  path: '/admin/blocks',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminBulkActionsRoute = AdminBulkActionsRouteImport.update({
   id: '/admin/bulk-actions',
   path: '/admin/bulk-actions',
@@ -309,6 +316,11 @@ const TicketsFlagshipRoute = TicketsFlagshipRouteImport.update({
   path: '/tickets/flagship',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminMembersMemberIdRoute = AdminMembersMemberIdRouteImport.update({
+  id: '/$memberId',
+  path: '/$memberId',
+  getParentRoute: () => AdminMembersRoute,
+} as any)
 const LovableEmailEventsRoute = LovableEmailEventsRouteImport.update({
   id: '/lovable/email/events',
   path: '/lovable/email/events',
@@ -365,6 +377,7 @@ export interface FileRoutesByFullPath {
   '/unsubscribe': typeof UnsubscribeRoute
   '/admin/approvals': typeof AdminApprovalsRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/blocks': typeof AdminBlocksRoute
   '/admin/bulk-actions': typeof AdminBulkActionsRoute
   '/admin/checkin': typeof AdminCheckinRoute
   '/admin/communications': typeof AdminCommunicationsRoute
@@ -373,7 +386,7 @@ export interface FileRoutesByFullPath {
   '/admin/events': typeof AdminEventsRoute
   '/admin/intros': typeof AdminIntrosRoute
   '/admin/lions': typeof AdminLionsRoute
-  '/admin/members': typeof AdminMembersRoute
+  '/admin/members': typeof AdminMembersRouteWithChildren
   '/admin/reports': typeof AdminReportsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/company/$companyId': typeof CompanyCompanyIdRoute
@@ -387,6 +400,7 @@ export interface FileRoutesByFullPath {
   '/lions/': typeof LionsIndexRoute
   '/messages/': typeof MessagesIndexRoute
   '/settings/': typeof SettingsIndexRoute
+  '/admin/members/$memberId': typeof AdminMembersMemberIdRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/api/public/cron/admin-digest': typeof ApiPublicCronAdminDigestRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -421,6 +435,7 @@ export interface FileRoutesByTo {
   '/unsubscribe': typeof UnsubscribeRoute
   '/admin/approvals': typeof AdminApprovalsRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/blocks': typeof AdminBlocksRoute
   '/admin/bulk-actions': typeof AdminBulkActionsRoute
   '/admin/checkin': typeof AdminCheckinRoute
   '/admin/communications': typeof AdminCommunicationsRoute
@@ -429,7 +444,7 @@ export interface FileRoutesByTo {
   '/admin/events': typeof AdminEventsRoute
   '/admin/intros': typeof AdminIntrosRoute
   '/admin/lions': typeof AdminLionsRoute
-  '/admin/members': typeof AdminMembersRoute
+  '/admin/members': typeof AdminMembersRouteWithChildren
   '/admin/reports': typeof AdminReportsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/company/$companyId': typeof CompanyCompanyIdRoute
@@ -443,6 +458,7 @@ export interface FileRoutesByTo {
   '/lions': typeof LionsIndexRoute
   '/messages': typeof MessagesIndexRoute
   '/settings': typeof SettingsIndexRoute
+  '/admin/members/$memberId': typeof AdminMembersMemberIdRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/api/public/cron/admin-digest': typeof ApiPublicCronAdminDigestRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -478,6 +494,7 @@ export interface FileRoutesById {
   '/unsubscribe': typeof UnsubscribeRoute
   '/admin/approvals': typeof AdminApprovalsRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/blocks': typeof AdminBlocksRoute
   '/admin/bulk-actions': typeof AdminBulkActionsRoute
   '/admin/checkin': typeof AdminCheckinRoute
   '/admin/communications': typeof AdminCommunicationsRoute
@@ -486,7 +503,7 @@ export interface FileRoutesById {
   '/admin/events': typeof AdminEventsRoute
   '/admin/intros': typeof AdminIntrosRoute
   '/admin/lions': typeof AdminLionsRoute
-  '/admin/members': typeof AdminMembersRoute
+  '/admin/members': typeof AdminMembersRouteWithChildren
   '/admin/reports': typeof AdminReportsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/company/$companyId': typeof CompanyCompanyIdRoute
@@ -500,6 +517,7 @@ export interface FileRoutesById {
   '/lions/': typeof LionsIndexRoute
   '/messages/': typeof MessagesIndexRoute
   '/settings/': typeof SettingsIndexRoute
+  '/admin/members/$memberId': typeof AdminMembersMemberIdRoute
   '/lovable/email/events': typeof LovableEmailEventsRoute
   '/api/public/cron/admin-digest': typeof ApiPublicCronAdminDigestRoute
   '/lovable/email/auth/preview': typeof LovableEmailAuthPreviewRoute
@@ -536,6 +554,7 @@ export interface FileRouteTypes {
     | '/unsubscribe'
     | '/admin/approvals'
     | '/admin/audit'
+    | '/admin/blocks'
     | '/admin/bulk-actions'
     | '/admin/checkin'
     | '/admin/communications'
@@ -558,6 +577,7 @@ export interface FileRouteTypes {
     | '/lions/'
     | '/messages/'
     | '/settings/'
+    | '/admin/members/$memberId'
     | '/lovable/email/events'
     | '/api/public/cron/admin-digest'
     | '/lovable/email/auth/preview'
@@ -592,6 +612,7 @@ export interface FileRouteTypes {
     | '/unsubscribe'
     | '/admin/approvals'
     | '/admin/audit'
+    | '/admin/blocks'
     | '/admin/bulk-actions'
     | '/admin/checkin'
     | '/admin/communications'
@@ -614,6 +635,7 @@ export interface FileRouteTypes {
     | '/lions'
     | '/messages'
     | '/settings'
+    | '/admin/members/$memberId'
     | '/lovable/email/events'
     | '/api/public/cron/admin-digest'
     | '/lovable/email/auth/preview'
@@ -648,6 +670,7 @@ export interface FileRouteTypes {
     | '/unsubscribe'
     | '/admin/approvals'
     | '/admin/audit'
+    | '/admin/blocks'
     | '/admin/bulk-actions'
     | '/admin/checkin'
     | '/admin/communications'
@@ -670,6 +693,7 @@ export interface FileRouteTypes {
     | '/lions/'
     | '/messages/'
     | '/settings/'
+    | '/admin/members/$memberId'
     | '/lovable/email/events'
     | '/api/public/cron/admin-digest'
     | '/lovable/email/auth/preview'
@@ -705,6 +729,7 @@ export interface RootRouteChildren {
   UnsubscribeRoute: typeof UnsubscribeRoute
   AdminApprovalsRoute: typeof AdminApprovalsRoute
   AdminAuditRoute: typeof AdminAuditRoute
+  AdminBlocksRoute: typeof AdminBlocksRoute
   AdminBulkActionsRoute: typeof AdminBulkActionsRoute
   AdminCheckinRoute: typeof AdminCheckinRoute
   AdminCommunicationsRoute: typeof AdminCommunicationsRoute
@@ -713,7 +738,7 @@ export interface RootRouteChildren {
   AdminEventsRoute: typeof AdminEventsRoute
   AdminIntrosRoute: typeof AdminIntrosRoute
   AdminLionsRoute: typeof AdminLionsRoute
-  AdminMembersRoute: typeof AdminMembersRoute
+  AdminMembersRoute: typeof AdminMembersRouteWithChildren
   AdminReportsRoute: typeof AdminReportsRoute
   AdminSettingsRoute: typeof AdminSettingsRoute
   CompanyCompanyIdRoute: typeof CompanyCompanyIdRoute
@@ -932,6 +957,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAuditRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/blocks': {
+      id: '/admin/blocks'
+      path: '/admin/blocks'
+      fullPath: '/admin/blocks'
+      preLoaderRoute: typeof AdminBlocksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/bulk-actions': {
       id: '/admin/bulk-actions'
       path: '/admin/bulk-actions'
@@ -1079,6 +1111,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof TicketsFlagshipRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/members/$memberId': {
+      id: '/admin/members/$memberId'
+      path: '/$memberId'
+      fullPath: '/admin/members/$memberId'
+      preLoaderRoute: typeof AdminMembersMemberIdRouteImport
+      parentRoute: typeof AdminMembersRoute
+    }
     '/lovable/email/events': {
       id: '/lovable/email/events'
       path: '/lovable/email/events'
@@ -1117,6 +1156,18 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface AdminMembersRouteChildren {
+  AdminMembersMemberIdRoute: typeof AdminMembersMemberIdRoute
+}
+
+const AdminMembersRouteChildren: AdminMembersRouteChildren = {
+  AdminMembersMemberIdRoute: AdminMembersMemberIdRoute,
+}
+
+const AdminMembersRouteWithChildren = AdminMembersRoute._addFileChildren(
+  AdminMembersRouteChildren,
+)
+
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountDeletionRoute: AccountDeletionRoute,
@@ -1145,6 +1196,7 @@ const rootRouteChildren: RootRouteChildren = {
   UnsubscribeRoute: UnsubscribeRoute,
   AdminApprovalsRoute: AdminApprovalsRoute,
   AdminAuditRoute: AdminAuditRoute,
+  AdminBlocksRoute: AdminBlocksRoute,
   AdminBulkActionsRoute: AdminBulkActionsRoute,
   AdminCheckinRoute: AdminCheckinRoute,
   AdminCommunicationsRoute: AdminCommunicationsRoute,
@@ -1153,7 +1205,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminEventsRoute: AdminEventsRoute,
   AdminIntrosRoute: AdminIntrosRoute,
   AdminLionsRoute: AdminLionsRoute,
-  AdminMembersRoute: AdminMembersRoute,
+  AdminMembersRoute: AdminMembersRouteWithChildren,
   AdminReportsRoute: AdminReportsRoute,
   AdminSettingsRoute: AdminSettingsRoute,
   CompanyCompanyIdRoute: CompanyCompanyIdRoute,

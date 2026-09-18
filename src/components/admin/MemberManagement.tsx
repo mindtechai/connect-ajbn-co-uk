@@ -11,18 +11,21 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
-import { Search, Download, Crown, MoreHorizontal, Loader2, Check, X, Clock, UserCheck, KeyRound, Moon, Building2, Plus, Trash2, ShieldCheck, Pencil } from "lucide-react";
+import { Search, Download, Crown, MoreHorizontal, Loader2, Check, X, Clock, UserCheck, KeyRound, Moon, Building2, Plus, Trash2, ShieldCheck, Pencil, Eye } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
+import { useSearchParams, Link } from "@/lib/router-compat";
+import { useAdminScope } from "@/components/RequireSuperAdmin";
 import { decideProfileChange } from "@/lib/member-profile-approvals.functions";
 import { resetMemberPassword } from "@/lib/admin-password.functions";
 import { setMemberQuietHours } from "@/lib/quiet-hours.functions";
 import {
   createMemberAccount, setMemberApproved, setMemberRole, setMembershipTier,
-  softDeleteMember, updateMemberFields,
+  softDeleteMember, updateMemberFields, rejectMember,
 } from "@/lib/admin-members.functions";
+import { Textarea } from "@/components/ui/textarea";
 
 type Role = "super_admin" | "ajbn_member" | "impact_lion" | "prospective_member";
 type BaseRole = "prospective_member" | "ajbn_member" | "super_admin";
@@ -94,8 +97,11 @@ const displayName = (m: Member) =>
   `${m.first_name ?? ""} ${m.last_name ?? ""}`.trim() || m.email || "Unnamed member";
 
 export function MemberManagement() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const scope = useAdminScope();
+  const isFull = scope === "full";
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState(() => searchParams.get("filter") === "pending" ? "pending" : "all");
   const [roleFilter, setRoleFilter] = useState("all");
   const [lionsFilter, setLionsFilter] = useState("all");
   const [changesFilter, setChangesFilter] = useState("all");
@@ -116,8 +122,11 @@ export function MemberManagement() {
   const [addOpen, setAddOpen] = useState(false);
   const [newMember, setNewMember] = useState({ firstName: "", lastName: "", email: "", company: "", role: "prospective_member" as BaseRole });
   const [creating, setCreating] = useState(false);
+  const [rejecting, setRejecting] = useState<Member | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
   const { toast } = useToast();
   const decide = useServerFn(decideProfileChange);
+  const reject = useServerFn(rejectMember);
   const resetPassword = useServerFn(resetMemberPassword);
   const toggleQuiet = useServerFn(setMemberQuietHours);
   const saveFields = useServerFn(updateMemberFields);
@@ -161,6 +170,33 @@ export function MemberManagement() {
   };
 
   useEffect(() => { load(); }, []);
+
+  useEffect(() => {
+    const current = searchParams.get("filter");
+    if (statusFilter === "pending" && current !== "pending") {
+      setSearchParams({ filter: "pending" }, { replace: true });
+    } else if (statusFilter !== "pending" && current === "pending") {
+      setSearchParams({}, { replace: true });
+    }
+  }, [statusFilter, searchParams, setSearchParams]);
+
+  const companyMatch = (m: Member) => {
+    if (!m.company) return false;
+    const q = m.company.toLowerCase().trim();
+    return companies.some((c) => c.company_name.toLowerCase().includes(q) || q.includes(c.company_name.toLowerCase()));
+  };
+
+  const handleReject = async (m: Member) => {
+    try {
+      const result = await reject({ data: { memberId: m.id, reason: rejectReason.trim() || undefined } });
+      toast({ title: "Membership not approved", description: result.emailSent ? "Rejection email sent." : "Could not send rejection email." });
+      setRejecting(null);
+      setRejectReason("");
+      await load();
+    } catch (e: any) {
+      toast({ title: "Could not reject", description: e?.message, variant: "destructive" });
+    }
+  };
 
   const statusOf = (m: Member) =>
     m.roles.includes("super_admin") ? "admin" :
@@ -565,6 +601,80 @@ export function MemberManagement() {
 
   if (loading) {
     return <div className="py-16 flex justify-center"><Loader2 className="animate-spin text-muted-foreground" /></div>;
+  }
+
+  if (!isFull) {
+    const rows = pendingMembers.filter((m) => {
+      const q = search.toLowerCase();
+      if (!q) return true;
+      return displayName(m).toLowerCase().includes(q) || (m.company ?? "").toLowerCase().includes(q);
+    });
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-display font-bold">Pending approvals</h1>
+          <p className="text-sm text-muted-foreground">{rows.length} member{rows.length === 1 ? "" : "s"} awaiting approval.</p>
+        </div>
+        <div className="relative">
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Input placeholder="Search name or company…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 max-w-md" />
+        </div>
+        <div className="bg-card rounded-xl border shadow-xs overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Company</TableHead>
+                <TableHead>Signed up</TableHead>
+                <TableHead>Company match</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {rows.map((m) => (
+                <TableRow key={m.id}>
+                  <TableCell className="font-medium">{displayName(m)}</TableCell>
+                  <TableCell>{m.company || "—"}</TableCell>
+                  <TableCell className="whitespace-nowrap">{new Date(m.created_at).toLocaleDateString("en-GB")}</TableCell>
+                  <TableCell>{companyMatch(m) ? <Badge variant="outline" className="text-emerald-600 border-emerald-200 bg-emerald-50 dark:bg-emerald-950/30">Yes</Badge> : <span className="text-muted-foreground">—</span>}</TableCell>
+                  <TableCell>
+                    <div className="flex justify-end gap-2">
+                      <Button size="sm" variant="outline" asChild>
+                        <Link to={`/admin/members/${m.id}`}><Eye size={14} className="mr-1" /> View</Link>
+                      </Button>
+                      <Button size="sm" disabled={promoting === m.id} onClick={() => promote(m)}>
+                        {promoting === m.id ? <Loader2 size={14} className="animate-spin" /> : <UserCheck size={14} className="mr-1" />} Approve
+                      </Button>
+                      <Button size="sm" variant="destructive" onClick={() => setRejecting(m)}>
+                        <X size={14} className="mr-1" /> Reject
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {rows.length === 0 && (
+                <TableRow><TableCell colSpan={5} className="text-center py-8 text-muted-foreground">No pending members.</TableCell></TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+        <Dialog open={!!rejecting} onOpenChange={(open) => !open && setRejecting(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Not approve {rejecting ? displayName(rejecting) : "this member"}?</DialogTitle>
+              <DialogDescription>The member will be emailed that their application was not approved at this time.</DialogDescription>
+            </DialogHeader>
+            <Textarea placeholder="Reason (optional, included in email)" value={rejectReason} onChange={(e) => setRejectReason(e.target.value)} rows={4} />
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setRejecting(null)}>Cancel</Button>
+              <Button variant="destructive" disabled={busy === rejecting?.id} onClick={() => rejecting && void handleReject(rejecting)}>
+                Send rejection
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+    );
   }
 
   return (

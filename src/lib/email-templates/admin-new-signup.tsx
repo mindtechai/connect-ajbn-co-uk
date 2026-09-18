@@ -29,8 +29,8 @@ const AdminNewSignupEmail = ({
   member_email = '',
   member_phone = '',
   signed_up_on = '',
-  member_url = 'https://connect.ajbn.co.uk/admin/members',
-  approvals_url = 'https://connect.ajbn.co.uk/admin/approvals',
+  member_url = 'https://connect.ajbn.co.uk/admin/members?member=00a67fe6',
+  approvals_url = 'https://connect.ajbn.co.uk/admin/members?filter=pending',
 }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
@@ -77,7 +77,7 @@ export const template = {
     member_phone: '',
     signed_up_on: 'Thursday, 17 September 2026',
     member_url: 'https://connect.ajbn.co.uk/admin/members?member=00a67fe6',
-    approvals_url: 'https://connect.ajbn.co.uk/admin/approvals',
+    approvals_url: 'https://connect.ajbn.co.uk/admin/members?filter=pending',
   },
 } satisfies TemplateEntry
 
