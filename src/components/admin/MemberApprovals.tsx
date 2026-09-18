@@ -4,10 +4,16 @@ import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Table, TableHeader, TableRow, TableHead, TableBody, TableCell } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
-import { Check, X, Search, Loader2, Crown } from "lucide-react";
+import { Check, X, Search, Loader2, Crown, Eye } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
-import { setMemberApproved } from "@/lib/admin-members.functions";
+import { setMemberApproved, rejectMember } from "@/lib/admin-members.functions";
+import { Link } from "@/lib/router-compat";
+import { useServerFn } from "@tanstack/react-start";
+import {
+  Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
+} from "@/components/ui/dialog";
+import { Textarea } from "@/components/ui/textarea";
 
 type Applicant = {
   id: string;
@@ -20,17 +26,20 @@ type Applicant = {
   created_at: string;
 };
 
-export function MemberApprovals() {
+export function MemberApprovals({ pendingCount }: { pendingCount?: number }) {
   const [rows, setRows] = useState<Applicant[]>([]);
   const [referrerNames, setReferrerNames] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [filter, setFilter] = useState("all");
+  const [rejecting, setRejecting] = useState<Applicant | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
+  const [busy, setBusy] = useState<string | null>(null);
   const { toast } = useToast();
+  const rejectFn = useServerFn(rejectMember);
 
   const load = async () => {
     setLoading(true);
-    // Prospective = users whose ONLY role is prospective_member
     const { data: roles } = await supabase.from("user_roles").select("user_id, role");
     const byUser = new Map<string, string[]>();
     for (const r of (roles ?? []) as any[]) {
@@ -83,32 +92,34 @@ export function MemberApprovals() {
   }), [rows, search, filter]);
 
   const approve = async (m: Applicant, asLion = false) => {
+    setBusy(m.id);
     try {
-      // Single source of truth: also sets profiles.is_approved, audits and sends welcome.
       await setMemberApproved({ data: { memberId: m.id, approved: true, sendWelcome: true } });
       if (asLion) {
         await supabase.from("user_roles").insert({ user_id: m.id, role: "impact_lion" });
       }
+      toast({ title: "Member approved", description: `${m.first_name ?? "Member"} is now an active AJBN member${asLion ? " + Impact Lion" : ""}.` });
+      load();
     } catch (e: any) {
       toast({ title: "Could not approve", description: e?.message ?? "Please try again.", variant: "destructive" });
-      return;
+    } finally {
+      setBusy(null);
     }
-    toast({ title: "Member approved", description: `${m.first_name ?? "Member"} is now an active AJBN member${asLion ? " + Impact Lion" : ""}.` });
-    load();
   };
 
   const reject = async (m: Applicant) => {
-    await supabase.from("user_roles").delete().eq("user_id", m.id).eq("role", "prospective_member");
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      await supabase.from("admin_audit_log").insert({
-        actor_id: user.id, action: "reject_member",
-        target_type: "user", target_id: m.id,
-        details: { email: m.email },
-      });
+    setBusy(m.id);
+    try {
+      const result = await rejectFn({ data: { memberId: m.id, reason: rejectReason.trim() || undefined } });
+      toast({ title: "Application declined", description: result.emailSent ? "Rejection email sent." : "Could not send rejection email.", variant: "destructive" });
+      setRejecting(null);
+      setRejectReason("");
+      load();
+    } catch (e: any) {
+      toast({ title: "Could not decline", description: e?.message ?? "Please try again.", variant: "destructive" });
+    } finally {
+      setBusy(null);
     }
-    toast({ title: "Application declined", description: `${m.first_name ?? "Applicant"} has been declined.`, variant: "destructive" });
-    load();
   };
 
   if (loading) return <div className="py-16 flex justify-center"><Loader2 className="animate-spin text-muted-foreground" /></div>;
@@ -116,7 +127,12 @@ export function MemberApprovals() {
   return (
     <div className="space-y-6">
       <div>
-        <h1 className="text-2xl font-display font-bold">Pending Approvals</h1>
+        <div className="flex items-center gap-2">
+          <h1 className="text-2xl font-display font-bold">Pending Approvals</h1>
+          {typeof pendingCount === "number" && pendingCount > 0 && (
+            <Badge variant="default" className="rounded-full px-2">{pendingCount}</Badge>
+          )}
+        </div>
         <p className="text-sm text-muted-foreground">{rows.length} application{rows.length !== 1 && "s"} awaiting review</p>
       </div>
 
@@ -147,9 +163,12 @@ export function MemberApprovals() {
               <p className="text-xs text-muted-foreground">Referred by <span className="font-medium text-foreground">{referrerNames[m.referred_by_code] ?? m.referred_by_code}</span></p>
             )}
             <div className="flex gap-2">
-              <Button size="sm" className="flex-1" onClick={() => approve(m)}><Check size={14} /> Approve</Button>
-              <Button size="sm" variant="outline" onClick={() => approve(m, true)}><Crown size={14} className="text-gold" /></Button>
-              <Button size="sm" variant="outline" onClick={() => reject(m)}><X size={14} /></Button>
+              <Button size="sm" variant="outline" asChild className="flex-1">
+                <Link to={`/admin/members/${m.id}`}><Eye size={14} /> View</Link>
+              </Button>
+              <Button size="sm" className="flex-1" disabled={busy === m.id} onClick={() => approve(m)}><Check size={14} /> Approve</Button>
+              <Button size="sm" variant="outline" disabled={busy === m.id} onClick={() => approve(m, true)}><Crown size={14} className="text-gold" /></Button>
+              <Button size="sm" variant="destructive" disabled={busy === m.id} onClick={() => setRejecting(m)}><X size={14} /></Button>
             </div>
           </div>
         ))}
@@ -187,11 +206,14 @@ export function MemberApprovals() {
                 <TableCell className="text-sm text-muted-foreground">{new Date(m.created_at).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" })}</TableCell>
                 <TableCell>
                   <div className="flex justify-end gap-1">
-                    <Button size="sm" onClick={() => approve(m)}><Check size={14} /> Approve</Button>
-                    <Button size="sm" variant="outline" onClick={() => approve(m, true)} title="Approve + Impact Lion">
+                    <Button size="sm" variant="outline" asChild>
+                      <Link to={`/admin/members/${m.id}`}><Eye size={14} /></Link>
+                    </Button>
+                    <Button size="sm" disabled={busy === m.id} onClick={() => approve(m)}><Check size={14} /> Approve</Button>
+                    <Button size="sm" variant="outline" disabled={busy === m.id} onClick={() => approve(m, true)} title="Approve + Impact Lion">
                       <Crown size={14} className="text-gold" />
                     </Button>
-                    <Button size="sm" variant="outline" onClick={() => reject(m)}><X size={14} /></Button>
+                    <Button size="sm" variant="destructive" disabled={busy === m.id} onClick={() => setRejecting(m)}><X size={14} /></Button>
                   </div>
                 </TableCell>
               </TableRow>
@@ -204,6 +226,22 @@ export function MemberApprovals() {
           </TableBody>
         </Table>
       </div>
+
+      <Dialog open={!!rejecting} onOpenChange={(open) => !open && setRejecting(null)}>
+        <DialogContent>
+          <DialogHeader>
+            <DialogTitle>Not approve {rejecting ? `${rejecting.first_name ?? ""} ${rejecting.last_name ?? ""}`.trim() || "this member" : "this member"}?</DialogTitle>
+            <DialogDescription>The member will be emailed that their application was not approved at this time.</DialogDescription>
+          </DialogHeader>
+          <Textarea placeholder="Reason (optional, included in email)" value={rejectReason} onChange={(e) => setRejectReason(e.target.value)} rows={4} />
+          <DialogFooter>
+            <Button variant="outline" onClick={() => setRejecting(null)} disabled={busy === rejecting?.id}>Cancel</Button>
+            <Button variant="destructive" disabled={busy === rejecting?.id} onClick={() => rejecting && void reject(rejecting)}>
+              Send rejection
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }
