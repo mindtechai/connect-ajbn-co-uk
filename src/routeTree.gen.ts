@@ -11,7 +11,9 @@
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AccountDeletionRouteImport } from './routes/account-deletion'
+import { Route as AiMatcherRouteImport } from './routes/ai-matcher'
 import { Route as BoardRouteImport } from './routes/board'
+import { Route as BusinessNeedsMatchRouteImport } from './routes/business-needs-match'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DirectoryRouteImport } from './routes/directory'
@@ -70,9 +72,19 @@ const AccountDeletionRoute = AccountDeletionRouteImport.update({
   path: '/account-deletion',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AiMatcherRoute = AiMatcherRouteImport.update({
+  id: '/ai-matcher',
+  path: '/ai-matcher',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const BoardRoute = BoardRouteImport.update({
   id: '/board',
   path: '/board',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const BusinessNeedsMatchRoute = BusinessNeedsMatchRouteImport.update({
+  id: '/business-needs-match',
+  path: '/business-needs-match',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -316,7 +328,9 @@ const LovableEmailTransactionalPreviewRoute =
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/account-deletion': typeof AccountDeletionRoute
+  '/ai-matcher': typeof AiMatcherRoute
   '/board': typeof BoardRoute
+  '/business-needs-match': typeof BusinessNeedsMatchRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/directory': typeof DirectoryRoute
@@ -368,7 +382,9 @@ export interface FileRoutesByFullPath {
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/account-deletion': typeof AccountDeletionRoute
+  '/ai-matcher': typeof AiMatcherRoute
   '/board': typeof BoardRoute
+  '/business-needs-match': typeof BusinessNeedsMatchRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/directory': typeof DirectoryRoute
@@ -421,7 +437,9 @@ export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/account-deletion': typeof AccountDeletionRoute
+  '/ai-matcher': typeof AiMatcherRoute
   '/board': typeof BoardRoute
+  '/business-needs-match': typeof BusinessNeedsMatchRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/directory': typeof DirectoryRoute
@@ -475,7 +493,9 @@ export interface FileRouteTypes {
   fullPaths:
     | '/'
     | '/account-deletion'
+    | '/ai-matcher'
     | '/board'
+    | '/business-needs-match'
     | '/contact'
     | '/dashboard'
     | '/directory'
@@ -527,7 +547,9 @@ export interface FileRouteTypes {
   to:
     | '/'
     | '/account-deletion'
+    | '/ai-matcher'
     | '/board'
+    | '/business-needs-match'
     | '/contact'
     | '/dashboard'
     | '/directory'
@@ -579,7 +601,9 @@ export interface FileRouteTypes {
     | '__root__'
     | '/'
     | '/account-deletion'
+    | '/ai-matcher'
     | '/board'
+    | '/business-needs-match'
     | '/contact'
     | '/dashboard'
     | '/directory'
@@ -632,7 +656,9 @@ export interface FileRouteTypes {
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AccountDeletionRoute: typeof AccountDeletionRoute
+  AiMatcherRoute: typeof AiMatcherRoute
   BoardRoute: typeof BoardRoute
+  BusinessNeedsMatchRoute: typeof BusinessNeedsMatchRoute
   ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRoute
   DirectoryRoute: typeof DirectoryRoute
@@ -698,11 +724,25 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AccountDeletionRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/ai-matcher': {
+      id: '/ai-matcher'
+      path: '/ai-matcher'
+      fullPath: '/ai-matcher'
+      preLoaderRoute: typeof AiMatcherRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/board': {
       id: '/board'
       path: '/board'
       fullPath: '/board'
       preLoaderRoute: typeof BoardRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/business-needs-match': {
+      id: '/business-needs-match'
+      path: '/business-needs-match'
+      fullPath: '/business-needs-match'
+      preLoaderRoute: typeof BusinessNeedsMatchRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -1040,7 +1080,9 @@ declare module '@tanstack/react-router' {
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AccountDeletionRoute: AccountDeletionRoute,
+  AiMatcherRoute: AiMatcherRoute,
   BoardRoute: BoardRoute,
+  BusinessNeedsMatchRoute: BusinessNeedsMatchRoute,
   ContactRoute: ContactRoute,
   DashboardRoute: DashboardRoute,
   DirectoryRoute: DirectoryRoute,
