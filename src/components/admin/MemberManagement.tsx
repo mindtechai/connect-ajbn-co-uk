@@ -603,6 +603,80 @@ export function MemberManagement() {
     return <div className="py-16 flex justify-center"><Loader2 className="animate-spin text-muted-foreground" /></div>;
   }
 
+  if (!isFull) {
+    const rows = pendingMembers.filter((m) => {
+      const q = search.toLowerCase();
+      if (!q) return true;
+      return displayName(m).toLowerCase().includes(q) || (m.company ?? "").toLowerCase().includes(q);
+    });
+    return (
+      <div className="space-y-6">
+        <div>
+          <h1 className="text-2xl font-display font-bold">Pending approvals</h1>
+          <p className="text-sm text-muted-foreground">{rows.length} member{rows.length === 1 ? "" : "s"} awaiting approval.</p>
+        </div>
+        <div className="relative">
+          <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
+          <Input placeholder="Search name or company…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9 max-w-md" />
+        </div>
+        <div className="bg-card rounded-xl border shadow-xs overflow-x-auto">
+          <Table>
+            <TableHeader>
+              <TableRow>
+                <TableHead>Name</TableHead>
+                <TableHead>Company</TableHead>
+                <TableHead>Signed up</TableHead>
+                <TableHead>Company match</TableHead>
+                <TableHead className="text-right">Actions</TableHead>
+              </TableRow>
+            </TableHeader>
+            <TableBody>
+              {rows.map((m) => (
+                <TableRow key={m.id}>
+                  <TableCell className="font-medium">{displayName(m)}</TableCell>
+                  <TableCell>{m.company || "—"}</TableCell>
+                  <TableCell className="whitespace-nowrap">{new Date(m.created_at).toLocaleDateString("en-GB")}</TableCell>
+                  <TableCell>{companyMatch(m) ? <Badge variant="outline" className="text-emerald-600 border-emerald-200 bg-emerald-50 dark:bg-emerald-950/30">Yes</Badge> : <span className="text-muted-foreground">—</span>}</TableCell>
+                  <TableCell>
+                    <div className="flex justify-end gap-2">
+                      <Button size="sm" variant="outline" asChild>
+                        <Link to={`/admin/members/${m.id}`}><Eye size={14} className="mr-1" /> View</Link>
+                      </Button>
+                      <Button size="sm" disabled={promoting === m.id} onClick={() => promote(m)}>
+                        {promoting === m.id ? <Loader2 size={14} className="animate-spin" /> : <UserCheck size={14} className="mr-1" />} Approve
+                      </Button>
+                      <Button size="sm" variant="destructive" onClick={() => setRejecting(m)}>
+                        <X size={14} className="mr-1" /> Reject
+                      </Button>
+                    </div>
+                  </TableCell>
+                </TableRow>
+              ))}
+              {rows.length === 0 && (
+                <TableRow><TableCell colSpan={5} className="text-center py-8 text-muted-foreground">No pending members.</TableCell></TableRow>
+              )}
+            </TableBody>
+          </Table>
+        </div>
+        <Dialog open={!!rejecting} onOpenChange={(open) => !open && setRejecting(null)}>
+          <DialogContent>
+            <DialogHeader>
+              <DialogTitle>Not approve {rejecting ? displayName(rejecting) : "this member"}?</DialogTitle>
+              <DialogDescription>The member will be emailed that their application was not approved at this time.</DialogDescription>
+            </DialogHeader>
+            <Textarea placeholder="Reason (optional, included in email)" value={rejectReason} onChange={(e) => setRejectReason(e.target.value)} rows={4} />
+            <DialogFooter>
+              <Button variant="outline" onClick={() => setRejecting(null)}>Cancel</Button>
+              <Button variant="destructive" disabled={busy === rejecting?.id} onClick={() => rejecting && void handleReject(rejecting)}>
+                Send rejection
+              </Button>
+            </DialogFooter>
+          </DialogContent>
+        </Dialog>
+      </div>
+    );
+  }
+
   return (
     <div className="space-y-6">
       <div className="flex flex-col gap-3 sm:flex-row sm:items-start sm:justify-between">
