@@ -400,7 +400,7 @@ export const rejectMember = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data) => RejectSchema.parse(data))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context, "full");
+    await assertAdmin(context, "moderation");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const { data: profile } = await supabaseAdmin
