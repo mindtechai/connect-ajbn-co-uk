@@ -18,6 +18,7 @@ const fullNavItems = [
 const moderationNavItems = [
   { label: "Overview", icon: BarChart3, path: "/admin" },
   { label: "Members", icon: Users, path: "/admin/members" },
+  { label: "Approvals", icon: UserCheck, path: "/admin/approvals" },
   { label: "Reports", icon: Flag, path: "/admin/reports" },
   { label: "Blocks", icon: Ban, path: "/admin/blocks" },
 ];
