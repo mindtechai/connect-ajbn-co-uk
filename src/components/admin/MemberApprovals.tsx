@@ -37,6 +37,7 @@ export function MemberApprovals({ pendingCount }: { pendingCount?: number }) {
   const [busy, setBusy] = useState<string | null>(null);
   const { toast } = useToast();
   const rejectFn = useServerFn(rejectMember);
+  const approveFn = useServerFn(setMemberApproved);
 
   const load = async () => {
     setLoading(true);
