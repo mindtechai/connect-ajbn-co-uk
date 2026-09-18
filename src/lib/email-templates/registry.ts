@@ -34,4 +34,5 @@ export const TEMPLATES: Record<string, TemplateEntry> = {
   'member-welcome': memberWelcome,
   'admin-new-signup': adminNewSignup,
   'registration-pending': registrationPending,
+  'member-not-approved': memberNotApproved,
 }
