@@ -32,6 +32,8 @@ export default function AdminPage() {
   const { signOut } = useAuth();
   const scope = useAdminScope();
   const [pendingCount, setPendingCount] = useState(0);
+  const [reportCount, setReportCount] = useState(0);
+  const [blockCount, setBlockCount] = useState(0);
 
   const loadPendingCount = async () => {
     const { count } = await supabase
@@ -42,12 +44,29 @@ export default function AdminPage() {
     setPendingCount(count ?? 0);
   };
 
+  // Moderation counters (Apple guideline 1.2): open reports and active blocks.
+  const loadModerationCounts = async () => {
+    const [reports, blocks] = await Promise.all([
+      supabase.from("member_reports").select("id", { count: "exact", head: true }).eq("status", "open"),
+      supabase.from("member_blocks").select("id", { count: "exact", head: true }),
+    ]);
+    setReportCount(reports.count ?? 0);
+    setBlockCount(blocks.count ?? 0);
+  };
+
   useEffect(() => {
     loadPendingCount();
+    void loadModerationCounts();
     const ch = supabase
       .channel("admin-pending-count")
       .on("postgres_changes", { event: "*", schema: "public", table: "profiles" }, () => {
         void loadPendingCount();
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "member_reports" }, () => {
+        void loadModerationCounts();
+      })
+      .on("postgres_changes", { event: "*", schema: "public", table: "member_blocks" }, () => {
+        void loadModerationCounts();
       })
       .subscribe();
     return () => { supabase.removeChannel(ch); };
