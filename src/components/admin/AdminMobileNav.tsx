@@ -60,7 +60,7 @@ export function AdminMobileNav({ pendingCount = 0, reportCount = 0, blockCount =
                 <item.icon size={18} />
                 {showBadge && (
                   <span className="absolute -top-1.5 -right-2 min-w-4 h-4 px-1 flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[9px] font-bold">
-                    {pendingCount > 9 ? "9+" : pendingCount}
+                    {badge > 9 ? "9+" : badge}
                   </span>
                 )}
               </span>
