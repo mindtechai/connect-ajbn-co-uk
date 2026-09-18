@@ -11,18 +11,21 @@ import {
   AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import { Label } from "@/components/ui/label";
-import { Search, Download, Crown, MoreHorizontal, Loader2, Check, X, Clock, UserCheck, KeyRound, Moon, Building2, Plus, Trash2, ShieldCheck, Pencil } from "lucide-react";
+import { Search, Download, Crown, MoreHorizontal, Loader2, Check, X, Clock, UserCheck, KeyRound, Moon, Building2, Plus, Trash2, ShieldCheck, Pencil, Eye } from "lucide-react";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu";
 import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { useServerFn } from "@tanstack/react-start";
+import { useSearchParams, Link } from "@/lib/router-compat";
+import { useAdminScope } from "@/components/RequireSuperAdmin";
 import { decideProfileChange } from "@/lib/member-profile-approvals.functions";
 import { resetMemberPassword } from "@/lib/admin-password.functions";
 import { setMemberQuietHours } from "@/lib/quiet-hours.functions";
 import {
   createMemberAccount, setMemberApproved, setMemberRole, setMembershipTier,
-  softDeleteMember, updateMemberFields,
+  softDeleteMember, updateMemberFields, rejectMember,
 } from "@/lib/admin-members.functions";
+import { Textarea } from "@/components/ui/textarea";
 
 type Role = "super_admin" | "ajbn_member" | "impact_lion" | "prospective_member";
 type BaseRole = "prospective_member" | "ajbn_member" | "super_admin";
