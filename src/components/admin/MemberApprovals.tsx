@@ -9,6 +9,7 @@ import { useToast } from "@/hooks/use-toast";
 import { supabase } from "@/integrations/supabase/client";
 import { setMemberApproved, rejectMember } from "@/lib/admin-members.functions";
 import { Link } from "@/lib/router-compat";
+import { useAdminScope } from "@/components/RequireSuperAdmin";
 import { useServerFn } from "@tanstack/react-start";
 import {
   Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle,
