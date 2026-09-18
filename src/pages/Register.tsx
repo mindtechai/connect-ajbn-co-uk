@@ -60,8 +60,8 @@ export default function RegisterPage() {
       navigate(`/login?verification=1&email=${encodeURIComponent(email.trim())}`);
       return;
     }
-    toast({ title: "Welcome to AJBN Connect", description: "Your account is ready." });
-    window.location.href = "/dashboard";
+    toast({ title: "Welcome to AJBN Connect", description: "Your membership is pending approval." });
+    window.location.href = "/pending";
   };
 
   return (

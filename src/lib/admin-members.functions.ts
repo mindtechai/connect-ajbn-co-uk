@@ -130,7 +130,8 @@ export const setMemberApproved = createServerFn({ method: "POST" })
       .eq("id", data.memberId);
 
     let welcomeSent = false;
-    if (data.approved && data.sendWelcome) {
+    // Approval always tells the member; callers opt out explicitly with false.
+    if (data.approved && data.sendWelcome !== false) {
       const { data: profile } = await supabaseAdmin
         .from("profiles")
         .select("email, first_name")
