@@ -28,6 +28,8 @@ type Applicant = {
 };
 
 export function MemberApprovals({ pendingCount }: { pendingCount?: number }) {
+  const scope = useAdminScope();
+  const isFull = scope === "full";
   const [rows, setRows] = useState<Applicant[]>([]);
   const [referrerNames, setReferrerNames] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState(true);
