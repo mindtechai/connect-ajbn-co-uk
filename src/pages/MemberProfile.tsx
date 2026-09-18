@@ -20,11 +20,11 @@ type MemberDetail = {
 
 export default function MemberProfilePage() {
   const { memberId } = useParams({ from: "/member/$memberId" });
-  const { roles, loading: authLoading } = useAuth();
+  const { roles, isApprovedMember, loading: authLoading } = useAuth();
   const [member, setMember] = useState<MemberDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const inQuietHours = useUkQuietHoursWindow();
-  const approved = roles.some((role) => ["ajbn_member", "impact_lion", "super_admin"].includes(role));
+  const approved = isApprovedMember;
 
   useEffect(() => {
     if (authLoading) return;

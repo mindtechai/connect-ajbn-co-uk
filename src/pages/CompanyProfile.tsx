@@ -18,11 +18,11 @@ type Owner = { id: string; first_name: string | null; last_name: string | null; 
 
 export default function CompanyProfilePage() {
   const { companyId } = useParams({ from: "/company/$companyId" });
-  const { roles, loading: authLoading } = useAuth();
+  const { roles, isApprovedMember, loading: authLoading } = useAuth();
   const [company, setCompany] = useState<Company | null>(null);
   const [owner, setOwner] = useState<Owner | null>(null);
   const [loading, setLoading] = useState(true);
-  const approved = roles.some((role) => ["ajbn_member", "impact_lion", "super_admin"].includes(role));
+  const approved = isApprovedMember;
 
   useEffect(() => {
     if (authLoading) return;

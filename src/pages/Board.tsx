@@ -45,11 +45,10 @@ function daysLeft(expiresAt: string): string {
 }
 
 export default function BoardPage() {
-  const { user, session, roles, loading: authLoading } = useAuth();
+  const { user, session, roles, isApprovedMember: canAccessMembersCorner, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const hasRealSession = !!session?.access_token && session.access_token !== "demo";
-  const isApprovedMember =
-    roles.includes("ajbn_member") || roles.includes("impact_lion") || roles.includes("super_admin");
+  const isApprovedMember = canAccessMembersCorner;
 
   const [posts, setPosts] = useState<BoardPost[]>([]);
   const [authors, setAuthors] = useState<Record<string, AuthorInfo>>({});

@@ -33,11 +33,11 @@ const contributions = [
 ];
 
 export default function LionsPage() {
-  const { user, roles } = useAuth();
+  const { user, roles, isApprovedMember } = useAuth();
   // Only active AJBN members can apply for Impact Lions; everyone else joins AJBN first.
   const isActiveMember =
     !!user &&
-    (roles.includes("ajbn_member") || roles.includes("impact_lion") || roles.includes("super_admin"));
+    isApprovedMember;
   const joinHref = isActiveMember ? "/lions/apply" : "/register?next=/lions/apply";
 
 

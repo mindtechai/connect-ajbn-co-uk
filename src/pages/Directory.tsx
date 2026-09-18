@@ -63,7 +63,7 @@ function initials(name: string): string {
 }
 
 export default function DirectoryPage() {
-  const { user, session, roles, loading: authLoading } = useAuth();
+  const { user, session, roles, isApprovedMember, loading: authLoading } = useAuth();
   // A demo/mock session has no real backend token; querying with it hits the
   // database as an anonymous caller and is rejected by access rules.
   const hasRealSession = !!session?.access_token && session.access_token !== "demo";
@@ -77,8 +77,7 @@ export default function DirectoryPage() {
 
   const canAccess = !!user;
   // Only approved membership levels can see listings; prospective sign-ups see a teaser.
-  const isApprovedMember =
-    roles.includes("ajbn_member") || roles.includes("impact_lion") || roles.includes("super_admin");
+
 
   useEffect(() => {
     if (authLoading || !user) return;
@@ -179,8 +178,12 @@ export default function DirectoryPage() {
             ))}
           </div>
           <p className="text-xs text-muted-foreground">
-            Your membership is awaiting approval. You'll see the full directory as soon as it's
-            active.
+            Your membership is pending approval by an AJBN admin — you'll get full access to the
+            Directory, 1-2-1 Messaging and Referral Rewards as soon as it's active, with no need to
+            sign in again. Questions?{" "}
+            <a href="mailto:admin@ajbn.co.uk" className="underline hover:text-primary">
+              admin@ajbn.co.uk
+            </a>
           </p>
         </div>
       ) : (
