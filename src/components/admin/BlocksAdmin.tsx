@@ -14,7 +14,7 @@ export function BlocksAdmin() {
   const load = async () => {
     setLoading(true);
     try {
-      const data = await fetchBlocks({ data: {} });
+      const data = await fetchBlocks();
       setRows(data);
     } catch (e: any) {
       toast({ title: "Could not load blocks", description: e?.message, variant: "destructive" });
