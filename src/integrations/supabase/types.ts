@@ -1298,6 +1298,15 @@ export type Database = {
           total_deal_value_gbp: number
         }[]
       }
+      profile_privileged_fields_unchanged: {
+        Args: {
+          _deleted_at: string
+          _id: string
+          _is_approved: boolean
+          _membership_tier: string
+        }
+        Returns: boolean
+      }
       public_member_directory: {
         Args: never
         Returns: {
