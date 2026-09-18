@@ -12,9 +12,19 @@ export const DeletionRequestSchema = z.object({
 
 export type DeletionRequestInput = z.input<typeof DeletionRequestSchema>;
 
+/** Store-review accounts must never be removed while an app review is in progress. */
+export const PROTECTED_DELETION_EMAILS = [
+  "apple-review@ajbn.co.uk",
+  "support@ajbn.co.uk",
+];
+
 export async function runAccountDeletionRequest(rawInput: unknown) {
   const input = DeletionRequestSchema.parse(rawInput);
   const email = input.email.toLowerCase();
+
+  if (PROTECTED_DELETION_EMAILS.includes(email)) {
+    throw new Error("Review account cannot be deleted");
+  }
   const reason = input.reason?.trim() ? input.reason.trim() : null;
   const fullName = input.fullName?.trim() ? input.fullName.trim() : null;
   const accountType = input.accountType?.trim() ? input.accountType.trim() : null;
