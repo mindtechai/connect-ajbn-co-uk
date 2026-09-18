@@ -161,7 +161,7 @@ export function MemberApprovals({ pendingCount }: { pendingCount?: number }) {
             <div>
               <p className="font-semibold text-sm">{m.first_name} {m.last_name}</p>
               <p className="text-xs text-muted-foreground">{[m.company, m.industry].filter(Boolean).join(" · ")}</p>
-              <p className="text-xs text-muted-foreground">{m.email}</p>
+              {isFull && <p className="text-xs text-muted-foreground">{m.email}</p>}
             </div>
             {m.referred_by_code && (
               <p className="text-xs text-muted-foreground">Referred by <span className="font-medium text-foreground">{referrerNames[m.referred_by_code] ?? m.referred_by_code}</span></p>
@@ -170,9 +170,13 @@ export function MemberApprovals({ pendingCount }: { pendingCount?: number }) {
               <Button size="sm" variant="outline" asChild className="flex-1">
                 <Link to={`/admin/members/${m.id}`}><Eye size={14} /> View</Link>
               </Button>
-              <Button size="sm" className="flex-1" disabled={busy === m.id} onClick={() => approve(m)}><Check size={14} /> Approve</Button>
-              <Button size="sm" variant="outline" disabled={busy === m.id} onClick={() => approve(m, true)}><Crown size={14} className="text-gold" /></Button>
-              <Button size="sm" variant="destructive" disabled={busy === m.id} onClick={() => setRejecting(m)}><X size={14} /></Button>
+              {isFull && (
+                <>
+                  <Button size="sm" className="flex-1" disabled={busy === m.id} onClick={() => approve(m)}><Check size={14} /> Approve</Button>
+                  <Button size="sm" variant="outline" disabled={busy === m.id} onClick={() => approve(m, true)}><Crown size={14} className="text-gold" /></Button>
+                  <Button size="sm" variant="destructive" disabled={busy === m.id} onClick={() => setRejecting(m)}><X size={14} /></Button>
+                </>
+              )}
             </div>
           </div>
         ))}
