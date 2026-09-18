@@ -51,7 +51,11 @@ export function AnalyticsOverview({ pendingCount }: Props) {
     setLoading(true);
     setError(null);
     try {
-      const [c, s, f] = await Promise.all([fetchCounts({}), fetchSeries({}), fetchFeed({})]);
+      const [c, s, f] = await Promise.all([
+        fetchCounts({ data: {} }),
+        fetchSeries({ data: {} }),
+        fetchFeed({ data: {} }),
+      ]);
       setCounts(c);
       setSeries(s);
       setFeed(f);
