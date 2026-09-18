@@ -177,8 +177,13 @@ export default function BoardPage() {
       <div className="mb-6">
         <h1 className="text-2xl md:text-3xl font-display font-bold">Needs &amp; Offers Board</h1>
         <p className="text-sm text-muted-foreground mt-1">
-          Post what you need or what you can offer. Posts expire automatically after 7 days.
+          Post what you need or what you can offer. Posts expire automatically after 7 days, and appear
+          on your profile board and in the all-member feed.
         </p>
+        <p className="text-xs text-muted-foreground mt-2">{BOARD_DISCLAIMER}</p>
+        <Button asChild variant="outline" size="sm" className="mt-3">
+          <Link to="/needs-offers">Browse all Needs &amp; Offers</Link>
+        </Button>
       </div>
 
       {!isApprovedMember ? (
