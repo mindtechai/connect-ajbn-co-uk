@@ -613,7 +613,7 @@ export function MemberManagement() {
       <div className="space-y-6">
         <div>
           <h1 className="text-2xl font-display font-bold">Pending approvals</h1>
-          <p className="text-sm text-muted-foreground">{rows.length} member{rows.length === 1 ? "" : "s"} awaiting approval.</p>
+          <p className="text-sm text-muted-foreground">{rows.length} member{rows.length === 1 ? "" : "s"} awaiting approval. Contact details are hidden in reviewer view.</p>
         </div>
         <div className="relative">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
@@ -642,12 +642,6 @@ export function MemberManagement() {
                       <Button size="sm" variant="outline" asChild>
                         <Link to={`/admin/members/${m.id}`}><Eye size={14} className="mr-1" /> View</Link>
                       </Button>
-                      <Button size="sm" disabled={promoting === m.id} onClick={() => promote(m)}>
-                        {promoting === m.id ? <Loader2 size={14} className="animate-spin" /> : <UserCheck size={14} className="mr-1" />} Approve
-                      </Button>
-                      <Button size="sm" variant="destructive" onClick={() => setRejecting(m)}>
-                        <X size={14} className="mr-1" /> Reject
-                      </Button>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -658,21 +652,6 @@ export function MemberManagement() {
             </TableBody>
           </Table>
         </div>
-        <Dialog open={!!rejecting} onOpenChange={(open) => !open && setRejecting(null)}>
-          <DialogContent>
-            <DialogHeader>
-              <DialogTitle>Not approve {rejecting ? displayName(rejecting) : "this member"}?</DialogTitle>
-              <DialogDescription>The member will be emailed that their application was not approved at this time.</DialogDescription>
-            </DialogHeader>
-            <Textarea placeholder="Reason (optional, included in email)" value={rejectReason} onChange={(e) => setRejectReason(e.target.value)} rows={4} />
-            <DialogFooter>
-              <Button variant="outline" onClick={() => setRejecting(null)}>Cancel</Button>
-              <Button variant="destructive" disabled={busy === rejecting?.id} onClick={() => rejecting && void handleReject(rejecting)}>
-                Send rejection
-              </Button>
-            </DialogFooter>
-          </DialogContent>
-        </Dialog>
       </div>
     );
   }
