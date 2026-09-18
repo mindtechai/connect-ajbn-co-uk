@@ -178,8 +178,12 @@ export default function DirectoryPage() {
             ))}
           </div>
           <p className="text-xs text-muted-foreground">
-            Your membership is awaiting approval. You'll see the full directory as soon as it's
-            active.
+            Your membership is pending approval by an AJBN admin — you'll get full access to the
+            Directory, 1-2-1 Messaging and Referral Rewards as soon as it's active, with no need to
+            sign in again. Questions?{" "}
+            <a href="mailto:admin@ajbn.co.uk" className="underline hover:text-primary">
+              admin@ajbn.co.uk
+            </a>
           </p>
         </div>
       ) : (
