@@ -6,7 +6,7 @@ import { daysLeft, postedOn, type BoardAuthor, type BoardPost } from "@/lib/boar
 
 type Props = {
   post: BoardPost;
-  author?: BoardAuthor;
+  author?: BoardAuthor | undefined;
   authorLabel: string;
   /** Show the poster's name and company (feed + profile of others). */
   showAuthor?: boolean;
