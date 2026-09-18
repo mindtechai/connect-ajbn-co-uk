@@ -69,7 +69,18 @@ export default function AdminPage() {
         void loadModerationCounts();
       })
       .subscribe();
-    return () => { supabase.removeChannel(ch); };
+
+    // Polling + focus refresh keeps counters live even where change streaming
+    // is unavailable for a table.
+    const refresh = () => { void loadPendingCount(); void loadModerationCounts(); };
+    const timer = window.setInterval(refresh, 30_000);
+    window.addEventListener("focus", refresh);
+
+    return () => {
+      supabase.removeChannel(ch);
+      window.clearInterval(timer);
+      window.removeEventListener("focus", refresh);
+    };
   }, []);
 
   const getContent = () => {
