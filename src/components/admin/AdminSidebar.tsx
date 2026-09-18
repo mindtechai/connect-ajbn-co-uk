@@ -35,13 +35,22 @@ const moderationNavItems = [
 
 interface Props {
   pendingCount?: number;
+  reportCount?: number;
+  blockCount?: number;
 }
 
-export function AdminSidebar({ pendingCount = 0 }: Props) {
+export function AdminSidebar({ pendingCount = 0, reportCount = 0, blockCount = 0 }: Props) {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
   const scope = useAdminScope();
   const navItems = scope === "moderation" ? moderationNavItems : fullNavItems;
+
+  const badgeFor = (path: string) => {
+    if (path === "/admin/reports") return reportCount;
+    if (path === "/admin/blocks") return blockCount;
+    if (path === "/admin/approvals" || path === "/admin/members") return pendingCount;
+    return 0;
+  };
 
   return (
     <aside
