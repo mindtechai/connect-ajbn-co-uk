@@ -287,7 +287,7 @@ export const createMemberAccount = createServerFn({ method: "POST" })
 export type AdminMemberDetail = {
   id: string;
   scope: "full" | "moderation";
-  email?: string;
+  email?: string | null;
   phone?: string | null;
   first_name: string | null;
   last_name: string | null;
