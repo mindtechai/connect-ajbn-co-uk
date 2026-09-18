@@ -25,10 +25,17 @@ const moderationNavItems = [
   { label: "Blocks", icon: Ban, path: "/admin/blocks" },
 ];
 
-export function AdminMobileNav({ pendingCount = 0 }: Props) {
+export function AdminMobileNav({ pendingCount = 0, reportCount = 0, blockCount = 0 }: Props) {
   const location = useLocation();
   const scope = useAdminScope();
   const navItems = scope === "moderation" ? moderationNavItems : fullNavItems;
+
+  const badgeFor = (path: string) => {
+    if (path === "/admin/reports") return reportCount;
+    if (path === "/admin/blocks") return blockCount;
+    if (path === "/admin/approvals") return pendingCount;
+    return 0;
+  };
 
   return (
     <nav className="md:hidden fixed bottom-0 left-0 right-0 bg-card border-t z-50 safe-area-pb">
@@ -38,7 +45,8 @@ export function AdminMobileNav({ pendingCount = 0 }: Props) {
             item.path === "/admin"
               ? location.pathname === "/admin"
               : location.pathname.startsWith(item.path);
-          const showBadge = item.path === "/admin/approvals" && pendingCount > 0;
+          const badge = badgeFor(item.path);
+          const showBadge = badge > 0;
           return (
             <Link
               key={item.path}
