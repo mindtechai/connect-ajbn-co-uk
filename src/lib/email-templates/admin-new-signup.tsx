@@ -64,8 +64,8 @@ const AdminNewSignupEmail = ({
 export const template = {
   component: AdminNewSignupEmail,
   subject: (data: Record<string, any>) => {
-    const name = data?.member_name || 'New member'
-    const company = data?.company
+    const name = data?.['member_name'] || 'New member'
+    const company = data?.['company']
     return `New AJBN member: ${name}${company ? ` - ${company}` : ''} - needs approval`
   },
   displayName: 'Admin alert — new member sign-up',
