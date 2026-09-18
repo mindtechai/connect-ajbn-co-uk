@@ -1,12 +1,13 @@
 import { Link, useLocation } from "@/lib/router-compat";
 import {
   Users, BarChart3, Mail, Shield, ChevronLeft,
-  UserCheck, Settings, Home, Zap, CalendarDays, HeartHandshake, Crown, QrCode, ScrollText, Handshake, Inbox, Flag
+  UserCheck, Settings, Home, Zap, CalendarDays, HeartHandshake, Crown, QrCode, ScrollText, Handshake, Inbox, Flag, Ban
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
+import { useAdminScope } from "@/components/RequireSuperAdmin";
 
-const navItems = [
+const fullNavItems = [
   { label: "Overview", icon: BarChart3, path: "/admin" },
   { label: "Members", icon: Users, path: "/admin/members" },
   { label: "Approvals", icon: UserCheck, path: "/admin/approvals" },
@@ -14,6 +15,7 @@ const navItems = [
   { label: "Intro Requests", icon: Handshake, path: "/admin/intros" },
   { label: "Enquiries", icon: Inbox, path: "/admin/enquiries" },
   { label: "Reports", icon: Flag, path: "/admin/reports" },
+  { label: "Blocks", icon: Ban, path: "/admin/blocks" },
   { label: "Events", icon: CalendarDays, path: "/admin/events" },
   { label: "Check-in", icon: QrCode, path: "/admin/checkin" },
   { label: "ESG", icon: HeartHandshake, path: "/admin/esg" },
@@ -23,9 +25,23 @@ const navItems = [
   { label: "Settings", icon: Settings, path: "/admin/settings" },
 ];
 
-export function AdminSidebar() {
+const moderationNavItems = [
+  { label: "Overview", icon: BarChart3, path: "/admin" },
+  { label: "Members", icon: Users, path: "/admin/members" },
+  { label: "Approvals", icon: UserCheck, path: "/admin/approvals" },
+  { label: "Reports", icon: Flag, path: "/admin/reports" },
+  { label: "Blocks", icon: Ban, path: "/admin/blocks" },
+];
+
+interface Props {
+  pendingCount?: number;
+}
+
+export function AdminSidebar({ pendingCount = 0 }: Props) {
   const location = useLocation();
   const [collapsed, setCollapsed] = useState(false);
+  const scope = useAdminScope();
+  const navItems = scope === "moderation" ? moderationNavItems : fullNavItems;
 
   return (
     <aside
@@ -37,7 +53,9 @@ export function AdminSidebar() {
       {/* Header */}
       <div className="h-14 flex items-center justify-between px-4 border-b border-sidebar-border">
         {!collapsed && (
-          <span className="font-display text-lg font-bold">Admin</span>
+          <span className="font-display text-lg font-bold">
+            {scope === "moderation" ? "Reviewer" : "Admin"}
+          </span>
         )}
         <button
           onClick={() => setCollapsed(!collapsed)}
@@ -57,6 +75,7 @@ export function AdminSidebar() {
             item.path === "/admin"
               ? location.pathname === "/admin"
               : location.pathname.startsWith(item.path);
+          const isPending = item.path === "/admin/approvals" || item.path === "/admin/members" || item.path === "/admin/blocks";
           return (
             <Link
               key={item.path}
@@ -69,7 +88,16 @@ export function AdminSidebar() {
               )}
             >
               <item.icon size={18} className="shrink-0" />
-              {!collapsed && <span>{item.label}</span>}
+              {!collapsed && (
+                <span className="flex-1 flex items-center justify-between gap-2">
+                  {item.label}
+                  {isPending && pendingCount > 0 && (
+                    <span className="min-w-5 h-5 px-1 flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold">
+                      {pendingCount > 99 ? "99+" : pendingCount}
+                    </span>
+                  )}
+                </span>
+              )}
             </Link>
           );
         })}
@@ -77,13 +105,15 @@ export function AdminSidebar() {
 
       {/* Back to dashboard */}
       <div className="p-2 border-t border-sidebar-border">
-        <Link
-          to="/settings"
-          className="mb-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-primary-foreground/60 hover:text-primary-foreground hover:bg-sidebar-accent/50 transition-colors"
-        >
-          <Settings size={18} className="shrink-0" />
-          {!collapsed && <span>Account Settings</span>}
-        </Link>
+        {scope === "full" && (
+          <Link
+            to="/settings"
+            className="mb-1 flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-primary-foreground/60 hover:text-primary-foreground hover:bg-sidebar-accent/50 transition-colors"
+          >
+            <Settings size={18} className="shrink-0" />
+            {!collapsed && <span>Account Settings</span>}
+          </Link>
+        )}
         <Link
           to="/dashboard"
           className="flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm text-primary-foreground/60 hover:text-primary-foreground hover:bg-sidebar-accent/50 transition-colors"
