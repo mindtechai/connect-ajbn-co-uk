@@ -1,196 +1,241 @@
-import {
-  Users, Crown, TrendingUp, CalendarDays, PoundSterling, UserPlus
-} from "lucide-react";
-import {
-  AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer,
-  BarChart, Bar, PieChart, Pie, Cell
-} from "recharts";
+import { useEffect, useState } from "react";
+import { useServerFn } from "@/hooks/useServerFn";
+import { getDashboardCounts, getSignupSeries, getActivityFeed, type ActivityItem } from "@/lib/admin-dashboard.functions";
+import { Users, UserCheck, UserPlus, Ban, TrendingUp, Loader2, AlertCircle } from "lucide-react";
+import { Link } from "@/lib/router-compat";
+import { AreaChart, Area, XAxis, YAxis, CartesianGrid, Tooltip, ResponsiveContainer } from "recharts";
+import { cn } from "@/lib/utils";
 
-const membershipGrowth = [
-  { month: "Sep", ajbn: 82, lions: 12 },
-  { month: "Oct", ajbn: 96, lions: 18 },
-  { month: "Nov", ajbn: 110, lions: 22 },
-  { month: "Dec", ajbn: 118, lions: 28 },
-  { month: "Jan", ajbn: 134, lions: 35 },
-  { month: "Feb", ajbn: 148, lions: 42 },
-  { month: "Mar", ajbn: 162, lions: 48 },
-];
+const typeIcons: Record<ActivityItem["type"], typeof Users> = {
+  signup: UserPlus,
+  need: TrendingUp,
+  offer: TrendingUp,
+  intro: UserCheck,
+  enquiry: AlertCircle,
+  report: AlertCircle,
+};
 
-const revenueData = [
-  { month: "Sep", ajbn: 8200, lions: 3000 },
-  { month: "Oct", ajbn: 9600, lions: 4500 },
-  { month: "Nov", ajbn: 11000, lions: 5500 },
-  { month: "Dec", ajbn: 11800, lions: 7000 },
-  { month: "Jan", ajbn: 13400, lions: 8750 },
-  { month: "Feb", ajbn: 14800, lions: 10500 },
-  { month: "Mar", ajbn: 16200, lions: 12000 },
-];
+const typeLabels: Record<ActivityItem["type"], string> = {
+  signup: "New sign-up",
+  need: "Need",
+  offer: "Offer",
+  intro: "Intro request",
+  enquiry: "Enquiry",
+  report: "Report",
+};
 
-const eventAttendance = [
-  { name: "Q4 Networking", networking: 65, charity: 0 },
-  { name: "Golf Day", networking: 0, charity: 42 },
-  { name: "Winter Gala", networking: 0, charity: 58 },
-  { name: "FinTech RT", networking: 38, charity: 0 },
-  { name: "Q1 Dinner", networking: 72, charity: 0 },
-];
+function formatDateShort(iso: string) {
+  return new Date(iso).toLocaleDateString("en-GB", { day: "numeric", month: "short", year: "numeric" });
+}
 
-const memberStatus = [
-  { name: "Active", value: 148, fill: "hsl(207, 58%, 24%)" },
-  { name: "Pending", value: 14, fill: "hsl(40, 80%, 50%)" },
-  { name: "Expired", value: 22, fill: "hsl(0, 72%, 51%)" },
-];
+function formatDateTime(iso: string) {
+  return new Date(iso).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" });
+}
 
-const kpis = [
-  { label: "Total Members", value: "162", change: "+9.5%", icon: Users, color: "text-primary" },
-  { label: "Impact Lions", value: "48", change: "+14.3%", icon: Crown, color: "text-gold" },
-  { label: "Revenue (MTD)", value: "£28,200", change: "+12.1%", icon: PoundSterling, color: "text-teal" },
-  { label: "Pending Approvals", value: "14", change: "", icon: UserPlus, color: "text-gold" },
-  { label: "Events This Quarter", value: "6", change: "+2", icon: CalendarDays, color: "text-primary" },
-  { label: "Avg Referrals/Member", value: "2.4", change: "+0.3", icon: TrendingUp, color: "text-teal" },
-];
+interface Props {
+  pendingCount: number;
+}
 
-export function AnalyticsOverview() {
+export function AnalyticsOverview({ pendingCount }: Props) {
+  const fetchCounts = useServerFn(getDashboardCounts);
+  const fetchSeries = useServerFn(getSignupSeries);
+  const fetchFeed = useServerFn(getActivityFeed);
+
+  const [counts, setCounts] = useState<Awaited<ReturnType<typeof fetchCounts>> | null>(null);
+  const [series, setSeries] = useState<Awaited<ReturnType<typeof fetchSeries>>>([]);
+  const [feed, setFeed] = useState<Awaited<ReturnType<typeof fetchFeed>>>([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+
+  const load = async () => {
+    setLoading(true);
+    setError(null);
+    try {
+      const [c, s, f] = await Promise.all([fetchCounts({}), fetchSeries({}), fetchFeed({})]);
+      setCounts(c);
+      setSeries(s);
+      setFeed(f);
+    } catch (e: any) {
+      setError(e?.message || "Could not load dashboard data.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    load();
+  }, []);
+
+  // Keep the live pending badge in sync with the realtime counter in AdminPage.
+  useEffect(() => {
+    setCounts((prev) => (prev ? { ...prev, pending: pendingCount } : prev));
+  }, [pendingCount]);
+
+  if (loading) {
+    return (
+      <div className="flex flex-col items-center justify-center py-20 text-muted-foreground gap-3">
+        <Loader2 className="animate-spin" size={28} />
+        <p className="text-sm">Loading dashboard…</p>
+      </div>
+    );
+  }
+
+  if (error || !counts) {
+    return (
+      <div className="bg-destructive/10 border border-destructive/30 rounded-xl p-6 text-destructive">
+        <p className="font-medium">Dashboard unavailable</p>
+        <p className="text-sm mt-1">{error || "Unknown error"}</p>
+        <button onClick={load} className="mt-3 text-sm underline">Retry</button>
+      </div>
+    );
+  }
+
+  const newestPendingText = counts.newestPending
+    ? `${counts.newestPending.name}${counts.newestPending.company ? ` — ${counts.newestPending.company}` : ""}`
+    : "No pending approvals";
+
   return (
     <div className="space-y-6">
       <div>
         <h1 className="text-2xl font-display font-bold">Admin Dashboard</h1>
-        <p className="text-sm text-muted-foreground">AJBN network overview and analytics</p>
+        <p className="text-sm text-muted-foreground">Live AJBN network overview</p>
       </div>
 
       {/* KPI Cards */}
-      <div className="grid grid-cols-2 lg:grid-cols-3 gap-4">
-        {kpis.map((kpi) => (
-          <div key={kpi.label} className="bg-card rounded-xl border p-4 shadow-xs">
-            <div className="flex items-center gap-2 mb-2">
-              <kpi.icon size={16} className={kpi.color} />
-              <span className="text-xs text-muted-foreground font-medium">{kpi.label}</span>
-            </div>
-            <p className="text-2xl font-bold tabular-nums">{kpi.value}</p>
-            {kpi.change && (
-              <p className="text-xs text-teal mt-1 font-medium">{kpi.change} vs last month</p>
-            )}
-          </div>
-        ))}
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <MetricCard
+          label="Total Members"
+          value={counts.total}
+          icon={Users}
+          href="/admin/members"
+        />
+        <MetricCard
+          label="Pending Approval"
+          value={counts.pending}
+          icon={UserPlus}
+          href="/admin/members?filter=pending"
+          sub={newestPendingText}
+          highlight={counts.pending > 0}
+        />
+        <MetricCard
+          label="Approved"
+          value={counts.approved}
+          icon={UserCheck}
+          href="/admin/members"
+        />
+        <MetricCard
+          label="Blocked"
+          value={counts.blocks}
+          icon={Ban}
+          href="/admin/blocks"
+        />
       </div>
 
-      {/* Charts row */}
-      <div className="grid lg:grid-cols-2 gap-5">
-        {/* Membership growth */}
-        <div className="bg-card rounded-xl border p-5 shadow-xs">
-          <h3 className="text-sm font-semibold mb-4">Membership Growth</h3>
-          <ResponsiveContainer width="100%" height={240}>
-            <AreaChart data={membershipGrowth}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(210, 18%, 89%)" />
-              <XAxis dataKey="month" tick={{ fontSize: 12 }} stroke="hsl(213, 12%, 48%)" />
-              <YAxis tick={{ fontSize: 12 }} stroke="hsl(213, 12%, 48%)" />
-              <Tooltip
-                contentStyle={{
-                  background: "hsl(0, 0%, 100%)",
-                  border: "1px solid hsl(210, 18%, 89%)",
-                  borderRadius: "8px",
-                  fontSize: "12px",
-                }}
-              />
-              <Area
-                type="monotone"
-                dataKey="ajbn"
-                stackId="1"
-                stroke="hsl(207, 58%, 24%)"
-                fill="hsl(207, 58%, 24%)"
-                fillOpacity={0.15}
-                name="AJBN Members"
-              />
-              <Area
-                type="monotone"
-                dataKey="lions"
-                stackId="2"
-                stroke="hsl(40, 80%, 50%)"
-                fill="hsl(40, 80%, 50%)"
-                fillOpacity={0.2}
-                name="Impact Lions"
-              />
-            </AreaChart>
-          </ResponsiveContainer>
-        </div>
+      <div className="grid grid-cols-2 lg:grid-cols-4 gap-4">
+        <MetricCard label="New sign-ups (24h)" value={counts.new24h} icon={TrendingUp} />
+        <MetricCard label="New sign-ups (7d)" value={counts.new7d} icon={TrendingUp} />
+      </div>
 
-        {/* Revenue */}
-        <div className="bg-card rounded-xl border p-5 shadow-xs">
-          <h3 className="text-sm font-semibold mb-4">Revenue Breakdown</h3>
-          <ResponsiveContainer width="100%" height={240}>
-            <BarChart data={revenueData}>
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(210, 18%, 89%)" />
-              <XAxis dataKey="month" tick={{ fontSize: 12 }} stroke="hsl(213, 12%, 48%)" />
-              <YAxis tick={{ fontSize: 12 }} stroke="hsl(213, 12%, 48%)" tickFormatter={(v) => `£${v / 1000}k`} />
-              <Tooltip
-                contentStyle={{
-                  background: "hsl(0, 0%, 100%)",
-                  border: "1px solid hsl(210, 18%, 89%)",
-                  borderRadius: "8px",
-                  fontSize: "12px",
-                }}
-                formatter={(value: number) => `£${value.toLocaleString()}`}
-              />
-              <Bar dataKey="ajbn" fill="hsl(207, 58%, 24%)" radius={[4, 4, 0, 0]} name="AJBN Revenue" />
-              <Bar dataKey="lions" fill="hsl(40, 80%, 50%)" radius={[4, 4, 0, 0]} name="Lions Revenue" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Event attendance */}
-        <div className="bg-card rounded-xl border p-5 shadow-xs">
-          <h3 className="text-sm font-semibold mb-4">Event Attendance</h3>
-          <ResponsiveContainer width="100%" height={240}>
-            <BarChart data={eventAttendance} layout="vertical">
-              <CartesianGrid strokeDasharray="3 3" stroke="hsl(210, 18%, 89%)" />
-              <XAxis type="number" tick={{ fontSize: 12 }} stroke="hsl(213, 12%, 48%)" />
-              <YAxis dataKey="name" type="category" tick={{ fontSize: 11 }} stroke="hsl(213, 12%, 48%)" width={80} />
-              <Tooltip
-                contentStyle={{
-                  background: "hsl(0, 0%, 100%)",
-                  border: "1px solid hsl(210, 18%, 89%)",
-                  borderRadius: "8px",
-                  fontSize: "12px",
-                }}
-              />
-              <Bar dataKey="networking" fill="hsl(207, 58%, 24%)" radius={[0, 4, 4, 0]} name="Networking" />
-              <Bar dataKey="charity" fill="hsl(40, 80%, 50%)" radius={[0, 4, 4, 0]} name="Charity" />
-            </BarChart>
-          </ResponsiveContainer>
-        </div>
-
-        {/* Member status pie */}
-        <div className="bg-card rounded-xl border p-5 shadow-xs">
-          <h3 className="text-sm font-semibold mb-4">Member Status</h3>
-          <div className="flex items-center justify-center">
-            <ResponsiveContainer width="100%" height={240}>
-              <PieChart>
-                <Pie
-                  data={memberStatus}
-                  cx="50%"
-                  cy="50%"
-                  innerRadius={60}
-                  outerRadius={90}
-                  paddingAngle={3}
-                  dataKey="value"
-                  label={({ name, value }) => `${name}: ${value}`}
-                >
-                  {memberStatus.map((entry, i) => (
-                    <Cell key={i} fill={entry.fill} />
-                  ))}
-                </Pie>
-                <Tooltip
-                  contentStyle={{
-                    background: "hsl(0, 0%, 100%)",
-                    border: "1px solid hsl(210, 18%, 89%)",
-                    borderRadius: "8px",
-                    fontSize: "12px",
-                  }}
+      {/* Chart + Activity */}
+      <div className="grid lg:grid-cols-3 gap-5">
+        <div className="lg:col-span-2 bg-card rounded-xl border p-5 shadow-xs">
+          <h3 className="text-sm font-semibold mb-4">Sign-ups over the last 30 days</h3>
+          <div className="h-64">
+            <ResponsiveContainer width="100%" height="100%">
+              <AreaChart data={series}>
+                <defs>
+                  <linearGradient id="signupGradient" x1="0" y1="0" x2="0" y2="1">
+                    <stop offset="5%" stopColor="hsl(var(--primary))" stopOpacity={0.3} />
+                    <stop offset="95%" stopColor="hsl(var(--primary))" stopOpacity={0} />
+                  </linearGradient>
+                </defs>
+                <CartesianGrid strokeDasharray="3 3" stroke="hsl(var(--border))" />
+                <XAxis
+                  dataKey="date"
+                  tickFormatter={(v) => new Date(v).toLocaleDateString("en-GB", { day: "numeric", month: "short" })}
+                  tick={{ fontSize: 11 }}
+                  stroke="hsl(var(--muted-foreground))"
                 />
-              </PieChart>
+                <YAxis tick={{ fontSize: 11 }} stroke="hsl(var(--muted-foreground))" allowDecimals={false} />
+                <Tooltip
+                  contentStyle={{ background: "hsl(var(--card))", border: "1px solid hsl(var(--border))", borderRadius: "8px", fontSize: "12px" }}
+                  labelFormatter={(v) => new Date(v as string).toLocaleDateString("en-GB", { weekday: "short", day: "numeric", month: "short" })}
+                />
+                <Area
+                  type="monotone"
+                  dataKey="count"
+                  stroke="hsl(var(--primary))"
+                  fill="url(#signupGradient)"
+                  strokeWidth={2}
+                />
+              </AreaChart>
             </ResponsiveContainer>
+          </div>
+        </div>
+
+        <div className="bg-card rounded-xl border p-5 shadow-xs flex flex-col">
+          <h3 className="text-sm font-semibold mb-4">Live activity feed</h3>
+          <div className="flex-1 overflow-y-auto max-h-96 space-y-3 pr-1">
+            {feed.length === 0 && (
+              <p className="text-sm text-muted-foreground text-center py-6">No activity in the last 30 days.</p>
+            )}
+            {feed.map((item) => {
+              const Icon = typeIcons[item.type];
+              return (
+                <Link
+                  key={item.id}
+                  to={item.link}
+                  className="flex items-start gap-3 p-3 rounded-lg hover:bg-muted transition-colors group"
+                >
+                  <div className="rounded-full bg-primary/10 p-2 text-primary">
+                    <Icon size={14} />
+                  </div>
+                  <div className="flex-1 min-w-0">
+                    <p className="text-xs font-medium text-muted-foreground uppercase tracking-wide">{typeLabels[item.type]}</p>
+                    <p className="text-sm font-medium line-clamp-1 group-hover:underline">{item.title}</p>
+                    <p className="text-xs text-muted-foreground mt-0.5">
+                      {item.name}{item.company ? ` · ${item.company}` : ""} · {formatDateShort(item.date)}
+                    </p>
+                  </div>
+                </Link>
+              );
+            })}
           </div>
         </div>
       </div>
     </div>
   );
+}
+
+function MetricCard({
+  label,
+  value,
+  icon: Icon,
+  href,
+  sub,
+  highlight,
+}: {
+  label: string;
+  value: number;
+  icon: typeof Users;
+  href?: string;
+  sub?: string;
+  highlight?: boolean;
+}) {
+  const content = (
+    <div className={cn(
+      "bg-card rounded-xl border p-4 shadow-xs transition-colors",
+      href && "hover:border-primary/50 cursor-pointer"
+    )}>
+      <div className="flex items-center gap-2 mb-2">
+        <Icon size={16} className={cn("text-primary", highlight && "text-amber-500")} />
+        <span className="text-xs text-muted-foreground font-medium">{label}</span>
+      </div>
+      <p className={cn("text-2xl font-bold tabular-nums", highlight && "text-amber-600 dark:text-amber-400")}>{value}</p>
+      {sub && <p className="text-xs text-muted-foreground mt-1 truncate">{sub}</p>}
+    </div>
+  );
+
+  if (href) return <Link to={href}>{content}</Link>;
+  return content;
 }
