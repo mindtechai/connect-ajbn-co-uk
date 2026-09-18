@@ -48,8 +48,7 @@ export default function BoardPage() {
   const { user, session, roles, isApprovedMember: canAccessMembersCorner, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const hasRealSession = !!session?.access_token && session.access_token !== "demo";
-  const isApprovedMember =
-    canAccessMembersCorner;
+  const isApprovedMember = canAccessMembersCorner;
 
   const [posts, setPosts] = useState<BoardPost[]>([]);
   const [authors, setAuthors] = useState<Record<string, AuthorInfo>>({});

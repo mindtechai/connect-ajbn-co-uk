@@ -39,8 +39,7 @@ export default function LionApplicationPage() {
   const [loading, setLoading] = useState(true);
 
   const isLion = roles.includes("impact_lion");
-  const isApprovedMember =
-    isLion || isApprovedMember;
+
   // A demo/mock session has no real backend token, so skip database calls with it.
   const hasRealSession = !!session?.access_token && session.access_token !== "demo";
 
