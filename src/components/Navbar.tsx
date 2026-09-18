@@ -133,7 +133,24 @@ export function Navbar() {
         </div>
 
         <div className="flex shrink-0 items-center gap-1 md:hidden">
-          {!user && (
+          {user ? (
+            <>
+              <Link to="/settings/profile" aria-label="Profile" title="Profile">
+                <Button variant={showSolid ? "outline" : "heroOutline"} size="icon">
+                  <Settings size={16} aria-hidden="true" />
+                </Button>
+              </Link>
+              <Button
+                variant={showSolid ? "default" : "hero"}
+                size="icon"
+                onClick={() => signOut()}
+                aria-label="Sign Out"
+                title="Sign Out"
+              >
+                <LogOut size={16} aria-hidden="true" />
+              </Button>
+            </>
+          ) : (
             <Link to="/login">
               <Button variant={showSolid ? "outline" : "heroOutline"} size="sm">
                 Sign In
