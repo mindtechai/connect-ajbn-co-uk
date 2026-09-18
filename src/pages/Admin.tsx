@@ -58,7 +58,7 @@ export default function AdminPage() {
       return <MemberDetail memberId={params.memberId} />;
     }
     if (location.pathname === "/admin/members") return <MemberManagement />;
-    if (location.pathname === "/admin/approvals") return <MemberApprovals />;
+    if (location.pathname === "/admin/approvals") return <MemberApprovals pendingCount={pendingCount} />;
     if (location.pathname === "/admin/blocks") return <BlocksAdmin />;
     if (location.pathname === "/admin/communications") return <BulkActionsPanel />;
     if (location.pathname === "/admin/bulk-actions") return <BulkActionsPanel />;
