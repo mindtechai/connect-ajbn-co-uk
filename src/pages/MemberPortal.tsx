@@ -40,7 +40,7 @@ function PendingBadge() {
 }
 
 export default function MemberPortalPage() {
-  const { user, roles, loading: authLoading } = useAuth();
+  const { user, roles, isApprovedMember, loading: authLoading } = useAuth();
   const [loading, setLoading] = useState(true);
   const [saving, setSaving] = useState(false);
   const [uploading, setUploading] = useState(false);
@@ -52,8 +52,7 @@ export default function MemberPortalPage() {
     address: "", linkedin_url: "", other_socials: "", calendly_url: "",
   });
 
-  const isApproved = roles.some((r) =>
-    r === "ajbn_member" || r === "impact_lion" || r === "super_admin");
+  const isApproved = isApprovedMember;
 
   const signedUrl = useCallback(async (path: string | null) => {
     if (!path) return null;
