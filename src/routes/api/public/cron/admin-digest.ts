@@ -4,7 +4,7 @@ import { sendAppEmail } from "@/lib/email-send.server";
 import type { DigestSection } from "@/lib/email-templates/admin-daily-digest";
 
 const ADMIN_EMAIL = "admin@ajbn.co.uk";
-const ADMIN_URL = "https://connect.ajbn.co.uk/admin/members";
+const APP_URL = "https://connect.ajbn.co.uk";
 const MAX_ITEMS = 15;
 
 function fullName(p: { first_name?: string | null; last_name?: string | null; email?: string | null }) {
