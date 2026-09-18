@@ -11,6 +11,8 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useUkQuietHoursWindow } from "@/hooks/useQuietHours";
+import { REVIEWER_BANNER, useReviewerMode } from "@/hooks/useReviewerMode";
+import { MemberSafetyActions } from "@/components/safety/MemberSafetyActions";
 
 type MemberDetail = {
   id: string; first_name: string | null; last_name: string | null; company: string | null;
@@ -25,6 +27,7 @@ export default function MemberProfilePage() {
   const [member, setMember] = useState<MemberDetail | null>(null);
   const [loading, setLoading] = useState(true);
   const inQuietHours = useUkQuietHoursWindow();
+  const reviewerMode = useReviewerMode();
   const approved = isApprovedMember;
 
   useEffect(() => {
@@ -43,6 +46,11 @@ export default function MemberProfilePage() {
   const name = `${member.first_name ?? ""} ${member.last_name ?? ""}`.trim() || "AJBN member";
   return (
     <AppLayout maxWidth="4xl">
+      {reviewerMode && (
+        <div className="mb-4 rounded-lg border border-amber-300 bg-amber-50 px-4 py-3 text-sm font-medium text-amber-900">
+          {REVIEWER_BANNER}
+        </div>
+      )}
       <Button asChild variant="ghost" size="sm" className="mb-5"><Link to="/directory"><ArrowLeft size={15} /> Directory</Link></Button>
       <article className="space-y-6">
         <header className="border-b pb-6">
@@ -57,10 +65,12 @@ export default function MemberProfilePage() {
               {member.title && <p className="mt-1 text-muted-foreground">{member.title}</p>}
               {member.company && <p className="mt-2 flex items-center gap-2 text-sm"><Building2 size={15} /> {member.company}</p>}
             </div>
-            <MemberSafetyMenu memberId={member.id} memberName={name} context="profile" />
+            {!reviewerMode && <MemberSafetyMenu memberId={member.id} memberName={name} context="profile" />}
           </div>
         </header>
-        <MemberActions member={{ id: member.id, name, calendlyUrl: member.calendly_url, messagingActive: member.is_messaging_active }} showContact />
+        {reviewerMode
+          ? <MemberSafetyActions memberId={member.id} memberName={name} context="profile" />
+          : <MemberActions member={{ id: member.id, name, calendlyUrl: member.calendly_url, messagingActive: member.is_messaging_active }} showContact />}
         <section className="space-y-3">
           {member.industry && <Badge variant="outline">{member.industry}</Badge>}
           {member.bio && <p className="text-sm leading-6 text-muted-foreground whitespace-pre-line">{member.bio}</p>}

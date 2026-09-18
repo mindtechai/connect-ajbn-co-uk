@@ -1,5 +1,6 @@
 import { useState } from "react";
 import { useNavigate } from "@tanstack/react-router";
+import { useServerFn } from "@tanstack/react-start";
 import { CalendarClock, Eye, Loader2, MessageCircle } from "lucide-react";
 import { toast } from "sonner";
 import { ActivateMessagingDialog } from "@/components/messaging/ActivateMessagingDialog";
@@ -8,6 +9,9 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { useMessagingProfile } from "@/hooks/useMessagingProfile";
+import { useReviewerMode } from "@/hooks/useReviewerMode";
+import { MemberSafetyActions } from "@/components/safety/MemberSafetyActions";
+import { revealMemberContact } from "@/lib/member-contact.functions";
 import { startOrGetConversation } from "@/lib/messaging";
 
 type MemberTarget = {
@@ -39,6 +43,8 @@ export function MemberActions({ member, showContact = false, compact = false }: 
   const [contactOpen, setContactOpen] = useState(false);
   const [contact, setContact] = useState<Contact | null>(null);
   const [revealing, setRevealing] = useState(false);
+  const reviewerMode = useReviewerMode();
+  const reveal = useServerFn(revealMemberContact);
   const isSelf = user?.id === member.id;
   const bookingUrl = member.calendlyUrl && /^https?:\/\//i.test(member.calendlyUrl)
     ? member.calendlyUrl
@@ -79,19 +85,33 @@ export function MemberActions({ member, showContact = false, compact = false }: 
   };
 
   const revealContact = async () => {
-    if (isSelf) return;
+    if (isSelf || reviewerMode) return;
     setRevealing(true);
-    const { data, error } = await supabase.rpc("reveal_member_contact", { _member_id: member.id });
-    setRevealing(false);
-    if (error) {
+    try {
+      const details = await reveal({ data: { memberId: member.id } });
+      setContact({ email: details.email, phone: details.phone });
+      setContactOpen(true);
+    } catch {
       toast.error("Contact details could not be revealed.");
-      return;
+    } finally {
+      setRevealing(false);
     }
-    setContact((data?.[0] as Contact | undefined) ?? { email: null, phone: null });
-    setContactOpen(true);
   };
 
   const buttonSize = compact ? "sm" : "default";
+
+  // Reviewer mode: no contact details or private introductions — moderation only.
+  if (reviewerMode) {
+    if (isSelf) return null;
+    return (
+      <MemberSafetyActions
+        memberId={member.id}
+        memberName={member.name}
+        context="profile"
+        compact={compact}
+      />
+    );
+  }
 
   return (
     <>
