@@ -1,0 +1,2 @@
+GRANT INSERT ON public.ai_matcher_requests TO authenticated;
+CREATE POLICY "Members log own matcher requests" ON public.ai_matcher_requests FOR INSERT TO authenticated WITH CHECK (auth.uid() = user_id);

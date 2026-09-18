@@ -1,0 +1,241 @@
+import { useState } from "react";
+import { AppLayout } from "@/components/AppLayout";
+import { useAuth } from "@/hooks/useAuth";
+import { Link, useNavigate } from "@/lib/router-compat";
+import { Button } from "@/components/ui/button";
+import { Textarea } from "@/components/ui/textarea";
+import { Label } from "@/components/ui/label";
+import { toast } from "sonner";
+import { Flag, Loader2, Lock, MessageCircle, Sparkles } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
+import { openMemberConversation } from "@/components/member/MemberActions";
+import { aiMatcherEnabledFor } from "@/lib/ai-matcher-flag";
+import { matchBusinessNeed, type MatchResult } from "@/lib/ai-matcher.functions";
+
+const MIN_CHARS = 20;
+const DISCLAIMER =
+  "AI suggestions are not recommendations. Members must conduct their own due diligence and verify suitability before any business decision or referral. Provided for informational purposes only.";
+
+export default function AiMatcherPage() {
+  const { user, isApprovedMember, loading } = useAuth();
+  const navigate = useNavigate();
+  const [need, setNeed] = useState("");
+  const [busy, setBusy] = useState(false);
+  const [result, setResult] = useState<MatchResult | null>(null);
+  const [reported, setReported] = useState<Record<string, boolean>>({});
+
+  const featureVisible = aiMatcherEnabledFor(user?.email ?? null);
+  const canUse = !loading && !!user && isApprovedMember && featureVisible;
+
+  async function onSubmit() {
+    if (need.trim().length < MIN_CHARS || busy) return;
+    setBusy(true);
+    setResult(null);
+    try {
+      const res = await matchBusinessNeed({ data: { businessNeed: need.trim() } });
+      if (!res.ok) {
+        toast.error(
+          res.error === "rate_limited"
+            ? "You've used your 5 matches for this hour. Please try again later."
+            : res.error === "not_approved"
+              ? "Your membership is pending approval."
+              : "The matcher is unavailable right now. Please try again shortly.",
+        );
+        return;
+      }
+      setResult(res.result);
+      if (res.result.members.length === 0) {
+        toast.info("No close matches found — try describing the need differently.");
+      }
+    } catch {
+      toast.error("Something went wrong. Please try again.");
+    } finally {
+      setBusy(false);
+    }
+  }
+
+  async function onMessage(memberId: string) {
+    try {
+      const conversationId = await openMemberConversation(memberId);
+      navigate(`/messages/${conversationId}`);
+    } catch {
+      toast.error("Could not open the conversation.");
+    }
+  }
+
+  async function onReport(key: string, suggestion: unknown) {
+    if (!user) return;
+    const { error } = await supabase.from("ai_reports").insert({
+      reporter_id: user.id,
+      business_need: need.trim().slice(0, 1000),
+      suggestion: suggestion as never,
+    });
+    if (error) {
+      toast.error("Could not send the report.");
+      return;
+    }
+    setReported((r) => ({ ...r, [key]: true }));
+    toast.success("Thanks — the AJBN team will review this suggestion.");
+  }
+
+  if (!canUse) {
+    return (
+      <AppLayout>
+        <div className="mx-auto max-w-lg px-4 py-12">
+          <div className="rounded-xl border bg-card p-6 text-center shadow-xs">
+            <div className="mx-auto mb-3 grid h-11 w-11 place-items-center rounded-full bg-primary/10">
+              <Lock size={18} className="text-primary" />
+            </div>
+            <h1 className="mb-2 font-display text-lg font-bold">
+              Members only — Join AJBN to access AI Business Matcher
+            </h1>
+            <p className="mb-5 text-sm text-muted-foreground">
+              The AI Business Needs Matcher is available to approved AJBN members. Questions?
+              Email admin@ajbn.co.uk.
+            </p>
+            <Link to="/register">
+              <Button className="w-full sm:w-auto">Apply for membership</Button>
+            </Link>
+          </div>
+        </div>
+      </AppLayout>
+    );
+  }
+
+  return (
+    <AppLayout>
+      <div className="mx-auto max-w-2xl px-4 py-8">
+        <div className="mb-6 flex items-center gap-2">
+          <Sparkles size={20} className="text-primary" />
+          <h1 className="font-display text-2xl font-bold">AI Business Needs Matcher</h1>
+        </div>
+
+        <div className="space-y-3 rounded-xl border bg-card p-5 shadow-xs">
+          <Label htmlFor="need">
+            Describe your business need — what client, service, or referral are you looking for?
+          </Label>
+          <Textarea
+            id="need"
+            rows={5}
+            value={need}
+            onChange={(e) => setNeed(e.target.value)}
+            placeholder="Looking for a commercial property solicitor in London for a Jewish school client..."
+          />
+          <Button
+            onClick={onSubmit}
+            disabled={need.trim().length < MIN_CHARS || busy}
+            className="w-full sm:w-auto"
+          >
+            {busy ? <Loader2 size={16} className="mr-2 animate-spin" /> : null}
+            Find Matches
+          </Button>
+          <p className="text-xs text-muted-foreground">{DISCLAIMER}</p>
+        </div>
+
+        {result ? (
+          <div className="mt-6 space-y-5">
+            {result.members.length > 0 ? (
+              <section className="space-y-3">
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                  Suggested members
+                </h2>
+                {result.members.map((m) => {
+                  const key = `member-${m.member_id}`;
+                  return (
+                    <div key={key} className="rounded-xl border bg-card p-4 shadow-xs">
+                      <div className="flex items-start justify-between gap-3">
+                        <div>
+                          <p className="font-semibold">{m.name}</p>
+                          {m.business ? (
+                            <p className="text-sm text-muted-foreground">{m.business}</p>
+                          ) : null}
+                        </div>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label="Report this suggestion"
+                          disabled={reported[key]}
+                          onClick={() => onReport(key, m)}
+                        >
+                          <Flag size={15} className={reported[key] ? "text-muted-foreground" : ""} />
+                        </Button>
+                      </div>
+                      <p className="mt-2 text-sm">{m.reason}</p>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="mt-3 gap-1.5"
+                        onClick={() => onMessage(m.member_id)}
+                      >
+                        <MessageCircle size={14} /> Message
+                      </Button>
+                    </div>
+                  );
+                })}
+              </section>
+            ) : null}
+
+            {result.services.length > 0 ? (
+              <section className="space-y-3">
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                  Relevant services
+                </h2>
+                {result.services.map((s, i) => {
+                  const key = `service-${i}`;
+                  return (
+                    <div key={key} className="rounded-xl border bg-card p-4 shadow-xs">
+                      <div className="flex items-start justify-between gap-3">
+                        <p className="font-semibold">{s.name}</p>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label="Report this suggestion"
+                          disabled={reported[key]}
+                          onClick={() => onReport(key, s)}
+                        >
+                          <Flag size={15} />
+                        </Button>
+                      </div>
+                      <p className="mt-2 text-sm">{s.reason}</p>
+                    </div>
+                  );
+                })}
+              </section>
+            ) : null}
+
+            {result.referrals.length > 0 ? (
+              <section className="space-y-3">
+                <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+                  Referral opportunity
+                </h2>
+                {result.referrals.map((r, i) => {
+                  const key = `referral-${i}`;
+                  return (
+                    <div key={key} className="rounded-xl border bg-card p-4 shadow-xs">
+                      <div className="flex items-start justify-between gap-3">
+                        <p className="text-sm">{r.opportunity}</p>
+                        <Button
+                          variant="ghost"
+                          size="icon"
+                          aria-label="Report this suggestion"
+                          disabled={reported[key]}
+                          onClick={() => onReport(key, r)}
+                        >
+                          <Flag size={15} />
+                        </Button>
+                      </div>
+                    </div>
+                  );
+                })}
+              </section>
+            ) : null}
+
+            <p className="text-xs text-muted-foreground">
+              AI suggestions are not recommendations — please conduct your own due diligence.
+            </p>
+          </div>
+        ) : null}
+      </div>
+    </AppLayout>
+  );
+}

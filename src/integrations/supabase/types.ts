@@ -113,6 +113,57 @@ export type Database = {
         }
         Relationships: []
       }
+      ai_matcher_requests: {
+        Row: {
+          business_need: string
+          created_at: string
+          id: string
+          user_id: string
+        }
+        Insert: {
+          business_need: string
+          created_at?: string
+          id?: string
+          user_id: string
+        }
+        Update: {
+          business_need?: string
+          created_at?: string
+          id?: string
+          user_id?: string
+        }
+        Relationships: []
+      }
+      ai_reports: {
+        Row: {
+          business_need: string | null
+          created_at: string
+          details: string | null
+          id: string
+          reporter_id: string
+          status: string
+          suggestion: Json
+        }
+        Insert: {
+          business_need?: string | null
+          created_at?: string
+          details?: string | null
+          id?: string
+          reporter_id: string
+          status?: string
+          suggestion?: Json
+        }
+        Update: {
+          business_need?: string | null
+          created_at?: string
+          details?: string | null
+          id?: string
+          reporter_id?: string
+          status?: string
+          suggestion?: Json
+        }
+        Relationships: []
+      }
       announcements: {
         Row: {
           body: string
