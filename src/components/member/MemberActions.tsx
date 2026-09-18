@@ -100,9 +100,10 @@ export function MemberActions({ member, showContact = false, compact = false }: 
 
   const buttonSize = compact ? "sm" : "default";
 
+  if (isSelf) return null;
+
   // Reviewer mode: no contact details or private introductions — moderation only.
   if (reviewerMode) {
-    if (isSelf) return null;
     return (
       <MemberSafetyActions
         memberId={member.id}
@@ -115,18 +116,26 @@ export function MemberActions({ member, showContact = false, compact = false }: 
 
   return (
     <>
-      <div className={compact ? "flex flex-wrap gap-2" : "grid gap-2 sm:grid-cols-3"}>
-        <Button type="button" size={buttonSize} variant="outline" disabled={isSelf} onClick={() => void bookOrRequest()}>
+      <div className="grid grid-cols-2 gap-2">
+        <Button type="button" size={buttonSize} variant="outline" onClick={() => void bookOrRequest()}>
           <CalendarClock size={16} /> {bookingUrl ? "Book 1-2-1" : "Request 1-2-1"}
         </Button>
-        <Button type="button" size={buttonSize} variant="outline" disabled={isSelf} onClick={() => void openChat()}>
+        <Button type="button" size={buttonSize} variant="outline" onClick={() => void openChat()}>
           <MessageCircle size={16} /> Message
         </Button>
         {showContact && (
-          <Button type="button" size={buttonSize} variant="outline" disabled={isSelf || revealing} onClick={() => void revealContact()}>
+          <Button type="button" size={buttonSize} variant="outline" disabled={revealing} onClick={() => void revealContact()}>
             {revealing ? <Loader2 size={16} className="animate-spin" /> : <Eye size={16} />} Reveal Contact
           </Button>
         )}
+        <div className={showContact ? "col-span-2" : "contents"}>
+          <MemberSafetyActions
+            memberId={member.id}
+            memberName={member.name}
+            context="profile"
+            compact={compact}
+          />
+        </div>
       </div>
 
       <ActivateMessagingDialog

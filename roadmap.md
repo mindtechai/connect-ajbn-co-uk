@@ -12,3 +12,4 @@
 - [x] Publish the verified web/PWA update (native projects synced)
 - [x] Create the Android upload signing key and wire conditional release signing into Gradle and the GitHub Actions workflow
 - [ ] Add the four ANDROID_* repository secrets in GitHub, then run "Build Android AAB" to produce the signed bundle (blocked on user action)
+- [x] Restore always-visible Block and Report actions for normal members while preserving reviewer privacy mode
