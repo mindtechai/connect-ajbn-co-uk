@@ -15,7 +15,16 @@ export function RequireSuperAdmin({ children }: { children: ReactNode }) {
   }
 
   if (!user) {
-    return <Navigate to="/login" state={{ from: location.pathname }} replace />;
+    // Keep the intended admin destination so sign-in lands there (e.g. links
+    // in the admin summary email opened while signed out).
+    const intended = `${location.pathname}${location.search ?? ""}`;
+    return (
+      <Navigate
+        to={`/login?next=${encodeURIComponent(intended)}`}
+        state={{ from: location.pathname }}
+        replace
+      />
+    );
   }
 
   if (!isSuperAdmin) {

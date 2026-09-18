@@ -11,6 +11,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { GoogleSignInButton } from "@/components/GoogleSignInButton";
 import { ReferrerCombobox } from "@/components/ReferrerCombobox";
+import { notifyNewSignup } from "@/lib/signup-notify.functions";
 
 export default function RegisterPage() {
   const [showPassword, setShowPassword] = useState(false);
@@ -46,6 +47,10 @@ export default function RegisterPage() {
     if (error) {
       toast({ title: "Registration failed", description: error.message, variant: "destructive" });
       return;
+    }
+    if (data.user?.id) {
+      // Instant admin alert + member confirmation; never blocks registration.
+      void notifyNewSignup({ data: { memberId: data.user.id } }).catch(() => {});
     }
     if (!data.session) {
       toast({

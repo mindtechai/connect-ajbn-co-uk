@@ -4,7 +4,7 @@ import { sendAppEmail } from "@/lib/email-send.server";
 import type { DigestSection } from "@/lib/email-templates/admin-daily-digest";
 
 const ADMIN_EMAIL = "admin@ajbn.co.uk";
-const ADMIN_URL = "https://connect.ajbn.co.uk/admin/members";
+const APP_URL = "https://connect.ajbn.co.uk";
 const MAX_ITEMS = 15;
 
 function fullName(p: { first_name?: string | null; last_name?: string | null; email?: string | null }) {
@@ -16,13 +16,14 @@ function section(
   title: string,
   items: string[],
   actionLabel: string,
+  path: string,
 ): DigestSection | null {
   if (items.length === 0) return null;
   return {
     title,
     count: items.length,
     items: items.slice(0, MAX_ITEMS),
-    action_url: ADMIN_URL,
+    action_url: `${APP_URL}${path}`,
     action_label: actionLabel,
   };
 }
@@ -51,7 +52,7 @@ async function buildAndSend() {
     ].filter(Boolean);
     return `${fullName(p)} — ${changes.join(", ")}`;
   });
-  const s1 = section("Profile changes awaiting approval", pendingItems, "Review profile changes");
+  const s1 = section("Profile changes awaiting approval", pendingItems, "Review profile changes", "/admin/members");
   if (s1) sections.push(s1);
 
   // 2. New service enquiries
@@ -64,6 +65,7 @@ async function buildAndSend() {
     "New service enquiries",
     (enquiries ?? []).map((e) => `${e.name || e.email} — ${e.service_type}`),
     "Review enquiries",
+    "/admin/enquiries",
   );
   if (s2) sections.push(s2);
 
@@ -79,6 +81,7 @@ async function buildAndSend() {
       `${i.target_name}${i.target_company ? ` (${i.target_company})` : ""} — ${i.status}`,
     ),
     "Review introduction requests",
+    "/admin/intros",
   );
   if (s3) sections.push(s3);
 
@@ -94,6 +97,7 @@ async function buildAndSend() {
       (d) => `${d.email} — ${d.status}, complete by ${new Date(d.due_by).toLocaleDateString("en-GB")}`,
     ),
     "Review deletion requests",
+    "/admin/members",
   );
   if (s4) sections.push(s4);
 
@@ -107,6 +111,7 @@ async function buildAndSend() {
     "New members signed up",
     (signups ?? []).map((p) => `${fullName(p)}${p.company ? ` — ${p.company}` : ""}`),
     "Review new members",
+    "/admin/approvals",
   );
   if (s5) sections.push(s5);
 
@@ -130,7 +135,7 @@ async function buildAndSend() {
       return `${p ? fullName(p) : "Member"} — ${l.status}`;
     });
   }
-  const s6 = section("New Impact Lion applications", lionItems, "Review applications");
+  const s6 = section("New Impact Lion applications", lionItems, "Review applications", "/admin/lions");
   if (s6) sections.push(s6);
 
   if (sections.length === 0) {

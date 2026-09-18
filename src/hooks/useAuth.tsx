@@ -23,6 +23,22 @@ const Ctx = createContext<AuthCtx>({
 });
 
 const MOCK_KEY = "ajbn_demo_mock_user";
+const SIGNUP_NOTIFIED_KEY = "ajbn_signup_notified";
+
+/**
+ * Covers sign-ups that never touch the registration form (Google sign-in).
+ * The server only emails when the profile was created in the last 24 hours and
+ * uses idempotency keys, so existing members are never emailed again.
+ */
+function notifyIfNewSignup(userId: string) {
+  try {
+    if (localStorage.getItem(SIGNUP_NOTIFIED_KEY) === userId) return;
+    localStorage.setItem(SIGNUP_NOTIFIED_KEY, userId);
+  } catch { /* storage unavailable - still attempt once */ }
+  void import("@/lib/signup-notify.functions")
+    .then(({ notifyNewSignup }) => notifyNewSignup({ data: { memberId: userId } }))
+    .catch(() => {});
+}
 
 function readMockUser(): User | null {
   try {
@@ -43,6 +59,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     const { data: sub } = supabase.auth.onAuthStateChange((_evt, s) => {
       if (s?.user) {
         localStorage.removeItem(MOCK_KEY);
+        if (_evt === "SIGNED_IN") notifyIfNewSignup(s.user.id);
         setSession(s);
         setUser(s.user);
         // defer role fetch
