@@ -36,6 +36,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [session, setSession] = useState<Session | null>(null);
   const [user, setUser] = useState<User | null>(null);
   const [roles, setRoles] = useState<AppRole[]>([]);
+  const [approvedFlag, setApprovedFlag] = useState(false);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
