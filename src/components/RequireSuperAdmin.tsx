@@ -1,6 +1,16 @@
-import { ReactNode } from "react";
+import { createContext, ReactNode, useContext } from "react";
 import { Navigate, useLocation } from "@/lib/router-compat";
 import { useAuth } from "@/hooks/useAuth";
+
+export type AdminScope = "full" | "moderation";
+
+const REVIEWER_EMAIL = "apple-review@ajbn.co.uk";
+
+const AdminScopeCtx = createContext<AdminScope | null>(null);
+
+export function useAdminScope(): AdminScope {
+  return useContext(AdminScopeCtx) ?? "full";
+}
 
 export function RequireSuperAdmin({ children }: { children: ReactNode }) {
   const { user, isSuperAdmin, loading } = useAuth();
@@ -27,9 +37,16 @@ export function RequireSuperAdmin({ children }: { children: ReactNode }) {
     );
   }
 
-  if (!isSuperAdmin) {
+  let scope: AdminScope | null = null;
+  if (isSuperAdmin) {
+    scope = "full";
+  } else if (user.email === REVIEWER_EMAIL) {
+    scope = "moderation";
+  }
+
+  if (!scope) {
     return <Navigate to="/dashboard" replace />;
   }
 
-  return <>{children}</>;
+  return <AdminScopeCtx.Provider value={scope}>{children}</AdminScopeCtx.Provider>;
 }
