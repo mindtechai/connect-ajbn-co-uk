@@ -5,6 +5,8 @@ import { useAdminScope } from "@/components/RequireSuperAdmin";
 
 interface Props {
   pendingCount?: number;
+  reportCount?: number;
+  blockCount?: number;
 }
 
 const fullNavItems = [
