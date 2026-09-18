@@ -52,7 +52,7 @@ async function buildAndSend() {
     ].filter(Boolean);
     return `${fullName(p)} — ${changes.join(", ")}`;
   });
-  const s1 = section("Profile changes awaiting approval", pendingItems, "Review profile changes", "/admin/members");
+  const s1 = section("Profile changes awaiting approval", pendingItems, "Review profile changes", "/admin/members?filter=pending");
   if (s1) sections.push(s1);
 
   // 2. New service enquiries
