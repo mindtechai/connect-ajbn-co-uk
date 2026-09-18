@@ -1,7 +1,8 @@
 import type { ReactNode } from "react";
 import { Clock } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
-import { BoardPostReportButton } from "@/components/board/BoardPostReportButton";
+import { BoardPostSafetyMenu } from "@/components/board/BoardPostSafetyMenu";
+import { useIsBlocked } from "@/components/safety/useIsBlocked";
 import { daysLeft, postedOn, type BoardAuthor, type BoardPost } from "@/lib/board-posts";
 
 type Props = {
@@ -14,6 +15,9 @@ type Props = {
 };
 
 export function BoardPostCard({ post, author, authorLabel, showAuthor = true, actions }: Props) {
+  const blocked = useIsBlocked(post.author_id);
+  if (blocked) return null;
+
   return (
     <div className="bg-card border rounded-xl p-5 shadow-xs space-y-2">
       <div className="flex items-start justify-between gap-2">
@@ -37,7 +41,7 @@ export function BoardPostCard({ post, author, authorLabel, showAuthor = true, ac
         </span>
         <div className="ml-auto flex items-center gap-3">
           {actions}
-          <BoardPostReportButton post={post} authorName={authorLabel} />
+          <BoardPostSafetyMenu post={post} authorName={authorLabel} />
         </div>
       </div>
     </div>

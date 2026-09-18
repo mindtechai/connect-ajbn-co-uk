@@ -1,4 +1,5 @@
 import { Button } from "@/components/ui/button";
+import { ReportContentButton } from "@/components/safety/ReportContentButton";
 import type { LucideIcon } from "lucide-react";
 
 interface Props {
@@ -19,7 +20,10 @@ export function ServiceCard({ icon: Icon, title, tagline, description, cta, onCl
       <h3 className="font-display text-xl md:text-2xl font-bold mb-1.5">{title}</h3>
       <p className="text-sm text-gold/90 mb-3 italic">{tagline}</p>
       <p className="text-sm text-muted-foreground leading-relaxed mb-6 flex-1">{description}</p>
-      <Button onClick={onClick} className="w-full sm:w-auto self-start">{cta}</Button>
+      <div className="flex items-center gap-2 flex-wrap">
+        <Button onClick={onClick} className="w-full sm:w-auto">{cta}</Button>
+        <ReportContentButton subject={title} detailsPrefix="Service enquiry listing:" />
+      </div>
     </div>
   );
 }
