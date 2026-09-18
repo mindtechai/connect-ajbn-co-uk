@@ -43,7 +43,8 @@ export function PublicHeader() {
 
         <a
           href="/"
-          className="flex items-center gap-1.5 rounded-md text-sm font-medium text-slate-600 outline-hidden hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          title="AJBN Connect Home"
+          className="flex items-center gap-1.5 rounded-md text-sm font-medium text-gray-600 outline-hidden hover:text-[#164164] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           aria-label="Back to Home"
         >
           <span className="text-slate-400" aria-hidden="true">/</span>
