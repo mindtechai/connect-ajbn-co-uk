@@ -350,7 +350,7 @@ export const getAdminMemberDetail = createServerFn({ method: "GET" })
     const hasCompanyMatch = Boolean(companies && companies.length > 0);
 
     let corporateOwnerName: string | null = null;
-    if (companies && companies.length === 1) {
+    if (companies && companies.length === 1 && companies[0].owner_user_id) {
       const { data: owners } = await supabaseAdmin
         .from("profiles")
         .select("first_name, last_name")
