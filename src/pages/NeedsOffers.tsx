@@ -188,6 +188,11 @@ export default function NeedsOffersPage() {
                 />
               );
             })}
+            {visible.length > 0 && !visible.some((p) => p.author_id !== user?.id) && (
+              <p className="sm:col-span-2 text-xs text-muted-foreground border rounded-lg p-3 bg-muted/30">
+                Other members' posts will appear here with Report and Block options.
+              </p>
+            )}
             {visible.length === 0 && (
               <p className="sm:col-span-2 text-center text-sm text-muted-foreground py-10">
                 Nothing matches your filters yet.
