@@ -24,6 +24,30 @@ async function audit(context: Ctx, action: string, targetId: string, details: Re
   });
 }
 
+const REVIEWER_EMAIL = "apple-review@ajbn.co.uk";
+
+async function getAdminScope(context: Ctx): Promise<"full" | "moderation"> {
+  const [{ data: isSuper }, { data: profile }] = await Promise.all([
+    context.supabase.rpc("has_role", { _user_id: context.userId, _role: "super_admin" }),
+    context.supabase.from("profiles").select("email").eq("id", context.userId).maybeSingle(),
+  ]);
+  if (isSuper) return "full";
+  if (profile?.email === REVIEWER_EMAIL) return "moderation";
+  throw new Error("Only admins can access this area.");
+}
+
+async function assertAdmin(context: Ctx, required: "full" | "moderation" = "full") {
+  const scope = await getAdminScope(context);
+  if (required === "full" && scope !== "full") {
+    throw new Error("You do not have permission to perform this action.");
+  }
+}
+
+function displayName(first?: string | null, last?: string | null, email?: string | null) {
+  const name = [first ?? "", last ?? ""].join(" ").trim();
+  return name || email || "Unnamed";
+}
+
 /* ---------- inline field edits ---------- */
 
 const UpdateFieldsSchema = z.object({
