@@ -123,7 +123,10 @@ export const setMemberApproved = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data) => ApprovedSchema.parse(data))
   .handler(async ({ data, context }) => {
-    await assertSuperAdmin(context);
+    const scope = await getAdminScope(context);
+    if (scope !== "full" && !data.approved) {
+      throw new Error("Only full admins can remove approval.");
+    }
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     if (data.approved) {
