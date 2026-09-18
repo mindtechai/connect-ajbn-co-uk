@@ -132,24 +132,36 @@ export function Navbar() {
           )}
         </div>
 
-        {/* Mobile menu toggle */}
-        <button
-          className={`md:hidden min-w-[44px] min-h-[44px] flex items-center justify-center ${showSolid ? "text-foreground" : "text-primary-foreground"}`}
-          onClick={() => setOpen(!open)}
-          aria-label="Toggle navigation menu"
-        >
-          {open ? <X size={24} /> : <Menu size={24} />}
-        </button>
+        <div className="flex shrink-0 items-center gap-1 md:hidden">
+          {!user && (
+            <Link to="/login">
+              <Button variant={showSolid ? "outline" : "heroOutline"} size="sm">
+                Sign In
+              </Button>
+            </Link>
+          )}
+          <button
+            className={`min-w-[44px] min-h-[44px] flex items-center justify-center ${showSolid ? "text-foreground" : "text-primary-foreground"}`}
+            onClick={() => setOpen(!open)}
+            aria-label="Toggle navigation menu"
+          >
+            {open ? <X size={24} /> : <Menu size={24} />}
+          </button>
+        </div>
       </div>
 
       {/* Mobile menu */}
       {open && (
         <div className="md:hidden bg-card border-t shadow-lg p-4 flex flex-col gap-3">
           {[
-            { label: "About", to: "/#about" },
-            { label: "Events", to: "/#events" },
+            { label: "Home", to: "/" },
+            { label: "Directory", to: "/directory" },
+            { label: "Messages", to: "/messages" },
             { label: "Services", to: "/services" },
             { label: "Impact Lions", to: "/lions" },
+            { label: "Profile", to: "/settings/profile" },
+            { label: "Privacy", to: "/privacy" },
+            { label: "Account Deletion", to: "/account-deletion" },
           ].map((item) => (
             <Link
               key={item.label}
@@ -160,53 +172,6 @@ export function Navbar() {
               {item.label}
             </Link>
           ))}
-          <Link
-            to="/referral-rewards"
-            className="text-sm font-medium text-muted-foreground hover:text-foreground py-2"
-            onClick={() => setOpen(false)}
-          >
-            Referral Rewards
-          </Link>
-          <Link
-            to="/sponsors-partners"
-            className="text-sm font-medium text-muted-foreground hover:text-foreground py-2"
-            onClick={() => setOpen(false)}
-          >
-            Sponsors & Partners
-          </Link>
-          {user ? (
-            <>
-              <div className="flex items-center gap-2 py-2 text-sm text-foreground">
-                <div className="h-8 w-8 rounded-full bg-gold/90 text-primary grid place-items-center font-semibold">
-                  {initial}
-                </div>
-                <span className="font-medium truncate">{displayName}</span>
-                <QuietHoursStatus />
-              </div>
-              <Link to="/dashboard" onClick={() => setOpen(false)}>
-                <Button variant="outline" size="sm" className="w-full">
-                  <LayoutDashboard size={16} className="mr-1.5" /> Dashboard
-                </Button>
-              </Link>
-              <Link to="/settings" onClick={() => setOpen(false)}>
-                <Button variant="outline" size="sm" className="w-full">
-                  <Settings size={16} className="mr-1.5" /> Account Settings
-                </Button>
-              </Link>
-              <Button size="sm" className="w-full" onClick={() => { setOpen(false); signOut(); }}>
-                <LogOut size={16} className="mr-1.5" /> Sign Out
-              </Button>
-            </>
-          ) : (
-            <>
-              <Link to="/login" onClick={() => setOpen(false)}>
-                <Button variant="outline" size="sm" className="w-full">Sign In</Button>
-              </Link>
-              <Link to="/register" onClick={() => setOpen(false)}>
-                <Button size="sm" className="w-full">Join AJBN</Button>
-              </Link>
-            </>
-          )}
         </div>
       )}
     </nav>

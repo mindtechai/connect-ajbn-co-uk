@@ -2,6 +2,9 @@ import { AppLayout } from "@/components/AppLayout";
 import { Button } from "@/components/ui/button";
 import { ExternalLink, ArrowLeft } from "lucide-react";
 import { Link } from "@/lib/router-compat";
+import { assetUrl } from "@/lib/asset";
+import scwLogo from "@/assets/scw-legal.png.asset.json";
+import tradelendLogo from "@/assets/tradelend.png.asset.json";
 
 const EXTERNAL_URL = "https://www.ajbn.co.uk/sponsors-partners/";
 
@@ -11,14 +14,14 @@ const SPONSORS = [
     role: "Headline Sponsor — Law Firm",
     website: "https://www.scwlegal.co.uk/",
     websiteLabel: "www.scwlegal.co.uk",
-    logo: "https://asian-jewish-business-network-cdn.s3.eu-west-2.amazonaws.com/wp-content/uploads/2024/05/17102554/SCW-Logo-Stamp-Dark-Grey-3-600x600.png",
+    logo: assetUrl(scwLogo),
   },
   {
     name: "Tradelend",
     role: "Headline Sponsor — Property Finance",
     website: "https://www.tradelend.com/",
     websiteLabel: "www.tradelend.com",
-    logo: "https://asian-jewish-business-network-cdn.s3.eu-west-2.amazonaws.com/wp-content/uploads/2026/06/30222931/1-600x200.png",
+    logo: assetUrl(tradelendLogo),
   },
 ];
 

@@ -3,8 +3,11 @@ import { Button } from "@/components/ui/button";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import heroImage from "@/assets/hero-networking.jpg";
 import { ArrowRight, MessageCircle } from "lucide-react";
+import { useAuth } from "@/hooks/useAuth";
 
 export function HeroSection() {
+  const { user } = useAuth();
+
   return (
     <section className="relative min-h-[92vh] flex items-center bg-hero-pattern overflow-hidden">
       {/* Background image overlay */}
@@ -42,11 +45,20 @@ export function HeroSection() {
 
           <ScrollReveal delay={240}>
             <div className="flex flex-wrap gap-4">
-              <Link to="/register">
-                <Button variant="hero" size="xl">
-                  Apply for Membership
-                </Button>
-              </Link>
+              <div className="flex flex-col gap-2">
+                {!user && (
+                  <Link to="/login">
+                    <Button variant="heroOutline" size="xl" className="w-full">
+                      Already a member? Sign In
+                    </Button>
+                  </Link>
+                )}
+                <Link to="/register">
+                  <Button variant="hero" size="xl" className="w-full">
+                    Apply for Membership
+                  </Button>
+                </Link>
+              </div>
               <a href="#about">
                 <Button variant="heroOutline" size="xl">
                   About AJBN &amp; our mission
