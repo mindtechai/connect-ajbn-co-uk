@@ -5,35 +5,46 @@ import impactLionsLogo from "@/assets/impact-lions-logo.png.asset.json";
 
 export function PublicHeader() {
   return (
-    <header className="border-b border-slate-200 bg-white">
-      <div className="mx-auto flex max-w-[800px] items-center justify-between px-4 py-3 md:py-4">
-        <a
-          href="/"
-          className="flex items-center gap-4 rounded-md outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
-          aria-label="Asian Jewish Business Network — Home"
-        >
-          <img
-            src={assetUrl(ajbnLogo)}
-            alt=""
-            aria-hidden="true"
-            className="h-8 w-8 rounded-md object-cover sm:h-12 sm:w-12"
-          />
-          <span
-            className="font-display text-lg font-bold sm:text-xl"
+    <header className="sticky top-0 z-50 border-b border-[#e5e7eb] bg-white">
+      <div className="mx-auto flex h-[72px] max-w-[800px] items-center justify-between px-4">
+        <div className="flex items-center gap-4">
+          <a
+            href="/"
+            title="AJBN Connect Home"
+            className="rounded-md outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          >
+            <img
+              src={assetUrl(ajbnLogo)}
+              alt="AJBN"
+              className="h-8 w-auto rounded-md bg-white object-contain sm:h-12"
+            />
+          </a>
+          <a
+            href="/"
+            title="AJBN Connect Home"
+            className="font-display text-lg font-bold outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2 sm:text-xl"
             style={{ color: "#164164" }}
           >
             AJBN
-          </span>
-          <img
-            src={assetUrl(impactLionsLogo)}
-            alt="AJBN Impact Lions Club"
-            className="h-8 w-8 object-contain sm:h-12 sm:w-12"
-          />
-        </a>
+          </a>
+          <a
+            href="/lions"
+            title="AJBN Impact Lions Club District 105A"
+            className="rounded-full outline-hidden focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          >
+            <img
+              src={assetUrl(impactLionsLogo)}
+              alt="AJBN Impact Lions Club"
+              className="h-8 w-auto rounded-full bg-white object-contain p-0.5 sm:h-12"
+            />
+          </a>
+        </div>
+
 
         <a
           href="/"
-          className="flex items-center gap-1.5 rounded-md text-sm font-medium text-slate-600 outline-hidden hover:text-slate-900 focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
+          title="AJBN Connect Home"
+          className="flex items-center gap-1.5 rounded-md text-sm font-medium text-gray-600 outline-hidden hover:text-[#164164] focus-visible:ring-2 focus-visible:ring-ring focus-visible:ring-offset-2"
           aria-label="Back to Home"
         >
           <span className="text-slate-400" aria-hidden="true">/</span>
