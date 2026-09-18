@@ -143,7 +143,7 @@ export function MemberApprovals({ pendingCount }: { pendingCount?: number }) {
       <div className="flex flex-col sm:flex-row gap-3">
         <div className="relative flex-1">
           <Search size={16} className="absolute left-3 top-1/2 -translate-y-1/2 text-muted-foreground" />
-          <Input placeholder="Search by name, email or company…" value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
+          <Input placeholder={isFull ? "Search by name, email or company…" : "Search by name or company…"} value={search} onChange={(e) => setSearch(e.target.value)} className="pl-9" />
         </div>
         <Select value={filter} onValueChange={setFilter}>
           <SelectTrigger className="w-full sm:w-44"><SelectValue /></SelectTrigger>
