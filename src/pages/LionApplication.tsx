@@ -26,7 +26,7 @@ type App = {
 };
 
 export default function LionApplicationPage() {
-  const { user, session, roles, loading: authLoading } = useAuth();
+  const { user, session, roles, isApprovedMember, loading: authLoading } = useAuth();
   const navigate = useNavigate();
   const notify = useServerFn(notifyLionApplication);
   const [existing, setExisting] = useState<App | null>(null);
@@ -40,7 +40,7 @@ export default function LionApplicationPage() {
 
   const isLion = roles.includes("impact_lion");
   const isApprovedMember =
-    isLion || roles.includes("ajbn_member") || roles.includes("super_admin");
+    isLion || isApprovedMember;
   // A demo/mock session has no real backend token, so skip database calls with it.
   const hasRealSession = !!session?.access_token && session.access_token !== "demo";
 
