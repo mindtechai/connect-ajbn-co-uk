@@ -107,10 +107,8 @@ export const getSignupSeries = createServerFn({ method: "GET" })
     await assertAdmin(context, "moderation");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
     const start = daysAgo(29); // include today → 30 days
-    const { data } = await supabaseAdmin.rpc("admin_signup_series", { _start: start });
-    if (data && Array.isArray(data)) return data as SignupSeries;
 
-    // Fallback if RPC is not installed.
+    // Build series from profiles.created_at (no extra RPC required).
     const { data: rows } = await supabaseAdmin
       .from("profiles")
       .select("created_at")
