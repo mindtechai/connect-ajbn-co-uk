@@ -12,6 +12,9 @@ import { CheckCircle2, Loader2, Mail, Shield, Trash2 } from "lucide-react";
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const AJBN_BLUE = "#164164";
 
+/** Store-review accounts cannot be removed while an app review is in progress. */
+const PROTECTED_EMAILS = ["apple-review@ajbn.co.uk", "support@ajbn.co.uk"];
+
 const ACCOUNT_TYPES = [
   "Approved AJBN Member",
   "Registered but not approved",
@@ -52,6 +55,8 @@ export default function AccountDeletionPage() {
     const next: Errors = {};
     if (!fullName.trim()) next.fullName = "Please enter your full name.";
     if (!EMAIL_RE.test(email.trim())) next.email = "Please enter a valid email address.";
+    else if (PROTECTED_EMAILS.includes(email.trim().toLowerCase()))
+      next.email = "Review account cannot be deleted";
     if (!accountType) next.accountType = "Please select your account type.";
     if (!reason) next.reason = "Please select a reason.";
     if (!acknowledged) next.acknowledged = "Please confirm you want to delete your account.";
