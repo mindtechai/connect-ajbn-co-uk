@@ -19,6 +19,8 @@ import {
 import { toast } from "sonner";
 import { HandHeart, Loader2, Trash2, Clock } from "lucide-react";
 import { openMemberConversation } from "@/components/member/MemberActions";
+import { BoardPostCard } from "@/components/board/BoardPostCard";
+import { BOARD_DISCLAIMER } from "@/lib/board-posts";
 
 const CATEGORIES = ["Property", "Finance", "Legal", "Tax", "Other"] as const;
 type Category = (typeof CATEGORIES)[number];
@@ -122,7 +124,12 @@ export default function BoardPage() {
       return;
     }
     setForm({ title: "", description: "", category: "Property" });
-    toast.success(tab === "need" ? "Need posted — expires in 7 days." : "Offer posted — expires in 7 days.");
+    toast.success(
+      tab === "need"
+        ? "Need posted — visible on your profile board and in the Needs & Offers feed."
+        : "Offer posted — visible on your profile board and in the Needs & Offers feed.",
+    );
+    window.dispatchEvent(new Event("ajbn-board-posts-changed"));
     void load();
   };
 
@@ -133,6 +140,7 @@ export default function BoardPage() {
       return;
     }
     setPosts((prev) => prev.filter((p) => p.id !== id));
+    window.dispatchEvent(new Event("ajbn-board-posts-changed"));
     toast.success("Post removed.");
   };
 
@@ -260,36 +268,29 @@ export default function BoardPage() {
                   const a = authors[p.author_id];
                   const name = `${a?.first_name ?? ""} ${a?.last_name ?? ""}`.trim() || "AJBN member";
                   return (
-                    <div key={p.id} className="bg-card border rounded-xl p-5 shadow-xs space-y-2">
-                      <div className="flex items-start justify-between gap-2">
-                        <p className="font-semibold text-sm">{p.title}</p>
-                        <Badge variant="outline" className="text-[10px] shrink-0">{p.category}</Badge>
-                      </div>
-                      <p className="text-xs text-muted-foreground whitespace-pre-line">{p.description}</p>
-                      <p className="text-[11px] text-muted-foreground/80">
-                        {name}{a?.company ? ` · ${a.company}` : ""}
-                      </p>
-                      <div className="flex items-center gap-3 pt-2 border-t">
-                        <span className="text-[11px] text-muted-foreground flex items-center gap-1">
-                          <Clock size={11} /> {daysLeft(p.expires_at)}
-                        </span>
-                        {p.author_id === user?.id ? (
+                    <BoardPostCard
+                      key={p.id}
+                      post={p}
+                      author={a}
+                      authorLabel={name}
+                      actions={
+                        p.author_id === user?.id ? (
                           <button
                             onClick={() => void remove(p.id)}
-                            className="ml-auto text-xs text-destructive hover:text-destructive/80 flex items-center gap-1"
+                            className="text-xs text-destructive hover:text-destructive/80 flex items-center gap-1"
                           >
                             <Trash2 size={12} /> Delete
                           </button>
                         ) : (
                           <button
                             onClick={() => void help(p)}
-                            className="ml-auto text-xs text-primary hover:text-primary/80 font-medium flex items-center gap-1"
+                            className="text-xs text-primary hover:text-primary/80 font-medium flex items-center gap-1"
                           >
                             <HandHeart size={12} /> I can help
                           </button>
-                        )}
-                      </div>
-                    </div>
+                        )
+                      }
+                    />
                   );
                 })}
                 {visible.length === 0 && (
