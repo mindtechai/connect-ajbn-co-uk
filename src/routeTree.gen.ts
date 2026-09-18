@@ -37,6 +37,7 @@ import { Route as UnsubscribeRouteImport } from './routes/unsubscribe'
 import { Route as AdminIndexRouteImport } from './routes/admin/index'
 import { Route as AdminApprovalsRouteImport } from './routes/admin/approvals'
 import { Route as AdminAuditRouteImport } from './routes/admin/audit'
+import { Route as AdminBlocksRouteImport } from './routes/admin/blocks'
 import { Route as AdminBulkActionsRouteImport } from './routes/admin/bulk-actions'
 import { Route as AdminCheckinRouteImport } from './routes/admin/checkin'
 import { Route as AdminCommunicationsRouteImport } from './routes/admin/communications'
@@ -204,6 +205,11 @@ const AdminAuditRoute = AdminAuditRouteImport.update({
   path: '/admin/audit',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminBlocksRoute = AdminBlocksRouteImport.update({
+  id: '/admin/blocks',
+  path: '/admin/blocks',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminBulkActionsRoute = AdminBulkActionsRouteImport.update({
   id: '/admin/bulk-actions',
   path: '/admin/bulk-actions',
@@ -365,6 +371,7 @@ export interface FileRoutesByFullPath {
   '/unsubscribe': typeof UnsubscribeRoute
   '/admin/approvals': typeof AdminApprovalsRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/blocks': typeof AdminBlocksRoute
   '/admin/bulk-actions': typeof AdminBulkActionsRoute
   '/admin/checkin': typeof AdminCheckinRoute
   '/admin/communications': typeof AdminCommunicationsRoute
@@ -421,6 +428,7 @@ export interface FileRoutesByTo {
   '/unsubscribe': typeof UnsubscribeRoute
   '/admin/approvals': typeof AdminApprovalsRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/blocks': typeof AdminBlocksRoute
   '/admin/bulk-actions': typeof AdminBulkActionsRoute
   '/admin/checkin': typeof AdminCheckinRoute
   '/admin/communications': typeof AdminCommunicationsRoute
@@ -478,6 +486,7 @@ export interface FileRoutesById {
   '/unsubscribe': typeof UnsubscribeRoute
   '/admin/approvals': typeof AdminApprovalsRoute
   '/admin/audit': typeof AdminAuditRoute
+  '/admin/blocks': typeof AdminBlocksRoute
   '/admin/bulk-actions': typeof AdminBulkActionsRoute
   '/admin/checkin': typeof AdminCheckinRoute
   '/admin/communications': typeof AdminCommunicationsRoute
@@ -536,6 +545,7 @@ export interface FileRouteTypes {
     | '/unsubscribe'
     | '/admin/approvals'
     | '/admin/audit'
+    | '/admin/blocks'
     | '/admin/bulk-actions'
     | '/admin/checkin'
     | '/admin/communications'
@@ -592,6 +602,7 @@ export interface FileRouteTypes {
     | '/unsubscribe'
     | '/admin/approvals'
     | '/admin/audit'
+    | '/admin/blocks'
     | '/admin/bulk-actions'
     | '/admin/checkin'
     | '/admin/communications'
@@ -648,6 +659,7 @@ export interface FileRouteTypes {
     | '/unsubscribe'
     | '/admin/approvals'
     | '/admin/audit'
+    | '/admin/blocks'
     | '/admin/bulk-actions'
     | '/admin/checkin'
     | '/admin/communications'
@@ -705,6 +717,7 @@ export interface RootRouteChildren {
   UnsubscribeRoute: typeof UnsubscribeRoute
   AdminApprovalsRoute: typeof AdminApprovalsRoute
   AdminAuditRoute: typeof AdminAuditRoute
+  AdminBlocksRoute: typeof AdminBlocksRoute
   AdminBulkActionsRoute: typeof AdminBulkActionsRoute
   AdminCheckinRoute: typeof AdminCheckinRoute
   AdminCommunicationsRoute: typeof AdminCommunicationsRoute
@@ -932,6 +945,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminAuditRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/blocks': {
+      id: '/admin/blocks'
+      path: '/admin/blocks'
+      fullPath: '/admin/blocks'
+      preLoaderRoute: typeof AdminBlocksRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/bulk-actions': {
       id: '/admin/bulk-actions'
       path: '/admin/bulk-actions'
@@ -1145,6 +1165,7 @@ const rootRouteChildren: RootRouteChildren = {
   UnsubscribeRoute: UnsubscribeRoute,
   AdminApprovalsRoute: AdminApprovalsRoute,
   AdminAuditRoute: AdminAuditRoute,
+  AdminBlocksRoute: AdminBlocksRoute,
   AdminBulkActionsRoute: AdminBulkActionsRoute,
   AdminCheckinRoute: AdminCheckinRoute,
   AdminCommunicationsRoute: AdminCommunicationsRoute,
