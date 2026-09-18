@@ -4,6 +4,7 @@ import { ArrowLeft, Building2, Crown, Linkedin, Loader2, Moon } from "lucide-rea
 import { AppLayout } from "@/components/AppLayout";
 import { MemberBadges } from "@/components/badges/MemberBadges";
 import { MemberActions } from "@/components/member/MemberActions";
+import { MemberBoardSection } from "@/components/board/MemberBoardSection";
 import { MemberSafetyMenu } from "@/components/safety/MemberSafetyMenu";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
@@ -66,6 +67,7 @@ export default function MemberProfilePage() {
           {member.tags && member.tags.length > 0 && <div className="flex flex-wrap gap-2">{member.tags.map((tag) => <Badge key={tag} variant="secondary">{tag}</Badge>)}</div>}
           {member.linkedin && /^https?:\/\//i.test(member.linkedin) && <Button asChild variant="outline" size="sm"><a href={member.linkedin} target="_blank" rel="noreferrer"><Linkedin size={15} /> LinkedIn</a></Button>}
         </section>
+        <MemberBoardSection memberId={member.id} memberName={name} company={member.company} />
       </article>
     </AppLayout>
   );

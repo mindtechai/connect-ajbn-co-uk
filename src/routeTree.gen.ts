@@ -24,6 +24,7 @@ import { Route as ForgotPasswordRouteImport } from './routes/forgot-password'
 import { Route as InstallRouteImport } from './routes/install'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as MemberPortalRouteImport } from './routes/member-portal'
+import { Route as NeedsOffersRouteImport } from './routes/needs-offers'
 import { Route as PrivacyRouteImport } from './routes/privacy'
 import { Route as ProfileRouteImport } from './routes/profile'
 import { Route as ReferralRewardsRouteImport } from './routes/referral-rewards'
@@ -135,6 +136,11 @@ const LoginRoute = LoginRouteImport.update({
 const MemberPortalRoute = MemberPortalRouteImport.update({
   id: '/member-portal',
   path: '/member-portal',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const NeedsOffersRoute = NeedsOffersRouteImport.update({
+  id: '/needs-offers',
+  path: '/needs-offers',
   getParentRoute: () => rootRouteImport,
 } as any)
 const PrivacyRoute = PrivacyRouteImport.update({
@@ -341,6 +347,7 @@ export interface FileRoutesByFullPath {
   '/install': typeof InstallRoute
   '/login': typeof LoginRoute
   '/member-portal': typeof MemberPortalRoute
+  '/needs-offers': typeof NeedsOffersRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/referral-rewards': typeof ReferralRewardsRoute
@@ -395,6 +402,7 @@ export interface FileRoutesByTo {
   '/install': typeof InstallRoute
   '/login': typeof LoginRoute
   '/member-portal': typeof MemberPortalRoute
+  '/needs-offers': typeof NeedsOffersRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/referral-rewards': typeof ReferralRewardsRoute
@@ -450,6 +458,7 @@ export interface FileRoutesById {
   '/install': typeof InstallRoute
   '/login': typeof LoginRoute
   '/member-portal': typeof MemberPortalRoute
+  '/needs-offers': typeof NeedsOffersRoute
   '/privacy': typeof PrivacyRoute
   '/profile': typeof ProfileRoute
   '/referral-rewards': typeof ReferralRewardsRoute
@@ -506,6 +515,7 @@ export interface FileRouteTypes {
     | '/install'
     | '/login'
     | '/member-portal'
+    | '/needs-offers'
     | '/privacy'
     | '/profile'
     | '/referral-rewards'
@@ -560,6 +570,7 @@ export interface FileRouteTypes {
     | '/install'
     | '/login'
     | '/member-portal'
+    | '/needs-offers'
     | '/privacy'
     | '/profile'
     | '/referral-rewards'
@@ -614,6 +625,7 @@ export interface FileRouteTypes {
     | '/install'
     | '/login'
     | '/member-portal'
+    | '/needs-offers'
     | '/privacy'
     | '/profile'
     | '/referral-rewards'
@@ -669,6 +681,7 @@ export interface RootRouteChildren {
   InstallRoute: typeof InstallRoute
   LoginRoute: typeof LoginRoute
   MemberPortalRoute: typeof MemberPortalRoute
+  NeedsOffersRoute: typeof NeedsOffersRoute
   PrivacyRoute: typeof PrivacyRoute
   ProfileRoute: typeof ProfileRoute
   ReferralRewardsRoute: typeof ReferralRewardsRoute
@@ -813,6 +826,13 @@ declare module '@tanstack/react-router' {
       path: '/member-portal'
       fullPath: '/member-portal'
       preLoaderRoute: typeof MemberPortalRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/needs-offers': {
+      id: '/needs-offers'
+      path: '/needs-offers'
+      fullPath: '/needs-offers'
+      preLoaderRoute: typeof NeedsOffersRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/privacy': {
@@ -1093,6 +1113,7 @@ const rootRouteChildren: RootRouteChildren = {
   InstallRoute: InstallRoute,
   LoginRoute: LoginRoute,
   MemberPortalRoute: MemberPortalRoute,
+  NeedsOffersRoute: NeedsOffersRoute,
   PrivacyRoute: PrivacyRoute,
   ProfileRoute: ProfileRoute,
   ReferralRewardsRoute: ReferralRewardsRoute,

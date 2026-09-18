@@ -22,6 +22,7 @@ import { MessagingOnboardingCard } from "@/components/dashboard/MessagingOnboard
 import { MessageCircle } from "lucide-react";
 import { NetworkTicker } from "@/components/dashboard/NetworkTicker";
 import { LogActivityDialog } from "@/components/dashboard/LogActivityDialog";
+import { MyBoardPostsCard } from "@/components/dashboard/MyBoardPostsCard";
 import { useQuietHours } from "@/hooks/useQuietHours";
 
 import { EVENTS } from "@/lib/publicEvents";
@@ -258,6 +259,10 @@ export default function DashboardPage() {
               <div className="rounded-lg bg-teal/10 w-10 h-10 grid place-items-center"><HandHeart size={18} className="text-teal" /></div>
               <div><p className="text-sm font-semibold">Needs &amp; Offers</p><p className="text-xs text-muted-foreground">Post a need or offer help</p></div>
             </Link>
+            <Link to="/needs-offers" className="bg-card border rounded-xl p-4 shadow-xs hover:border-teal/40 transition-colors flex items-center gap-3">
+              <div className="rounded-lg bg-teal/10 w-10 h-10 grid place-items-center"><HandHeart size={18} className="text-teal" /></div>
+              <div><p className="text-sm font-semibold">Browse All Needs &amp; Offers</p><p className="text-xs text-muted-foreground">See every live member post</p></div>
+            </Link>
             <Link to="/esg" className="bg-card border rounded-xl p-4 shadow-xs hover:border-primary/40 transition-colors flex items-center gap-3">
               <div className="rounded-lg bg-gold/10 w-10 h-10 grid place-items-center"><HeartHandshake size={18} className="text-gold" /></div>
               <div><p className="text-sm font-semibold">ESG Report</p><p className="text-xs text-muted-foreground">Your social-impact summary</p></div>
@@ -301,6 +306,11 @@ export default function DashboardPage() {
                 </Link>
               </div>
             </DashboardCard>
+          </ScrollReveal>
+
+          {/* Own needs & offers */}
+          <ScrollReveal delay={20}>
+            <MyBoardPostsCard />
           </ScrollReveal>
 
           {/* Referrals */}
