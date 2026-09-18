@@ -84,7 +84,7 @@ export function AdminSidebar({ pendingCount = 0, reportCount = 0, blockCount = 0
             item.path === "/admin"
               ? location.pathname === "/admin"
               : location.pathname.startsWith(item.path);
-          const isPending = item.path === "/admin/approvals" || item.path === "/admin/members" || item.path === "/admin/blocks";
+          const badge = badgeFor(item.path);
           return (
             <Link
               key={item.path}
@@ -100,9 +100,9 @@ export function AdminSidebar({ pendingCount = 0, reportCount = 0, blockCount = 0
               {!collapsed && (
                 <span className="flex-1 flex items-center justify-between gap-2">
                   {item.label}
-                  {isPending && pendingCount > 0 && (
+                  {badge > 0 && (
                     <span className="min-w-5 h-5 px-1 flex items-center justify-center rounded-full bg-destructive text-destructive-foreground text-[10px] font-bold">
-                      {pendingCount > 99 ? "99+" : pendingCount}
+                      {badge > 99 ? "99+" : badge}
                     </span>
                   )}
                 </span>
