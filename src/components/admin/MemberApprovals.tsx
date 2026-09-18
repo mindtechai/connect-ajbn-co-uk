@@ -88,12 +88,12 @@ export function MemberApprovals({ pendingCount }: { pendingCount?: number }) {
   const filtered = useMemo(() => rows.filter((m) => {
     const name = `${m.first_name ?? ""} ${m.last_name ?? ""}`.trim().toLowerCase();
     const q = search.toLowerCase();
-    const okSearch = !q || name.includes(q) || (m.company ?? "").toLowerCase().includes(q) || (m.email ?? "").toLowerCase().includes(q);
+    const okSearch = !q || name.includes(q) || (m.company ?? "").toLowerCase().includes(q) || (isFull && (m.email ?? "").toLowerCase().includes(q));
     const okFilter = filter === "all"
       || (filter === "referred" && m.referred_by_code)
       || (filter === "direct" && !m.referred_by_code);
     return okSearch && okFilter;
-  }), [rows, search, filter]);
+  }), [rows, search, filter, isFull]);
 
   const approve = async (m: Applicant, asLion = false) => {
     setBusy(m.id);
