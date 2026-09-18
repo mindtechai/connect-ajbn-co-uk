@@ -1,8 +1,11 @@
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { Button } from "@/components/ui/button";
 import { Link } from "@/lib/router-compat";
+import { useAuth } from "@/hooks/useAuth";
 
 export function CTASection() {
+  const { user } = useAuth();
+
   return (
     <section className="py-24 bg-hero-pattern relative overflow-hidden">
       <div className="container mx-auto px-4 lg:px-8 relative z-10 text-center">
@@ -17,9 +20,11 @@ export function CTASection() {
             <Link to="/register">
               <Button variant="hero" size="xl">Apply for Membership</Button>
             </Link>
-            <Link to="/login">
-              <Button variant="heroOutline" size="xl">Member Sign In</Button>
-            </Link>
+            {!user && (
+              <Link to="/login">
+                <Button variant="heroOutline" size="xl">Member Sign In</Button>
+              </Link>
+            )}
           </div>
         </ScrollReveal>
       </div>
