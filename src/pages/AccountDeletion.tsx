@@ -5,9 +5,8 @@ import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "@tanstack/react-router";
+import { PublicHeader } from "@/components/PublicHeader";
 import { requestAccountDeletion } from "@/lib/account-deletion-request.functions";
-import { assetUrl } from "@/lib/asset";
-import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
 import { CheckCircle2, Loader2, Mail, Shield, Trash2 } from "lucide-react";
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -83,16 +82,7 @@ export default function AccountDeletionPage() {
 
   return (
     <div className="min-h-screen bg-white text-slate-900">
-      <header className="border-b" style={{ backgroundColor: AJBN_BLUE }}>
-        <div className="mx-auto flex max-w-[800px] items-center gap-3 px-4 py-4">
-          <img
-            src={assetUrl(ajbnLogo)}
-            alt="AJBN Connect logo"
-            className="h-10 w-10 rounded-md object-cover"
-          />
-          <span className="font-display text-lg font-semibold text-white">AJBN Connect</span>
-        </div>
-      </header>
+      <PublicHeader />
 
       <main className="mx-auto max-w-[800px] px-4 py-8 md:py-12">
         <h1
