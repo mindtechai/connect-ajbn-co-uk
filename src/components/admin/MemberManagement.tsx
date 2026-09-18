@@ -171,6 +171,33 @@ export function MemberManagement() {
 
   useEffect(() => { load(); }, []);
 
+  useEffect(() => {
+    const current = searchParams.get("filter");
+    if (statusFilter === "pending" && current !== "pending") {
+      setSearchParams({ filter: "pending" }, { replace: true });
+    } else if (statusFilter !== "pending" && current === "pending") {
+      setSearchParams({}, { replace: true });
+    }
+  }, [statusFilter, searchParams, setSearchParams]);
+
+  const companyMatch = (m: Member) => {
+    if (!m.company) return false;
+    const q = m.company.toLowerCase().trim();
+    return companies.some((c) => c.company_name.toLowerCase().includes(q) || q.includes(c.company_name.toLowerCase()));
+  };
+
+  const handleReject = async (m: Member) => {
+    try {
+      const result = await reject({ data: { memberId: m.id, reason: rejectReason.trim() || undefined } });
+      toast({ title: "Membership not approved", description: result.emailSent ? "Rejection email sent." : "Could not send rejection email." });
+      setRejecting(null);
+      setRejectReason("");
+      await load();
+    } catch (e: any) {
+      toast({ title: "Could not reject", description: e?.message, variant: "destructive" });
+    }
+  };
+
   const statusOf = (m: Member) =>
     m.roles.includes("super_admin") ? "admin" :
     (m.roles.includes("ajbn_member") || m.roles.includes("impact_lion")) ? "active" :
