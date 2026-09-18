@@ -22,6 +22,7 @@ import { template as quietHoursMessage } from './quiet-hours-message'
 import { template as memberWelcome } from './member-welcome'
 import { template as adminNewSignup } from './admin-new-signup'
 import { template as registrationPending } from './registration-pending'
+import { template as memberNotApproved } from './member-not-approved'
 
 export const TEMPLATES: Record<string, TemplateEntry> = {
   'bulk-message': bulkMessage,
