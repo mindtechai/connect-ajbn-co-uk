@@ -54,6 +54,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
           : null);
         setUser(mock);
         setRoles(mock ? ["ajbn_member"] : []);
+        setApprovedFlag(!!mock);
       }
     });
 
