@@ -32,6 +32,46 @@ import { aiMatcherEnabledFor } from "@/lib/ai-matcher-flag";
 type Announcement = { id: string; title: string; body: string; priority: string; published_at: string; pinned: boolean };
 type UpcomingEvent = { id: string; title: string; starts_at: string; location: string | null };
 
+const TONE_CLASSES: Record<"primary" | "teal" | "gold", { bg: string; text: string; hover: string }> = {
+  primary: { bg: "bg-primary/10", text: "text-primary", hover: "hover:border-primary/40" },
+  teal: { bg: "bg-teal/10", text: "text-teal", hover: "hover:border-teal/40" },
+  gold: { bg: "bg-gold/10", text: "text-gold", hover: "hover:border-gold/40" },
+};
+
+/** Dashboard shortcut. Member-only destinations render locked until approval. */
+function QuickTile({
+  to, icon: Icon, tone, title, hint, locked = false,
+}: { to: string; icon: LucideIcon; tone: "primary" | "teal" | "gold"; title: string; hint: string; locked?: boolean }) {
+  const t = TONE_CLASSES[tone];
+  const inner = (
+    <>
+      <div className={`rounded-lg ${t.bg} w-10 h-10 grid place-items-center`}>
+        {locked ? <Lock size={18} className="text-muted-foreground" /> : <Icon size={18} className={t.text} />}
+      </div>
+      <div>
+        <p className="text-sm font-semibold">{title}</p>
+        <p className="text-xs text-muted-foreground">{locked ? "Awaiting approval" : hint}</p>
+      </div>
+    </>
+  );
+  if (locked) {
+    return (
+      <button
+        type="button"
+        onClick={() => toast({ title: "Awaiting approval", description: `${title} unlocks once AJBN admin approves your membership.` })}
+        className="bg-card border rounded-xl p-4 shadow-xs flex items-center gap-3 text-left opacity-60"
+      >
+        {inner}
+      </button>
+    );
+  }
+  return (
+    <Link to={to} className={`bg-card border rounded-xl p-4 shadow-xs ${t.hover} transition-colors flex items-center gap-3`}>
+      {inner}
+    </Link>
+  );
+}
+
 export default function DashboardPage() {
   const navigate = useNavigate();
   const { user, isSuperAdmin, isApprovedMember, signOut } = useAuth();
