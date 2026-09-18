@@ -6,7 +6,7 @@ import { ScrollReveal } from "@/components/ScrollReveal";
 import {
   Users, CalendarDays, Award, Link2, Bell, Crown,
   Copy, ArrowRight, LogOut, Shield, Settings, User, BookUser, HeartHandshake, Briefcase,
-  HandHeart, CalendarClock, Moon
+  HandHeart, CalendarClock, Moon, Sparkles
 } from "lucide-react";
 import lionsEmblem from "@/assets/lions-emblem.png";
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
@@ -25,6 +25,7 @@ import { LogActivityDialog } from "@/components/dashboard/LogActivityDialog";
 import { useQuietHours } from "@/hooks/useQuietHours";
 
 import { EVENTS } from "@/lib/publicEvents";
+import { aiMatcherEnabledFor } from "@/lib/ai-matcher-flag";
 
 type Announcement = { id: string; title: string; body: string; priority: string; published_at: string; pinned: boolean };
 type UpcomingEvent = { id: string; title: string; starts_at: string; location: string | null };
@@ -269,6 +270,12 @@ export default function DashboardPage() {
               <div className="rounded-lg bg-gold/10 w-10 h-10 grid place-items-center"><Briefcase size={18} className="text-gold" /></div>
               <div><p className="text-sm font-semibold">Services</p><p className="text-xs text-muted-foreground">Introductions, advisory & more</p></div>
             </Link>
+            {aiMatcherEnabledFor(user?.email ?? null) && (
+              <Link to="/ai-matcher" className="bg-card border rounded-xl p-4 shadow-xs hover:border-primary/40 transition-colors flex items-center gap-3">
+                <div className="rounded-lg bg-primary/10 w-10 h-10 grid place-items-center"><Sparkles size={18} className="text-primary" /></div>
+                <div><p className="text-sm font-semibold">AI Matcher</p><p className="text-xs text-muted-foreground">Match your business need</p></div>
+              </Link>
+            )}
           </div>
         </ScrollReveal>
 
