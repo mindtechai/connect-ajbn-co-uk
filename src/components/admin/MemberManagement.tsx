@@ -97,8 +97,11 @@ const displayName = (m: Member) =>
   `${m.first_name ?? ""} ${m.last_name ?? ""}`.trim() || m.email || "Unnamed member";
 
 export function MemberManagement() {
+  const [searchParams, setSearchParams] = useSearchParams();
+  const scope = useAdminScope();
+  const isFull = scope === "full";
   const [search, setSearch] = useState("");
-  const [statusFilter, setStatusFilter] = useState("all");
+  const [statusFilter, setStatusFilter] = useState(() => searchParams.get("filter") === "pending" ? "pending" : "all");
   const [roleFilter, setRoleFilter] = useState("all");
   const [lionsFilter, setLionsFilter] = useState("all");
   const [changesFilter, setChangesFilter] = useState("all");
@@ -119,8 +122,11 @@ export function MemberManagement() {
   const [addOpen, setAddOpen] = useState(false);
   const [newMember, setNewMember] = useState({ firstName: "", lastName: "", email: "", company: "", role: "prospective_member" as BaseRole });
   const [creating, setCreating] = useState(false);
+  const [rejecting, setRejecting] = useState<Member | null>(null);
+  const [rejectReason, setRejectReason] = useState("");
   const { toast } = useToast();
   const decide = useServerFn(decideProfileChange);
+  const reject = useServerFn(rejectMember);
   const resetPassword = useServerFn(resetMemberPassword);
   const toggleQuiet = useServerFn(setMemberQuietHours);
   const saveFields = useServerFn(updateMemberFields);
