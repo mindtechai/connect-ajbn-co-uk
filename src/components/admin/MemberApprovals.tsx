@@ -82,20 +82,15 @@ export function MemberApprovals() {
   }), [rows, search, filter]);
 
   const approve = async (m: Applicant, asLion = false) => {
-    // Add ajbn_member (and optional impact_lion), remove prospective role
-    const rows: { user_id: string; role: "ajbn_member" | "impact_lion" }[] = [
-      { user_id: m.id, role: "ajbn_member" },
-    ];
-    if (asLion) rows.push({ user_id: m.id, role: "impact_lion" });
-    await supabase.from("user_roles").insert(rows);
-    await supabase.from("user_roles").delete().eq("user_id", m.id).eq("role", "prospective_member");
-    const { data: { user } } = await supabase.auth.getUser();
-    if (user) {
-      await supabase.from("admin_audit_log").insert({
-        actor_id: user.id, action: asLion ? "approve_member_lion" : "approve_member",
-        target_type: "user", target_id: m.id,
-        details: { email: m.email, name: `${m.first_name ?? ""} ${m.last_name ?? ""}`.trim() },
-      });
+    try {
+      // Single source of truth: also sets profiles.is_approved, audits and sends welcome.
+      await setMemberApproved({ data: { memberId: m.id, approved: true, sendWelcome: true } });
+      if (asLion) {
+        await supabase.from("user_roles").insert({ user_id: m.id, role: "impact_lion" });
+      }
+    } catch (e: any) {
+      toast({ title: "Could not approve", description: e?.message ?? "Please try again.", variant: "destructive" });
+      return;
     }
     toast({ title: "Member approved", description: `${m.first_name ?? "Member"} is now an active AJBN member${asLion ? " + Impact Lion" : ""}.` });
     load();
