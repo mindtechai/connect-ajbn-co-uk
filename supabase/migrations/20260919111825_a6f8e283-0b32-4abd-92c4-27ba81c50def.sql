@@ -1,0 +1,1 @@
+ALTER FUNCTION public.normalize_company_name(text) SET search_path = public, pg_catalog;
