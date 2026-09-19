@@ -15,23 +15,30 @@ import type { TemplateEntry } from './registry'
 interface Props {
   member_name?: string
   login_url?: string
+  company?: string
 }
 
 const MemberWelcomeEmail = ({
   member_name = 'there',
-  login_url = 'https://connect.ajbn.co.uk/login',
+  login_url = 'https://connect.ajbn.co.uk/dashboard',
+  company,
 }: Props) => (
   <Html lang="en" dir="ltr">
     <Head />
-    <Preview>Your AJBN Connect membership is approved</Preview>
+    <Preview>Your AJBN Connect account is now approved</Preview>
     <Body style={main}>
       <Container style={container}>
         <EmailHeader />
         <Heading style={h1}>Welcome to AJBN Connect, {member_name}</Heading>
         <Text style={text}>
-          Your membership has been approved. You can now sign in to browse the member
+          Your AJBN Connect account is now approved. You can sign in to browse the member
           directory, message other members, book one-to-ones and register for events.
         </Text>
+        {company ? (
+          <Text style={text}>
+            Your company {company} is now visible in the member directory.
+          </Text>
+        ) : null}
         <Button style={button} href={login_url}>
           Sign in to AJBN Connect
         </Button>
@@ -46,11 +53,12 @@ const MemberWelcomeEmail = ({
 
 export const template = {
   component: MemberWelcomeEmail,
-  subject: 'Welcome to AJBN Connect — your membership is approved',
+  subject: 'Your AJBN Connect account is approved',
   displayName: 'Member welcome',
   previewData: {
     member_name: 'Laura',
-    login_url: 'https://connect.ajbn.co.uk/login',
+    login_url: 'https://connect.ajbn.co.uk/dashboard',
+    company: 'ATZ Finance Ltd',
   },
 } satisfies TemplateEntry
 

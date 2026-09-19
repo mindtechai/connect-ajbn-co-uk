@@ -159,7 +159,7 @@ export const setMemberApproved = createServerFn({ method: "POST" })
     if (data.approved && data.sendWelcome !== false) {
       const { data: profile } = await supabaseAdmin
         .from("profiles")
-        .select("email, first_name")
+        .select("email, first_name, company")
         .eq("id", data.memberId)
         .maybeSingle();
       if (profile?.email) {
@@ -167,7 +167,8 @@ export const setMemberApproved = createServerFn({ method: "POST" })
         const result = await sendAppEmail(supabaseAdmin, "member-welcome", profile.email, {
           templateData: {
             member_name: profile.first_name ?? "there",
-            login_url: `${APP_URL}/login`,
+            login_url: `${APP_URL}/dashboard`,
+            company: profile.company ?? undefined,
           },
         });
         welcomeSent = result.sent;
