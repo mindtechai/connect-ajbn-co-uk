@@ -157,6 +157,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     <Ctx.Provider value={{
       user, session, roles,
       isSuperAdmin: roles.includes("super_admin"),
+      rolesLoaded,
       isApprovedMember:
         approvedFlag ||
         roles.includes("ajbn_member") ||
