@@ -9,6 +9,8 @@ interface AuthCtx {
   session: Session | null;
   roles: AppRole[];
   isSuperAdmin: boolean;
+  /** True once the role lookup for the current user has finished. */
+  rolesLoaded: boolean;
   /** Single source of truth for member-only areas: approved flag OR member role. */
   isApprovedMember: boolean;
   loading: boolean;
