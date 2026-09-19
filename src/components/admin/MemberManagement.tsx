@@ -610,6 +610,11 @@ export function MemberManagement() {
           <DropdownMenuItem className="text-destructive" onClick={() => setConfirmDelete(m)}>
             <Trash2 size={14} className="mr-2" /> Delete member
           </DropdownMenuItem>
+          {isFull && m.id !== currentUserId && (
+            <DropdownMenuItem className="text-destructive" onClick={() => { setPurgeText(""); setConfirmPurge(m); }}>
+              <Trash2 size={14} className="mr-2" /> Delete Account
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     );
