@@ -9,7 +9,7 @@ import { AuditLog } from "@/components/admin/AuditLog";
  * audit log stacked on one page so a full review needs no navigation.
  * The dedicated pages remain available for deep links and email buttons.
  */
-export function ReviewOverview({ pendingCount }: { pendingCount?: number }) {
+export function ReviewOverview({ pendingCount }: { pendingCount: number }) {
   return (
     <div className="space-y-10">
       <AnalyticsOverview pendingCount={pendingCount} />
