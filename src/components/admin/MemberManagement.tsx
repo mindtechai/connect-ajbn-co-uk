@@ -977,6 +977,43 @@ export function MemberManagement() {
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>
+
+      <AlertDialog
+        open={confirmPurge !== null}
+        onOpenChange={(open) => { if (!open) { setConfirmPurge(null); setPurgeText(""); } }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Delete {confirmPurge ? displayName(confirmPurge) : "this member"}
+              {confirmPurge?.email ? ` (${confirmPurge.email})` : ""}?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This permanently deletes their sign-in, profile, company listing, messages, deals and
+              event records. This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="purge-confirm">Type <span className="font-mono font-semibold">DELETE</span> to confirm</Label>
+            <Input
+              id="purge-confirm"
+              value={purgeText}
+              onChange={(e) => setPurgeText(e.target.value)}
+              placeholder="DELETE"
+              autoComplete="off"
+            />
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={purgeText.trim() !== "DELETE" || busy === confirmPurge?.id}
+              onClick={(e) => { e.preventDefault(); void doPurge(); }}
+            >
+              Delete account
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }

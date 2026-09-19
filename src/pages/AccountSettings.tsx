@@ -180,6 +180,14 @@ export default function AccountSettingsPage() {
             Update Password
           </Button>
         </form>
+
+        <section className="mt-2 rounded-xl border border-destructive/40 bg-destructive/5 p-6" aria-labelledby="danger-zone-heading">
+          <h2 id="danger-zone-heading" className="text-lg font-semibold text-destructive">Danger Zone</h2>
+          <p className="mb-4 mt-1 text-sm text-muted-foreground">
+            Permanently delete your account and all associated data. This cannot be undone.
+          </p>
+          <DeleteAccountDialog label="Delete My Account" />
+        </section>
       </main>
     </AppLayout>
   );
