@@ -23,7 +23,7 @@ import { resetMemberPassword } from "@/lib/admin-password.functions";
 import { setMemberQuietHours } from "@/lib/quiet-hours.functions";
 import {
   createMemberAccount, setMemberApproved, setMemberRole, setMembershipTier,
-  softDeleteMember, updateMemberFields, rejectMember,
+  softDeleteMember, hardDeleteMember, updateMemberFields, rejectMember,
 } from "@/lib/admin-members.functions";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -119,6 +119,9 @@ export function MemberManagement() {
   const [editValue, setEditValue] = useState("");
   const [logoUrls, setLogoUrls] = useState<Record<string, string>>({});
   const [confirmDelete, setConfirmDelete] = useState<Member | null>(null);
+  const [confirmPurge, setConfirmPurge] = useState<Member | null>(null);
+  const [purgeText, setPurgeText] = useState("");
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
   const [newMember, setNewMember] = useState({ firstName: "", lastName: "", email: "", company: "", role: "prospective_member" as BaseRole });
   const [creating, setCreating] = useState(false);
@@ -134,6 +137,7 @@ export function MemberManagement() {
   const changeApproved = useServerFn(setMemberApproved);
   const changeTier = useServerFn(setMembershipTier);
   const removeMember = useServerFn(softDeleteMember);
+  const purgeMember = useServerFn(hardDeleteMember);
   const addMember = useServerFn(createMemberAccount);
 
   const load = async () => {
