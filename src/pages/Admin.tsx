@@ -101,7 +101,7 @@ export default function AdminPage() {
     if (location.pathname === "/admin/reports") return <MemberReportsAdmin />;
     if (location.pathname === "/admin/audit") return <AuditLog />;
     if (location.pathname === "/admin/settings") return <AdminSettings />;
-    return <AnalyticsOverview pendingCount={pendingCount} />;
+    return <ReviewOverview pendingCount={pendingCount} />;
   };
 
   return (
