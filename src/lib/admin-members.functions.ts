@@ -123,10 +123,8 @@ export const setMemberApproved = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data) => ApprovedSchema.parse(data))
   .handler(async ({ data, context }) => {
-    const scope = await getAdminScope(context);
-    if (scope !== "full" && !data.approved) {
-      throw new Error("Only full admins can remove approval.");
-    }
+    // Approving and un-approving are both full-admin only; reviewers are read-only here.
+    await assertAdmin(context, "full");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     if (data.approved) {
@@ -402,7 +400,7 @@ export const rejectMember = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
   .inputValidator((data) => RejectSchema.parse(data))
   .handler(async ({ data, context }) => {
-    await assertAdmin(context, "moderation");
+    await assertAdmin(context, "full");
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
     const { data: profile } = await supabaseAdmin
