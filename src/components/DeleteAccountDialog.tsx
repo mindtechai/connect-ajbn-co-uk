@@ -11,7 +11,7 @@ import { deleteAccount } from "@/lib/delete-account.functions";
 import { toast } from "@/hooks/use-toast";
 import { Loader2, Trash2 } from "lucide-react";
 
-export function DeleteAccountDialog() {
+export function DeleteAccountDialog({ label = "Delete Account" }: { label?: string }) {
   const [open, setOpen] = useState(false);
   const [confirm, setConfirm] = useState("");
   const [busy, setBusy] = useState(false);
@@ -37,7 +37,7 @@ export function DeleteAccountDialog() {
     <Dialog open={open} onOpenChange={(o) => { if (!busy) { setOpen(o); if (!o) setConfirm(""); } }}>
       <DialogTrigger asChild>
         <Button variant="destructive" className="gap-1.5">
-          <Trash2 size={14} /> Delete Account
+          <Trash2 size={14} /> {label}
         </Button>
       </DialogTrigger>
       <DialogContent>

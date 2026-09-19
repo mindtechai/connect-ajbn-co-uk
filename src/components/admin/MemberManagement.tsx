@@ -23,7 +23,7 @@ import { resetMemberPassword } from "@/lib/admin-password.functions";
 import { setMemberQuietHours } from "@/lib/quiet-hours.functions";
 import {
   createMemberAccount, setMemberApproved, setMemberRole, setMembershipTier,
-  softDeleteMember, updateMemberFields, rejectMember,
+  softDeleteMember, hardDeleteMember, updateMemberFields, rejectMember,
 } from "@/lib/admin-members.functions";
 import { Textarea } from "@/components/ui/textarea";
 
@@ -119,6 +119,9 @@ export function MemberManagement() {
   const [editValue, setEditValue] = useState("");
   const [logoUrls, setLogoUrls] = useState<Record<string, string>>({});
   const [confirmDelete, setConfirmDelete] = useState<Member | null>(null);
+  const [confirmPurge, setConfirmPurge] = useState<Member | null>(null);
+  const [purgeText, setPurgeText] = useState("");
+  const [currentUserId, setCurrentUserId] = useState<string | null>(null);
   const [addOpen, setAddOpen] = useState(false);
   const [newMember, setNewMember] = useState({ firstName: "", lastName: "", email: "", company: "", role: "prospective_member" as BaseRole });
   const [creating, setCreating] = useState(false);
@@ -134,6 +137,7 @@ export function MemberManagement() {
   const changeApproved = useServerFn(setMemberApproved);
   const changeTier = useServerFn(setMembershipTier);
   const removeMember = useServerFn(softDeleteMember);
+  const purgeMember = useServerFn(hardDeleteMember);
   const addMember = useServerFn(createMemberAccount);
 
   const load = async () => {
@@ -170,6 +174,10 @@ export function MemberManagement() {
   };
 
   useEffect(() => { load(); }, []);
+
+  useEffect(() => {
+    void supabase.auth.getUser().then(({ data }) => setCurrentUserId(data.user?.id ?? null));
+  }, []);
 
   useEffect(() => {
     const current = searchParams.get("filter");
@@ -367,6 +375,23 @@ export function MemberManagement() {
       await load();
     } catch (e) {
       toast({ title: "Could not grant admin", description: e instanceof Error ? e.message : "Please try again.", variant: "destructive" });
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const doPurge = async () => {
+    const m = confirmPurge;
+    if (!m || purgeText.trim() !== "DELETE") return;
+    setBusy(m.id);
+    try {
+      await purgeMember({ data: { memberId: m.id } });
+      toast({ title: "Member deleted", description: `${displayName(m)} has been permanently erased.` });
+      setConfirmPurge(null);
+      setPurgeText("");
+      await load();
+    } catch (e) {
+      toast({ title: "Could not delete", description: e instanceof Error ? e.message : "Please try again.", variant: "destructive" });
     } finally {
       setBusy(null);
     }
@@ -585,6 +610,11 @@ export function MemberManagement() {
           <DropdownMenuItem className="text-destructive" onClick={() => setConfirmDelete(m)}>
             <Trash2 size={14} className="mr-2" /> Delete member
           </DropdownMenuItem>
+          {isFull && m.id !== currentUserId && (
+            <DropdownMenuItem className="text-destructive" onClick={() => { setPurgeText(""); setConfirmPurge(m); }}>
+              <Trash2 size={14} className="mr-2" /> Delete Account
+            </DropdownMenuItem>
+          )}
         </DropdownMenuContent>
       </DropdownMenu>
     );
@@ -944,6 +974,43 @@ export function MemberManagement() {
           <AlertDialogFooter>
             <AlertDialogCancel>Cancel</AlertDialogCancel>
             <AlertDialogAction onClick={() => void doDelete()}>Remove member</AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
+
+      <AlertDialog
+        open={confirmPurge !== null}
+        onOpenChange={(open) => { if (!open) { setConfirmPurge(null); setPurgeText(""); } }}
+      >
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>
+              Delete {confirmPurge ? displayName(confirmPurge) : "this member"}
+              {confirmPurge?.email ? ` (${confirmPurge.email})` : ""}?
+            </AlertDialogTitle>
+            <AlertDialogDescription>
+              This permanently deletes their sign-in, profile, company listing, messages, deals and
+              event records. This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <div className="space-y-2">
+            <Label htmlFor="purge-confirm">Type <span className="font-mono font-semibold">DELETE</span> to confirm</Label>
+            <Input
+              id="purge-confirm"
+              value={purgeText}
+              onChange={(e) => setPurgeText(e.target.value)}
+              placeholder="DELETE"
+              autoComplete="off"
+            />
+          </div>
+          <AlertDialogFooter>
+            <AlertDialogCancel>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              disabled={purgeText.trim() !== "DELETE" || busy === confirmPurge?.id}
+              onClick={(e) => { e.preventDefault(); void doPurge(); }}
+            >
+              Delete account
+            </AlertDialogAction>
           </AlertDialogFooter>
         </AlertDialogContent>
       </AlertDialog>

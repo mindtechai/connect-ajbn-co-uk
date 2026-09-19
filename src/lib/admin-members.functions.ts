@@ -438,3 +438,34 @@ export const rejectMember = createServerFn({ method: "POST" })
     await audit(context, "reject_member", data.memberId, { reason: data.reason ?? "", email_sent: emailSent });
     return { ok: true as const, emailSent };
   });
+
+/* ---------- permanent delete ---------- */
+
+export const hardDeleteMember = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((data) => DeleteSchema.parse(data))
+  .handler(async ({ data, context }) => {
+    await assertAdmin(context, "full");
+    if (data.memberId === context.userId) {
+      throw new Error("You cannot delete your own account here.");
+    }
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    const { data: profile } = await supabaseAdmin
+      .from("profiles")
+      .select("email, first_name, last_name, company")
+      .eq("id", data.memberId)
+      .maybeSingle();
+
+    // Audit first: the deleted member's own audit rows are erased below.
+    await audit(context, "admin_delete", data.memberId, {
+      email: profile?.email ?? null,
+      name: displayName(profile?.first_name, profile?.last_name, profile?.email),
+      company: profile?.company ?? null,
+    });
+
+    const { purgeUserData } = await import("@/lib/delete-account.server");
+    await purgeUserData(supabaseAdmin as never, data.memberId);
+
+    return { ok: true as const };
+  });
