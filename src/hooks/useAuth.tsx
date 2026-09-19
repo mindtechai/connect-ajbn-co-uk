@@ -1,4 +1,4 @@
-import { createContext, useContext, useEffect, useState, ReactNode } from "react";
+import { createContext, useContext, useEffect, useRef, useState, ReactNode } from "react";
 import type { Session, User } from "@supabase/supabase-js";
 import { supabase } from "@/integrations/supabase/client";
 
@@ -59,6 +59,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   // Access decisions (admin areas) must wait for this, never for `loading`
   // alone: a signed-in user with roles still in flight is not "no roles".
   const [rolesLoaded, setRolesLoaded] = useState(false);
+  // Invalidates role responses from an older session or an overlapping
+  // refresh so stale access cannot overwrite the current signed-in user.
+  const roleRequestRef = useRef(0);
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((_evt, s) => {
@@ -67,8 +70,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (_evt === "SIGNED_IN") notifyIfNewSignup(s.user.id);
         setSession(s);
         setUser(s.user);
+        setRoles([]);
+        setApprovedFlag(false);
+        setRolesLoaded(false);
         void fetchRoles(s.user.id);
       } else {
+        roleRequestRef.current += 1;
         const mock = readMockUser();
         setSession(mock
           ? ({ access_token: "demo", refresh_token: "demo", expires_in: 3600, token_type: "bearer", user: mock } as unknown as Session)
@@ -85,8 +92,12 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         localStorage.removeItem(MOCK_KEY);
         setSession(data.session);
         setUser(data.session.user);
+        setRoles([]);
+        setApprovedFlag(false);
+        setRolesLoaded(false);
         fetchRoles(data.session.user.id).finally(() => setLoading(false));
       } else {
+        roleRequestRef.current += 1;
         const mock = readMockUser();
         setSession(mock
           ? ({ access_token: "demo", refresh_token: "demo", expires_in: 3600, token_type: "bearer", user: mock } as unknown as Session)
@@ -102,24 +113,28 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => sub.subscription.unsubscribe();
   }, []);
 
-  async function fetchRoles(userId: string, attempt = 0): Promise<void> {
+  async function fetchRoles(userId: string, attempt = 0, requestId?: number): Promise<void> {
+    const activeRequestId = requestId ?? ++roleRequestRef.current;
+    if (requestId === undefined) setRolesLoaded(false);
+
     const [{ data: roleRows, error: roleError }, { data: profile }] = await Promise.all([
       supabase.from("user_roles").select("role").eq("user_id", userId),
       supabase.from("profiles").select("is_approved, deleted_at").eq("id", userId).maybeSingle(),
     ]);
+    if (activeRequestId !== roleRequestRef.current) return;
     if (roleError) {
-      // Never silently downgrade access on a transient failure: retry once,
-      // then surface the reason instead of pretending the user has no roles.
+      // Never silently downgrade access on a transient failure. Keep the
+      // guard loading instead of treating a failed lookup as "not admin".
       console.error("[auth] role lookup failed", roleError);
       if (attempt < 1) {
         await new Promise((r) => setTimeout(r, 600));
-        return fetchRoles(userId, attempt + 1);
+        if (activeRequestId !== roleRequestRef.current) return;
+        return fetchRoles(userId, attempt + 1, activeRequestId);
       }
-      setRolesLoaded(true);
       return;
     }
     const nextRoles = (roleRows ?? []).map((r) => r.role as AppRole);
-    console.info("[auth] roles loaded", nextRoles);
+    console.info("[auth] admin role:", nextRoles.includes("super_admin") ? "super_admin" : null);
     setRoles(nextRoles);
     setApprovedFlag(!!profile?.is_approved && !profile?.deleted_at);
     setRolesLoaded(true);
