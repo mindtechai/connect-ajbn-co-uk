@@ -10,6 +10,7 @@ import { useAuth } from "@/hooks/useAuth";
 import { supabase } from "@/integrations/supabase/client";
 import { Switch } from "@/components/ui/switch";
 import { QUIET_HOURS_SCHEDULE, isUkQuietHours } from "@/lib/quietHours";
+import { DeleteAccountDialog } from "@/components/DeleteAccountDialog";
 
 export default function AccountSettingsPage() {
   const { user } = useAuth();

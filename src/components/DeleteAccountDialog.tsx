@@ -11,7 +11,7 @@ import { deleteAccount } from "@/lib/delete-account.functions";
 import { toast } from "@/hooks/use-toast";
 import { Loader2, Trash2 } from "lucide-react";
 
-export function DeleteAccountDialog() {
+export function DeleteAccountDialog({ label = "Delete Account" }: { label?: string }) {
   const [open, setOpen] = useState(false);
   const [confirm, setConfirm] = useState("");
   const [busy, setBusy] = useState(false);
