@@ -1272,6 +1272,11 @@ export type Database = {
         }[]
       }
       claim_referral_reward: { Args: never; Returns: number }
+      company_has_unapproved_member: {
+        Args: { _company_name: string }
+        Returns: boolean
+      }
+      company_owner_is_approved: { Args: { _owner: string }; Returns: boolean }
       generate_referral_code: {
         Args: { _first: string; _last: string }
         Returns: string
