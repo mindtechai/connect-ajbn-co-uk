@@ -112,18 +112,24 @@ export default function AdminPage() {
         <header className="bg-card border-b sticky top-0 z-40">
           <div className="px-4 lg:px-8 h-14 flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <img src={assetUrl(ajbnLogo)} alt="AJBN" className="h-8 w-8 rounded-md object-cover" />
-              {scope === "moderation" ? (
-                <>
-                  <ShieldCheck size={14} className="text-amber-500" />
-                  <span className="font-display text-sm font-bold text-foreground">AJBN Reviewer</span>
-                </>
-              ) : (
-                <>
-                  <Shield size={14} className="text-primary" />
-                  <span className="font-display text-sm font-bold text-primary">AJBN Admin</span>
-                </>
-              )}
+              <Link
+                to={location.pathname.startsWith("/admin") ? "/admin" : "/dashboard"}
+                className="flex items-center gap-2 cursor-pointer"
+                aria-label={scope === "moderation" ? "AJBN Reviewer dashboard" : "AJBN Admin dashboard"}
+              >
+                <img src={assetUrl(ajbnLogo)} alt="AJBN" className="h-8 w-8 rounded-md object-cover" />
+                {scope === "moderation" ? (
+                  <>
+                    <ShieldCheck size={14} className="text-amber-500" />
+                    <span className="font-display text-sm font-bold text-foreground">AJBN Reviewer</span>
+                  </>
+                ) : (
+                  <>
+                    <Shield size={14} className="text-primary" />
+                    <span className="font-display text-sm font-bold text-primary">AJBN Admin</span>
+                  </>
+                )}
+              </Link>
             </div>
             <div className="flex items-center gap-3">
               <Link
