@@ -1349,6 +1349,7 @@ export type Database = {
           total_deal_value_gbp: number
         }[]
       }
+      normalize_company_name: { Args: { _name: string }; Returns: string }
       profile_privileged_fields_unchanged: {
         Args: {
           _deleted_at: string
