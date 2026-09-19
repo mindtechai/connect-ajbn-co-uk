@@ -155,7 +155,7 @@ export function MemberReportsAdmin() {
                       variant="destructive"
                       className="gap-1.5"
                       disabled={busyId === r.id}
-                      onClick={() => void remove(r.id)}
+                      onClick={() => setConfirmRemove(r)}
                     >
                       <Trash2 size={14} /> Remove content
                     </Button>
