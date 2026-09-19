@@ -4,6 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Loader2, Flag, CheckCircle2, XCircle, Trash2 } from "lucide-react";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Link } from "@/lib/router-compat";
 import { useAdminScope } from "@/components/RequireSuperAdmin";
 import {
@@ -57,6 +61,8 @@ export function MemberReportsAdmin() {
     }
   };
 
+  const [confirmRemove, setConfirmRemove] = useState<AdminReportRow | null>(null);
+
   const remove = async (id: string) => {
     setBusyId(id);
     try {
@@ -67,6 +73,7 @@ export function MemberReportsAdmin() {
       toast.error(error instanceof Error ? error.message : "Removal failed");
     } finally {
       setBusyId(null);
+      setConfirmRemove(null);
     }
   };
 
@@ -148,7 +155,7 @@ export function MemberReportsAdmin() {
                       variant="destructive"
                       className="gap-1.5"
                       disabled={busyId === r.id}
-                      onClick={() => void remove(r.id)}
+                      onClick={() => setConfirmRemove(r)}
                     >
                       <Trash2 size={14} /> Remove content
                     </Button>
@@ -169,6 +176,29 @@ export function MemberReportsAdmin() {
           ))}
         </div>
       )}
+
+      <AlertDialog open={confirmRemove !== null} onOpenChange={(open) => !open && setConfirmRemove(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove this member's content?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete every live Needs &amp; Offers post by{" "}
+              <strong>{confirmRemove?.target_name ?? "this member"}</strong> and mark the report
+              as resolved. This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={busyId !== null}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={busyId !== null}
+              onClick={() => confirmRemove && void remove(confirmRemove.id)}
+            >
+              {busyId === confirmRemove?.id ? "Removing…" : "Yes, remove all their posts"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
