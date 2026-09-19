@@ -176,6 +176,29 @@ export function MemberReportsAdmin() {
           ))}
         </div>
       )}
+
+      <AlertDialog open={confirmRemove !== null} onOpenChange={(open) => !open && setConfirmRemove(null)}>
+        <AlertDialogContent>
+          <AlertDialogHeader>
+            <AlertDialogTitle>Remove this member's content?</AlertDialogTitle>
+            <AlertDialogDescription>
+              This will permanently delete every live Needs &amp; Offers post by{" "}
+              <strong>{confirmRemove?.target_name ?? "this member"}</strong> and mark the report
+              as resolved. This cannot be undone.
+            </AlertDialogDescription>
+          </AlertDialogHeader>
+          <AlertDialogFooter>
+            <AlertDialogCancel disabled={busyId !== null}>Cancel</AlertDialogCancel>
+            <AlertDialogAction
+              className="bg-destructive text-destructive-foreground hover:bg-destructive/90"
+              disabled={busyId !== null}
+              onClick={() => confirmRemove && void remove(confirmRemove.id)}
+            >
+              {busyId === confirmRemove?.id ? "Removing…" : "Yes, remove all their posts"}
+            </AlertDialogAction>
+          </AlertDialogFooter>
+        </AlertDialogContent>
+      </AlertDialog>
     </div>
   );
 }
