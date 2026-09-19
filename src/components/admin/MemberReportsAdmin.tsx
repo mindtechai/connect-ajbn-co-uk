@@ -4,6 +4,10 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "sonner";
 import { Loader2, Flag, CheckCircle2, XCircle, Trash2 } from "lucide-react";
+import {
+  AlertDialog, AlertDialogAction, AlertDialogCancel, AlertDialogContent,
+  AlertDialogDescription, AlertDialogFooter, AlertDialogHeader, AlertDialogTitle,
+} from "@/components/ui/alert-dialog";
 import { Link } from "@/lib/router-compat";
 import { useAdminScope } from "@/components/RequireSuperAdmin";
 import {
@@ -57,6 +61,8 @@ export function MemberReportsAdmin() {
     }
   };
 
+  const [confirmRemove, setConfirmRemove] = useState<AdminReportRow | null>(null);
+
   const remove = async (id: string) => {
     setBusyId(id);
     try {
@@ -67,6 +73,7 @@ export function MemberReportsAdmin() {
       toast.error(error instanceof Error ? error.message : "Removal failed");
     } finally {
       setBusyId(null);
+      setConfirmRemove(null);
     }
   };
 
