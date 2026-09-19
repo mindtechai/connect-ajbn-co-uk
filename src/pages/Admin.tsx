@@ -5,7 +5,7 @@ import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
 import { assetUrl } from "@/lib/asset";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { AdminMobileNav } from "@/components/admin/AdminMobileNav";
-import { AnalyticsOverview } from "@/components/admin/AnalyticsOverview";
+import { ReviewOverview } from "@/components/admin/ReviewOverview";
 import { MemberApprovals } from "@/components/admin/MemberApprovals";
 import { MemberManagement } from "@/components/admin/MemberManagement";
 import { MemberDetail } from "@/components/admin/MemberDetail";
