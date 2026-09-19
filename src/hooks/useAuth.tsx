@@ -56,6 +56,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [approvedFlag, setApprovedFlag] = useState(false);
   const [loading, setLoading] = useState(true);
+  // Access decisions (admin areas) must wait for this, never for `loading`
+  // alone: a signed-in user with roles still in flight is not "no roles".
+  const [rolesLoaded, setRolesLoaded] = useState(false);
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((_evt, s) => {
@@ -64,8 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (_evt === "SIGNED_IN") notifyIfNewSignup(s.user.id);
         setSession(s);
         setUser(s.user);
-        // defer role fetch
-        setTimeout(() => fetchRoles(s.user.id), 0);
+        void fetchRoles(s.user.id);
       } else {
         const mock = readMockUser();
         setSession(mock
@@ -74,6 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(mock);
         setRoles(mock ? ["ajbn_member"] : []);
         setApprovedFlag(!!mock);
+        setRolesLoaded(true);
       }
     });
 
