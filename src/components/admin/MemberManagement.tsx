@@ -176,6 +176,10 @@ export function MemberManagement() {
   useEffect(() => { load(); }, []);
 
   useEffect(() => {
+    void supabase.auth.getUser().then(({ data }) => setCurrentUserId(data.user?.id ?? null));
+  }, []);
+
+  useEffect(() => {
     const current = searchParams.get("filter");
     if (statusFilter === "pending" && current !== "pending") {
       setSearchParams({ filter: "pending" }, { replace: true });
@@ -371,6 +375,23 @@ export function MemberManagement() {
       await load();
     } catch (e) {
       toast({ title: "Could not grant admin", description: e instanceof Error ? e.message : "Please try again.", variant: "destructive" });
+    } finally {
+      setBusy(null);
+    }
+  };
+
+  const doPurge = async () => {
+    const m = confirmPurge;
+    if (!m || purgeText.trim() !== "DELETE") return;
+    setBusy(m.id);
+    try {
+      await purgeMember({ data: { memberId: m.id } });
+      toast({ title: "Member deleted", description: `${displayName(m)} has been permanently erased.` });
+      setConfirmPurge(null);
+      setPurgeText("");
+      await load();
+    } catch (e) {
+      toast({ title: "Could not delete", description: e instanceof Error ? e.message : "Please try again.", variant: "destructive" });
     } finally {
       setBusy(null);
     }
