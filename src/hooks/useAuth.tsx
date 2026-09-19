@@ -19,7 +19,7 @@ interface AuthCtx {
 }
 
 const Ctx = createContext<AuthCtx>({
-  user: null, session: null, roles: [], isSuperAdmin: false, isApprovedMember: false, loading: true,
+  user: null, session: null, roles: [], isSuperAdmin: false, rolesLoaded: false, isApprovedMember: false, loading: true,
   refreshAccess: async () => {},
   signOut: async () => {},
 });
