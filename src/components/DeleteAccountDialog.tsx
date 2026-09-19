@@ -37,7 +37,7 @@ export function DeleteAccountDialog({ label = "Delete Account" }: { label?: stri
     <Dialog open={open} onOpenChange={(o) => { if (!busy) { setOpen(o); if (!o) setConfirm(""); } }}>
       <DialogTrigger asChild>
         <Button variant="destructive" className="gap-1.5">
-          <Trash2 size={14} /> Delete Account
+          <Trash2 size={14} /> {label}
         </Button>
       </DialogTrigger>
       <DialogContent>
