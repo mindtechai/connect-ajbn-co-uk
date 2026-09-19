@@ -94,6 +94,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(mock);
         setRoles(mock ? ["ajbn_member"] : []);
         setApprovedFlag(!!mock);
+        setRolesLoaded(true);
         setLoading(false);
       }
     });
@@ -101,13 +102,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => sub.subscription.unsubscribe();
   }, []);
 
-  async function fetchRoles(userId: string) {
-    const [{ data: roleRows }, { data: profile }] = await Promise.all([
+  async function fetchRoles(userId: string, attempt = 0): Promise<void> {
+    const [{ data: roleRows, error: roleError }, { data: profile }] = await Promise.all([
       supabase.from("user_roles").select("role").eq("user_id", userId),
       supabase.from("profiles").select("is_approved, deleted_at").eq("id", userId).maybeSingle(),
     ]);
-    setRoles((roleRows ?? []).map((r) => r.role as AppRole));
+    if (roleError) {
+      // Never silently downgrade access on a transient failure: retry once,
+      // then surface the reason instead of pretending the user has no roles.
+      console.error("[auth] role lookup failed", roleError);
+      if (attempt < 1) {
+        await new Promise((r) => setTimeout(r, 600));
+        return fetchRoles(userId, attempt + 1);
+      }
+      setRolesLoaded(true);
+      return;
+    }
+    const nextRoles = (roleRows ?? []).map((r) => r.role as AppRole);
+    console.info("[auth] roles loaded", nextRoles);
+    setRoles(nextRoles);
     setApprovedFlag(!!profile?.is_approved && !profile?.deleted_at);
+    setRolesLoaded(true);
   }
 
   // Approval granted by an admin takes effect on the next app open/focus,
