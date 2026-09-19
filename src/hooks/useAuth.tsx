@@ -9,6 +9,8 @@ interface AuthCtx {
   session: Session | null;
   roles: AppRole[];
   isSuperAdmin: boolean;
+  /** True once the role lookup for the current user has finished. */
+  rolesLoaded: boolean;
   /** Single source of truth for member-only areas: approved flag OR member role. */
   isApprovedMember: boolean;
   loading: boolean;
@@ -17,7 +19,7 @@ interface AuthCtx {
 }
 
 const Ctx = createContext<AuthCtx>({
-  user: null, session: null, roles: [], isSuperAdmin: false, isApprovedMember: false, loading: true,
+  user: null, session: null, roles: [], isSuperAdmin: false, rolesLoaded: false, isApprovedMember: false, loading: true,
   refreshAccess: async () => {},
   signOut: async () => {},
 });
@@ -54,6 +56,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   const [roles, setRoles] = useState<AppRole[]>([]);
   const [approvedFlag, setApprovedFlag] = useState(false);
   const [loading, setLoading] = useState(true);
+  // Access decisions (admin areas) must wait for this, never for `loading`
+  // alone: a signed-in user with roles still in flight is not "no roles".
+  const [rolesLoaded, setRolesLoaded] = useState(false);
 
   useEffect(() => {
     const { data: sub } = supabase.auth.onAuthStateChange((_evt, s) => {
@@ -62,8 +67,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         if (_evt === "SIGNED_IN") notifyIfNewSignup(s.user.id);
         setSession(s);
         setUser(s.user);
-        // defer role fetch
-        setTimeout(() => fetchRoles(s.user.id), 0);
+        void fetchRoles(s.user.id);
       } else {
         const mock = readMockUser();
         setSession(mock
@@ -72,6 +76,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(mock);
         setRoles(mock ? ["ajbn_member"] : []);
         setApprovedFlag(!!mock);
+        setRolesLoaded(true);
       }
     });
 
@@ -89,6 +94,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setUser(mock);
         setRoles(mock ? ["ajbn_member"] : []);
         setApprovedFlag(!!mock);
+        setRolesLoaded(true);
         setLoading(false);
       }
     });
@@ -96,13 +102,27 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => sub.subscription.unsubscribe();
   }, []);
 
-  async function fetchRoles(userId: string) {
-    const [{ data: roleRows }, { data: profile }] = await Promise.all([
+  async function fetchRoles(userId: string, attempt = 0): Promise<void> {
+    const [{ data: roleRows, error: roleError }, { data: profile }] = await Promise.all([
       supabase.from("user_roles").select("role").eq("user_id", userId),
       supabase.from("profiles").select("is_approved, deleted_at").eq("id", userId).maybeSingle(),
     ]);
-    setRoles((roleRows ?? []).map((r) => r.role as AppRole));
+    if (roleError) {
+      // Never silently downgrade access on a transient failure: retry once,
+      // then surface the reason instead of pretending the user has no roles.
+      console.error("[auth] role lookup failed", roleError);
+      if (attempt < 1) {
+        await new Promise((r) => setTimeout(r, 600));
+        return fetchRoles(userId, attempt + 1);
+      }
+      setRolesLoaded(true);
+      return;
+    }
+    const nextRoles = (roleRows ?? []).map((r) => r.role as AppRole);
+    console.info("[auth] roles loaded", nextRoles);
+    setRoles(nextRoles);
     setApprovedFlag(!!profile?.is_approved && !profile?.deleted_at);
+    setRolesLoaded(true);
   }
 
   // Approval granted by an admin takes effect on the next app open/focus,
@@ -137,6 +157,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     <Ctx.Provider value={{
       user, session, roles,
       isSuperAdmin: roles.includes("super_admin"),
+      rolesLoaded,
       isApprovedMember:
         approvedFlag ||
         roles.includes("ajbn_member") ||

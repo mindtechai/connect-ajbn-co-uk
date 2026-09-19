@@ -5,7 +5,7 @@ import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
 import { assetUrl } from "@/lib/asset";
 import { AdminSidebar } from "@/components/admin/AdminSidebar";
 import { AdminMobileNav } from "@/components/admin/AdminMobileNav";
-import { AnalyticsOverview } from "@/components/admin/AnalyticsOverview";
+import { ReviewOverview } from "@/components/admin/ReviewOverview";
 import { MemberApprovals } from "@/components/admin/MemberApprovals";
 import { MemberManagement } from "@/components/admin/MemberManagement";
 import { MemberDetail } from "@/components/admin/MemberDetail";
@@ -101,7 +101,7 @@ export default function AdminPage() {
     if (location.pathname === "/admin/reports") return <MemberReportsAdmin />;
     if (location.pathname === "/admin/audit") return <AuditLog />;
     if (location.pathname === "/admin/settings") return <AdminSettings />;
-    return <AnalyticsOverview pendingCount={pendingCount} />;
+    return <ReviewOverview pendingCount={pendingCount} />;
   };
 
   return (

@@ -13,10 +13,12 @@ export function useAdminScope(): AdminScope {
 }
 
 export function RequireSuperAdmin({ children }: { children: ReactNode }) {
-  const { user, isSuperAdmin, loading } = useAuth();
+  const { user, isSuperAdmin, rolesLoaded, loading } = useAuth();
   const location = useLocation();
 
-  if (loading) {
+  // Wait for the role lookup too — deciding on a signed-in user whose roles
+  // are still in flight bounced admins to /dashboard.
+  if (loading || (user && !rolesLoaded)) {
     return (
       <div className="min-h-screen flex items-center justify-center text-muted-foreground">
         Loading…
