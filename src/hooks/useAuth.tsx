@@ -73,7 +73,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setRoles([]);
         setApprovedFlag(false);
         setRolesLoaded(false);
-        void fetchRoles(s.user.id);
+        void fetchRoles(s.user.id).finally(() => setLoading(false));
       } else {
         roleRequestRef.current += 1;
         const mock = readMockUser();
@@ -84,6 +84,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         setRoles(mock ? ["ajbn_member"] : []);
         setApprovedFlag(!!mock);
         setRolesLoaded(true);
+        setLoading(false);
       }
     });
 
