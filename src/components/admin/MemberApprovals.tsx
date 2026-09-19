@@ -98,11 +98,15 @@ export function MemberApprovals({ pendingCount }: { pendingCount?: number }) {
   const approve = async (m: Applicant, asLion = false) => {
     setBusy(m.id);
     try {
-      await approveFn({ data: { memberId: m.id, approved: true, sendWelcome: true } });
+      const result = await approveFn({ data: { memberId: m.id, approved: true, sendWelcome: true } });
       if (asLion) {
         await supabase.from("user_roles").insert({ user_id: m.id, role: "impact_lion" });
       }
-      toast({ title: "Member approved", description: `${m.first_name ?? "Member"} is now an active AJBN member${asLion ? " + Impact Lion" : ""}.` });
+      toast({
+        title: result.welcomeSent ? "Approved + email sent" : "Approved — email could not be sent",
+        description: `${m.first_name ?? "Member"} is now an active AJBN member${asLion ? " + Impact Lion" : ""}.`,
+        ...(result.welcomeSent ? {} : { variant: "destructive" as const }),
+      });
       load();
     } catch (e: any) {
       toast({ title: "Could not approve", description: e?.message ?? "Please try again.", variant: "destructive" });
