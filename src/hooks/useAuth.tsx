@@ -114,9 +114,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => sub.subscription.unsubscribe();
   }, []);
 
-  async function fetchRoles(userId: string, attempt = 0, requestId?: number): Promise<void> {
+  async function fetchRoles(
+    userId: string,
+    attempt = 0,
+    requestId?: number,
+    // Background refreshes (tab focus) must never flip the guard back to
+    // "loading": that unmounts admin screens and wipes in-progress edits.
+    background = false,
+  ): Promise<void> {
     const activeRequestId = requestId ?? ++roleRequestRef.current;
-    if (requestId === undefined) setRolesLoaded(false);
+    if (requestId === undefined && !background) setRolesLoaded(false);
+
 
     const [{ data: roleRows, error: roleError }, { data: profile }] = await Promise.all([
       supabase.from("user_roles").select("role").eq("user_id", userId),
