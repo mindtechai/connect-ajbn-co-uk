@@ -238,7 +238,8 @@ export default function DirectoryPage() {
             </p>
             {selectedServices.length > 0 && (
               <Badge variant="secondary" className="text-[11px]">
-                {shownTotal} {shownTotal === 1 ? "match" : "matches"}
+                {shownTotal} {shownTotal === 1 ? "match" : "matches"} for {selectedServices.length}{" "}
+                {selectedServices.length === 1 ? "filter" : "filters"}
               </Badge>
             )}
           </div>
