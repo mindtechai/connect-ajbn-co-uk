@@ -138,7 +138,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (attempt < 1) {
         await new Promise((r) => setTimeout(r, 600));
         if (activeRequestId !== roleRequestRef.current) return;
-        return fetchRoles(userId, attempt + 1, activeRequestId);
+        return fetchRoles(userId, attempt + 1, activeRequestId, background);
       }
       return;
     }
@@ -151,9 +151,9 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Approval granted by an admin takes effect on the next app open/focus,
   // without the member having to sign out and back in.
-  const refreshAccess = async () => {
+  const refreshAccess = async (background = false) => {
     const { data } = await supabase.auth.getSession();
-    if (data.session?.user) await fetchRoles(data.session.user.id);
+    if (data.session?.user) await fetchRoles(data.session.user.id, 0, undefined, background);
   };
 
   useEffect(() => {
