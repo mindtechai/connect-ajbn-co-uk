@@ -96,7 +96,7 @@ export default function DirectoryPage() {
         supabase
           .from("corporate_members")
           .select(
-            "id,company_name,industry,city,membership_tier,job_title,short_bio,website,linkedin_url,verified,owner_user_id",
+            "id,company_name,industry,city,membership_tier,job_title,short_bio,website,linkedin_url,verified,owner_user_id,primary_sector,services_list",
           )
           .order("company_name", { ascending: true }),
       ]);
