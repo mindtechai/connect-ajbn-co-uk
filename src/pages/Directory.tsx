@@ -5,18 +5,13 @@ import { useAuth } from "@/hooks/useAuth";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search, Crown, Loader2, Building2, Linkedin, Globe, BadgeCheck, Moon } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { MemberBadges } from "@/components/badges/MemberBadges";
 import { MemberSafetyMenu } from "@/components/safety/MemberSafetyMenu";
 import { MemberActions } from "@/components/member/MemberActions";
+import { ServiceFilter } from "@/components/directory/ServiceFilter";
+import { useServiceTaxonomy } from "@/hooks/useServiceTaxonomy";
 import { listBlocked, syncBlocked } from "@/lib/moderation";
 import { useUkQuietHoursWindow } from "@/hooks/useQuietHours";
 import { useReviewerMode } from "@/hooks/useReviewerMode";
@@ -38,6 +33,8 @@ type Member = {
   is_top_ambassador: boolean | null;
   calendly_url?: string | null;
   quiet_hours_enabled?: boolean;
+  primary_sector?: string | null;
+  services_list?: string[] | null;
 };
 
 type CorporateMember = {
@@ -52,7 +49,10 @@ type CorporateMember = {
   linkedin_url: string | null;
   verified: boolean;
   owner_user_id: string | null;
+  primary_sector: string | null;
+  services_list: string[] | null;
 };
+
 
 function initials(name: string): string {
   return name
