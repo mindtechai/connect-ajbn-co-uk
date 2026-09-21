@@ -3,36 +3,43 @@ import { AppLayout } from "@/components/AppLayout";
 import { useAuth } from "@/hooks/useAuth";
 import { Link, useNavigate } from "@/lib/router-compat";
 import { Button } from "@/components/ui/button";
+import { Badge } from "@/components/ui/badge";
 import { Textarea } from "@/components/ui/textarea";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
-import { Flag, Loader2, Lock, MessageCircle, Sparkles } from "lucide-react";
+import { ArrowRight, Building2, Flag, Loader2, Lock, MessageCircle, Sparkles } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { openMemberConversation } from "@/components/member/MemberActions";
 import { aiMatcherEnabledFor } from "@/lib/ai-matcher-flag";
 import { matchBusinessNeed, type MatchResult } from "@/lib/ai-matcher.functions";
+import { ServiceFilter } from "@/components/directory/ServiceFilter";
+import { useServiceTaxonomy } from "@/hooks/useServiceTaxonomy";
 
-const MIN_CHARS = 20;
 const DISCLAIMER =
   "AI suggestions are not recommendations. Members must conduct their own due diligence and verify suitability before any business decision or referral. Provided for informational purposes only.";
 
 export default function AiMatcherPage() {
   const { user, isApprovedMember, loading } = useAuth();
   const navigate = useNavigate();
+  const { services } = useServiceTaxonomy();
+  const [service, setService] = useState<string>("");
   const [need, setNeed] = useState("");
   const [busy, setBusy] = useState(false);
   const [result, setResult] = useState<MatchResult | null>(null);
+  const [searched, setSearched] = useState<string>("");
   const [reported, setReported] = useState<Record<string, boolean>>({});
 
   const featureVisible = aiMatcherEnabledFor(user?.email ?? null);
   const canUse = !loading && !!user && isApprovedMember && featureVisible;
 
   async function onSubmit() {
-    if (need.trim().length < MIN_CHARS || busy) return;
+    if (!service || busy) return;
     setBusy(true);
     setResult(null);
     try {
-      const res = await matchBusinessNeed({ data: { businessNeed: need.trim() } });
+      const res = await matchBusinessNeed({
+        data: { service, context: need.trim() || undefined },
+      });
       if (!res.ok) {
         toast.error(
           res.error === "rate_limited"
@@ -44,8 +51,9 @@ export default function AiMatcherPage() {
         return;
       }
       setResult(res.result);
-      if (res.result.members.length === 0) {
-        toast.info("No close matches found — try describing the need differently.");
+      setSearched(service);
+      if (res.result.matches.length === 0) {
+        toast.info("No members or companies are tagged with that service yet.");
       }
     } catch {
       toast.error("Something went wrong. Please try again.");
@@ -53,6 +61,7 @@ export default function AiMatcherPage() {
       setBusy(false);
     }
   }
+
 
   async function onMessage(memberId: string) {
     try {
