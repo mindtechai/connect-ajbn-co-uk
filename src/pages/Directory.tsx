@@ -73,7 +73,13 @@ export default function DirectoryPage() {
   const [companies, setCompanies] = useState<CorporateMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
-  const [industry, setIndustry] = useState<string>("all");
+  const routeSearch = useSearch({ strict: false }) as { service?: string };
+  const { services: taxonomy } = useServiceTaxonomy();
+  // Services can be pre-selected from a link, e.g. /directory?service=Tax%20Accounting
+  const [selectedServices, setSelectedServices] = useState<string[]>(() =>
+    routeSearch.service ? routeSearch.service.split(",").map((s) => s.trim()).filter(Boolean) : [],
+  );
+
   const inQuietHoursWindow = useUkQuietHoursWindow();
   const reviewerMode = useReviewerMode();
 
