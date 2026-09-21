@@ -4,9 +4,11 @@ import DirectoryPage from "@/pages/Directory";
 
 export const Route = createFileRoute("/directory")({
   // Services can be pre-selected from a link, e.g. /directory?service=Tax%20Accounting
-  validateSearch: (search: Record<string, unknown>) => ({
-    service: typeof search.service === "string" ? search.service : undefined,
-  }),
+  validateSearch: (search: Record<string, unknown>): { service?: string } => {
+    const value = search["service"];
+    return typeof value === "string" && value ? { service: value } : {};
+  },
+
   // Member-only area: kept out of search and AI crawler indexes.
 
   head: () => ({
