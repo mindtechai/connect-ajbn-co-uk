@@ -224,24 +224,25 @@ export default function DirectoryPage() {
                 className="pl-9"
               />
             </div>
-            <Select value={industry} onValueChange={setIndustry}>
-              <SelectTrigger className="md:w-72">
-                <SelectValue placeholder="All industries" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All industries</SelectItem>
-                {industries.map((ind) => (
-                  <SelectItem key={ind} value={ind}>
-                    {ind}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <ServiceFilter
+              className="md:w-72"
+              services={taxonomy}
+              selected={selectedServices}
+              onChange={setSelectedServices}
+            />
           </div>
 
-          <p className="text-xs text-muted-foreground mb-3">
-            Showing {shownTotal} of {total} listings
-          </p>
+          <div className="flex items-center gap-2 mb-3">
+            <p className="text-xs text-muted-foreground">
+              Showing {shownTotal} of {total} listings
+            </p>
+            {selectedServices.length > 0 && (
+              <Badge variant="secondary" className="text-[11px]">
+                {shownTotal} {shownTotal === 1 ? "match" : "matches"}
+              </Badge>
+            )}
+          </div>
+
 
           {filteredMembers.length > 0 && (
             <>
