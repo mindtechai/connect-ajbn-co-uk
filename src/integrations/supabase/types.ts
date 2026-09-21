@@ -1350,7 +1350,9 @@ export type Database = {
           is_verified_connector: boolean
           last_name: string
           linkedin: string
+          primary_sector: string
           quiet_hours_enabled: boolean
+          services_list: string[]
           tags: string[]
           title: string
         }[]
