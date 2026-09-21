@@ -115,39 +115,56 @@ export default function DirectoryPage() {
     return () => window.removeEventListener("ajbn-moderation-changed", sync);
   }, []);
 
-  const industries = useMemo(() => {
-    const set = new Set<string>();
-    members.forEach((m) => m.industry && set.add(m.industry));
-    companies.forEach((c) => c.industry && set.add(c.industry));
-    return Array.from(set).sort((a, b) => a.localeCompare(b));
-  }, [members, companies]);
-
   const search = q.trim().toLowerCase();
+
+  const matchesServices = (primary: string | null | undefined, list: string[] | null | undefined) => {
+    if (selectedServices.length === 0) return true;
+    const own = new Set([...(list ?? []), ...(primary ? [primary] : [])]);
+    return selectedServices.some((s) => own.has(s));
+  };
 
   const filteredMembers = useMemo(() => {
     return members.filter((m) => {
       if (blockedIds.includes(m.id)) return false;
-      if (industry !== "all" && m.industry !== industry) return false;
+      if (!matchesServices(m.primary_sector, m.services_list)) return false;
       if (!search) return true;
-      const haystack = [m.first_name, m.last_name, m.company, m.title, m.industry, m.bio, ...(m.tags ?? [])]
+      const haystack = [
+        m.first_name,
+        m.last_name,
+        m.company,
+        m.title,
+        m.industry,
+        m.bio,
+        ...(m.tags ?? []),
+        ...(m.services_list ?? []),
+      ]
         .filter(Boolean)
         .join(" ")
         .toLowerCase();
       return haystack.includes(search);
     });
-  }, [members, search, industry, blockedIds]);
+  }, [members, search, selectedServices, blockedIds]);
 
   const filteredCompanies = useMemo(() => {
     return companies.filter((c) => {
-      if (industry !== "all" && c.industry !== industry) return false;
+      if (!matchesServices(c.primary_sector, c.services_list)) return false;
       if (!search) return true;
-      const haystack = [c.company_name, c.industry, c.city, c.membership_tier, c.job_title, c.short_bio]
+      const haystack = [
+        c.company_name,
+        c.industry,
+        c.city,
+        c.membership_tier,
+        c.job_title,
+        c.short_bio,
+        ...(c.services_list ?? []),
+      ]
         .filter(Boolean)
         .join(" ")
         .toLowerCase();
       return haystack.includes(search);
     });
-  }, [companies, search, industry]);
+  }, [companies, search, selectedServices]);
+
 
   const shownTotal = filteredMembers.length + filteredCompanies.length;
   const total = members.length + companies.length;
