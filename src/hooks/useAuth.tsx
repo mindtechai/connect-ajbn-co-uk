@@ -14,7 +14,7 @@ interface AuthCtx {
   /** Single source of truth for member-only areas: approved flag OR member role. */
   isApprovedMember: boolean;
   loading: boolean;
-  refreshAccess: () => Promise<void>;
+  refreshAccess: (background?: boolean) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -114,9 +114,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     return () => sub.subscription.unsubscribe();
   }, []);
 
-  async function fetchRoles(userId: string, attempt = 0, requestId?: number): Promise<void> {
+  async function fetchRoles(
+    userId: string,
+    attempt = 0,
+    requestId?: number,
+    // Background refreshes (tab focus) must never flip the guard back to
+    // "loading": that unmounts admin screens and wipes in-progress edits.
+    background = false,
+  ): Promise<void> {
     const activeRequestId = requestId ?? ++roleRequestRef.current;
-    if (requestId === undefined) setRolesLoaded(false);
+    if (requestId === undefined && !background) setRolesLoaded(false);
+
 
     const [{ data: roleRows, error: roleError }, { data: profile }] = await Promise.all([
       supabase.from("user_roles").select("role").eq("user_id", userId),
@@ -130,7 +138,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (attempt < 1) {
         await new Promise((r) => setTimeout(r, 600));
         if (activeRequestId !== roleRequestRef.current) return;
-        return fetchRoles(userId, attempt + 1, activeRequestId);
+        return fetchRoles(userId, attempt + 1, activeRequestId, background);
       }
       return;
     }
@@ -143,14 +151,14 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   // Approval granted by an admin takes effect on the next app open/focus,
   // without the member having to sign out and back in.
-  const refreshAccess = async () => {
+  const refreshAccess = async (background = false) => {
     const { data } = await supabase.auth.getSession();
-    if (data.session?.user) await fetchRoles(data.session.user.id);
+    if (data.session?.user) await fetchRoles(data.session.user.id, 0, undefined, background);
   };
 
   useEffect(() => {
     if (!user) return;
-    const onFocus = () => { if (document.visibilityState === "visible") void refreshAccess(); };
+    const onFocus = () => { if (document.visibilityState === "visible") void refreshAccess(true); };
     window.addEventListener("focus", onFocus);
     document.addEventListener("visibilitychange", onFocus);
     return () => {
