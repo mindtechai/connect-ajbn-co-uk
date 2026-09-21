@@ -317,6 +317,8 @@ export type Database = {
           logo_filename: string | null
           membership_tier: string | null
           owner_user_id: string | null
+          primary_sector: string | null
+          services_list: string[]
           short_bio: string | null
           updated_at: string
           verified: boolean
@@ -333,6 +335,8 @@ export type Database = {
           logo_filename?: string | null
           membership_tier?: string | null
           owner_user_id?: string | null
+          primary_sector?: string | null
+          services_list?: string[]
           short_bio?: string | null
           updated_at?: string
           verified?: boolean
@@ -349,6 +353,8 @@ export type Database = {
           logo_filename?: string | null
           membership_tier?: string | null
           owner_user_id?: string | null
+          primary_sector?: string | null
+          services_list?: string[]
           short_bio?: string | null
           updated_at?: string
           verified?: boolean
@@ -1043,10 +1049,12 @@ export type Database = {
           pending_logo_url: string | null
           pending_website: string | null
           phone: string | null
+          primary_sector: string | null
           quiet_hours_enabled: boolean
           referral_code: string | null
           referred_by: string | null
           referred_by_code: string | null
+          services_list: string[]
           tags: string[]
           title: string | null
           updated_at: string
@@ -1079,10 +1087,12 @@ export type Database = {
           pending_logo_url?: string | null
           pending_website?: string | null
           phone?: string | null
+          primary_sector?: string | null
           quiet_hours_enabled?: boolean
           referral_code?: string | null
           referred_by?: string | null
           referred_by_code?: string | null
+          services_list?: string[]
           tags?: string[]
           title?: string | null
           updated_at?: string
@@ -1115,10 +1125,12 @@ export type Database = {
           pending_logo_url?: string | null
           pending_website?: string | null
           phone?: string | null
+          primary_sector?: string | null
           quiet_hours_enabled?: boolean
           referral_code?: string | null
           referred_by?: string | null
           referred_by_code?: string | null
+          services_list?: string[]
           tags?: string[]
           title?: string | null
           updated_at?: string
@@ -1187,6 +1199,33 @@ export type Database = {
           phone?: string | null
           service_type?: string
           user_id?: string | null
+        }
+        Relationships: []
+      }
+      service_taxonomy: {
+        Row: {
+          created_at: string
+          id: string
+          is_active: boolean
+          name: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          is_active?: boolean
+          name?: string
+          sort_order?: number
+          updated_at?: string
         }
         Relationships: []
       }
