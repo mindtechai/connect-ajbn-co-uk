@@ -4,15 +4,26 @@ import { requireSupabaseAuth } from "@/integrations/supabase/auth-middleware";
 import { aiMatcherEnabledFor } from "./ai-matcher-flag";
 
 const Schema = z.object({
-  businessNeed: z.string().min(20).max(1200),
+  service: z.string().min(2).max(120),
+  context: z.string().max(1200).optional(),
 });
 
 const RATE_LIMIT = 5; // requests per hour per member
-const MAX_MEMBERS_IN_PROMPT = 50;
+const MAX_CANDIDATES_IN_PROMPT = 60;
+const MAX_MATCHES = 6;
+
+export type MatchCandidate = {
+  key: string;
+  kind: "member" | "company";
+  name: string;
+  business: string;
+  member_id: string | null;
+  company_id: string | null;
+  reason: string;
+};
 
 export type MatchResult = {
-  members: { name: string; business: string; reason: string; member_id: string }[];
-  services: { name: string; reason: string }[];
+  matches: MatchCandidate[];
   referrals: { opportunity: string }[];
 };
 
@@ -25,32 +36,26 @@ type DirectoryRow = {
   industry: string | null;
   bio: string | null;
   tags: string[] | null;
+  primary_sector: string | null;
+  services_list: string[] | null;
 };
 
-function keywords(need: string): string[] {
-  return Array.from(
-    new Set(
-      need
-        .toLowerCase()
-        .replace(/[^a-z0-9\s]/g, " ")
-        .split(/\s+/)
-        .filter((w) => w.length > 3),
-    ),
-  );
-}
-
-function score(row: DirectoryRow, words: string[]): number {
-  const haystack = [row.company, row.title, row.industry, row.bio, (row.tags ?? []).join(" ")]
-    .filter(Boolean)
-    .join(" ")
-    .toLowerCase();
-  return words.reduce((n, w) => (haystack.includes(w) ? n + 1 : n), 0);
-}
+type CompanyRow = {
+  id: string;
+  company_name: string;
+  industry: string | null;
+  city: string | null;
+  job_title: string | null;
+  short_bio: string | null;
+  primary_sector: string | null;
+  services_list: string[] | null;
+};
 
 /**
- * Matches a member's business need against the AJBN directory using the
- * Lovable AI Gateway. Only business information is sent to the model — never
- * emails, phone numbers or private messages.
+ * Matches a member's chosen service against the AJBN directory. The shortlist is
+ * built deterministically from the service tags (exact match first) — the model
+ * only ranks and explains, and may never invent a name. Only business
+ * information is sent to the model, never emails, phone numbers or messages.
  */
 export const matchBusinessNeed = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
@@ -83,22 +88,64 @@ export const matchBusinessNeed = createServerFn({ method: "POST" })
       return { ok: false as const, error: "rate_limited" as const };
     }
 
-    const { data: directory } = await context.supabase.rpc("member_directory_list");
-    const rows = ((directory ?? []) as DirectoryRow[]).filter((r) => r.id !== context.userId);
-    const words = keywords(data.businessNeed);
-    const shortlist = [...rows]
-      .map((r) => ({ r, s: score(r, words) }))
-      .sort((a, b) => b.s - a.s)
-      .slice(0, MAX_MEMBERS_IN_PROMPT)
-      .map(({ r }) => ({
+    const service = data.service.trim();
+
+    const [{ data: directory }, { data: companyRows }] = await Promise.all([
+      context.supabase.rpc("member_directory_list"),
+      context.supabase
+        .from("corporate_members")
+        .select(
+          "id,company_name,industry,city,job_title,short_bio,primary_sector,services_list",
+        )
+        .or(`primary_sector.eq.${service},services_list.cs.{"${service}"}`)
+        .order("company_name", { ascending: true }),
+    ]);
+
+    const memberCandidates = ((directory ?? []) as DirectoryRow[])
+      .filter((r) => r.id !== context.userId)
+      .filter(
+        (r) =>
+          r.primary_sector === service || (r.services_list ?? []).includes(service),
+      )
+      .map((r) => ({
+        key: `member-${r.id}`,
+        kind: "member" as const,
         member_id: r.id,
+        company_id: null,
         name: [r.first_name, r.last_name].filter(Boolean).join(" ") || "AJBN member",
         business: r.company ?? "",
         role: r.title ?? "",
-        industry: r.industry ?? "",
-        tags: r.tags ?? [],
+        services: r.services_list ?? [],
         about: (r.bio ?? "").slice(0, 300),
       }));
+
+    const companyCandidates = ((companyRows ?? []) as CompanyRow[]).map((c) => ({
+      key: `company-${c.id}`,
+      kind: "company" as const,
+      member_id: null,
+      company_id: c.id,
+      name: c.company_name,
+      business: c.company_name,
+      role: c.job_title ?? "",
+      services: c.services_list ?? [],
+      about: [c.short_bio ?? "", c.city ?? ""].filter(Boolean).join(" — ").slice(0, 300),
+    }));
+
+    const candidates = [...memberCandidates, ...companyCandidates];
+
+    if (candidates.length === 0) {
+      await context.supabase
+        .from("ai_matcher_requests")
+        .insert({ user_id: context.userId, business_need: service });
+      return {
+        ok: true as const,
+        result: { matches: [], referrals: [] } as MatchResult,
+        remaining: RATE_LIMIT - (count ?? 0) - 1,
+      };
+    }
+
+    const shortlist = candidates.slice(0, MAX_CANDIDATES_IN_PROMPT);
+    const byKey = new Map(shortlist.map((c) => [c.key, c]));
 
     const apiKey = process.env["LOVABLE_API_KEY"];
     if (!apiKey) return { ok: false as const, error: "ai_unavailable" as const };
@@ -115,11 +162,23 @@ export const matchBusinessNeed = createServerFn({ method: "POST" })
           {
             role: "system",
             content:
-              "You are the AJBN matcher for the Asian Jewish Business Network. Given a member's business need and the member context provided, recommend the 3 most relevant members, 2 relevant services, and 1 referral opportunity. Keep it concise and business-focused, and explain the reason for each match. Use only members from the provided context and copy their member_id exactly. Return JSON only, shaped as {\"members\":[{\"name\":\"\",\"business\":\"\",\"reason\":\"\",\"member_id\":\"\"}],\"services\":[{\"name\":\"\",\"reason\":\"\"}],\"referrals\":[{\"opportunity\":\"\"}]}.",
+              `You are the AJBN matcher for the Asian Jewish Business Network. Every candidate below is already tagged with the requested service, so do not question their relevance. Rank the ${MAX_MATCHES} most suitable candidates and give one referral opportunity. Each reason must quote or paraphrase only facts present in that candidate's own entry (business name, role, services, about text). Never speculate: do not write "sounds like", "potentially", "may be able to", "likely" or invent clients, locations or specialisms. If an entry has little detail, say plainly which service they are tagged with. Use only candidates from the provided list and copy their "key" exactly. Return JSON only, shaped as {"matches":[{"key":"","reason":""}],"referrals":[{"opportunity":""}]}.`,
           },
           {
             role: "user",
-            content: `Business need: ${data.businessNeed}\n\nMember context (JSON): ${JSON.stringify(shortlist)}`,
+            content: `Requested service: ${service}\n${
+              data.context?.trim() ? `Extra context from the member: ${data.context.trim()}\n` : ""
+            }\nCandidates (JSON): ${JSON.stringify(
+              shortlist.map(({ key, kind, name, business, role, services, about }) => ({
+                key,
+                kind,
+                name,
+                business,
+                role,
+                services,
+                about,
+              })),
+            )}`,
           },
         ],
       }),
@@ -134,27 +193,49 @@ export const matchBusinessNeed = createServerFn({ method: "POST" })
     const raw = payload.choices?.[0]?.message?.content ?? "";
     const json = raw.replace(/^```(?:json)?/i, "").replace(/```$/, "").trim();
 
-    let parsed: MatchResult;
+    let parsed: { matches?: { key?: string; reason?: string }[]; referrals?: { opportunity?: string }[] };
     try {
-      parsed = JSON.parse(json) as MatchResult;
+      parsed = JSON.parse(json);
     } catch {
       return { ok: false as const, error: "ai_unavailable" as const };
     }
 
-    const validIds = new Set(shortlist.map((m) => m.member_id));
+    const seen = new Set<string>();
+    const ranked: MatchCandidate[] = [];
+    for (const item of parsed.matches ?? []) {
+      const candidate = item.key ? byKey.get(item.key) : undefined;
+      if (!candidate || seen.has(candidate.key)) continue;
+      seen.add(candidate.key);
+      ranked.push({
+        key: candidate.key,
+        kind: candidate.kind,
+        name: candidate.name,
+        business: candidate.business,
+        member_id: candidate.member_id,
+        company_id: candidate.company_id,
+        reason: String(item.reason ?? "").trim(),
+      });
+      if (ranked.length >= MAX_MATCHES) break;
+    }
+
+    // Deterministic safety net: never show fewer than we actually have tagged.
+    for (const candidate of shortlist) {
+      if (ranked.length >= MAX_MATCHES) break;
+      if (seen.has(candidate.key)) continue;
+      seen.add(candidate.key);
+      ranked.push({
+        key: candidate.key,
+        kind: candidate.kind,
+        name: candidate.name,
+        business: candidate.business,
+        member_id: candidate.member_id,
+        company_id: candidate.company_id,
+        reason: `Tagged in the AJBN directory under ${service}.`,
+      });
+    }
+
     const result: MatchResult = {
-      members: (parsed.members ?? [])
-        .filter((m) => validIds.has(m.member_id))
-        .slice(0, 3)
-        .map((m) => ({
-          member_id: m.member_id,
-          name: String(m.name ?? ""),
-          business: String(m.business ?? ""),
-          reason: String(m.reason ?? ""),
-        })),
-      services: (parsed.services ?? [])
-        .slice(0, 2)
-        .map((s) => ({ name: String(s.name ?? ""), reason: String(s.reason ?? "") })),
+      matches: ranked.slice(0, MAX_MATCHES),
       referrals: (parsed.referrals ?? [])
         .slice(0, 1)
         .map((r) => ({ opportunity: String(r.opportunity ?? "") })),
@@ -162,7 +243,10 @@ export const matchBusinessNeed = createServerFn({ method: "POST" })
 
     await context.supabase
       .from("ai_matcher_requests")
-      .insert({ user_id: context.userId, business_need: data.businessNeed.slice(0, 1000) });
+      .insert({
+        user_id: context.userId,
+        business_need: [service, data.context?.trim()].filter(Boolean).join(" — ").slice(0, 1000),
+      });
 
     return { ok: true as const, result, remaining: RATE_LIMIT - (count ?? 0) - 1 };
   });
