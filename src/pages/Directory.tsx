@@ -5,18 +5,13 @@ import { useAuth } from "@/hooks/useAuth";
 import { Input } from "@/components/ui/input";
 import { Badge } from "@/components/ui/badge";
 import { Search, Crown, Loader2, Building2, Linkedin, Globe, BadgeCheck, Moon } from "lucide-react";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "@/components/ui/select";
-import { useNavigate } from "@tanstack/react-router";
+import { useNavigate, useSearch } from "@tanstack/react-router";
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip";
 import { MemberBadges } from "@/components/badges/MemberBadges";
 import { MemberSafetyMenu } from "@/components/safety/MemberSafetyMenu";
 import { MemberActions } from "@/components/member/MemberActions";
+import { ServiceFilter } from "@/components/directory/ServiceFilter";
+import { useServiceTaxonomy } from "@/hooks/useServiceTaxonomy";
 import { listBlocked, syncBlocked } from "@/lib/moderation";
 import { useUkQuietHoursWindow } from "@/hooks/useQuietHours";
 import { useReviewerMode } from "@/hooks/useReviewerMode";
@@ -38,6 +33,8 @@ type Member = {
   is_top_ambassador: boolean | null;
   calendly_url?: string | null;
   quiet_hours_enabled?: boolean;
+  primary_sector?: string | null;
+  services_list?: string[] | null;
 };
 
 type CorporateMember = {
@@ -52,7 +49,10 @@ type CorporateMember = {
   linkedin_url: string | null;
   verified: boolean;
   owner_user_id: string | null;
+  primary_sector: string | null;
+  services_list: string[] | null;
 };
+
 
 function initials(name: string): string {
   return name
@@ -73,7 +73,13 @@ export default function DirectoryPage() {
   const [companies, setCompanies] = useState<CorporateMember[]>([]);
   const [loading, setLoading] = useState(true);
   const [q, setQ] = useState("");
-  const [industry, setIndustry] = useState<string>("all");
+  const routeSearch = useSearch({ strict: false }) as { service?: string };
+  const { services: taxonomy } = useServiceTaxonomy();
+  // Services can be pre-selected from a link, e.g. /directory?service=Tax%20Accounting
+  const [selectedServices, setSelectedServices] = useState<string[]>(() =>
+    routeSearch.service ? routeSearch.service.split(",").map((s) => s.trim()).filter(Boolean) : [],
+  );
+
   const inQuietHoursWindow = useUkQuietHoursWindow();
   const reviewerMode = useReviewerMode();
 
@@ -90,7 +96,7 @@ export default function DirectoryPage() {
         supabase
           .from("corporate_members")
           .select(
-            "id,company_name,industry,city,membership_tier,job_title,short_bio,website,linkedin_url,verified,owner_user_id",
+            "id,company_name,industry,city,membership_tier,job_title,short_bio,website,linkedin_url,verified,owner_user_id,primary_sector,services_list",
           )
           .order("company_name", { ascending: true }),
       ]);
@@ -109,39 +115,56 @@ export default function DirectoryPage() {
     return () => window.removeEventListener("ajbn-moderation-changed", sync);
   }, []);
 
-  const industries = useMemo(() => {
-    const set = new Set<string>();
-    members.forEach((m) => m.industry && set.add(m.industry));
-    companies.forEach((c) => c.industry && set.add(c.industry));
-    return Array.from(set).sort((a, b) => a.localeCompare(b));
-  }, [members, companies]);
-
   const search = q.trim().toLowerCase();
+
+  const matchesServices = (primary: string | null | undefined, list: string[] | null | undefined) => {
+    if (selectedServices.length === 0) return true;
+    const own = new Set([...(list ?? []), ...(primary ? [primary] : [])]);
+    return selectedServices.some((s) => own.has(s));
+  };
 
   const filteredMembers = useMemo(() => {
     return members.filter((m) => {
       if (blockedIds.includes(m.id)) return false;
-      if (industry !== "all" && m.industry !== industry) return false;
+      if (!matchesServices(m.primary_sector, m.services_list)) return false;
       if (!search) return true;
-      const haystack = [m.first_name, m.last_name, m.company, m.title, m.industry, m.bio, ...(m.tags ?? [])]
+      const haystack = [
+        m.first_name,
+        m.last_name,
+        m.company,
+        m.title,
+        m.industry,
+        m.bio,
+        ...(m.tags ?? []),
+        ...(m.services_list ?? []),
+      ]
         .filter(Boolean)
         .join(" ")
         .toLowerCase();
       return haystack.includes(search);
     });
-  }, [members, search, industry, blockedIds]);
+  }, [members, search, selectedServices, blockedIds]);
 
   const filteredCompanies = useMemo(() => {
     return companies.filter((c) => {
-      if (industry !== "all" && c.industry !== industry) return false;
+      if (!matchesServices(c.primary_sector, c.services_list)) return false;
       if (!search) return true;
-      const haystack = [c.company_name, c.industry, c.city, c.membership_tier, c.job_title, c.short_bio]
+      const haystack = [
+        c.company_name,
+        c.industry,
+        c.city,
+        c.membership_tier,
+        c.job_title,
+        c.short_bio,
+        ...(c.services_list ?? []),
+      ]
         .filter(Boolean)
         .join(" ")
         .toLowerCase();
       return haystack.includes(search);
     });
-  }, [companies, search, industry]);
+  }, [companies, search, selectedServices]);
+
 
   const shownTotal = filteredMembers.length + filteredCompanies.length;
   const total = members.length + companies.length;
@@ -201,24 +224,25 @@ export default function DirectoryPage() {
                 className="pl-9"
               />
             </div>
-            <Select value={industry} onValueChange={setIndustry}>
-              <SelectTrigger className="md:w-72">
-                <SelectValue placeholder="All industries" />
-              </SelectTrigger>
-              <SelectContent>
-                <SelectItem value="all">All industries</SelectItem>
-                {industries.map((ind) => (
-                  <SelectItem key={ind} value={ind}>
-                    {ind}
-                  </SelectItem>
-                ))}
-              </SelectContent>
-            </Select>
+            <ServiceFilter
+              className="md:w-72"
+              services={taxonomy}
+              selected={selectedServices}
+              onChange={setSelectedServices}
+            />
           </div>
 
-          <p className="text-xs text-muted-foreground mb-3">
-            Showing {shownTotal} of {total} listings
-          </p>
+          <div className="flex items-center gap-2 mb-3">
+            <p className="text-xs text-muted-foreground">
+              Showing {shownTotal} of {total} listings
+            </p>
+            {selectedServices.length > 0 && (
+              <Badge variant="secondary" className="text-[11px]">
+                {shownTotal} {shownTotal === 1 ? "match" : "matches"}
+              </Badge>
+            )}
+          </div>
+
 
           {filteredMembers.length > 0 && (
             <>
