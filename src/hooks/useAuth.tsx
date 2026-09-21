@@ -14,7 +14,7 @@ interface AuthCtx {
   /** Single source of truth for member-only areas: approved flag OR member role. */
   isApprovedMember: boolean;
   loading: boolean;
-  refreshAccess: () => Promise<void>;
+  refreshAccess: (background?: boolean) => Promise<void>;
   signOut: () => Promise<void>;
 }
 
@@ -158,7 +158,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
 
   useEffect(() => {
     if (!user) return;
-    const onFocus = () => { if (document.visibilityState === "visible") void refreshAccess(); };
+    const onFocus = () => { if (document.visibilityState === "visible") void refreshAccess(true); };
     window.addEventListener("focus", onFocus);
     document.addEventListener("visibilitychange", onFocus);
     return () => {
