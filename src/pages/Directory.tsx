@@ -427,6 +427,13 @@ export default function DirectoryPage() {
               </p>
             )}
           </div>
+
+          {/* Keeps the live match count reachable above the mobile tab bar. */}
+          <div className="md:hidden sticky bottom-0 z-40 -mx-4 mt-4 border-t bg-background/95 px-4 pt-3 pb-[calc(env(safe-area-inset-bottom)+80px)] backdrop-blur">
+            <div className="rounded-md bg-muted/60 px-3 py-2 text-center text-sm font-medium">
+              Showing {shownTotal} {shownTotal === 1 ? "match" : "matches"}
+            </div>
+          </div>
         </>
       )}
 
