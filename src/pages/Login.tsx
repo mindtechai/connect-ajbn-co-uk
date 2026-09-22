@@ -9,6 +9,7 @@ import { assetUrl } from "@/lib/asset";
 import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { GoogleSignInButton } from "@/components/GoogleSignInButton";
+import { AppleSignInButton } from "@/components/AppleSignInButton";
 import { ReferrerCombobox } from "@/components/ReferrerCombobox";
 import { notifyNewSignup } from "@/lib/signup-notify.functions";
 
@@ -239,7 +240,10 @@ export default function LoginPage() {
                 <span className="text-xs text-muted-foreground">or</span>
                 <div className="h-px flex-1 bg-border" />
               </div>
-              <GoogleSignInButton next={next} />
+              <div className="space-y-2">
+                <AppleSignInButton next={next} />
+                <GoogleSignInButton next={next} />
+              </div>
             </form>
           ) : (
             <form className="space-y-5" onSubmit={handleSignIn}>
@@ -293,7 +297,10 @@ export default function LoginPage() {
                 <span className="text-xs text-muted-foreground">or</span>
                 <div className="h-px flex-1 bg-border" />
               </div>
-              <GoogleSignInButton next={next} />
+              <div className="space-y-2">
+                <AppleSignInButton next={next} />
+                <GoogleSignInButton next={next} />
+              </div>
             </form>
           )}
         </div>
