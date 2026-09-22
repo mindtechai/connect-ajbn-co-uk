@@ -17,6 +17,8 @@ export type MatchCandidate = {
   kind: "member" | "company";
   name: string;
   business: string;
+  /** Role line shown under the business name, e.g. "Asset Finance Specialist". */
+  role?: string;
   member_id: string | null;
   company_id: string | null;
   reason: string;
@@ -34,6 +36,7 @@ type DirectoryRow = {
   first_name: string | null;
   last_name: string | null;
   company: string | null;
+  company_id: string | null;
   title: string | null;
   industry: string | null;
   bio: string | null;
@@ -52,6 +55,16 @@ type CompanyRow = {
   primary_sector: string | null;
   services_list: string[] | null;
 };
+
+/** Same rule as the database helper, so a person and their listing collapse into one card. */
+function normalizeCompanyName(name: string | null | undefined): string {
+  return (name ?? "")
+    .toLowerCase()
+    .replace(/[^a-z0-9 ]/g, " ")
+    .replace(/\s+/g, " ")
+    .replace(/(\s(ltd|limited|inc|llc|plc))+$/g, "")
+    .trim();
+}
 
 /**
  * Matches a member's chosen service against the AJBN directory. The shortlist is
