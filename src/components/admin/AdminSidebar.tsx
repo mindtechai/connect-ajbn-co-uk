@@ -1,7 +1,7 @@
 import { Link, useLocation } from "@/lib/router-compat";
 import {
   Users, BarChart3, Mail, Shield, ChevronLeft,
-  UserCheck, Settings, Home, Zap, CalendarDays, HeartHandshake, Crown, QrCode, ScrollText, Handshake, Inbox, Flag, Ban
+  UserCheck, Settings, Home, Zap, CalendarDays, HeartHandshake, Crown, QrCode, ScrollText, Handshake, Inbox, Flag, Ban, Building2
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { useState } from "react";
@@ -11,6 +11,7 @@ const fullNavItems = [
   { label: "Overview", icon: BarChart3, path: "/admin" },
   { label: "Members", icon: Users, path: "/admin/members" },
   { label: "Approvals", icon: UserCheck, path: "/admin/approvals" },
+  { label: "Companies", icon: Building2, path: "/admin/companies" },
   { label: "Lion Applications", icon: Crown, path: "/admin/lions" },
   { label: "Intro Requests", icon: Handshake, path: "/admin/intros" },
   { label: "Enquiries", icon: Inbox, path: "/admin/enquiries" },
