@@ -113,7 +113,7 @@ const softwareApplicationSchema = {
   "@id": PLATFORM_ID,
   name: "AJBN Connect",
   applicationCategory: "BusinessApplication",
-  operatingSystem: "Web, iOS, Android",
+  operatingSystem: "Web, iOS",
   url: "https://connect.ajbn.co.uk",
   isPartOf: { "@id": "https://connect.ajbn.co.uk/#website" },
   about: { "@id": ORG_ID },

@@ -52,7 +52,7 @@ export default function InstallPage() {
         <section className="mb-10">
           <h2 className="font-display text-xl font-semibold text-primary mb-4 flex items-center gap-2">
             <Smartphone className="w-5 h-5 text-teal" aria-hidden="true" />
-            Android (Chrome)
+            Chrome (phone or tablet)
           </h2>
           <ol className="space-y-4">
             <li className={STEP}>
