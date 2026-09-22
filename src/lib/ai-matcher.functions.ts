@@ -116,35 +116,72 @@ export const matchBusinessNeed = createServerFn({ method: "POST" })
         .order("company_name", { ascending: true }),
     ]);
 
-    const memberCandidates = ((directory ?? []) as DirectoryRow[])
+    const taggedMembers = ((directory ?? []) as DirectoryRow[])
       .filter((r) => r.id !== context.userId)
       .filter(
         (r) =>
           r.primary_sector === service || (r.services_list ?? []).includes(service),
-      )
-      .map((r) => ({
+      );
+
+    const companies = (companyRows ?? []) as CompanyRow[];
+
+    // A tagged member's own listing may not itself be tagged — load it so the
+    // person and their business still collapse into a single card.
+    const extraIds = taggedMembers
+      .map((m) => m.company_id)
+      .filter((id): id is string => !!id && !companies.some((c) => c.id === id));
+    if (extraIds.length > 0) {
+      const { data: extra } = await context.supabase
+        .from("corporate_members")
+        .select(
+          "id,company_name,industry,city,job_title,short_bio,primary_sector,services_list",
+        )
+        .in("id", Array.from(new Set(extraIds)));
+      companies.push(...((extra ?? []) as CompanyRow[]));
+    }
+
+    const companyById = new Map(companies.map((c) => [c.id, c]));
+    const companyByName = new Map(
+      companies.map((c) => [normalizeCompanyName(c.company_name), c]),
+    );
+
+    const claimedCompanyIds = new Set<string>();
+
+    const memberCandidates = taggedMembers.map((r) => {
+      const listing =
+        (r.company_id ? companyById.get(r.company_id) : undefined) ??
+        companyByName.get(normalizeCompanyName(r.company));
+      if (listing) claimedCompanyIds.add(listing.id);
+      return {
         key: `member-${r.id}`,
         kind: "member" as const,
         member_id: r.id,
-        company_id: null,
+        company_id: listing?.id ?? null,
         name: [r.first_name, r.last_name].filter(Boolean).join(" ") || "AJBN member",
-        business: r.company ?? "",
-        role: r.title ?? "",
+        business: listing?.company_name ?? r.company ?? "",
+        role: r.title ?? listing?.job_title ?? "",
         services: r.services_list ?? [],
-        about: (r.bio ?? "").slice(0, 300),
-      }));
+        about: (listing?.short_bio || r.bio || "").slice(0, 300),
+      };
+    });
 
-    const companyCandidates = ((companyRows ?? []) as CompanyRow[]).map((c) => ({
-      key: `company-${c.id}`,
-      kind: "company" as const,
-      member_id: null,
-      company_id: c.id,
-      name: c.company_name,
-      business: c.company_name,
-      role: c.job_title ?? "",
-      services: c.services_list ?? [],
-      about: [c.short_bio ?? "", c.city ?? ""].filter(Boolean).join(" — ").slice(0, 300),
-    }));
+    const companyCandidates = companies
+      .filter((c) => !claimedCompanyIds.has(c.id))
+      .filter(
+        (c) =>
+          c.primary_sector === service || (c.services_list ?? []).includes(service),
+      )
+      .map((c) => ({
+        key: `company-${c.id}`,
+        kind: "company" as const,
+        member_id: null,
+        company_id: c.id,
+        name: c.company_name,
+        business: c.company_name,
+        role: c.job_title ?? "",
+        services: c.services_list ?? [],
+        about: [c.short_bio ?? "", c.city ?? ""].filter(Boolean).join(" — ").slice(0, 300),
+      }));
 
     const candidates = [...memberCandidates, ...companyCandidates];
 
@@ -162,15 +199,19 @@ export const matchBusinessNeed = createServerFn({ method: "POST" })
     const shortlist = candidates.slice(0, MAX_CANDIDATES_IN_PROMPT);
     const byKey = new Map(shortlist.map((c) => [c.key, c]));
 
+    const describe = (c: (typeof shortlist)[number]) =>
+      c.about || `Tagged in the AJBN directory under ${service}.`;
+
     const fallback = (): MatchCandidate[] =>
       shortlist.slice(0, MAX_MATCHES).map((c) => ({
         key: c.key,
         kind: c.kind,
         name: c.name,
         business: c.business,
+        role: c.role,
         member_id: c.member_id,
         company_id: c.company_id,
-        reason: `Tagged in the AJBN directory under ${service}.`,
+        reason: describe(c),
       }));
 
     const logRequest = () =>
