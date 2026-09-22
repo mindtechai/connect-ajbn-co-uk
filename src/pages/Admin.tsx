@@ -20,6 +20,7 @@ import { EventCheckIn } from "@/components/admin/EventCheckIn";
 import { IntroRequestsAdmin } from "@/components/admin/IntroRequestsAdmin";
 import { EnquiriesAdmin } from "@/components/admin/EnquiriesAdmin";
 import { MemberReportsAdmin } from "@/components/admin/MemberReportsAdmin";
+import { CompaniesAdmin } from "@/components/admin/CompaniesAdmin";
 import { useAuth } from "@/hooks/useAuth";
 import { NotificationsBell } from "@/components/NotificationsBell";
 import { useAdminScope } from "@/components/RequireSuperAdmin";
@@ -90,6 +91,7 @@ export default function AdminPage() {
     if (location.pathname === "/admin/members") return <MemberManagement />;
     if (location.pathname === "/admin/approvals") return <MemberApprovals pendingCount={pendingCount} />;
     if (location.pathname === "/admin/blocks") return <BlocksAdmin />;
+    if (location.pathname === "/admin/companies") return <CompaniesAdmin />;
     if (location.pathname === "/admin/communications") return <BulkActionsPanel />;
     if (location.pathname === "/admin/bulk-actions") return <BulkActionsPanel />;
     if (location.pathname === "/admin/events") return <EventsManagement />;

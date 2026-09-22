@@ -1030,6 +1030,7 @@ export type Database = {
           calendly_url: string | null
           city: string | null
           company: string | null
+          company_id: string | null
           company_name_status: string
           created_at: string
           deleted_at: string | null
@@ -1068,6 +1069,7 @@ export type Database = {
           calendly_url?: string | null
           city?: string | null
           company?: string | null
+          company_id?: string | null
           company_name_status?: string
           created_at?: string
           deleted_at?: string | null
@@ -1106,6 +1108,7 @@ export type Database = {
           calendly_url?: string | null
           city?: string | null
           company?: string | null
+          company_id?: string | null
           company_name_status?: string
           created_at?: string
           deleted_at?: string | null
@@ -1137,7 +1140,15 @@ export type Database = {
           website?: string | null
           website_status?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "profiles_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: false
+            referencedRelation: "corporate_members"
+            referencedColumns: ["id"]
+          },
+        ]
       }
       reward_deposits: {
         Row: {
@@ -1340,6 +1351,7 @@ export type Database = {
           bio: string
           calendly_url: string
           company: string
+          company_id: string
           enquiry_count: number
           first_name: string
           id: string

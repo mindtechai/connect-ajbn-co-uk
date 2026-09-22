@@ -179,11 +179,13 @@ export default function AiMatcherPage() {
                         <p className="font-semibold">{m.name}</p>
                         {m.kind === "company" ? (
                           <p className="flex items-center gap-1 text-sm text-muted-foreground">
-                            <Building2 size={13} /> Company listing
+                            <Building2 size={13} /> No representative yet
                           </p>
-                        ) : m.business ? (
-                          <p className="text-sm text-muted-foreground">{m.business}</p>
-                        ) : null}
+                        ) : (
+                          <p className="text-sm text-muted-foreground">
+                            {[m.business, m.role].filter(Boolean).join(" • ")}
+                          </p>
+                        )}
                       </div>
                       <Button
                         variant="ghost"
@@ -196,22 +198,25 @@ export default function AiMatcherPage() {
                       </Button>
                     </div>
                     <p className="mt-2 text-sm">{m.reason}</p>
-                    {m.kind === "member" && m.member_id ? (
-                      <Button
-                        variant="outline"
-                        size="sm"
-                        className="mt-3 gap-1.5"
-                        onClick={() => onMessage(m.member_id as string)}
-                      >
-                        <MessageCircle size={14} /> Message
-                      </Button>
-                    ) : m.company_id ? (
-                      <Link to={`/company/${m.company_id}`}>
-                        <Button variant="outline" size="sm" className="mt-3 gap-1.5">
-                          <Building2 size={14} /> View listing
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      {m.kind === "member" && m.member_id ? (
+                        <Button
+                          variant="outline"
+                          size="sm"
+                          className="gap-1.5"
+                          onClick={() => onMessage(m.member_id as string)}
+                        >
+                          <MessageCircle size={14} /> Message
                         </Button>
-                      </Link>
-                    ) : null}
+                      ) : null}
+                      {m.company_id ? (
+                        <Link to={`/company/${m.company_id}`}>
+                          <Button variant="outline" size="sm" className="gap-1.5">
+                            <Building2 size={14} /> View listing
+                          </Button>
+                        </Link>
+                      ) : null}
+                    </div>
                   </div>
                 ))}
               </section>

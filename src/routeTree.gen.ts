@@ -41,6 +41,7 @@ import { Route as AdminBlocksRouteImport } from './routes/admin/blocks'
 import { Route as AdminBulkActionsRouteImport } from './routes/admin/bulk-actions'
 import { Route as AdminCheckinRouteImport } from './routes/admin/checkin'
 import { Route as AdminCommunicationsRouteImport } from './routes/admin/communications'
+import { Route as AdminCompaniesRouteImport } from './routes/admin/companies'
 import { Route as AdminEnquiriesRouteImport } from './routes/admin/enquiries'
 import { Route as AdminEsgRouteImport } from './routes/admin/esg'
 import { Route as AdminEventsRouteImport } from './routes/admin/events'
@@ -226,6 +227,11 @@ const AdminCommunicationsRoute = AdminCommunicationsRouteImport.update({
   path: '/admin/communications',
   getParentRoute: () => rootRouteImport,
 } as any)
+const AdminCompaniesRoute = AdminCompaniesRouteImport.update({
+  id: '/admin/companies',
+  path: '/admin/companies',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const AdminEnquiriesRoute = AdminEnquiriesRouteImport.update({
   id: '/admin/enquiries',
   path: '/admin/enquiries',
@@ -381,6 +387,7 @@ export interface FileRoutesByFullPath {
   '/admin/bulk-actions': typeof AdminBulkActionsRoute
   '/admin/checkin': typeof AdminCheckinRoute
   '/admin/communications': typeof AdminCommunicationsRoute
+  '/admin/companies': typeof AdminCompaniesRoute
   '/admin/enquiries': typeof AdminEnquiriesRoute
   '/admin/esg': typeof AdminEsgRoute
   '/admin/events': typeof AdminEventsRoute
@@ -439,6 +446,7 @@ export interface FileRoutesByTo {
   '/admin/bulk-actions': typeof AdminBulkActionsRoute
   '/admin/checkin': typeof AdminCheckinRoute
   '/admin/communications': typeof AdminCommunicationsRoute
+  '/admin/companies': typeof AdminCompaniesRoute
   '/admin/enquiries': typeof AdminEnquiriesRoute
   '/admin/esg': typeof AdminEsgRoute
   '/admin/events': typeof AdminEventsRoute
@@ -498,6 +506,7 @@ export interface FileRoutesById {
   '/admin/bulk-actions': typeof AdminBulkActionsRoute
   '/admin/checkin': typeof AdminCheckinRoute
   '/admin/communications': typeof AdminCommunicationsRoute
+  '/admin/companies': typeof AdminCompaniesRoute
   '/admin/enquiries': typeof AdminEnquiriesRoute
   '/admin/esg': typeof AdminEsgRoute
   '/admin/events': typeof AdminEventsRoute
@@ -558,6 +567,7 @@ export interface FileRouteTypes {
     | '/admin/bulk-actions'
     | '/admin/checkin'
     | '/admin/communications'
+    | '/admin/companies'
     | '/admin/enquiries'
     | '/admin/esg'
     | '/admin/events'
@@ -616,6 +626,7 @@ export interface FileRouteTypes {
     | '/admin/bulk-actions'
     | '/admin/checkin'
     | '/admin/communications'
+    | '/admin/companies'
     | '/admin/enquiries'
     | '/admin/esg'
     | '/admin/events'
@@ -674,6 +685,7 @@ export interface FileRouteTypes {
     | '/admin/bulk-actions'
     | '/admin/checkin'
     | '/admin/communications'
+    | '/admin/companies'
     | '/admin/enquiries'
     | '/admin/esg'
     | '/admin/events'
@@ -733,6 +745,7 @@ export interface RootRouteChildren {
   AdminBulkActionsRoute: typeof AdminBulkActionsRoute
   AdminCheckinRoute: typeof AdminCheckinRoute
   AdminCommunicationsRoute: typeof AdminCommunicationsRoute
+  AdminCompaniesRoute: typeof AdminCompaniesRoute
   AdminEnquiriesRoute: typeof AdminEnquiriesRoute
   AdminEsgRoute: typeof AdminEsgRoute
   AdminEventsRoute: typeof AdminEventsRoute
@@ -985,6 +998,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AdminCommunicationsRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/admin/companies': {
+      id: '/admin/companies'
+      path: '/admin/companies'
+      fullPath: '/admin/companies'
+      preLoaderRoute: typeof AdminCompaniesRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/admin/enquiries': {
       id: '/admin/enquiries'
       path: '/admin/enquiries'
@@ -1200,6 +1220,7 @@ const rootRouteChildren: RootRouteChildren = {
   AdminBulkActionsRoute: AdminBulkActionsRoute,
   AdminCheckinRoute: AdminCheckinRoute,
   AdminCommunicationsRoute: AdminCommunicationsRoute,
+  AdminCompaniesRoute: AdminCompaniesRoute,
   AdminEnquiriesRoute: AdminEnquiriesRoute,
   AdminEsgRoute: AdminEsgRoute,
   AdminEventsRoute: AdminEventsRoute,
