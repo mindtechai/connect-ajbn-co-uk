@@ -1,25 +1,33 @@
 import { Button } from "@/components/ui/button";
-import { lovable } from "@/integrations/lovable";
+import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 
 /**
  * Official-style black "Continue with Apple" button.
- * Requests name + email only and accepts Apple private relay addresses.
+ * Signs in directly through Supabase Auth using our own Apple Service ID
+ * (uk.co.ajbn.connect.signin). Requests name + email only and accepts
+ * Apple "Hide My Email" private relay addresses.
  */
 export function AppleSignInButton({ next }: { next?: string }) {
   const [loading, setLoading] = useState(false);
 
   const onClick = async () => {
     setLoading(true);
-    const redirect = `${window.location.origin}${next ? `?next=${encodeURIComponent(next)}` : ""}`;
-    const res = await lovable.auth.signInWithOAuth("apple", { redirect_uri: redirect });
-    if ((res as any)?.error) {
+    const redirectTo = `${window.location.origin}${next ? `?next=${encodeURIComponent(next)}` : ""}`;
+    const { error } = await supabase.auth.signInWithOAuth({
+      provider: "apple",
+      options: {
+        redirectTo,
+        scopes: "name email",
+      },
+    });
+    if (error) {
       setLoading(false);
       toast({
         title: "Apple sign-in failed",
-        description: String((res as any).error?.message ?? (res as any).error),
+        description: error.message,
         variant: "destructive",
       });
     }
@@ -28,7 +36,7 @@ export function AppleSignInButton({ next }: { next?: string }) {
   return (
     <Button
       type="button"
-      className="w-full gap-2 bg-black text-white hover:bg-black/90"
+      className="w-full h-11 gap-2 rounded-md bg-black text-white text-[15px] hover:bg-black/90"
       onClick={onClick}
       disabled={loading}
     >
