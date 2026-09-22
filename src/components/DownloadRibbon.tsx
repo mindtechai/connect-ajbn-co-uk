@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import { useNavigate, useLocation } from "@/lib/router-compat";
 import { useAuth } from "@/hooks/useAuth";
-import { Play, Apple, X, Smartphone } from "lucide-react";
+import { X, Smartphone } from "lucide-react";
 
 const STORAGE_KEY = "downloadRibbonDismissed";
 const DISMISS_TTL_MS = 24 * 60 * 60 * 1000;
