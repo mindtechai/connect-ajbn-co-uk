@@ -17,14 +17,22 @@ export type RepAvailability = {
  * Tells the sign-up form whether a business already has its three
  * representatives. Returns counts only — never contact details.
  */
+/** Same rule as the database helper: lowercase, strip punctuation and Ltd/Limited. */
+export function normalizeCompanyName(name: string): string {
+  return name
+    .toLowerCase()
+    .replace(/[^a-z0-9 ]/g, " ")
+    .replace(/\s+/g, " ")
+    .replace(/(\s(ltd|limited|inc|llc|plc))+$/g, "")
+    .trim();
+}
+
 export const checkCompanyRepAvailability = createServerFn({ method: "POST" })
   .inputValidator((data) => Schema.parse(data))
   .handler(async ({ data }): Promise<RepAvailability> => {
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    const { data: normalized } = await supabaseAdmin.rpc("normalize_company_name", {
-      _name: data.company,
-    });
+    const normalized = normalizeCompanyName(data.company);
     if (!normalized) return { companyName: null, repCount: 0, full: false, firstRep: null };
 
     const { data: companies } = await supabaseAdmin
@@ -32,8 +40,7 @@ export const checkCompanyRepAvailability = createServerFn({ method: "POST" })
       .select("id, company_name");
 
     const match = (companies ?? []).find(
-      (c) => c.company_name.toLowerCase().includes(String(normalized).toLowerCase()) ||
-        String(normalized).includes(c.company_name.toLowerCase()),
+      (c) => normalizeCompanyName(c.company_name) === normalized,
     );
     if (!match) return { companyName: null, repCount: 0, full: false, firstRep: null };
 
