@@ -25,6 +25,8 @@ export type MatchCandidate = {
 export type MatchResult = {
   matches: MatchCandidate[];
   referrals: { opportunity: string }[];
+  /** True when the AI ranker timed out and direct tag matches are shown instead. */
+  degraded?: boolean;
 };
 
 type DirectoryRow = {
@@ -147,57 +149,89 @@ export const matchBusinessNeed = createServerFn({ method: "POST" })
     const shortlist = candidates.slice(0, MAX_CANDIDATES_IN_PROMPT);
     const byKey = new Map(shortlist.map((c) => [c.key, c]));
 
+    const fallback = (): MatchCandidate[] =>
+      shortlist.slice(0, MAX_MATCHES).map((c) => ({
+        key: c.key,
+        kind: c.kind,
+        name: c.name,
+        business: c.business,
+        member_id: c.member_id,
+        company_id: c.company_id,
+        reason: `Tagged in the AJBN directory under ${service}.`,
+      }));
+
+    const logRequest = () =>
+      context.supabase.from("ai_matcher_requests").insert({
+        user_id: context.userId,
+        business_need: [service, data.context?.trim()].filter(Boolean).join(" — ").slice(0, 1000),
+      });
+
     const apiKey = process.env["LOVABLE_API_KEY"];
-    if (!apiKey) return { ok: false as const, error: "ai_unavailable" as const };
+    if (!apiKey) {
+      await logRequest();
+      return {
+        ok: true as const,
+        result: { matches: fallback(), referrals: [], degraded: true } as MatchResult,
+        remaining: RATE_LIMIT - (count ?? 0) - 1,
+      };
+    }
 
-    const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
-      method: "POST",
-      headers: {
-        Authorization: `Bearer ${apiKey}`,
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({
-        model: "google/gemini-2.5-flash",
-        messages: [
-          {
-            role: "system",
-            content:
-              `You are the AJBN matcher for the Asian Jewish Business Network. Every candidate below is already tagged with the requested service, so do not question their relevance. Rank the ${MAX_MATCHES} most suitable candidates and give one referral opportunity. Each reason must quote or paraphrase only facts present in that candidate's own entry (business name, role, services, about text). Never speculate: do not write "sounds like", "potentially", "may be able to", "likely" or invent clients, locations or specialisms. If an entry has little detail, say plainly which service they are tagged with. Use only candidates from the provided list and copy their "key" exactly. Return JSON only, shaped as {"matches":[{"key":"","reason":""}],"referrals":[{"opportunity":""}]}.`,
-          },
-          {
-            role: "user",
-            content: `Requested service: ${service}\n${
-              data.context?.trim() ? `Extra context from the member: ${data.context.trim()}\n` : ""
-            }\nCandidates (JSON): ${JSON.stringify(
-              shortlist.map(({ key, kind, name, business, role, services, about }) => ({
-                key,
-                kind,
-                name,
-                business,
-                role,
-                services,
-                about,
-              })),
-            )}`,
-          },
-        ],
-      }),
-    });
-
-    if (response.status === 429) return { ok: false as const, error: "rate_limited" as const };
-    if (!response.ok) return { ok: false as const, error: "ai_unavailable" as const };
-
-    const payload = (await response.json()) as {
-      choices?: { message?: { content?: string } }[];
-    };
-    const raw = payload.choices?.[0]?.message?.content ?? "";
-    const json = raw.replace(/^```(?:json)?/i, "").replace(/```$/, "").trim();
-
-    let parsed: { matches?: { key?: string; reason?: string }[]; referrals?: { opportunity?: string }[] };
+    let parsed: { matches?: { key?: string; reason?: string }[] } | null = null;
     try {
-      parsed = JSON.parse(json);
+      const response = await fetch("https://ai.gateway.lovable.dev/v1/chat/completions", {
+        method: "POST",
+        signal: AbortSignal.timeout(8000),
+        headers: {
+          Authorization: `Bearer ${apiKey}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          model: "google/gemini-2.5-flash",
+          messages: [
+            {
+              role: "system",
+              content:
+                `You are the AJBN matcher for the Asian Jewish Business Network. Every candidate below is already tagged with the requested service, so do not question their relevance. Rank the ${MAX_MATCHES} most suitable candidates. Each reason must quote or paraphrase only facts present in that candidate's own entry (business name, role, services, about text). Never speculate: do not write "sounds like", "potentially", "may be able to", "likely" or invent clients, locations or specialisms. If an entry has little detail, say plainly which service they are tagged with. Use only candidates from the provided list and copy their "key" exactly. Return JSON only, shaped as {"matches":[{"key":"","reason":""}]}.`,
+            },
+            {
+              role: "user",
+              content: `Requested service: ${service}\n${
+                data.context?.trim() ? `Extra context from the member: ${data.context.trim()}\n` : ""
+              }\nCandidates (JSON): ${JSON.stringify(
+                shortlist.map(({ key, kind, name, business, role, services, about }) => ({
+                  key,
+                  kind,
+                  name,
+                  business,
+                  role,
+                  services,
+                  about,
+                })),
+              )}`,
+            },
+          ],
+        }),
+      });
+
+      if (response.ok) {
+        const payload = (await response.json()) as {
+          choices?: { message?: { content?: string } }[];
+        };
+        const raw = payload.choices?.[0]?.message?.content ?? "";
+        const json = raw.replace(/^```(?:json)?/i, "").replace(/```$/, "").trim();
+        parsed = JSON.parse(json);
+      }
     } catch {
-      return { ok: false as const, error: "ai_unavailable" as const };
+      parsed = null; // timeout, network failure or bad JSON — fall back to direct matches
+    }
+
+    if (!parsed) {
+      await logRequest();
+      return {
+        ok: true as const,
+        result: { matches: fallback(), referrals: [], degraded: true } as MatchResult,
+        remaining: RATE_LIMIT - (count ?? 0) - 1,
+      };
     }
 
     const seen = new Set<string>();
@@ -236,9 +270,7 @@ export const matchBusinessNeed = createServerFn({ method: "POST" })
 
     const result: MatchResult = {
       matches: ranked.slice(0, MAX_MATCHES),
-      referrals: (parsed.referrals ?? [])
-        .slice(0, 1)
-        .map((r) => ({ opportunity: String(r.opportunity ?? "") })),
+      referrals: [],
     };
 
     await context.supabase
