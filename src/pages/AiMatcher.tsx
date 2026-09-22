@@ -25,6 +25,7 @@ export default function AiMatcherPage() {
   const [service, setService] = useState<string>("");
   const [need, setNeed] = useState("");
   const [busy, setBusy] = useState(false);
+  const [stage, setStage] = useState("Finding…");
   const [result, setResult] = useState<MatchResult | null>(null);
   const [searched, setSearched] = useState<string>("");
   const [reported, setReported] = useState<Record<string, boolean>>({});
