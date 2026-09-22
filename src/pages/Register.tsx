@@ -1,4 +1,6 @@
 import { useState } from "react";
+import { useServerFn } from "@tanstack/react-start";
+import { checkCompanyRepAvailability } from "@/lib/company-reps.functions";
 import { Link, useNavigate } from "@/lib/router-compat";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -14,6 +16,7 @@ import { ReferrerCombobox } from "@/components/ReferrerCombobox";
 import { notifyNewSignup } from "@/lib/signup-notify.functions";
 
 export default function RegisterPage() {
+  const checkRepAvailability = useServerFn(checkCompanyRepAvailability);
   const [showPassword, setShowPassword] = useState(false);
   const [firstName, setFirstName] = useState("");
   const [lastName, setLastName] = useState("");
@@ -28,6 +31,22 @@ export default function RegisterPage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
+    if (company.trim().length >= 2) {
+      try {
+        const availability = await checkRepAvailability({ data: { company: company.trim() } });
+        if (availability.full) {
+          setLoading(false);
+          toast({
+            title: `${availability.companyName} has 3 reps max`,
+            description: `${availability.firstRep ?? "Its representatives"} and 2 others already represent this business. Contact admin@ajbn.co.uk.`,
+            variant: "destructive",
+          });
+          return;
+        }
+      } catch {
+        // Availability check is advisory only — never blocks registration.
+      }
+    }
     localStorage.removeItem("ajbn_demo_mock_user");
     const { data, error } = await supabase.auth.signUp({
       email: email.trim(),
