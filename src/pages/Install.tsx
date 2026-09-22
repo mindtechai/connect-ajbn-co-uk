@@ -100,8 +100,8 @@ export default function InstallPage() {
         <div className="rounded-xl bg-muted p-5">
           <h3 className="font-semibold text-foreground mb-2">Mobile app</h3>
           <p className="text-foreground/80 text-sm leading-relaxed">
-            Native iOS and Android store listings are coming soon, pending Apple App Store verification
-            (ID 788C85L79P). Until then, installing from your browser gives you the same full app experience.
+            Installing AJBN Connect from your browser gives you the same full app experience, with its own
+            icon on your home screen.
           </p>
         </div>
       </article>

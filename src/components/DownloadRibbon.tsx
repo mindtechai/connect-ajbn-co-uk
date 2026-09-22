@@ -134,20 +134,8 @@ export function DownloadRibbon() {
               color: "#ffffff",
             }}
           >
-            <Play size={16} fill="currentColor" aria-hidden="true" />
-            Get it on Google Play
-          </button>
-          <button
-            type="button"
-            onClick={handleInstall}
-            className="inline-flex items-center gap-1.5 h-9 px-3 rounded-md text-xs font-semibold whitespace-nowrap transition-transform active:scale-95 focus:outline-hidden focus-visible:ring-2 focus-visible:ring-white/70"
-            style={{
-              backgroundColor: AJBN_BLUE,
-              color: "#ffffff",
-            }}
-          >
-            <Apple size={16} aria-hidden="true" />
-            Download on App Store
+            <Smartphone size={16} aria-hidden="true" />
+            Install AJBN Connect
           </button>
         </div>
       </div>
