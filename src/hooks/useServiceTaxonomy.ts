@@ -17,7 +17,7 @@ export function useServiceTaxonomy() {
         .from("service_taxonomy")
         .select("name,sort_order")
         .eq("is_active", true)
-        .order("sort_order", { ascending: true });
+        .order("name", { ascending: true });
       if (!active) return;
       setServices((data ?? []).map((row) => row.name as string));
       setLoading(false);
