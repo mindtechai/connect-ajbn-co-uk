@@ -25,6 +25,7 @@ export default function AiMatcherPage() {
   const [service, setService] = useState<string>("");
   const [need, setNeed] = useState("");
   const [busy, setBusy] = useState(false);
+  const [stage, setStage] = useState("Finding…");
   const [result, setResult] = useState<MatchResult | null>(null);
   const [searched, setSearched] = useState<string>("");
   const [reported, setReported] = useState<Record<string, boolean>>({});
@@ -35,7 +36,9 @@ export default function AiMatcherPage() {
   async function onSubmit() {
     if (!service || busy) return;
     setBusy(true);
+    setStage("Finding…");
     setResult(null);
+    const nudge = setTimeout(() => setStage("Almost there…"), 2500);
     try {
       const res = await matchBusinessNeed({
         data: { service, context: need.trim() || undefined },
@@ -58,6 +61,7 @@ export default function AiMatcherPage() {
     } catch {
       toast.error("Something went wrong. Please try again.");
     } finally {
+      clearTimeout(nudge);
       setBusy(false);
     }
   }
@@ -133,17 +137,28 @@ export default function AiMatcherPage() {
             rows={4}
             value={need}
             onChange={(e) => setNeed(e.target.value)}
+            onFocus={(e) =>
+              e.currentTarget.scrollIntoView({ behavior: "smooth", block: "center" })
+            }
             placeholder="Commercial property purchase in North London, completing in eight weeks..."
           />
+          <p className="text-xs text-muted-foreground">{DISCLAIMER}</p>
+        </div>
+
+        <div className="sticky bottom-0 z-50 -mx-4 mt-3 border-t bg-background/95 px-4 pt-3 pb-[calc(env(safe-area-inset-bottom)+80px)] backdrop-blur md:static md:mx-0 md:border-0 md:bg-transparent md:px-0 md:pb-0 md:backdrop-blur-none">
           <Button onClick={onSubmit} disabled={!service || busy} className="w-full sm:w-auto">
             {busy ? <Loader2 size={16} className="mr-2 animate-spin" /> : null}
-            Find Matches
+            {busy ? stage : "Find Matches"}
           </Button>
-          <p className="text-xs text-muted-foreground">{DISCLAIMER}</p>
         </div>
 
         {result ? (
           <div className="mt-6 space-y-5">
+            {result.degraded && result.matches.length > 0 ? (
+              <p className="rounded-lg border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+                Showing direct matches
+              </p>
+            ) : null}
             {result.matches.length > 0 ? (
               <section className="space-y-3">
                 <div className="flex items-center justify-between gap-3">
@@ -207,32 +222,18 @@ export default function AiMatcherPage() {
             )}
 
 
-            {result.referrals.length > 0 ? (
-              <section className="space-y-3">
-                <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                  Referral opportunity
-                </h2>
-                {result.referrals.map((r, i) => {
-                  const key = `referral-${i}`;
-                  return (
-                    <div key={key} className="rounded-xl border bg-card p-4 shadow-xs">
-                      <div className="flex items-start justify-between gap-3">
-                        <p className="text-sm">{r.opportunity}</p>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          aria-label="Report this suggestion"
-                          disabled={reported[key]}
-                          onClick={() => onReport(key, r)}
-                        >
-                          <Flag size={15} />
-                        </Button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </section>
-            ) : null}
+            <section className="rounded-xl border bg-muted/40 p-5">
+              <h2 className="mb-2 font-display text-base font-bold">Referral Opportunity</h2>
+              <p className="text-sm leading-relaxed text-foreground/90">
+                Every great connection starts with trust. If you've worked with someone
+                exceptional — who delivers, follows through, and represents our values — invite
+                them in.
+              </p>
+              <p className="mt-3 text-sm leading-relaxed text-foreground/90">
+                Help us build London's most trusted business network, where quality introductions
+                create real growth for everyone.
+              </p>
+            </section>
 
             <p className="text-xs text-muted-foreground">
               AI suggestions are not recommendations — please conduct your own due diligence.
