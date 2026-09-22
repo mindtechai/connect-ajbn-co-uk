@@ -133,13 +133,19 @@ export default function AiMatcherPage() {
             rows={4}
             value={need}
             onChange={(e) => setNeed(e.target.value)}
+            onFocus={(e) =>
+              e.currentTarget.scrollIntoView({ behavior: "smooth", block: "center" })
+            }
             placeholder="Commercial property purchase in North London, completing in eight weeks..."
           />
+          <p className="text-xs text-muted-foreground">{DISCLAIMER}</p>
+        </div>
+
+        <div className="sticky bottom-0 z-50 -mx-4 mt-3 border-t bg-background/95 px-4 pt-3 pb-[calc(env(safe-area-inset-bottom)+80px)] backdrop-blur md:static md:mx-0 md:border-0 md:bg-transparent md:px-0 md:pb-0 md:backdrop-blur-none">
           <Button onClick={onSubmit} disabled={!service || busy} className="w-full sm:w-auto">
             {busy ? <Loader2 size={16} className="mr-2 animate-spin" /> : null}
-            Find Matches
+            {busy ? stage : "Find Matches"}
           </Button>
-          <p className="text-xs text-muted-foreground">{DISCLAIMER}</p>
         </div>
 
         {result ? (
@@ -207,32 +213,18 @@ export default function AiMatcherPage() {
             )}
 
 
-            {result.referrals.length > 0 ? (
-              <section className="space-y-3">
-                <h2 className="text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-                  Referral opportunity
-                </h2>
-                {result.referrals.map((r, i) => {
-                  const key = `referral-${i}`;
-                  return (
-                    <div key={key} className="rounded-xl border bg-card p-4 shadow-xs">
-                      <div className="flex items-start justify-between gap-3">
-                        <p className="text-sm">{r.opportunity}</p>
-                        <Button
-                          variant="ghost"
-                          size="icon"
-                          aria-label="Report this suggestion"
-                          disabled={reported[key]}
-                          onClick={() => onReport(key, r)}
-                        >
-                          <Flag size={15} />
-                        </Button>
-                      </div>
-                    </div>
-                  );
-                })}
-              </section>
-            ) : null}
+            <section className="rounded-xl border bg-muted/40 p-5">
+              <h2 className="mb-2 font-display text-base font-bold">Referral Opportunity</h2>
+              <p className="text-sm leading-relaxed text-foreground/90">
+                Every great connection starts with trust. If you've worked with someone
+                exceptional — who delivers, follows through, and represents our values — invite
+                them in.
+              </p>
+              <p className="mt-3 text-sm leading-relaxed text-foreground/90">
+                Help us build London's most trusted business network, where quality introductions
+                create real growth for everyone.
+              </p>
+            </section>
 
             <p className="text-xs text-muted-foreground">
               AI suggestions are not recommendations — please conduct your own due diligence.
