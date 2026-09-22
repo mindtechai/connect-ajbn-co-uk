@@ -299,9 +299,10 @@ export const matchBusinessNeed = createServerFn({ method: "POST" })
         kind: candidate.kind,
         name: candidate.name,
         business: candidate.business,
+        role: candidate.role,
         member_id: candidate.member_id,
         company_id: candidate.company_id,
-        reason: String(item.reason ?? "").trim(),
+        reason: String(item.reason ?? "").trim() || describe(candidate),
       });
       if (ranked.length >= MAX_MATCHES) break;
     }
@@ -316,9 +317,10 @@ export const matchBusinessNeed = createServerFn({ method: "POST" })
         kind: candidate.kind,
         name: candidate.name,
         business: candidate.business,
+        role: candidate.role,
         member_id: candidate.member_id,
         company_id: candidate.company_id,
-        reason: `Tagged in the AJBN directory under ${service}.`,
+        reason: describe(candidate),
       });
     }
 
