@@ -36,7 +36,9 @@ export default function AiMatcherPage() {
   async function onSubmit() {
     if (!service || busy) return;
     setBusy(true);
+    setStage("Finding…");
     setResult(null);
+    const nudge = setTimeout(() => setStage("Almost there…"), 2500);
     try {
       const res = await matchBusinessNeed({
         data: { service, context: need.trim() || undefined },
@@ -59,6 +61,7 @@ export default function AiMatcherPage() {
     } catch {
       toast.error("Something went wrong. Please try again.");
     } finally {
+      clearTimeout(nudge);
       setBusy(false);
     }
   }
