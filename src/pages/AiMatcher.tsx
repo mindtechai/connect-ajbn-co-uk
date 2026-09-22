@@ -154,6 +154,11 @@ export default function AiMatcherPage() {
 
         {result ? (
           <div className="mt-6 space-y-5">
+            {result.degraded && result.matches.length > 0 ? (
+              <p className="rounded-lg border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
+                Showing direct matches
+              </p>
+            ) : null}
             {result.matches.length > 0 ? (
               <section className="space-y-3">
                 <div className="flex items-center justify-between gap-3">
