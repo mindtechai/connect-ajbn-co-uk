@@ -5,7 +5,7 @@
         <key>CFBundleName</key><string>AJBN Connect</string>
         <key>CFBundleDisplayName</key><string>AJBN Connect</string>
         <key>CFBundleIdentifier</key><string>uk.co.ajbn.connect</string>
-        <key>CFBundleVersion</key><string>21</string>
+        <key>CFBundleVersion</key><string>22</string>
         <key>CFBundleShortVersionString</key><string>1.0.3</string>
         <key>CFBundleExecutable</key><string>$(EXECUTABLE_NAME)</string>
         <key>CFBundlePackageType</key><string>APPL</string>
