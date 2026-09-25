@@ -338,7 +338,7 @@ export default function DirectoryPage() {
           )}
 
           <h2 className="text-sm font-semibold mb-3">Corporate members</h2>
-          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 pb-20 md:pb-0">
             {filteredCompanies.map((c) => {
               const owner = c.owner_user_id ? members.find((member) => member.id === c.owner_user_id) : undefined;
               const ownerName = owner ? `${owner.first_name ?? ""} ${owner.last_name ?? ""}`.trim() || c.company_name : c.company_name;
@@ -429,7 +429,7 @@ export default function DirectoryPage() {
           </div>
 
           {/* Keeps the live match count reachable above the mobile tab bar. */}
-          <div className="md:hidden sticky bottom-0 z-40 -mx-4 mt-4 border-t bg-background/95 px-4 pt-3 pb-[calc(env(safe-area-inset-bottom)+80px)] backdrop-blur">
+          <div className="md:hidden sticky bottom-[calc(env(safe-area-inset-bottom)+56px)] z-40 -mx-4 mt-4 border-t bg-background/95 px-4 py-3 backdrop-blur">
             <div className="rounded-md bg-muted/60 px-3 py-2 text-center text-sm font-medium">
               Showing {shownTotal} {shownTotal === 1 ? "match" : "matches"}
             </div>

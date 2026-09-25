@@ -145,7 +145,7 @@ export default function AiMatcherPage() {
           <p className="text-xs text-muted-foreground">{DISCLAIMER}</p>
         </div>
 
-        <div className="sticky bottom-0 z-50 -mx-4 mt-3 border-t bg-background/95 px-4 pt-3 pb-[calc(env(safe-area-inset-bottom)+80px)] backdrop-blur md:static md:mx-0 md:border-0 md:bg-transparent md:px-0 md:pb-0 md:backdrop-blur-none">
+        <div className="sticky bottom-[calc(env(safe-area-inset-bottom)+56px)] z-50 -mx-4 mt-3 border-t bg-background/95 px-4 py-3 backdrop-blur md:static md:mx-0 md:border-0 md:bg-transparent md:px-0 md:py-0 md:backdrop-blur-none">
           <Button onClick={onSubmit} disabled={!service || busy} className="w-full sm:w-auto">
             {busy ? <Loader2 size={16} className="mr-2 animate-spin" /> : null}
             {busy ? stage : "Find Matches"}
@@ -153,7 +153,7 @@ export default function AiMatcherPage() {
         </div>
 
         {result ? (
-          <div className="mt-6 space-y-5">
+          <div className="mt-6 space-y-5 pb-20 md:pb-0">
             {result.degraded && result.matches.length > 0 ? (
               <p className="rounded-lg border bg-muted/40 px-3 py-2 text-xs text-muted-foreground">
                 Showing direct matches
