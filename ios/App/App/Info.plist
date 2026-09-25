@@ -1,78 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTD/PLIST/1.0.dtd">
 <plist version="1.0">
 <dict>
-  <key>CAPACITOR_DEBUG</key>
-	<string>$(CAPACITOR_DEBUG)</string>
-	<key>CFBundleDevelopmentRegion</key>
-	<string>en</string>
-	<key>CFBundleDisplayName</key>
-	<string>AJBN Connect</string>
-	<key>CFBundleExecutable</key>
-	<string>$(EXECUTABLE_NAME)</string>
-	<key>CFBundleIdentifier</key>
-	<string>$(PRODUCT_BUNDLE_IDENTIFIER)</string>
-	<key>CFBundleInfoDictionaryVersion</key>
-	<string>6.0</string>
-	<key>CFBundleName</key>
-	<string>$(PRODUCT_NAME)</string>
-	<key>CFBundlePackageType</key>
-	<string>APPL</string>
-	<key>CFBundleShortVersionString</key>
-	<string>$(MARKETING_VERSION)</string>
-	<key>CFBundleVersion</key>
-	<string>$(CURRENT_PROJECT_VERSION)</string>
-	<key>LSRequiresIPhoneOS</key>
-	<true/>
-	<key>UIApplicationSceneManifest</key>
-	<dict>
-		<key>UIApplicationSupportsMultipleScenes</key>
-    <false/>
-    <key>UISceneConfigurations</key>
-    <dict>
-      <key>UIWindowSceneSessionRoleApplication</key>
-      <array>
-        <dict>
-            <key>UISceneConfigurationName</key>
-            <string>Default Configuration</string>
-            <key>UISceneDelegateClassName</key>
-            <string>$(PRODUCT_MODULE_NAME).SceneDelegate</string>
-            <key>UISceneStoryboardFile</key>
-            <string>Main</string>
-        </dict>
-      </array>
-    </dict>
-	</dict>
-	<key>UILaunchStoryboardName</key>
-	<string>LaunchScreen</string>
-	<key>UIMainStoryboardFile</key>
-	<string>Main</string>
-	<key>UIRequiredDeviceCapabilities</key>
-	<array>
-		<string>armv7</string>
-	</array>
-	<key>UISupportedInterfaceOrientations</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>UISupportedInterfaceOrientations~ipad</key>
-	<array>
-		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationPortraitUpsideDown</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
-	</array>
-	<key>NSCameraUsageDescription</key>
-	<string>AJBN Connect uses the camera so you can take a photo for your member profile or company logo.</string>
-	<key>NSPhotoLibraryUsageDescription</key>
-	<string>AJBN Connect needs access to your photos so you can choose a profile picture or company logo to upload.</string>
-	<key>NSPrivacyPolicyURL</key>
-	<string>https://connect.ajbn.co.uk/privacy</string>
-	<key>ITSAppUsesNonExemptEncryption</key>
-	<false/>
-	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<true/>
+        <key>CFBundleName</key><string>AJBN Connect</string>
+        <key>CFBundleDisplayName</key><string>AJBN Connect</string>
+        <key>CFBundleIdentifier</key><string>uk.co.ajbn.connect</string>
+        <key>CFBundleVersion</key><string>21</string>
+        <key>CFBundleShortVersionString</key><string>1.0.3</string>
+        <key>CFBundleExecutable</key><string>$(EXECUTABLE_NAME)</string>
+        <key>CFBundlePackageType</key><string>APPL</string>
+        <key>CFBundleInfoDictionaryVersion</key><string>6.0</string>
+        <key>LSRequiresIPhoneOS</key><true/>
+        <key>CFBundleIcons</key><dict><key>CFBundlePrimaryIcon</key><dict><key>CFBundleIconName</key><string>AppIcon</string></dict></dict>
+        <key>CFBundleIcons~ipad</key><dict><key>CFBundlePrimaryIcon</key><dict><key>CFBundleIconName</key><string>AppIcon</string></dict></dict>
+        <key>CFBundleIconName</key><string>AppIcon</string>
+        <key>NSCameraUsageDescription</key><string>For profile photos and event networking</string>
+        <key>NSPhotoLibraryUsageDescription</key><string>For profile photos</string>
+        <key>UILaunchStoryboardName</key><string>LaunchScreen</string>
+        <key>UIRequiresFullScreen</key><true/>
+        <key>ITSAppUsesNonExemptEncryption</key><false/>
 </dict>
 </plist>
