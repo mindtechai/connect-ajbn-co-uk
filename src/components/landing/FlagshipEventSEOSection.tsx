@@ -35,7 +35,7 @@ export function FlagshipEventSEOSection() {
             <p className="text-muted-foreground mb-5 flex items-start gap-2">
               <MapPin size={18} className="mt-0.5 text-gold shrink-0" aria-hidden="true" />
               <span>
-                <strong className="text-foreground">Venue:</strong> London Marriott Hotel Regent&apos;s Park,
+                <strong className="text-foreground">Venue:</strong> London Marriott Swiss Cottage,
                 128 King Henry&rsquo;s Rd, London NW3 3BY
               </span>
             </p>

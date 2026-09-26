@@ -44,7 +44,7 @@ const QUICK_TEMPLATES = [
 ];
 
 const recentActions = [
-  { id: "a1", type: "announcement", title: "Annual Flagship Dinner – save the date", segments: ["AJBN", "Lions"], recipients: 162, at: "2 days ago", priority: "important" },
+  { id: "a1", type: "announcement", title: "Annual Flagship Event – 19 Oct, London Marriott Swiss Cottage, 10AM-4PM Day Event – 50 stalls, 600 guests last year", segments: ["AJBN", "Lions"], recipients: 162, at: "2 days ago", priority: "important" },
   { id: "a2", type: "email", title: "Impact Lions Golf Day RSVP", segments: ["Lions"], recipients: 48, at: "5 days ago", priority: "info" },
   { id: "a3", type: "announcement", title: "Portal maintenance window", segments: ["All"], recipients: 220, at: "1 week ago", priority: "urgent" },
 ];

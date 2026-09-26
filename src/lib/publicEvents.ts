@@ -54,13 +54,13 @@ export const EVENTS: EventItem[] = [
   {
     id: "flagship-2026-10-19",
     kind: "networking",
-    title: "AJBN Flagship Networking Day",
+    title: "Annual Flagship Event",
     date: "2026-10-19T09:00:00Z",
     endDate: "2026-10-19T15:00:00Z",
     timeLabel: "10:00 AM – 4:00 PM",
-    location: "London Marriott Hotel, 128 King Henry's Rd, London NW3 3BY",
+    location: "London Marriott Swiss Cottage, 128 King Henry's Rd, London NW3 3BY",
     description:
-      "The UK's only platform dedicated to fostering commercial ties between the Asian and Jewish business communities. Senior leaders across Finance, Property, Banking, Law, Technology and Business Services meet for collaboration and knowledge exchange.",
+      "50 members paid for stalls erected by AJBN to showcase their business to attendees, 600 guests last year. Not evening dinner.",
     price: "£60 + VAT",
     priceGBP: "60",
     ctaLabel: "Buy tickets",

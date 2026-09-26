@@ -4,7 +4,7 @@ import BuyTicketsFlagshipPage from "@/pages/BuyTicketsFlagship";
 const BASE = "https://connect.ajbn.co.uk";
 const TITLE = "AJBN Flagship B2B Networking Exhibition, 19 Oct 2026 | London";
 const DESCRIPTION =
-  "Tickets and details for the AJBN Flagship B2B Networking Exhibition & Corporate Event on 19 October 2026 at London Marriott Hotel Regent's Park, 128 King Henry's Rd, London NW3 3BY.";
+  "Tickets and details for the AJBN Flagship B2B Networking Exhibition & Corporate Event on 19 October 2026 at London Marriott Swiss Cottage, 128 King Henry's Rd, London NW3 3BY.";
 
 const flagshipEventSchema = {
   "@context": "https://schema.org",
@@ -19,7 +19,7 @@ const flagshipEventSchema = {
   url: `${BASE}/tickets/flagship`,
   location: {
     "@type": "Place",
-    name: "London Marriott Hotel Regent's Park",
+    name: "London Marriott Swiss Cottage",
     address: {
       "@type": "PostalAddress",
       streetAddress: "128 King Henry\u2019s Rd",

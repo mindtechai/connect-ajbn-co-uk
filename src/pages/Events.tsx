@@ -135,7 +135,7 @@ export default function EventsPage() {
               <Badge variant="outline" className="text-xs">Tickets on sale</Badge>
             </div>
             <div>
-              <h2 className="text-xl md:text-2xl font-display font-bold">AJBN Flagship Networking Day</h2>
+              <h2 className="text-xl md:text-2xl font-display font-bold">Annual Flagship Event</h2>
               <p className="text-sm text-muted-foreground mt-2">
                 The Asian-Jewish Business Network is the UK's only platform dedicated to fostering commercial
                 ties between the Asian and Jewish business communities. Join senior leaders from Finance,
@@ -145,7 +145,7 @@ export default function EventsPage() {
             </div>
             <div className="grid sm:grid-cols-2 gap-3 text-sm">
               <div className="flex items-center gap-2"><CalendarDays size={14} className="text-primary" /> 19th October 2026 · 10AM – 4PM</div>
-              <div className="flex items-center gap-2"><MapPin size={14} className="text-primary" /> London Marriott Hotel, 128 King Henry's Rd, London NW3 3BY</div>
+              <div className="flex items-center gap-2"><MapPin size={14} className="text-primary" /> London Marriott Swiss Cottage, 128 King Henry's Rd, London NW3 3BY</div>
               <div className="flex items-center gap-2"><Users size={14} className="text-primary" /> 50+ high-value exhibitors</div>
               <div className="flex items-center gap-2"><Trophy size={14} className="text-gold" /> Hundreds of senior professionals</div>
             </div>
