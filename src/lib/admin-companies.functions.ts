@@ -159,3 +159,42 @@ export const setPrimaryCompanyRep = createServerFn({ method: "POST" })
 
     return { ok: true as const };
   });
+
+/** Bulk-update company services from a CSV: "company name","Service A, Service B". */
+export const importCompanyServices = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({ rows: z.array(z.object({ company: z.string().min(1).max(200), services: z.array(z.string().max(100)).max(30) })).max(1000) }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    await assertFullAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+    const norm = (s: string) => s.toLowerCase().replace(/\b(ltd|limited|llp|plc)\b/g, "").replace(/[^a-z0-9]/g, "");
+    const [{ data: tax }, { data: companies }] = await Promise.all([
+      supabaseAdmin.from("service_taxonomy").select("name").eq("is_active", true),
+      supabaseAdmin.from("corporate_members").select("id, company_name"),
+    ]);
+    const valid = new Map((tax ?? []).map((t: any) => [t.name.toLowerCase(), t.name as string]));
+    const byName = new Map((companies ?? []).map((c: any) => [norm(c.company_name), c.id as string]));
+    let updated = 0;
+    const notFound: string[] = [];
+    const unknownServices = new Set<string>();
+    for (const r of data.rows) {
+      const id = byName.get(norm(r.company));
+      if (!id) { notFound.push(r.company); continue; }
+      const services = r.services
+        .map((s) => s.trim()).filter(Boolean)
+        .map((s) => { const v = valid.get(s.toLowerCase()); if (!v) unknownServices.add(s); return v; })
+        .filter((s): s is string => !!s);
+      if (services.length === 0) continue;
+      const uniq = Array.from(new Set(services));
+      await supabaseAdmin.from("corporate_members").update({ services_list: uniq, primary_sector: uniq[0] }).eq("id", id);
+      await supabaseAdmin.from("profiles").update({ services_list: uniq, primary_sector: uniq[0] }).eq("company_id", id);
+      updated++;
+    }
+    await supabaseAdmin.from("admin_audit_log").insert({
+      actor_id: context.userId, action: "import_company_services", target_type: "corporate_members",
+      details: { updated, notFound, unknownServices: [...unknownServices] },
+    });
+    return { updated, notFound, unknownServices: [...unknownServices] };
+  });
