@@ -1,6 +1,6 @@
 import { Link, useLocation } from "@/lib/router-compat";
 import { Button } from "@/components/ui/button";
-import { Menu, X, LayoutDashboard, LogOut, Settings } from "lucide-react";
+import { Menu, X, LayoutDashboard, LogOut, Settings, CalendarDays } from "lucide-react";
 import { useState, useEffect } from "react";
 import { useAuth } from "@/hooks/useAuth";
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
@@ -173,6 +173,7 @@ export function Navbar() {
           {[
             { label: "Home", to: "/" },
             { label: "Directory", to: "/directory" },
+            { label: "Events", to: "/events", event: true },
             { label: "Messages", to: "/messages" },
             { label: "Services", to: "/services" },
             { label: "Impact Lions", to: "/lions" },
@@ -183,10 +184,16 @@ export function Navbar() {
             <Link
               key={item.label}
               to={item.to}
-              className="text-sm font-medium text-muted-foreground hover:text-foreground py-2"
+              className="flex min-h-11 items-center gap-2 text-sm font-medium text-muted-foreground hover:text-foreground py-2"
               onClick={() => setOpen(false)}
             >
-              {item.label}
+              {item.event && <CalendarDays size={18} className="shrink-0 text-teal" aria-hidden="true" />}
+              <span>{item.label}</span>
+              {item.event && (
+                <span className="ml-auto rounded-full border border-gold/40 bg-gold/10 px-2 py-0.5 text-[10px] font-semibold text-foreground">
+                  Annual Flagship Event
+                </span>
+              )}
             </Link>
           ))}
         </div>

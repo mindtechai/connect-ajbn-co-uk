@@ -5,7 +5,8 @@ import { Footer } from "@/components/landing/Footer";
 import { ScrollReveal } from "@/components/ScrollReveal";
 import { ServiceCard } from "@/components/services/ServiceCard";
 import { ServiceEnquiryDialog } from "@/components/services/ServiceEnquiryDialog";
-import { Handshake, Scale, Gift, Code2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Handshake, Scale, Gift, Code2, CalendarDays, ArrowRight } from "lucide-react";
 
 const SERVICES = [
   {
@@ -101,7 +102,22 @@ export default function ServicesPage() {
             Added value services for members
           </h2>
           <div className="grid md:grid-cols-2 gap-6">
-
+            <ScrollReveal className="md:col-span-2">
+              <div className="flex h-full flex-col gap-5 rounded-2xl border border-gold/40 bg-card p-6 shadow-xs md:flex-row md:items-center md:p-8">
+                <div className="grid h-12 w-12 shrink-0 place-items-center rounded-xl border border-gold/30 bg-gold/10 text-gold">
+                  <CalendarDays size={22} aria-hidden="true" />
+                </div>
+                <div className="min-w-0 flex-1">
+                  <h3 className="font-display text-xl font-bold md:text-2xl">Upcoming Events</h3>
+                  <p className="mt-1 text-sm text-muted-foreground">
+                    Annual Flagship Event – 19 Oct, 10AM-4PM at London Marriott Swiss Cottage.
+                  </p>
+                </div>
+                <Button asChild className="w-full shrink-0 md:w-auto">
+                  <Link to="/events">View events <ArrowRight size={16} aria-hidden="true" /></Link>
+                </Button>
+              </div>
+            </ScrollReveal>
             {SERVICES.map((s, i) => (
               <ScrollReveal key={s.title} delay={i * 60}>
                 <div id={slug(s.title)} className="scroll-mt-24">
