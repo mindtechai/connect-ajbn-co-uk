@@ -95,7 +95,7 @@ export default function PrivacyPage() {
               {[
                 "Your location",
                 "Your contacts or calendar",
-                "Your photos or files (unless you choose to share them in the app)",
+                "Your photos or files (the only photo we store is the profile photo you choose in account settings — no event photo uploads)",
                 "Any data for ads or tracking",
               ].map((item) => (
                 <li key={item} className="flex items-start gap-2">
