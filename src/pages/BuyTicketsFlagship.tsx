@@ -82,7 +82,7 @@ export default function BuyTicketsFlagshipPage() {
             <div className="flex items-start gap-2">
               <MapPin size={16} className="text-primary mt-0.5 shrink-0" />
               <div>
-                <div className="font-medium">London Marriott Hotel</div>
+                <div className="font-medium">London Marriott Swiss Cottage</div>
                 <div className="text-muted-foreground">128 King Henry's Rd, London NW3 3BY</div>
               </div>
             </div>
