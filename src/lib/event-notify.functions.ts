@@ -32,7 +32,7 @@ export const notifyEventAll = createServerFn({ method: "POST" })
         .order("created_at", { ascending: false })
         .limit(1);
       if (recent && recent.length > 0) {
-        return { alreadySent: true as const, sentAt: recent[0].created_at, count: 0 };
+        return { alreadySent: true as const, sentAt: recent[0]?.created_at ?? null, count: 0 };
       }
     }
 
