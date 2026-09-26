@@ -8,6 +8,7 @@ import { Textarea } from "@/components/ui/textarea";
 import { Badge } from "@/components/ui/badge";
 import { toast } from "@/hooks/use-toast";
 import { z } from "zod";
+import { isValidEmailAddress } from "@/lib/email-validation";
 import { Loader2, Send, Clock } from "lucide-react";
 
 type IntroRequest = {
