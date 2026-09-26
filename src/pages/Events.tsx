@@ -128,7 +128,7 @@ export default function EventsPage() {
 
         {/* Flagship event highlight */}
         <div id="event-flagship-2026" className="relative mb-8 bg-gradient-to-br from-primary/10 via-teal/5 to-gold/10 border border-primary/20 rounded-2xl overflow-hidden shadow-xs">
-          <NotifyAllButton eventKey="flagship-2026" className="absolute top-3 right-3 z-10" title="Annual Flagship Event – 19 Oct, London Marriott Swiss Cottage, 10AM–4PM" body="Day event with 50 member stalls and 600 guests last year. Tap to view details and buy tickets." />
+          <NotifyAllButton eventKey="flagship-2026" className="absolute top-3 right-3 z-10" title="Annual Flagship Event – 19 Oct, London Marriott Swiss Cottage, 10AM–4PM" body="Day event with 50+ high-value exhibitors and 600 guests last year. Tap to view details and buy tickets." />
           <div className="p-6 md:p-8 space-y-4">
             <div className="flex items-center gap-2">
               <Badge className="bg-primary/10 text-primary border-primary/20">
