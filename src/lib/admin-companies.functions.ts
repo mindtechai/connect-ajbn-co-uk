@@ -188,8 +188,8 @@ export const importCompanyServices = createServerFn({ method: "POST" })
         .filter((s): s is string => !!s);
       if (services.length === 0) continue;
       const uniq = Array.from(new Set(services));
-      await supabaseAdmin.from("corporate_members").update({ services_list: uniq, primary_sector: uniq[0] }).eq("id", id);
-      await supabaseAdmin.from("profiles").update({ services_list: uniq, primary_sector: uniq[0] }).eq("company_id", id);
+      await supabaseAdmin.from("corporate_members").update({ services_list: uniq, primary_sector: uniq[0] ?? null }).eq("id", id);
+      await supabaseAdmin.from("profiles").update({ services_list: uniq, primary_sector: uniq[0] ?? null }).eq("company_id", id);
       updated++;
     }
     await supabaseAdmin.from("admin_audit_log").insert({
