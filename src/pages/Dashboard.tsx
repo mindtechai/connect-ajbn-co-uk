@@ -244,6 +244,24 @@ export default function DashboardPage() {
           </section>
         )}
 
+        <ScrollReveal>
+          <Link
+            to="/events"
+            className="mb-6 flex items-center gap-4 rounded-xl border border-gold/40 bg-card p-5 shadow-xs transition-colors hover:border-gold"
+          >
+            <div className="grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-gold/10 text-gold">
+              <CalendarDays size={24} aria-hidden="true" />
+            </div>
+            <div className="min-w-0 flex-1">
+              <p className="font-display text-lg font-bold text-primary">Annual Flagship Event</p>
+              <p className="mt-1 text-sm text-muted-foreground">
+                19 Oct 10AM-4PM, London Marriott Swiss Cottage – 50 stalls, 600 guests
+              </p>
+            </div>
+            <ArrowRight size={20} className="shrink-0 text-gold" aria-hidden="true" />
+          </Link>
+        </ScrollReveal>
+
         {/* Premium hero banner */}
         <div className="mb-6 overflow-hidden rounded-xl border border-gold/20 bg-hero-pattern text-primary-foreground shadow-xs">
           <div className="p-6 md:p-8">
