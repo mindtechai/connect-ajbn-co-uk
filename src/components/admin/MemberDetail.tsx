@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { isAppleRelayEmail } from "@/lib/apple-relay";
 import { useServerFn } from "@tanstack/react-start";
 import { getAdminMemberDetail, setMemberApproved, rejectMember, type AdminMemberDetail } from "@/lib/admin-members.functions";
 import { useAdminScope } from "@/components/RequireSuperAdmin";
@@ -147,7 +148,7 @@ export function MemberDetail({ memberId }: { memberId: string }) {
           {scope === "full" && detail.email && (
             <div>
               <p className="text-muted-foreground text-xs uppercase tracking-wide">Email</p>
-              <a href={`mailto:${detail.email}`} className="flex items-center gap-1.5 mt-1 hover:underline"><Mail size={14} /> {detail.email}</a>
+              <a href={`mailto:${detail.email}`} className="flex items-center gap-1.5 mt-1 hover:underline"><Mail size={14} /> {detail.email}{isAppleRelayEmail(detail.email) && <span className="text-xs text-muted-foreground">(Private Apple email)</span>}</a>
             </div>
           )}
           {scope === "full" && detail.phone && (
