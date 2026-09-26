@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "@/lib/router-compat";
+import { displayFirstName } from "@/lib/display-name";
 import { useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { Button } from "@/components/ui/button";

@@ -1,4 +1,5 @@
 import { useEffect, useState } from "react";
+import { displayFirstName } from "@/lib/display-name";
 import { Link, useNavigate } from "@tanstack/react-router";
 import { BookUser, CalendarDays, Clock, HandHeart, Loader2, Mail, MessageCircle, Award } from "lucide-react";
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
