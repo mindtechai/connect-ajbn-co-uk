@@ -1,0 +1,2 @@
+ALTER TABLE public.notifications ADD COLUMN IF NOT EXISTS link text, ADD COLUMN IF NOT EXISTS event_key text;
+CREATE INDEX IF NOT EXISTS notifications_event_key_created_idx ON public.notifications (event_key, created_at);
