@@ -116,6 +116,12 @@ export default function DirectoryPage() {
   }, []);
 
   const search = q.trim().toLowerCase();
+  // Every word must match (AND); simple stems so "accountants" finds "Accounting", "banks" finds "Banking".
+  const searchStems = search
+    .split(/\s+/)
+    .filter((w) => w.length > 1)
+    .map((w) => (w.length > 5 ? w.replace(/(ants|ant|ancy|ing|ers|er|s)$/, "") : w.replace(/s$/, "")));
+  const matchesSearch = (haystack: string) => searchStems.every((st) => haystack.includes(st));
 
   const matchesServices = (primary: string | null | undefined, list: string[] | null | undefined) => {
     if (selectedServices.length === 0) return true;
@@ -141,7 +147,7 @@ export default function DirectoryPage() {
         .filter(Boolean)
         .join(" ")
         .toLowerCase();
-      return haystack.includes(search);
+      return matchesSearch(haystack);
     });
   }, [members, search, selectedServices, blockedIds]);
 
@@ -161,7 +167,7 @@ export default function DirectoryPage() {
         .filter(Boolean)
         .join(" ")
         .toLowerCase();
-      return haystack.includes(search);
+      return matchesSearch(haystack);
     });
   }, [companies, search, selectedServices]);
 

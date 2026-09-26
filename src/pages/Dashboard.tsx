@@ -1,4 +1,5 @@
 import { Link, useNavigate } from "@/lib/router-compat";
+import { displayFirstName } from "@/lib/display-name";
 import { useEffect, useState } from "react";
 import { formatDistanceToNow } from "date-fns";
 import { Button } from "@/components/ui/button";
@@ -138,7 +139,7 @@ export default function DashboardPage() {
     })();
   }, [user]);
 
-  const firstName = profile?.first_name || user?.user_metadata?.["first_name"] || (user?.email ?? "").split("@")[0];
+  const firstName = displayFirstName(profile, user);
   const memberSince = user?.created_at ? new Date(user.created_at).toLocaleDateString("en-GB", { month: "short", year: "numeric" }) : "—";
   const referralCode = profile?.referral_code ?? "—";
   const shownReferralCount = referralCount;
