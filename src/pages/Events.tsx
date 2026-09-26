@@ -11,6 +11,7 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogTrigger } from 
 import { Link } from "@/lib/router-compat";
 import { Tabs, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { FlagshipSponsors } from "@/components/FlagshipSponsors";
+import { NotifyAllButton } from "@/components/NotifyAllButton";
 import {
   Tooltip,
   TooltipContent,
@@ -126,7 +127,8 @@ export default function EventsPage() {
         </div>
 
         {/* Flagship event highlight */}
-        <div className="mb-8 bg-gradient-to-br from-primary/10 via-teal/5 to-gold/10 border border-primary/20 rounded-2xl overflow-hidden shadow-xs">
+        <div id="event-flagship-2026" className="relative mb-8 bg-gradient-to-br from-primary/10 via-teal/5 to-gold/10 border border-primary/20 rounded-2xl overflow-hidden shadow-xs">
+          <NotifyAllButton eventKey="flagship-2026" className="absolute top-3 right-3 z-10" title="Annual Flagship Event – 19 Oct, London Marriott Swiss Cottage, 10AM–4PM" body="Day event with 50 member stalls and 600 guests last year. Tap to view details and buy tickets." />
           <div className="p-6 md:p-8 space-y-4">
             <div className="flex items-center gap-2">
               <Badge className="bg-primary/10 text-primary border-primary/20">
@@ -188,7 +190,8 @@ export default function EventsPage() {
                 </h2>
                 <div className="grid gap-4">
                   {visiblePlaceholders.map((p) => (
-                    <div key={p.id} className="bg-card border border-gold/20 rounded-2xl shadow-xs overflow-hidden">
+                    <div key={p.id} id={`event-${p.id}`} className="relative bg-card border border-gold/20 rounded-2xl shadow-xs overflow-hidden">
+                      <NotifyAllButton eventKey={p.id} className="absolute top-3 right-3 z-10" title={p.title} body={`${p.dateLabel} · ${p.location}. ${p.description}`} />
                       <div className="p-5 md:p-6 grid md:grid-cols-[auto,1fr,auto] gap-5 items-start">
                         <div className="flex md:flex-col items-center md:items-start gap-2 md:gap-1 md:min-w-[96px]">
                           <div className="text-xs uppercase tracking-wide text-gold font-medium">{p.dateLabel}</div>
@@ -266,7 +269,8 @@ export default function EventsPage() {
                 ? Math.min(100, Math.round((Number(e.fundraising_raised) / Number(e.fundraising_target)) * 100))
                 : null;
               return (
-                <div key={e.id} className="bg-card border rounded-xl shadow-xs overflow-hidden">
+                <div key={e.id} id={`event-${e.id}`} className="relative bg-card border rounded-xl shadow-xs overflow-hidden">
+                  <NotifyAllButton eventKey={e.id} className="absolute top-3 right-3 z-10" title={e.title} body={`${new Date(e.starts_at).toLocaleString("en-GB", { day: "numeric", month: "short", hour: "2-digit", minute: "2-digit" })}${e.location ? " · " + e.location : ""}. Tap to view and RSVP.`} />
                   {e.cover_image_url && (
                     <img src={e.cover_image_url} alt="" className="w-full h-40 object-cover" />
                   )}

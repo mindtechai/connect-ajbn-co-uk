@@ -2,6 +2,8 @@ import { Link } from "@/lib/router-compat";
 import { ArrowLeft } from "lucide-react";
 import { BrandLink } from "@/components/BrandLink";
 import { DeveloperCredit } from "@/components/DeveloperCredit";
+import { NotificationsBell } from "@/components/NotificationsBell";
+import { useAuth } from "@/hooks/useAuth";
 
 type MaxWidth = "sm" | "md" | "lg" | "xl" | "2xl" | "3xl" | "4xl" | "5xl" | "6xl" | "7xl" | "full";
 
@@ -33,6 +35,7 @@ export function AppLayout({
   maxWidth = "4xl",
   mainClassName = "container mx-auto px-4 lg:px-8 py-8",
 }: AppLayoutProps) {
+  const { user } = useAuth();
   return (
     <div className="min-h-dvh bg-background flex flex-col">
       {/* Skip link: appears on keyboard focus, jumps past the header */}
@@ -66,7 +69,12 @@ export function AppLayout({
               </Link>
             </>
           )}
-          {headerRight && <div className="ml-auto flex items-center gap-2">{headerRight}</div>}
+          {(user || headerRight) && (
+            <div className="ml-auto flex items-center gap-3">
+              {user && <NotificationsBell />}
+              {headerRight}
+            </div>
+          )}
         </nav>
       </header>
 
