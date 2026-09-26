@@ -10,7 +10,7 @@ import { Loader2 } from "lucide-react";
 
 const schema = z.object({
   name: z.string().trim().min(1, "Name is required").max(100),
-  email: z.string().trim().email("Enter a valid email").max(255),
+  email: z.string().trim().max(255).refine(isValidEmailAddress, "Enter a valid email"),
   phone: z.string().trim().max(30).optional().or(z.literal("")),
   message: z.string().trim().max(2000).optional().or(z.literal("")),
 });

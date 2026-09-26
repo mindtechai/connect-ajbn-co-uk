@@ -37,7 +37,7 @@ const TRANSACTIONAL_OPTIONS: TemplateOption[] = [
 ];
 
 
-const emailSchema = z.string().trim().email().max(254);
+const emailSchema = z.string().trim().max(254).refine(isValidEmailAddress, "Enter a valid email");
 
 export function SendTestEmailCard() {
   const { user } = useAuth();

@@ -24,7 +24,7 @@ type IntroRequest = {
 const schema = z.object({
   target_name: z.string().trim().min(2, "Name is required").max(120),
   target_company: z.string().trim().max(160).optional().or(z.literal("")),
-  target_email: z.string().trim().email("Invalid email").max(255).optional().or(z.literal("")),
+  target_email: z.string().trim().max(255).refine(isValidEmailAddress, "Invalid email").optional().or(z.literal("")),
   reason: z.string().trim().min(10, "Add a short context (min 10 chars)").max(1000),
 });
 
