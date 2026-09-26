@@ -311,6 +311,7 @@ export default function DirectoryPage() {
                         ))}
                       </div>
                     )}
+                    <ServiceChips primary={m.primary_sector} list={m.services_list} />
                     {m.bio && <p className="text-xs text-muted-foreground line-clamp-3 pt-1">{m.bio}</p>}
                     <div className="pt-2 border-t space-y-2" onClick={(event) => event.stopPropagation()} onKeyDown={(event) => event.stopPropagation()}>
                       {m.id !== user?.id && <MemberActions member={{ id: m.id, name, calendlyUrl: m.calendly_url, messagingActive: m.is_messaging_active }} compact />}
@@ -397,6 +398,7 @@ export default function DirectoryPage() {
                     </Badge>
                   )}
                 </div>
+                <ServiceChips primary={c.primary_sector} list={c.services_list} />
                 {c.short_bio && <p className="text-xs text-muted-foreground line-clamp-3 pt-1">{c.short_bio}</p>}
                 {(c.website || c.linkedin_url || owner) && (
                   <div className="pt-2 border-t space-y-2" onClick={(event) => event.stopPropagation()} onKeyDown={(event) => event.stopPropagation()}>
@@ -445,4 +447,10 @@ export default function DirectoryPage() {
 
     </AppLayout>
   );
+}
+
+function ServiceChips({ primary, list }: { primary?: string | null | undefined; list?: string[] | null | undefined }) {
+  const all = Array.from(new Set([...(primary ? [primary] : []), ...(list ?? [])]));
+  if (all.length === 0) return null;
+  return <p className="text-[11px] font-medium text-primary pt-1 leading-snug">{all.join(" • ")}</p>;
 }

@@ -4,10 +4,11 @@ import {
   listCompaniesWithReps,
   removeCompanyRep,
   setPrimaryCompanyRep,
+  importCompanyServices,
   MAX_REPS_PER_COMPANY,
   type CompanyRow,
 } from "@/lib/admin-companies.functions";
-import { Building2, Loader2, Star, UserMinus } from "lucide-react";
+import { Building2, Loader2, Star, Upload, UserMinus } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { toast } from "@/hooks/use-toast";
@@ -24,6 +25,8 @@ export function CompaniesAdmin() {
   const fetchCompanies = useServerFn(listCompaniesWithReps);
   const removeRep = useServerFn(removeCompanyRep);
   const makePrimary = useServerFn(setPrimaryCompanyRep);
+  const importServices = useServerFn(importCompanyServices);
+  const [importing, setImporting] = useState(false);
   const [rows, setRows] = useState<CompanyRow[]>([]);
   const [loading, setLoading] = useState(true);
   const [query, setQuery] = useState("");
@@ -58,6 +61,47 @@ export function CompaniesAdmin() {
     }
   };
 
+  const onImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    e.target.value = "";
+    if (!file) return;
+    setImporting(true);
+    try {
+      const text = await file.text();
+      const parseLine = (line: string) => {
+        const out: string[] = []; let cur = ""; let q = false;
+        for (const ch of line) {
+          if (ch === '"') q = !q;
+          else if (ch === "," && !q) { out.push(cur); cur = ""; }
+          else cur += ch;
+        }
+        out.push(cur);
+        return out.map((s) => s.trim());
+      };
+      const lines = text.split(/\r?\n/).filter((l) => l.trim());
+      const header = parseLine(lines[0] ?? "").map((h) => h.toLowerCase());
+      const ci = header.findIndex((h) => h.includes("company"));
+      const si = header.findIndex((h) => h.includes("service"));
+      if (ci < 0 || si < 0) throw new Error("CSV needs 'company' and 'services' columns");
+      const rows = lines.slice(1).map(parseLine)
+        .map((c) => ({ company: c[ci] ?? "", services: (c[si] ?? "").split(",") }))
+        .filter((r) => r.company);
+      const res = await importServices({ data: { rows } });
+      toast({
+        title: `Updated ${res.updated} companies`,
+        description: [
+          res.notFound.length ? `Not found: ${res.notFound.join(", ")}` : "",
+          res.unknownServices.length ? `Unknown services: ${res.unknownServices.join(", ")}` : "",
+        ].filter(Boolean).join(" · ") || undefined,
+      });
+      await load();
+    } catch (err: any) {
+      toast({ title: "Import failed", description: err?.message, variant: "destructive" });
+    } finally {
+      setImporting(false);
+    }
+  };
+
   const onPrimary = async (companyId: string, memberId: string) => {
     try {
       await makePrimary({ data: { companyId, memberId } });
@@ -79,12 +123,21 @@ export function CompaniesAdmin() {
         </p>
       </div>
 
-      <Input
-        placeholder="Search companies…"
-        value={query}
-        onChange={(e) => setQuery(e.target.value)}
-        className="max-w-sm"
-      />
+      <div className="flex flex-wrap items-center gap-2">
+        <Input
+          placeholder="Search companies…"
+          value={query}
+          onChange={(e) => setQuery(e.target.value)}
+          className="max-w-sm"
+        />
+        <label className="inline-flex cursor-pointer items-center gap-2 rounded-md border px-3 py-2 text-sm font-medium hover:bg-muted">
+          <Upload size={14} /> {importing ? "Importing…" : "Import services (CSV)"}
+          <input type="file" accept=".csv,text/csv" className="hidden" onChange={onImport} disabled={importing} />
+        </label>
+      </div>
+      <p className="text-xs text-muted-foreground">
+        CSV columns: company, services — e.g. <code>ATZ Finance,"Bridging Finance, Asset Finance"</code>. Service names must match the approved list.
+      </p>
 
       {loading ? (
         <div className="flex justify-center py-16">
