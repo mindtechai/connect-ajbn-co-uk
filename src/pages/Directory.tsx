@@ -449,7 +449,7 @@ export default function DirectoryPage() {
   );
 }
 
-function ServiceChips({ primary, list }: { primary?: string | null; list?: string[] | null }) {
+function ServiceChips({ primary, list }: { primary?: string | null | undefined; list?: string[] | null | undefined }) {
   const all = Array.from(new Set([...(primary ? [primary] : []), ...(list ?? [])]));
   if (all.length === 0) return null;
   return <p className="text-[11px] font-medium text-primary pt-1 leading-snug">{all.join(" • ")}</p>;
