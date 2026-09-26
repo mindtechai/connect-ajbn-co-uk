@@ -183,7 +183,7 @@ export default function ProfilePage() {
               <div>
                 <label className="inline-flex items-center gap-1.5 text-sm font-medium cursor-pointer text-primary hover:underline">
                   <Upload size={14} />
-                  {uploading ? "Uploading…" : "Upload photo"}
+                  {uploading ? "Uploading…" : "Profile photo in account settings"}
                   <input type="file" accept="image/*" hidden disabled={uploading}
                     onChange={(e) => e.target.files?.[0] && uploadAvatar(e.target.files[0])} />
                 </label>

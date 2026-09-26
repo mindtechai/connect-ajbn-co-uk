@@ -59,6 +59,7 @@ export function BulkActionsPanel() {
   const [channelEmail, setChannelEmail] = useState(true);
   const [channelInApp, setChannelInApp] = useState(true);
   const [pinToDashboard, setPinToDashboard] = useState(false);
+  const [notifyMembers, setNotifyMembers] = useState(true);
   const [schedule, setSchedule] = useState(false);
   const [scheduleDate, setScheduleDate] = useState("");
   const [sending, setSending] = useState(false);
@@ -110,9 +111,23 @@ export function BulkActionsPanel() {
           published_at: publishedAt,
         });
         if (error) throw error;
+        // In-app bell notification to every selected member (respects each member's
+        // "announcements" in-app preference). Native push arrives with Build 37:
+        // Codemagic: Enable Push Notifications capability + UIBackgroundModes remote-notification for Build 37
+        let notified = 0;
+        if (notifyMembers && !schedule) {
+          try {
+            const r = await sendBulkMessage({
+              data: { subject: title, body, segments: selected, channels: ["in_app"], category: "announcements" },
+            });
+            notified = r.in_app_sent ?? 0;
+          } catch (err) {
+            console.error("announcement notify failed", err);
+          }
+        }
         toast({
           title: schedule ? "Announcement scheduled" : "Announcement published",
-          description: `${selected.length} segment${selected.length !== 1 ? "s" : ""}${schedule ? " · " + scheduleDate : ""}.`,
+          description: `${selected.length} segment${selected.length !== 1 ? "s" : ""}${schedule ? " · " + scheduleDate : ""}${notifyMembers && !schedule ? ` · ${notified} notified` : ""}.`,
         });
         setTitle(""); setBody(""); setSchedule(false); setScheduleDate(""); setPinToDashboard(false);
       } catch (e: any) {
@@ -253,6 +268,13 @@ export function BulkActionsPanel() {
                     );
                   })}
                 </div>
+              </div>
+
+              <div className="flex items-center gap-3">
+                <Checkbox id="notify" checked={notifyMembers} onCheckedChange={(c) => setNotifyMembers(c === true)} />
+                <label htmlFor="notify" className="text-sm cursor-pointer">
+                  Notify all selected members ({recipientCount} recipient{recipientCount !== 1 && "s"})
+                </label>
               </div>
 
               <div className="flex items-center gap-3">
