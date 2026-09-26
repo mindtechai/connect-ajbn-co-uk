@@ -962,7 +962,9 @@ export type Database = {
           body: string
           bulk_message_id: string | null
           created_at: string
+          event_key: string | null
           id: string
+          link: string | null
           read_at: string | null
           title: string
           user_id: string
@@ -971,7 +973,9 @@ export type Database = {
           body: string
           bulk_message_id?: string | null
           created_at?: string
+          event_key?: string | null
           id?: string
+          link?: string | null
           read_at?: string | null
           title: string
           user_id: string
@@ -980,7 +984,9 @@ export type Database = {
           body?: string
           bulk_message_id?: string | null
           created_at?: string
+          event_key?: string | null
           id?: string
+          link?: string | null
           read_at?: string | null
           title?: string
           user_id?: string

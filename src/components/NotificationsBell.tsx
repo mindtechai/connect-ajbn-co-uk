@@ -7,6 +7,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/useAuth";
 import { cn } from "@/lib/utils";
 import { useQuietHours } from "@/hooks/useQuietHours";
+import { useNavigate } from "@/lib/router-compat";
 
 interface Notification {
   id: string;
@@ -14,6 +15,7 @@ interface Notification {
   body: string;
   read_at: string | null;
   created_at: string;
+  link: string | null;
 }
 
 export function NotificationsBell() {
@@ -21,6 +23,20 @@ export function NotificationsBell() {
   const [items, setItems] = useState<Notification[]>([]);
   const [open, setOpen] = useState(false);
   const { activeNow } = useQuietHours();
+  const navigate = useNavigate();
+
+  const openItem = async (n: Notification) => {
+    if (!n.read_at) {
+      await supabase.from("notifications").update({ read_at: new Date().toISOString() }).eq("id", n.id);
+      setItems((prev) => prev.map((x) => x.id === n.id ? { ...x, read_at: new Date().toISOString() } : x));
+    }
+    if (n.link) {
+      setOpen(false);
+      const [path, hash] = n.link.split("#");
+      navigate(path || "/events");
+      if (hash) setTimeout(() => document.getElementById(hash)?.scrollIntoView({ behavior: "smooth", block: "start" }), 400);
+    }
+  };
 
   const unread = activeNow ? 0 : items.filter((n) => !n.read_at).length;
 
@@ -28,7 +44,7 @@ export function NotificationsBell() {
     if (!user) return;
     const { data } = await supabase
       .from("notifications")
-      .select("id,title,body,read_at,created_at")
+      .select("id,title,body,read_at,created_at,link")
       .eq("user_id", user.id)
       .order("created_at", { ascending: false })
       .limit(20);
@@ -88,8 +104,8 @@ export function NotificationsBell() {
             <div className="p-6 text-center text-sm text-muted-foreground">No notifications yet.</div>
           )}
           {items.map((n) => (
-            <div key={n.id} className={cn(
-              "px-4 py-3 border-b last:border-0",
+            <div key={n.id} role="button" tabIndex={0} onClick={() => openItem(n)} onKeyDown={(e) => e.key === "Enter" && openItem(n)} className={cn(
+              "px-4 py-3 border-b last:border-0 cursor-pointer hover:bg-muted/50",
               !n.read_at && "bg-primary/5"
             )}>
               <div className="flex items-start gap-2">
