@@ -171,6 +171,19 @@ export default function AccountSettingsPage() {
             <Label htmlFor="new-password">New password</Label>
             <Input id="new-password" type="password" autoComplete="new-password" value={newPassword} onChange={(e) => setNewPassword(e.target.value)} minLength={8} maxLength={128} required />
             <p className="text-xs text-muted-foreground">Use at least 8 characters.</p>
+            <button
+              type="button"
+              className="text-xs font-medium text-primary underline-offset-4 hover:underline"
+              onClick={async () => {
+                if (!user?.email) return;
+                const { error } = await supabase.auth.resetPasswordForEmail(user.email, {
+                  redirectTo: `${window.location.origin}/reset-password`,
+                });
+                toast(error ? { title: "Couldn't send reset link", description: error.message, variant: "destructive" } : { title: "Reset link sent", description: `Check ${user.email}` });
+              }}
+            >
+              Forgot password? Create new
+            </button>
           </div>
           <div className="space-y-2">
             <Label htmlFor="confirm-password">Confirm new password</Label>

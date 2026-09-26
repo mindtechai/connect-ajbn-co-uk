@@ -37,7 +37,7 @@ export default function PendingPage() {
     return <div className="min-h-screen grid place-items-center"><Loader2 className="animate-spin text-muted-foreground" /></div>;
   }
 
-  const firstName = profile?.first_name || (user.user_metadata?.["first_name"] as string | undefined) || "there";
+  const firstName = displayFirstName(profile, user);
   const company = profile?.company || (user.user_metadata?.["company"] as string | undefined) || "";
 
   return (
@@ -48,9 +48,10 @@ export default function PendingPage() {
           <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-gold/40 bg-gold-muted px-3 py-1 text-xs font-semibold">
             <Clock size={13} /> Awaiting approval
           </div>
-          <h1 className="mt-4 font-display text-2xl md:text-3xl font-bold">Membership Pending Approval</h1>
+          <h1 className="mt-4 font-display text-2xl md:text-3xl font-bold">Welcome back, {firstName}</h1>
+          <p className="mt-2 text-base font-medium">Your application is pending approval</p>
           <p className="mt-3 text-sm leading-6 text-muted-foreground">
-            Thanks {firstName}, your membership{company ? ` for ${company}` : ""} is under review by AJBN admin.
+            Your membership{company ? ` for ${company}` : ""} is under review by AJBN admin.
             You'll receive email confirmation once approved (usually within 24 hours).
           </p>
         </div>
