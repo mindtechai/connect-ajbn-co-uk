@@ -7,9 +7,8 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Link } from "@tanstack/react-router";
 import { PublicHeader } from "@/components/PublicHeader";
 import { requestAccountDeletion } from "@/lib/account-deletion-request.functions";
+import { isValidEmailAddress } from "@/lib/email-validation";
 import { CheckCircle2, Loader2, Mail, Shield, Trash2 } from "lucide-react";
-
-const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 const AJBN_BLUE = "#164164";
 
 /** Store-review accounts cannot be removed while an app review is in progress. */
@@ -54,7 +53,7 @@ export default function AccountDeletionPage() {
 
     const next: Errors = {};
     if (!fullName.trim()) next.fullName = "Please enter your full name.";
-    if (!EMAIL_RE.test(email.trim())) next.email = "Please enter a valid email address.";
+    if (!isValidEmailAddress(email)) next.email = "Please enter a valid email address.";
     else if (PROTECTED_EMAILS.includes(email.trim().toLowerCase()))
       next.email = "Review account cannot be deleted";
     if (!accountType) next.accountType = "Please select your account type.";

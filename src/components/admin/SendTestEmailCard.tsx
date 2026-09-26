@@ -1,6 +1,7 @@
 import { useEffect, useMemo, useState } from "react";
 import { Send, Mail } from "lucide-react";
 import { z } from "zod";
+import { isValidEmailAddress } from "@/lib/email-validation";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -37,7 +38,7 @@ const TRANSACTIONAL_OPTIONS: TemplateOption[] = [
 ];
 
 
-const emailSchema = z.string().trim().email().max(254);
+const emailSchema = z.string().trim().max(254).refine(isValidEmailAddress, "Enter a valid email");
 
 export function SendTestEmailCard() {
   const { user } = useAuth();
