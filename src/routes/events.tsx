@@ -54,6 +54,10 @@ const breadcrumbSchema = {
 function EventsRoute() {
   const { user } = useAuth();
   const [now] = useState(() => Date.now());
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  // Child routes (e.g. /events/flagship) render themselves.
+  if (pathname !== "/events") return <Outlet />;
 
   if (!user) return <PublicEventsView now={now} />;
 
