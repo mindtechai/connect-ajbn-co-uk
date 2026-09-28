@@ -164,6 +164,46 @@ export const setPrimaryCompanyRep = createServerFn({ method: "POST" })
     return { ok: true as const };
   });
 
+/** Marks or unmarks a company as a flagship event exhibitor. */
+export const setFlagshipExhibitor = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({ companyId: z.string().uuid(), exhibitor: z.boolean() }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    await assertFullAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    if (data.exhibitor) {
+      const { data: company } = await supabaseAdmin
+        .from("corporate_members")
+        .select("id, verified")
+        .eq("id", data.companyId)
+        .maybeSingle();
+      if (!company?.verified) throw new Error("Only verified directory companies can be exhibitors.");
+      const { error } = await supabaseAdmin
+        .from("flagship_exhibitors")
+        .upsert({ company_id: data.companyId }, { onConflict: "company_id" });
+      if (error) throw new Error(error.message);
+    } else {
+      const { error } = await supabaseAdmin
+        .from("flagship_exhibitors")
+        .delete()
+        .eq("company_id", data.companyId);
+      if (error) throw new Error(error.message);
+    }
+
+    await supabaseAdmin.from("admin_audit_log").insert({
+      actor_id: context.userId,
+      action: data.exhibitor ? "flagship_exhibitor_added" : "flagship_exhibitor_removed",
+      target_type: "corporate_member",
+      target_id: data.companyId,
+      details: {},
+    });
+
+    return { ok: true as const };
+  });
+
 /** Bulk-update company services from a CSV: "company name","Service A, Service B". */
 export const importCompanyServices = createServerFn({ method: "POST" })
   .middleware([requireSupabaseAuth])
