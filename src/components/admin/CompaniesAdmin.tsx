@@ -5,6 +5,7 @@ import {
   removeCompanyRep,
   setPrimaryCompanyRep,
   importCompanyServices,
+  setFlagshipExhibitor,
   MAX_REPS_PER_COMPANY,
   type CompanyRow,
 } from "@/lib/admin-companies.functions";
@@ -26,6 +27,7 @@ export function CompaniesAdmin() {
   const removeRep = useServerFn(removeCompanyRep);
   const makePrimary = useServerFn(setPrimaryCompanyRep);
   const importServices = useServerFn(importCompanyServices);
+  const toggleExhibitor = useServerFn(setFlagshipExhibitor);
   const [importing, setImporting] = useState(false);
   const [rows, setRows] = useState<CompanyRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -112,6 +114,16 @@ export function CompaniesAdmin() {
     }
   };
 
+  const onExhibitor = async (companyId: string, exhibitor: boolean) => {
+    try {
+      await toggleExhibitor({ data: { companyId, exhibitor } });
+      toast({ title: exhibitor ? "Added as flagship exhibitor" : "Removed from exhibitors" });
+      await load();
+    } catch (e: any) {
+      toast({ title: "Could not update", description: e?.message, variant: "destructive" });
+    }
+  };
+
   return (
     <div className="space-y-6">
       <div>
@@ -158,19 +170,35 @@ export function CompaniesAdmin() {
                     {[c.primary_sector, c.city].filter(Boolean).join(" • ") || "—"}
                   </p>
                 </div>
-                <span
-                  className={cn(
-                    "shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold",
-                    repBadgeClass(c.rep_count),
-                  )}
-                >
-                  {c.rep_count}/{MAX_REPS_PER_COMPANY}
-                  {c.rep_count >= MAX_REPS_PER_COMPANY ? " FULL" : ""}
-                </span>
+                <div className="flex shrink-0 items-center gap-2">
+                  {c.is_flagship_exhibitor ? (
+                    <span className="rounded-full bg-gold/10 px-2 py-0.5 text-[11px] font-semibold text-gold">
+                      Exhibitor
+                    </span>
+                  ) : null}
+                  <span
+                    className={cn(
+                      "shrink-0 rounded-full px-2 py-0.5 text-[11px] font-semibold",
+                      repBadgeClass(c.rep_count),
+                    )}
+                  >
+                    {c.rep_count}/{MAX_REPS_PER_COMPANY}
+                    {c.rep_count >= MAX_REPS_PER_COMPANY ? " FULL" : ""}
+                  </span>
+                </div>
               </button>
 
               {openId === c.id ? (
                 <div className="space-y-2 border-t bg-muted/30 px-4 py-3">
+                  <label className="flex items-center justify-between gap-3 rounded-lg border bg-card px-3 py-2">
+                    <span className="text-sm font-medium">Flagship event exhibitor</span>
+                    <input
+                      type="checkbox"
+                      checked={c.is_flagship_exhibitor}
+                      onChange={(e) => onExhibitor(c.id, e.target.checked)}
+                      className="h-4 w-4 accent-primary"
+                    />
+                  </label>
                   {Array.from({ length: MAX_REPS_PER_COMPANY }).map((_, i) => {
                     const rep = c.reps[i];
                     return (

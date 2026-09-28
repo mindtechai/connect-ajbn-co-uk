@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { createFileRoute } from "@tanstack/react-router";
+import { createFileRoute, Outlet, useRouterState } from "@tanstack/react-router";
 import { RequireAuth } from "@/components/RequireAuth";
 import { useAuth } from "@/hooks/useAuth";
 import EventsPage from "@/pages/Events";
@@ -54,6 +54,10 @@ const breadcrumbSchema = {
 function EventsRoute() {
   const { user } = useAuth();
   const [now] = useState(() => Date.now());
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+
+  // Child routes (e.g. /events/flagship) render themselves.
+  if (pathname !== "/events") return <Outlet />;
 
   if (!user) return <PublicEventsView now={now} />;
 

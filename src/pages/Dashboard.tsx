@@ -246,7 +246,7 @@ export default function DashboardPage() {
 
         <ScrollReveal>
           <Link
-            to="/events"
+            to="/events/flagship"
             className="mb-6 flex items-center gap-4 rounded-xl border border-gold/40 bg-card p-5 shadow-xs transition-colors hover:border-gold"
           >
             <div className="grid h-12 w-12 shrink-0 place-items-center rounded-lg bg-gold/10 text-gold">

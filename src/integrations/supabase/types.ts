@@ -665,6 +665,38 @@ export type Database = {
         }
         Relationships: []
       }
+      flagship_exhibitors: {
+        Row: {
+          company_id: string
+          created_at: string
+          id: string
+          sort_order: number
+          updated_at: string
+        }
+        Insert: {
+          company_id: string
+          created_at?: string
+          id?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Update: {
+          company_id?: string
+          created_at?: string
+          id?: string
+          sort_order?: number
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "flagship_exhibitors_company_id_fkey"
+            columns: ["company_id"]
+            isOneToOne: true
+            referencedRelation: "corporate_members"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       lion_applications: {
         Row: {
           created_at: string

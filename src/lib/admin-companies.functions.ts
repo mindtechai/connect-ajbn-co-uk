@@ -31,6 +31,7 @@ export type CompanyRow = {
   owner_user_id: string | null;
   rep_count: number;
   reps: CompanyRep[];
+  is_flagship_exhibitor: boolean;
 };
 
 /** Every company listing with its linked representatives (max 3 each). */
@@ -40,7 +41,7 @@ export const listCompaniesWithReps = createServerFn({ method: "GET" })
     await assertFullAdmin(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    const [{ data: companies }, { data: profiles }] = await Promise.all([
+    const [{ data: companies }, { data: profiles }, { data: exhibitors }] = await Promise.all([
       supabaseAdmin
         .from("corporate_members")
         .select("id, company_name, primary_sector, city, owner_user_id")
@@ -50,7 +51,9 @@ export const listCompaniesWithReps = createServerFn({ method: "GET" })
         .select("id, first_name, last_name, email, title, company_id")
         .not("company_id", "is", null)
         .is("deleted_at", null),
+      supabaseAdmin.from("flagship_exhibitors").select("company_id"),
     ]);
+    const exhibitorIds = new Set((exhibitors ?? []).map((e: any) => e.company_id as string));
 
     const byCompany = new Map<string, CompanyRep[]>();
     for (const p of profiles ?? []) {
@@ -79,6 +82,7 @@ export const listCompaniesWithReps = createServerFn({ method: "GET" })
         owner_user_id: c.owner_user_id ?? null,
         rep_count: reps.length,
         reps,
+        is_flagship_exhibitor: exhibitorIds.has(c.id),
       };
     });
     return rows;
@@ -155,6 +159,46 @@ export const setPrimaryCompanyRep = createServerFn({ method: "POST" })
       target_type: "corporate_member",
       target_id: data.companyId,
       details: { member_id: data.memberId },
+    });
+
+    return { ok: true as const };
+  });
+
+/** Marks or unmarks a company as a flagship event exhibitor. */
+export const setFlagshipExhibitor = createServerFn({ method: "POST" })
+  .middleware([requireSupabaseAuth])
+  .inputValidator((d: unknown) =>
+    z.object({ companyId: z.string().uuid(), exhibitor: z.boolean() }).parse(d),
+  )
+  .handler(async ({ data, context }) => {
+    await assertFullAdmin(context);
+    const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
+
+    if (data.exhibitor) {
+      const { data: company } = await supabaseAdmin
+        .from("corporate_members")
+        .select("id, verified")
+        .eq("id", data.companyId)
+        .maybeSingle();
+      if (!company?.verified) throw new Error("Only verified directory companies can be exhibitors.");
+      const { error } = await supabaseAdmin
+        .from("flagship_exhibitors")
+        .upsert({ company_id: data.companyId }, { onConflict: "company_id" });
+      if (error) throw new Error(error.message);
+    } else {
+      const { error } = await supabaseAdmin
+        .from("flagship_exhibitors")
+        .delete()
+        .eq("company_id", data.companyId);
+      if (error) throw new Error(error.message);
+    }
+
+    await supabaseAdmin.from("admin_audit_log").insert({
+      actor_id: context.userId,
+      action: data.exhibitor ? "flagship_exhibitor_added" : "flagship_exhibitor_removed",
+      target_type: "corporate_member",
+      target_id: data.companyId,
+      details: {},
     });
 
     return { ok: true as const };

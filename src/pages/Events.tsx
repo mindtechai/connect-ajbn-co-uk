@@ -158,6 +158,9 @@ export default function EventsPage() {
               </div>
               <div className="flex flex-wrap gap-2">
                 <Button asChild size="sm">
+                  <Link to="/events/flagship">View event page</Link>
+                </Button>
+                <Button asChild size="sm" variant="outline">
                   <Link to="/tickets/flagship">Buy tickets</Link>
                 </Button>
                 <Button asChild size="sm" variant="outline">
