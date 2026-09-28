@@ -23,22 +23,24 @@ A clean, single-column page for the Annual Flagship Event (19 Oct), kept calm an
 |  [Ash Verma]   [Riddlebox]       |  <- food & beverages
 |                                  |
 |----------------------------------|
-|  Exhibitors (12)                 |
+|  Exhibitors (48)   [search]      |  <- live count, search box
 |  +--------+  +--------+          |
 |  | logo   |  | logo   |          |
 |  | Name   |  | Name   |          |
 |  | Sector |  | Sector |          |
 |  +--------+  +--------+          |
+|  ...all ticked exhibitors...      |
 |                                  |
 |----------------------------------|
 |  About the day (2-3 short lines) |
 +----------------------------------+
 ```
 
+- Exhibitors: shows every company ticked as a flagship exhibitor in Admin (the sketch's "12" was a placeholder — capacity is all ~50 purchased stalls, no limit). With that many, the section gets a search box and stays a tidy 2-column grid of small cards (logo, name, sector) so the page doesn't feel crowded.
 - The 4 main sponsors are the ones already recorded: Spector Constant & Williams and Tradelend (headline, larger tiles), Ash Verma Consulting and Riddlebox (food & beverages). Their logos link to their websites.
-- Exhibitor cards: logo, company name, main sector only. Tap a card for a short profile sheet (bio, services, "View in directory").
+- Tap an exhibitor card for a short profile sheet (bio, services, "View in directory").
 - Desktop: same layout, exhibitors in 4 columns, centred, lots of white space.
-- If no exhibitors are picked yet: "Exhibitors announced soon" instead of the grid.
+- If no exhibitors are ticked yet: "Exhibitors announced soon" instead of the grid.
 - Existing AJBN navy/teal styling; no extra banners or widgets.
 
 ## Linking
