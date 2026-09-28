@@ -5,6 +5,7 @@ import {
   removeCompanyRep,
   setPrimaryCompanyRep,
   importCompanyServices,
+  setFlagshipExhibitor,
   MAX_REPS_PER_COMPANY,
   type CompanyRow,
 } from "@/lib/admin-companies.functions";
@@ -26,6 +27,7 @@ export function CompaniesAdmin() {
   const removeRep = useServerFn(removeCompanyRep);
   const makePrimary = useServerFn(setPrimaryCompanyRep);
   const importServices = useServerFn(importCompanyServices);
+  const toggleExhibitor = useServerFn(setFlagshipExhibitor);
   const [importing, setImporting] = useState(false);
   const [rows, setRows] = useState<CompanyRow[]>([]);
   const [loading, setLoading] = useState(true);
@@ -106,6 +108,16 @@ export function CompaniesAdmin() {
     try {
       await makePrimary({ data: { companyId, memberId } });
       toast({ title: "Primary representative set" });
+      await load();
+    } catch (e: any) {
+      toast({ title: "Could not update", description: e?.message, variant: "destructive" });
+    }
+  };
+
+  const onExhibitor = async (companyId: string, exhibitor: boolean) => {
+    try {
+      await toggleExhibitor({ data: { companyId, exhibitor } });
+      toast({ title: exhibitor ? "Added as flagship exhibitor" : "Removed from exhibitors" });
       await load();
     } catch (e: any) {
       toast({ title: "Could not update", description: e?.message, variant: "destructive" });
