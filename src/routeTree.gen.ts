@@ -51,6 +51,7 @@ import { Route as AdminMembersRouteImport } from './routes/admin/members'
 import { Route as AdminReportsRouteImport } from './routes/admin/reports'
 import { Route as AdminSettingsRouteImport } from './routes/admin/settings'
 import { Route as CompanyCompanyIdRouteImport } from './routes/company/$companyId'
+import { Route as EventsFlagshipRouteImport } from './routes/events.flagship'
 import { Route as LionsIndexRouteImport } from './routes/lions/index'
 import { Route as LionsApplyRouteImport } from './routes/lions/apply'
 import { Route as MemberMemberIdRouteImport } from './routes/member/$memberId'
@@ -277,6 +278,11 @@ const CompanyCompanyIdRoute = CompanyCompanyIdRouteImport.update({
   path: '/company/$companyId',
   getParentRoute: () => rootRouteImport,
 } as any)
+const EventsFlagshipRoute = EventsFlagshipRouteImport.update({
+  id: '/flagship',
+  path: '/flagship',
+  getParentRoute: () => EventsRoute,
+} as any)
 const LionsIndexRoute = LionsIndexRouteImport.update({
   id: '/lions/',
   path: '/lions/',
@@ -366,7 +372,7 @@ export interface FileRoutesByFullPath {
   '/directory': typeof DirectoryRoute
   '/email-unsubscribe': typeof EmailUnsubscribeRoute
   '/esg': typeof EsgRoute
-  '/events': typeof EventsRoute
+  '/events': typeof EventsRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
   '/install': typeof InstallRoute
   '/login': typeof LoginRoute
@@ -397,6 +403,7 @@ export interface FileRoutesByFullPath {
   '/admin/reports': typeof AdminReportsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/company/$companyId': typeof CompanyCompanyIdRoute
+  '/events/flagship': typeof EventsFlagshipRoute
   '/lions/apply': typeof LionsApplyRoute
   '/member/$memberId': typeof MemberMemberIdRoute
   '/messages/$conversationId': typeof MessagesConversationIdRoute
@@ -425,7 +432,7 @@ export interface FileRoutesByTo {
   '/directory': typeof DirectoryRoute
   '/email-unsubscribe': typeof EmailUnsubscribeRoute
   '/esg': typeof EsgRoute
-  '/events': typeof EventsRoute
+  '/events': typeof EventsRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
   '/install': typeof InstallRoute
   '/login': typeof LoginRoute
@@ -456,6 +463,7 @@ export interface FileRoutesByTo {
   '/admin/reports': typeof AdminReportsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/company/$companyId': typeof CompanyCompanyIdRoute
+  '/events/flagship': typeof EventsFlagshipRoute
   '/lions/apply': typeof LionsApplyRoute
   '/member/$memberId': typeof MemberMemberIdRoute
   '/messages/$conversationId': typeof MessagesConversationIdRoute
@@ -485,7 +493,7 @@ export interface FileRoutesById {
   '/directory': typeof DirectoryRoute
   '/email-unsubscribe': typeof EmailUnsubscribeRoute
   '/esg': typeof EsgRoute
-  '/events': typeof EventsRoute
+  '/events': typeof EventsRouteWithChildren
   '/forgot-password': typeof ForgotPasswordRoute
   '/install': typeof InstallRoute
   '/login': typeof LoginRoute
@@ -516,6 +524,7 @@ export interface FileRoutesById {
   '/admin/reports': typeof AdminReportsRoute
   '/admin/settings': typeof AdminSettingsRoute
   '/company/$companyId': typeof CompanyCompanyIdRoute
+  '/events/flagship': typeof EventsFlagshipRoute
   '/lions/apply': typeof LionsApplyRoute
   '/member/$memberId': typeof MemberMemberIdRoute
   '/messages/$conversationId': typeof MessagesConversationIdRoute
@@ -577,6 +586,7 @@ export interface FileRouteTypes {
     | '/admin/reports'
     | '/admin/settings'
     | '/company/$companyId'
+    | '/events/flagship'
     | '/lions/apply'
     | '/member/$memberId'
     | '/messages/$conversationId'
@@ -636,6 +646,7 @@ export interface FileRouteTypes {
     | '/admin/reports'
     | '/admin/settings'
     | '/company/$companyId'
+    | '/events/flagship'
     | '/lions/apply'
     | '/member/$memberId'
     | '/messages/$conversationId'
@@ -695,6 +706,7 @@ export interface FileRouteTypes {
     | '/admin/reports'
     | '/admin/settings'
     | '/company/$companyId'
+    | '/events/flagship'
     | '/lions/apply'
     | '/member/$memberId'
     | '/messages/$conversationId'
@@ -724,7 +736,7 @@ export interface RootRouteChildren {
   DirectoryRoute: typeof DirectoryRoute
   EmailUnsubscribeRoute: typeof EmailUnsubscribeRoute
   EsgRoute: typeof EsgRoute
-  EventsRoute: typeof EventsRoute
+  EventsRoute: typeof EventsRouteWithChildren
   ForgotPasswordRoute: typeof ForgotPasswordRoute
   InstallRoute: typeof InstallRoute
   LoginRoute: typeof LoginRoute
@@ -1068,6 +1080,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof CompanyCompanyIdRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/events/flagship': {
+      id: '/events/flagship'
+      path: '/flagship'
+      fullPath: '/events/flagship'
+      preLoaderRoute: typeof EventsFlagshipRouteImport
+      parentRoute: typeof EventsRoute
+    }
     '/lions/': {
       id: '/lions/'
       path: '/lions'
@@ -1176,6 +1195,17 @@ declare module '@tanstack/react-router' {
   }
 }
 
+interface EventsRouteChildren {
+  EventsFlagshipRoute: typeof EventsFlagshipRoute
+}
+
+const EventsRouteChildren: EventsRouteChildren = {
+  EventsFlagshipRoute: EventsFlagshipRoute,
+}
+
+const EventsRouteWithChildren =
+  EventsRoute._addFileChildren(EventsRouteChildren)
+
 interface AdminMembersRouteChildren {
   AdminMembersMemberIdRoute: typeof AdminMembersMemberIdRoute
 }
@@ -1199,7 +1229,7 @@ const rootRouteChildren: RootRouteChildren = {
   DirectoryRoute: DirectoryRoute,
   EmailUnsubscribeRoute: EmailUnsubscribeRoute,
   EsgRoute: EsgRoute,
-  EventsRoute: EventsRoute,
+  EventsRoute: EventsRouteWithChildren,
   ForgotPasswordRoute: ForgotPasswordRoute,
   InstallRoute: InstallRoute,
   LoginRoute: LoginRoute,

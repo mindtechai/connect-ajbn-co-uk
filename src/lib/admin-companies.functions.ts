@@ -31,6 +31,7 @@ export type CompanyRow = {
   owner_user_id: string | null;
   rep_count: number;
   reps: CompanyRep[];
+  is_flagship_exhibitor: boolean;
 };
 
 /** Every company listing with its linked representatives (max 3 each). */
@@ -40,7 +41,7 @@ export const listCompaniesWithReps = createServerFn({ method: "GET" })
     await assertFullAdmin(context);
     const { supabaseAdmin } = await import("@/integrations/supabase/client.server");
 
-    const [{ data: companies }, { data: profiles }] = await Promise.all([
+    const [{ data: companies }, { data: profiles }, { data: exhibitors }] = await Promise.all([
       supabaseAdmin
         .from("corporate_members")
         .select("id, company_name, primary_sector, city, owner_user_id")
@@ -50,7 +51,9 @@ export const listCompaniesWithReps = createServerFn({ method: "GET" })
         .select("id, first_name, last_name, email, title, company_id")
         .not("company_id", "is", null)
         .is("deleted_at", null),
+      supabaseAdmin.from("flagship_exhibitors").select("company_id"),
     ]);
+    const exhibitorIds = new Set((exhibitors ?? []).map((e: any) => e.company_id as string));
 
     const byCompany = new Map<string, CompanyRep[]>();
     for (const p of profiles ?? []) {
@@ -79,6 +82,7 @@ export const listCompaniesWithReps = createServerFn({ method: "GET" })
         owner_user_id: c.owner_user_id ?? null,
         rep_count: reps.length,
         reps,
+        is_flagship_exhibitor: exhibitorIds.has(c.id),
       };
     });
     return rows;
