@@ -1487,6 +1487,8 @@ export type Database = {
           id: string
           logo_filename: string
           primary_sector: string
+          services_list: string[]
+          short_bio: string
           sort_order: number
           website: string
         }[]
