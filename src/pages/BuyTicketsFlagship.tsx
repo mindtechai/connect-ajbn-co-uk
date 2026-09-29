@@ -1,7 +1,9 @@
+import { useEffect, useState } from "react";
 import { Link } from "@/lib/router-compat";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CalendarDays, MapPin, Ticket, ArrowLeft, ExternalLink, Crown } from "lucide-react";
+import { CalendarDays, MapPin, Ticket, ArrowLeft, ExternalLink, Crown, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
 import impactLionsLogo from "@/assets/impact-lions-logo.png.asset.json";
 import { assetUrl } from "@/lib/asset";
@@ -9,7 +11,50 @@ import { FlagshipSponsors } from "@/components/FlagshipSponsors";
 
 const EXTERNAL_TICKETS_URL = "https://www.ajbn.co.uk/buy-tickets/";
 
+type Exhibitor = {
+  id: string;
+  company_name: string;
+  primary_sector: string | null;
+  city: string | null;
+  website: string | null;
+  logo_filename: string | null;
+};
+
+function initials(name: string) {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0]!.toUpperCase())
+    .join("");
+}
+
+function usableWebsite(url: string | null) {
+  if (!url) return null;
+  const trimmed = url.trim();
+  if (!trimmed || trimmed === "#") return null;
+  return trimmed;
+}
+
 export default function BuyTicketsFlagshipPage() {
+  const [exhibitors, setExhibitors] = useState<Exhibitor[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      const { data } = await supabase
+        .from("flagship_exhibitors")
+        .select(
+          "sort_order, corporate_members!inner(id, company_name, primary_sector, city, website, logo_filename, verified)",
+        )
+        .order("sort_order", { ascending: true });
+      const rows = (data ?? [])
+        .map((r: any) => r.corporate_members)
+        .filter((c: any) => c && c.verified) as Exhibitor[];
+      setExhibitors(rows);
+      setLoading(false);
+    })();
+  }, []);
   return (
     <div className="min-h-screen bg-background">
       {/* Branded header — both logos are back-nav entry points */}
