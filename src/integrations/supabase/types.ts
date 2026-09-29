@@ -1479,6 +1479,18 @@ export type Database = {
         }
         Returns: boolean
       }
+      public_flagship_exhibitors: {
+        Args: never
+        Returns: {
+          city: string
+          company_name: string
+          id: string
+          logo_filename: string
+          primary_sector: string
+          sort_order: number
+          website: string
+        }[]
+      }
       public_member_directory: {
         Args: never
         Returns: {
