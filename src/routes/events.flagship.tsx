@@ -84,16 +84,10 @@ function FlagshipEventPage() {
 
   useEffect(() => {
     (async () => {
-      const { data } = await supabase
-        .from("flagship_exhibitors")
-        .select(
-          "sort_order, corporate_members!inner(id, company_name, primary_sector, short_bio, services_list, website, verified)",
-        )
-        .order("sort_order", { ascending: true });
-      const rows = (data ?? [])
-        .map((r: any) => r.corporate_members)
-        .filter((c: any) => c && c.verified) as Exhibitor[];
-      setExhibitors(rows);
+      // corporate_members is not readable by signed-out visitors (RLS), so the
+      // public pages fetch exhibitors through this locked-down public function.
+      const { data } = await supabase.rpc("public_flagship_exhibitors");
+      setExhibitors((data ?? []) as Exhibitor[]);
       setLoading(false);
     })();
   }, []);
