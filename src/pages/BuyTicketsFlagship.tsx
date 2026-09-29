@@ -1,7 +1,9 @@
+import { useEffect, useState } from "react";
 import { Link } from "@/lib/router-compat";
 import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
-import { CalendarDays, MapPin, Ticket, ArrowLeft, ExternalLink, Crown } from "lucide-react";
+import { CalendarDays, MapPin, Ticket, ArrowLeft, ExternalLink, Crown, Loader2 } from "lucide-react";
+import { supabase } from "@/integrations/supabase/client";
 import ajbnLogo from "@/assets/ajbn-logo.jpg.asset.json";
 import impactLionsLogo from "@/assets/impact-lions-logo.png.asset.json";
 import { assetUrl } from "@/lib/asset";
@@ -9,7 +11,44 @@ import { FlagshipSponsors } from "@/components/FlagshipSponsors";
 
 const EXTERNAL_TICKETS_URL = "https://www.ajbn.co.uk/buy-tickets/";
 
+type Exhibitor = {
+  id: string;
+  company_name: string;
+  primary_sector: string | null;
+  city: string | null;
+  website: string | null;
+  logo_filename: string | null;
+};
+
+function initials(name: string) {
+  return name
+    .split(/\s+/)
+    .filter(Boolean)
+    .slice(0, 2)
+    .map((w) => w[0]!.toUpperCase())
+    .join("");
+}
+
+function usableWebsite(url: string | null) {
+  if (!url) return null;
+  const trimmed = url.trim();
+  if (!trimmed || trimmed === "#") return null;
+  return trimmed;
+}
+
 export default function BuyTicketsFlagshipPage() {
+  const [exhibitors, setExhibitors] = useState<Exhibitor[]>([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    (async () => {
+      // corporate_members is not readable by signed-out visitors (RLS), so the
+      // public pages fetch exhibitors through this locked-down public function.
+      const { data } = await supabase.rpc("public_flagship_exhibitors");
+      setExhibitors((data ?? []) as Exhibitor[]);
+      setLoading(false);
+    })();
+  }, []);
   return (
     <div className="min-h-screen bg-background">
       {/* Branded header — both logos are back-nav entry points */}
@@ -117,6 +156,67 @@ export default function BuyTicketsFlagshipPage() {
               </Button>
             </div>
           </div>
+
+          {/* Exhibitors */}
+          <section className="pt-4 border-t space-y-4">
+            <h2 className="text-lg font-display font-semibold">
+              Exhibitors{exhibitors.length > 0 ? ` — ${exhibitors.length} Confirmed (50+ Expected)` : ""}
+            </h2>
+
+            {loading ? (
+              <div className="flex justify-center py-8">
+                <Loader2 className="animate-spin text-muted-foreground" />
+              </div>
+            ) : exhibitors.length === 0 ? (
+              <div className="rounded-xl border bg-card p-8 text-center text-sm text-muted-foreground">
+                Exhibitors to be announced
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {exhibitors.map((e) => {
+                  const website = usableWebsite(e.website);
+                  return (
+                    <div
+                      key={e.id}
+                      className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4 text-center hover:border-primary/40 hover:shadow-xs transition"
+                    >
+                      <span className="grid h-12 w-12 place-items-center rounded-lg bg-primary/10 text-primary font-display font-semibold">
+                        {e.logo_filename ? (
+                          <img
+                            src={`/logos/${e.logo_filename}`}
+                            alt={e.company_name}
+                            className="h-12 w-12 rounded-lg object-contain"
+                            onError={(ev) => {
+                              ev.currentTarget.outerHTML = initials(e.company_name);
+                            }}
+                          />
+                        ) : (
+                          initials(e.company_name)
+                        )}
+                      </span>
+                      <span className="text-sm font-medium leading-tight line-clamp-2">{e.company_name}</span>
+                      {e.primary_sector && (
+                        <span className="text-[11px] text-muted-foreground line-clamp-1">{e.primary_sector}</span>
+                      )}
+                      {e.city && (
+                        <span className="text-[11px] text-muted-foreground line-clamp-1">{e.city}</span>
+                      )}
+                      {website && (
+                        <a
+                          href={website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-auto inline-flex items-center gap-1 text-[11px] text-primary hover:underline"
+                        >
+                          Website <ExternalLink size={10} />
+                        </a>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </section>
         </div>
       </main>
     </div>
