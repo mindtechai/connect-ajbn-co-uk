@@ -162,6 +162,67 @@ export default function BuyTicketsFlagshipPage() {
               </Button>
             </div>
           </div>
+
+          {/* Exhibitors */}
+          <section className="pt-4 border-t space-y-4">
+            <h2 className="text-lg font-display font-semibold">
+              Exhibitors{exhibitors.length > 0 ? ` — ${exhibitors.length} Confirmed (50+ Expected)` : ""}
+            </h2>
+
+            {loading ? (
+              <div className="flex justify-center py-8">
+                <Loader2 className="animate-spin text-muted-foreground" />
+              </div>
+            ) : exhibitors.length === 0 ? (
+              <div className="rounded-xl border bg-card p-8 text-center text-sm text-muted-foreground">
+                Exhibitors to be announced
+              </div>
+            ) : (
+              <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
+                {exhibitors.map((e) => {
+                  const website = usableWebsite(e.website);
+                  return (
+                    <div
+                      key={e.id}
+                      className="flex flex-col items-center gap-2 rounded-xl border bg-card p-4 text-center hover:border-primary/40 hover:shadow-xs transition"
+                    >
+                      <span className="grid h-12 w-12 place-items-center rounded-lg bg-primary/10 text-primary font-display font-semibold">
+                        {e.logo_filename ? (
+                          <img
+                            src={`/logos/${e.logo_filename}`}
+                            alt={e.company_name}
+                            className="h-12 w-12 rounded-lg object-contain"
+                            onError={(ev) => {
+                              ev.currentTarget.outerHTML = initials(e.company_name);
+                            }}
+                          />
+                        ) : (
+                          initials(e.company_name)
+                        )}
+                      </span>
+                      <span className="text-sm font-medium leading-tight line-clamp-2">{e.company_name}</span>
+                      {e.primary_sector && (
+                        <span className="text-[11px] text-muted-foreground line-clamp-1">{e.primary_sector}</span>
+                      )}
+                      {e.city && (
+                        <span className="text-[11px] text-muted-foreground line-clamp-1">{e.city}</span>
+                      )}
+                      {website && (
+                        <a
+                          href={website}
+                          target="_blank"
+                          rel="noopener noreferrer"
+                          className="mt-auto inline-flex items-center gap-1 text-[11px] text-primary hover:underline"
+                        >
+                          Website <ExternalLink size={10} />
+                        </a>
+                      )}
+                    </div>
+                  );
+                })}
+              </div>
+            )}
+          </section>
         </div>
       </main>
     </div>
