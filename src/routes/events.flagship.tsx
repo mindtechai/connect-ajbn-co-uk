@@ -48,6 +48,15 @@ function initials(name: string) {
     .join("");
 }
 
+// Guard against free-text websites saved without a scheme, which the
+// browser would otherwise resolve as a relative in-app path.
+function exhibitorWebsite(url: string | null) {
+  if (!url) return null;
+  const trimmed = url.trim();
+  if (!trimmed || trimmed === "#") return null;
+  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+}
+
 const eventSchema = {
   "@context": "https://schema.org",
   "@type": "BusinessEvent",
@@ -240,13 +249,16 @@ function FlagshipEventPage() {
                     <Building2 size={14} className="mr-1" /> View in directory
                   </Link>
                 </Button>
-                {open.website && (
-                  <Button asChild size="sm" variant="ghost">
-                    <a href={open.website} target="_blank" rel="noopener noreferrer">
-                      <ExternalLink size={14} className="mr-1" /> Website
-                    </a>
-                  </Button>
-                )}
+                {(() => {
+                  const website = exhibitorWebsite(open.website);
+                  return website ? (
+                    <Button asChild size="sm" variant="ghost">
+                      <a href={website} target="_blank" rel="noopener noreferrer">
+                        <ExternalLink size={14} className="mr-1" /> Website
+                      </a>
+                    </Button>
+                  ) : null;
+                })()}
               </div>
             </div>
           )}

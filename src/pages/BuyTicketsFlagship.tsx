@@ -33,7 +33,9 @@ function usableWebsite(url: string | null) {
   if (!url) return null;
   const trimmed = url.trim();
   if (!trimmed || trimmed === "#") return null;
-  return trimmed;
+  // Guard against free-text websites saved without a scheme, which the
+  // browser would otherwise resolve as a relative in-app path.
+  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
 }
 
 export default function BuyTicketsFlagshipPage() {
