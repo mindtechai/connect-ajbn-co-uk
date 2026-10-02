@@ -240,9 +240,9 @@ function FlagshipEventPage() {
                     <Building2 size={14} className="mr-1" /> View in directory
                   </Link>
                 </Button>
-                {open.website && (
+                {open.website && /^https?:\/\//i.test(open.website.trim()) && (
                   <Button asChild size="sm" variant="ghost">
-                    <a href={open.website} target="_blank" rel="noopener noreferrer">
+                    <a href={open.website.trim()} target="_blank" rel="noopener noreferrer">
                       <ExternalLink size={14} className="mr-1" /> Website
                     </a>
                   </Button>
