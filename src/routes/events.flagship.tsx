@@ -48,6 +48,15 @@ function initials(name: string) {
     .join("");
 }
 
+// Guard against free-text websites saved without a scheme, which the
+// browser would otherwise resolve as a relative in-app path.
+function exhibitorWebsite(url: string | null) {
+  if (!url) return null;
+  const trimmed = url.trim();
+  if (!trimmed || trimmed === "#") return null;
+  return /^https?:\/\//i.test(trimmed) ? trimmed : `https://${trimmed}`;
+}
+
 const eventSchema = {
   "@context": "https://schema.org",
   "@type": "BusinessEvent",
