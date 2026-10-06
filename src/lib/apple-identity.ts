@@ -10,7 +10,12 @@ export function isAppleUser(user: UserLike): boolean {
   const app = (user?.app_metadata ?? {}) as Record<string, unknown>;
   if (app["provider"] === "apple") return true;
   const providers = app["providers"];
-  return Array.isArray(providers) && providers.includes("apple");
+  if (Array.isArray(providers) && providers.includes("apple")) return true;
+  const meta = (user?.user_metadata ?? {}) as Record<string, unknown>;
+  if (meta["iss"] === "https://appleid.apple.com") return true;
+  const identities = (user as { identities?: { provider?: string }[] } | null | undefined)?.identities;
+  if (Array.isArray(identities) && identities.some((i) => i?.provider === "apple")) return true;
+  return /@privaterelay\.appleid\.com$/i.test(user?.email ?? "");
 }
 
 /** Full name Apple provided (Apple only sends it on the very first sign-in). */
