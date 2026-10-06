@@ -26,5 +26,5 @@ export function appleFullName(user: UserLike): string {
 export function splitName(full: string): { first: string; last: string } {
   const parts = full.trim().split(/\s+/).filter(Boolean);
   if (!parts.length) return { first: "", last: "" };
-  return { first: parts[0], last: parts.slice(1).join(" ") };
+  return { first: parts[0] ?? "", last: parts.slice(1).join(" ") };
 }
