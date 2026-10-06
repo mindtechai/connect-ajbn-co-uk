@@ -127,7 +127,7 @@ export default function CompleteProfilePage() {
 
           <div className="flex gap-2">
             <Button type="submit" disabled={saving} className="flex-1">
-              {saving ? <Loader2 className="animate-spin" size={16} /> : "Save and continue"}
+              {saving ? <Loader2 className="animate-spin" size={16} /> : "Save"}
             </Button>
             <Button type="button" variant="ghost" onClick={() => navigate("/dashboard")}>Later</Button>
           </div>
