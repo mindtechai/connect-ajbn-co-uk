@@ -35,7 +35,9 @@ export default function CompleteProfilePage() {
       setLast(p?.last_name || meta["last_name"] || fromApple.last);
       setBusiness(p?.pending_company_name || p?.company || "");
       setCategory(p?.primary_sector || "");
-      setCategories((tax ?? []).map((t) => t.name));
+      const names = (tax ?? []).map((t) => t.name);
+      if (p?.primary_sector && !names.includes(p.primary_sector)) names.unshift(p.primary_sector);
+      setCategories(names.length ? names : ["Other"]);
       setLoading(false);
     })();
   }, [user, authLoading]);
@@ -58,9 +60,13 @@ export default function CompleteProfilePage() {
       last_name: last.trim() || null,
       primary_sector: category,
     };
-    if (business.trim() !== (row?.company ?? "")) {
-      // Company names go through the existing admin approval path.
-      patch["pending_company_name"] = business.trim();
+    const name = business.trim();
+    if (!(row?.company ?? "").trim()) {
+      // First business name is saved straight away.
+      patch["company"] = name;
+    } else if (name !== row?.company) {
+      // Later changes go through the existing admin approval path.
+      patch["pending_company_name"] = name;
       patch["company_name_status"] = "pending";
     }
     const { error } = await supabase.from("profiles").update(patch as never).eq("id", user.id);
@@ -87,10 +93,9 @@ export default function CompleteProfilePage() {
 
         <form onSubmit={save} className="mt-6 space-y-5">
           {apple ? (
-            <div className="rounded-lg border bg-muted/40 p-3 text-sm">
-              <p className="text-muted-foreground">Signed in with Apple as</p>
-              <p className="font-medium">{fullName || "Apple member"}</p>
-              {user?.email && <p className="text-muted-foreground break-all">{user.email}</p>}
+            <div className="rounded-lg border bg-muted/40 p-3 text-sm break-all" aria-readonly="true">
+              Signed in as <span className="font-medium">{fullName || "Apple member"}</span>
+              {user?.email ? <> · <span className="text-muted-foreground">{user.email}</span></> : null}
             </div>
           ) : (
             <>
