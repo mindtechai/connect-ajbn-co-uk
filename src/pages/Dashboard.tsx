@@ -144,7 +144,7 @@ export default function DashboardPage() {
         }
       }
       setProfile(liveProfile ?? localProfile);
-      if (liveProfile && !(liveProfile.company || liveProfile.pending_company_name) || (liveProfile && !liveProfile.primary_sector)) {
+      if (liveProfile && (!(liveProfile.company || liveProfile.pending_company_name) || !liveProfile.primary_sector)) {
         const key = `ajbn.completeProfile.prompted.${user.id}`;
         if (!sessionStorage.getItem(key)) {
           sessionStorage.setItem(key, "1");
@@ -370,7 +370,7 @@ export default function DashboardPage() {
                     style={{ width: `${completion}%` }}
                   />
                 </div>
-                <Link to="/settings/profile">
+                <Link to={profile && (!(profile.company || profile.pending_company_name) || !profile.primary_sector) ? "/complete-profile" : "/settings/profile"}>
                   <Button variant="ghost" size="sm" className="text-xs mt-1">
                     Complete Profile <ArrowRight size={14} />
                   </Button>
