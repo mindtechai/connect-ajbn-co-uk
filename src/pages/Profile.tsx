@@ -12,6 +12,7 @@ import { Loader2, Copy, Upload } from "lucide-react";
 import { Badge } from "@/components/ui/badge";
 import { X } from "lucide-react";
 import { DeleteAccountDialog } from "@/components/DeleteAccountDialog";
+import { isAppleUser, appleFullName, splitName } from "@/lib/apple-identity";
 
 const TAG_SUGGESTIONS = ["Barrister","Solicitor","Accountant","IFA","Funder","Property Consultant","Business Coach","Architect"];
 // Kept so the dashboard / enquiry pre-fill keep working from the same cache.
@@ -63,8 +64,8 @@ export default function ProfilePage() {
         toast({ title: "Could not load your profile", description: error.message, variant: "destructive" });
       }
       const next: ProfileForm = {
-        first_name: data?.first_name ?? meta["first_name"] ?? "",
-        last_name: data?.last_name ?? meta["last_name"] ?? "",
+        first_name: data?.first_name || meta["first_name"] || splitName(appleFullName(user)).first,
+        last_name: data?.last_name || meta["last_name"] || splitName(appleFullName(user)).last,
         title: data?.title ?? "",
         industry: data?.industry ?? "",
         phone: data?.phone ?? "",
@@ -202,8 +203,8 @@ export default function ProfilePage() {
           )}
 
           <div className="grid grid-cols-2 gap-3">
-            <div className="space-y-2"><Label>First name</Label><Input value={form.first_name} onChange={set("first_name")} disabled={!editing} /></div>
-            <div className="space-y-2"><Label>Last name</Label><Input value={form.last_name} onChange={set("last_name")} disabled={!editing} /></div>
+            <div className="space-y-2"><Label>First name</Label><Input value={form.first_name} onChange={set("first_name")} disabled={!editing || isAppleUser(user)} /></div>
+            <div className="space-y-2"><Label>Last name</Label><Input value={form.last_name} onChange={set("last_name")} disabled={!editing || isAppleUser(user)} /></div>
           </div>
           <div className="space-y-2"><Label>Email</Label><Input value={readOnly.email} disabled /></div>
           <div className="grid grid-cols-2 gap-3">

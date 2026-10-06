@@ -29,6 +29,7 @@ import { useQuietHours } from "@/hooks/useQuietHours";
 
 import { EVENTS } from "@/lib/publicEvents";
 import { aiMatcherEnabledFor } from "@/lib/ai-matcher-flag";
+import { isAppleUser, appleFullName, splitName } from "@/lib/apple-identity";
 
 type Announcement = { id: string; title: string; body: string; priority: string; published_at: string; pinned: boolean };
 type UpcomingEvent = { id: string; title: string; starts_at: string; location: string | null };
@@ -131,7 +132,25 @@ export default function DashboardPage() {
         supabase.from("events").select("id,title,starts_at,location").gte("starts_at", new Date().toISOString()).order("starts_at", { ascending: true }).limit(4),
         supabase.from("profiles").select("*", { count: "exact", head: true }).eq("referred_by_code", (await supabase.from("profiles").select("referral_code").eq("id", user.id).maybeSingle()).data?.referral_code ?? "__none__"),
       ]);
-      setProfile(p ?? localProfile);
+      let liveProfile: any = p;
+      // Apple sends the member's name only once — persist it immediately.
+      if (p && isAppleUser(user) && !p.first_name && !p.last_name) {
+        const full = appleFullName(user);
+        if (full) {
+          const { first, last } = splitName(full);
+          const { error: nameErr } = await supabase.from("profiles").update({ first_name: first, last_name: last || null }).eq("id", user.id);
+          if (!nameErr) liveProfile = { ...p, first_name: first, last_name: last || null };
+          void supabase.auth.updateUser({ data: { full_name: full } });
+        }
+      }
+      setProfile(liveProfile ?? localProfile);
+      if (liveProfile && (!(liveProfile.company || liveProfile.pending_company_name) || !liveProfile.primary_sector)) {
+        const key = `ajbn.completeProfile.prompted.${user.id}`;
+        if (!sessionStorage.getItem(key)) {
+          sessionStorage.setItem(key, "1");
+          navigate("/complete-profile");
+        }
+      }
       setAnnouncements((ann ?? []) as Announcement[]);
       const liveEvents = (ev ?? []) as UpcomingEvent[];
       setUpcomingEvents(liveEvents.length ? liveEvents : fallbackUpcomingEvents());
@@ -351,7 +370,7 @@ export default function DashboardPage() {
                     style={{ width: `${completion}%` }}
                   />
                 </div>
-                <Link to="/settings/profile">
+                <Link to={profile && (!(profile.company || profile.pending_company_name) || !profile.primary_sector) ? "/complete-profile" : "/settings/profile"}>
                   <Button variant="ghost" size="sm" className="text-xs mt-1">
                     Complete Profile <ArrowRight size={14} />
                   </Button>

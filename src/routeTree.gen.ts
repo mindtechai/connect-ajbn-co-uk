@@ -14,6 +14,7 @@ import { Route as AccountDeletionRouteImport } from './routes/account-deletion'
 import { Route as AiMatcherRouteImport } from './routes/ai-matcher'
 import { Route as BoardRouteImport } from './routes/board'
 import { Route as BusinessNeedsMatchRouteImport } from './routes/business-needs-match'
+import { Route as CompleteProfileRouteImport } from './routes/complete-profile'
 import { Route as ContactRouteImport } from './routes/contact'
 import { Route as DashboardRouteImport } from './routes/dashboard'
 import { Route as DirectoryRouteImport } from './routes/directory'
@@ -91,6 +92,11 @@ const BoardRoute = BoardRouteImport.update({
 const BusinessNeedsMatchRoute = BusinessNeedsMatchRouteImport.update({
   id: '/business-needs-match',
   path: '/business-needs-match',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CompleteProfileRoute = CompleteProfileRouteImport.update({
+  id: '/complete-profile',
+  path: '/complete-profile',
   getParentRoute: () => rootRouteImport,
 } as any)
 const ContactRoute = ContactRouteImport.update({
@@ -367,6 +373,7 @@ export interface FileRoutesByFullPath {
   '/ai-matcher': typeof AiMatcherRoute
   '/board': typeof BoardRoute
   '/business-needs-match': typeof BusinessNeedsMatchRoute
+  '/complete-profile': typeof CompleteProfileRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/directory': typeof DirectoryRoute
@@ -427,6 +434,7 @@ export interface FileRoutesByTo {
   '/ai-matcher': typeof AiMatcherRoute
   '/board': typeof BoardRoute
   '/business-needs-match': typeof BusinessNeedsMatchRoute
+  '/complete-profile': typeof CompleteProfileRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/directory': typeof DirectoryRoute
@@ -488,6 +496,7 @@ export interface FileRoutesById {
   '/ai-matcher': typeof AiMatcherRoute
   '/board': typeof BoardRoute
   '/business-needs-match': typeof BusinessNeedsMatchRoute
+  '/complete-profile': typeof CompleteProfileRoute
   '/contact': typeof ContactRoute
   '/dashboard': typeof DashboardRoute
   '/directory': typeof DirectoryRoute
@@ -550,6 +559,7 @@ export interface FileRouteTypes {
     | '/ai-matcher'
     | '/board'
     | '/business-needs-match'
+    | '/complete-profile'
     | '/contact'
     | '/dashboard'
     | '/directory'
@@ -610,6 +620,7 @@ export interface FileRouteTypes {
     | '/ai-matcher'
     | '/board'
     | '/business-needs-match'
+    | '/complete-profile'
     | '/contact'
     | '/dashboard'
     | '/directory'
@@ -670,6 +681,7 @@ export interface FileRouteTypes {
     | '/ai-matcher'
     | '/board'
     | '/business-needs-match'
+    | '/complete-profile'
     | '/contact'
     | '/dashboard'
     | '/directory'
@@ -731,6 +743,7 @@ export interface RootRouteChildren {
   AiMatcherRoute: typeof AiMatcherRoute
   BoardRoute: typeof BoardRoute
   BusinessNeedsMatchRoute: typeof BusinessNeedsMatchRoute
+  CompleteProfileRoute: typeof CompleteProfileRoute
   ContactRoute: typeof ContactRoute
   DashboardRoute: typeof DashboardRoute
   DirectoryRoute: typeof DirectoryRoute
@@ -819,6 +832,13 @@ declare module '@tanstack/react-router' {
       path: '/business-needs-match'
       fullPath: '/business-needs-match'
       preLoaderRoute: typeof BusinessNeedsMatchRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/complete-profile': {
+      id: '/complete-profile'
+      path: '/complete-profile'
+      fullPath: '/complete-profile'
+      preLoaderRoute: typeof CompleteProfileRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/contact': {
@@ -1224,6 +1244,7 @@ const rootRouteChildren: RootRouteChildren = {
   AiMatcherRoute: AiMatcherRoute,
   BoardRoute: BoardRoute,
   BusinessNeedsMatchRoute: BusinessNeedsMatchRoute,
+  CompleteProfileRoute: CompleteProfileRoute,
   ContactRoute: ContactRoute,
   DashboardRoute: DashboardRoute,
   DirectoryRoute: DirectoryRoute,
