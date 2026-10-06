@@ -8,6 +8,7 @@ export function GoogleSignInButton({ next }: { next?: string }) {
   const [loading, setLoading] = useState(false);
   const onClick = async () => {
     setLoading(true);
+    void import("@/lib/post-signin").then((m) => m.markOAuthPending(next));
     const redirect = `${window.location.origin}${next ? `?next=${encodeURIComponent(next)}` : ""}`;
     const res = await lovable.auth.signInWithOAuth("google", { redirect_uri: redirect });
     if ((res as any)?.error) {
