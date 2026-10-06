@@ -68,6 +68,10 @@ export function AuthProvider({ children }: { children: ReactNode }) {
       if (s?.user) {
         localStorage.removeItem(MOCK_KEY);
         if (_evt === "SIGNED_IN") notifyIfNewSignup(s.user.id);
+        if (_evt === "SIGNED_IN" || _evt === "INITIAL_SESSION") {
+          const uid = s.user.id;
+          setTimeout(() => { void import("@/lib/post-signin").then((m) => m.routeAfterOAuth(uid)).catch(() => {}); }, 0);
+        }
         setSession(s);
         setUser(s.user);
         setRoles([]);

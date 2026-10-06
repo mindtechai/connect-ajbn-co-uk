@@ -3,6 +3,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { markOAuthPending } from "@/lib/post-signin";
 
 /**
  * Official-style black "Continue with Apple" button.
@@ -15,6 +16,7 @@ export function AppleSignInButton({ next }: { next?: string }) {
 
   const onClick = async () => {
     setLoading(true);
+    markOAuthPending(next);
     const redirectTo = `${window.location.origin}${next ? `?next=${encodeURIComponent(next)}` : ""}`;
     const { error } = await supabase.auth.signInWithOAuth({
       provider: "apple",

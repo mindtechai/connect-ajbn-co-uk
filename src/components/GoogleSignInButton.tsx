@@ -3,11 +3,13 @@ import { lovable } from "@/integrations/lovable";
 import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
+import { markOAuthPending } from "@/lib/post-signin";
 
 export function GoogleSignInButton({ next }: { next?: string }) {
   const [loading, setLoading] = useState(false);
   const onClick = async () => {
     setLoading(true);
+    markOAuthPending(next);
     const redirect = `${window.location.origin}${next ? `?next=${encodeURIComponent(next)}` : ""}`;
     const res = await lovable.auth.signInWithOAuth("google", { redirect_uri: redirect });
     if ((res as any)?.error) {
