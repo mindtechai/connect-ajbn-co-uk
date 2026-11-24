@@ -1,0 +1,90 @@
+workflows:
+  ios-release:
+    name: AJBN Build 38 FINAL PUBLISH
+    instance_type: mac_mini_m2
+    max_build_duration: 60
+    integrations:
+      app_store_connect: ajbn_connect_api
+    environment:
+      groups: [ajbn_signing]
+      xcode: latest
+    scripts:
+      - name: Auto-fix project.pbxproj
+        script: |
+          PBX="AJBNConnect.xcodeproj/project.pbxproj"
+          python3 << 'PY'
+          import re, pathlib, random
+          text = pathlib.Path("AJBNConnect.xcodeproj/project.pbxproj").read_text()
+          if "ASSETCATALOG_COMPILER_APPICON_NAME" not in text:
+              text = re.sub(r'(PRODUCT_BUNDLE_IDENTIFIER .*?;)', r'\1\n\t\t\t\tASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;', text)
+          m = re.search(r'[A-F0-9]{24}\s*/\*\s*Assets.xcassets\s*/\*\s*=\s*\{isa\s*=\s*PBXFileReference', text)
+          if m:
+              file_ref = m.group(1)
+              if not re.search(rf'{file_ref}.*isa = PBXBuildFile;.*fileRef = \{file_ref\}', text, re.DOTALL):
+                  new_id = ''.join(random.choices('0123456789ABCDEF', k=24))
+                  entry = f'\t\t{new_id} /* Assets.xcassets */ = {{isa = PBXBuildFile; fileRef = {file_ref} /* Assets.xcassets */ }};\n'
+                  text = text.replace("/* Begin PBXBuildFile section */", f"/* Begin PBXBuildFile section */\n{entry}")
+          res_match = re.search(r'(\w+)\s*/\*\s*Resources\s*/\*\s*=\s*\{[^}]*files = \((\.*?)\)', text, re.DOTALL)
+          if res_match:
+              full = res_match.group(0)
+              files_content = res_match.group(2)
+              if new_id not in files_content:
+                  text = text.replace(full, f"files = ({files_content}\n\t\t\t\t{new_id} /* Assets.xcassets in Resources */,\n")
+          pathlib.Path("AJBNConnect.xcodeproj/project.pbxproj").write_text(text)
+          print("patched")
+          PY
+      - name: Fix Info.plist 38
+        script: |
+          PLIST=AJBNConnect/Info.plist
+          /usr/libexec/PlistBuddy -c "Delete :CFBundleIcons" "$PLIST" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Delete :CFBundleIcons~ipad" "$PLIST" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Delete :CFBundleIconFiles" "$PLIST" 2>/dev/null || true
+          /usr/libexec/PlistBuddy -c "Set :CFBundleExecutable ${EXECUTABLE_NAME}" "$PLIST" 2>/dev/null || /usr/libexec/PlistBuddy -c "Add :CFBundleExecutable string ${EXECUTABLE_NAME}" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Set :CFBundlePackageType APPL" "$PLIST" 2>/dev/null || /usr/libexec/PlistBuddy -c "Add :CFBundlePackageType string APPL" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleIconName AppIcon" "$PLIST" 2>/dev/null || /usr/libexec/PlistBuddy -c "Add :CFBundleIconName string AppIcon" "$PLIST"
+          /usr/libexec/PlistBuddy -c "Set :CFBundleVersion 38" "$PLIST"
+      - name: Generate 120+152 icons
+        script: |
+          set -e
+          ICONSET=$(find . -path "*AppIcon.appiconset" -type d | head -1)
+          SRC="$ICONSET/AppIcon-1024.png"
+          python3 -m pip install Pillow -q
+          python3 << 'PY'
+          from PIL import Image
+          import os
+          iconset=os.popen('find . -path "*AppIcon.appiconset" -type d | head -1').read().strip()
+          src=f"{iconset}/AppIcon-1024.png"
+          im=Image.open(src).convert("RGB").resize((1024,1024), Image.LANCZOS)
+          im.save(src, "PNG", optimize=True)
+          for n,px in [("AppIcon-60@2x.png",120), ("AppIcon-76@2x.png",152)]:
+              Image.open(src).resize((px,px), Image.LANCZOS).save(f"{iconset}/{n}", "PNG", optimize=True)
+          PY
+          sips -z 120 120 "$SRC" --out "$ICONSET/AppIcon-60@2x.png"
+          sips -z 152 152 "$SRC" --out "$ICONSET/AppIcon-76@2x.png"
+      - name: Build IPA
+        script: |
+          rm -rf build
+          keychain initialize
+          app-store-connect fetch-signing-files "uk.co.ajbn.connect" --type IOS_APP_STORE --create --certificate-key @env:CERTIFICATE_PRIVATE_KEY
+          keychain add-certificates
+          xcode-project use-profiles
+          xcode-project build-ipa --project AJBNConnect.xcodeproj --scheme AJBNConnect
+      - name: Inspect
+        script: |
+          set -e
+          ARCHIVE=$(find . -name "*.xcarchive" -type d | head -1)
+          APP=$(find "$ARCHIVE/Products/Applications" -maxdepth 1 -name "*.app" | head -1)
+          ls -la "$APP"
+          EXE=$(/usr/libexec/PlistBuddy -c "Print :CFBundleExecutable" "$APP/Info.plist")
+          file "$APP/$EXE"
+          ls -lh "$APP/assets.car" "$APP/$EXE"
+          echo "Ready to publish"
+    artifacts:
+      - build/ios/ipa/*.ipa
+      - build/**/*.xcarchive
+    publishing:
+      app_store_connect:
+        auth:
+          integration: ajbn_connect_api
+        api_key: ajbn_connect_api
+        submit_to_testflight: true
