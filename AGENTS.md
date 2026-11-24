@@ -1,1 +1,1 @@
-- Native iOS Apple sign-in uses a plugin vendored in ios/App/App/AppleSignInPlugin.swift (registered by MainViewController) because the iOS project uses SPM and the community plugin is CocoaPods-only; web/Android keep OAuth.
+- The Apple sign-in button uses the WKWebView appleSignIn message handler when present and OAuth otherwise; register its result callback before posting a raw nonce to avoid losing immediate native responses. The vendored iOS plugin remains untouched.

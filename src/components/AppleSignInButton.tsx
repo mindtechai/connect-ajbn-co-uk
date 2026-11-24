@@ -4,7 +4,19 @@ import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { markOAuthPending } from "@/lib/post-signin";
-import { isNativeIOS, signInWithAppleNative } from "@/lib/native-apple-signin";
+
+type AppleResult = {
+  error?: unknown;
+  cancelled?: boolean;
+  identityToken?: string;
+  givenName?: string | null;
+  familyName?: string | null;
+};
+
+type AppleBridgeWindow = Window & {
+  webkit?: { messageHandlers?: { appleSignIn?: { postMessage: (message: { nonce: string }) => void } } };
+  __appleResult?: (result: AppleResult) => Promise<void>;
+};
 
 /**
  * Official-style black "Continue with Apple" button.
@@ -18,16 +30,53 @@ export function AppleSignInButton({ next }: { next?: string }) {
   const onClick = async () => {
     setLoading(true);
     markOAuthPending(next);
-    if (isNativeIOS()) {
+    const appleWindow = window as AppleBridgeWindow;
+    const handler = appleWindow.webkit?.messageHandlers?.appleSignIn;
+    if (handler) {
+      const rawNonce = Array.from(crypto.getRandomValues(new Uint8Array(32)))
+        .map((byte) => byte.toString(16).padStart(2, "0"))
+        .join("");
+      let settled = false;
+      // Install the callback before sending the message: native can respond immediately.
+      appleWindow.__appleResult = async (r) => {
+        if (settled) return;
+        settled = true;
+        if (r.error || r.cancelled) {
+          setLoading(false);
+          return;
+        }
+        try {
+          if (!r.identityToken) throw new Error("Apple did not return an identity token.");
+          const { data, error } = await supabase.auth.signInWithIdToken({
+            provider: "apple",
+            token: r.identityToken,
+            nonce: rawNonce,
+          });
+          if (error) throw error;
+          const given = r.givenName?.trim();
+          const family = r.familyName?.trim();
+          if (data.user && (given || family)) {
+            const names: { first_name?: string; last_name?: string } = {};
+            if (given) names.first_name = given;
+            if (family) names.last_name = family;
+            const { error: profileError } = await supabase.from("profiles").update(names).eq("id", data.user.id);
+            if (profileError) throw profileError;
+          }
+          // Existing onAuthStateChange routing handles profile completion.
+        } catch (e) {
+          const msg = e instanceof Error ? e.message : String(e);
+          toast({ title: "Apple sign-in failed", description: msg, variant: "destructive" });
+        } finally {
+          setLoading(false);
+        }
+      };
       try {
-        await signInWithAppleNative();
-        // onAuthStateChange -> routeAfterOAuth sends incomplete profiles to /complete-profile.
+        handler.postMessage({ nonce: rawNonce });
       } catch (e) {
+        settled = true;
         setLoading(false);
         const msg = e instanceof Error ? e.message : String(e);
-        if (!/cancel|1001/i.test(msg)) {
-          toast({ title: "Apple sign-in failed", description: msg, variant: "destructive" });
-        }
+        toast({ title: "Apple sign-in failed", description: msg, variant: "destructive" });
       }
       return;
     }
