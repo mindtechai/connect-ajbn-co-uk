@@ -1,6 +1,6 @@
 // iOS-only native Sign in with Apple: Apple system sheet -> identityToken -> Supabase signInWithIdToken.
 // Never uses signInWithOAuth, Safari or appleid.apple.com.
-import { Capacitor } from "@capacitor/core";
+import { Capacitor, registerPlugin } from "@capacitor/core";
 import { supabase } from "@/integrations/supabase/client";
 
 export function isNativeIOS() {
@@ -18,7 +18,13 @@ function randomNonce(len = 32) {
 }
 
 export async function signInWithAppleNative() {
-  const { SignInWithApple } = await import("@capacitor-community/apple-sign-in");
+  // Native plugin is vendored in the iOS app (AppleSignInPlugin.swift); register by name only,
+  // so no web/browser plugin code is ever bundled into the website.
+  const SignInWithApple = registerPlugin<{
+    authorize(o: { clientId: string; redirectURI: string; scopes: string; nonce: string }): Promise<{
+      response: { identityToken: string; givenName?: string | null; familyName?: string | null };
+    }>;
+  }>("SignInWithApple");
   const rawNonce = randomNonce();
   const hashedNonce = await sha256Hex(rawNonce);
   const { response } = await SignInWithApple.authorize({
