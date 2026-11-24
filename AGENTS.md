@@ -1,0 +1,1 @@
+- Native iOS Apple sign-in uses a plugin vendored in ios/App/App/AppleSignInPlugin.swift (registered by MainViewController) because the iOS project uses SPM and the community plugin is CocoaPods-only; web/Android keep OAuth.
