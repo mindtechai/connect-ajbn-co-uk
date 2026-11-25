@@ -4,6 +4,7 @@ import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { markOAuthPending } from "@/lib/post-signin";
+import { isNativeIOS, signInWithAppleNative } from "@/lib/native-apple-signin";
 
 type AppleResult = {
   error?: unknown;
@@ -77,6 +78,20 @@ export function AppleSignInButton({ next }: { next?: string }) {
         setLoading(false);
         const msg = e instanceof Error ? e.message : String(e);
         toast({ title: "Apple sign-in failed", description: msg, variant: "destructive" });
+      }
+      return;
+    }
+    if (isNativeIOS()) {
+      // Inside the iOS app: vendored AppleSignInPlugin shows the native sheet (hashed nonce flow).
+      try {
+        await signInWithAppleNative();
+      } catch (e) {
+        const msg = e instanceof Error ? e.message : String(e);
+        if (!/cancel|1001/i.test(msg)) {
+          toast({ title: "Apple sign-in failed", description: msg, variant: "destructive" });
+        }
+      } finally {
+        setLoading(false);
       }
       return;
     }

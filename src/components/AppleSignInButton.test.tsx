@@ -11,6 +11,8 @@ vi.mock("@/integrations/supabase/client", () => ({ supabase: {
 } }));
 vi.mock("@/lib/post-signin", () => ({ markOAuthPending: mocks.pending }));
 vi.mock("@/hooks/use-toast", () => ({ toast: mocks.toast }));
+const native = vi.hoisted(() => ({ isIOS: vi.fn(() => false), signIn: vi.fn() }));
+vi.mock("@/lib/native-apple-signin", () => ({ isNativeIOS: native.isIOS, signInWithAppleNative: native.signIn }));
 
 type Result = { error?: string; cancelled?: boolean; identityToken?: string; givenName?: string; familyName?: string };
 const bridge = window as Window & {
@@ -52,6 +54,16 @@ describe("Apple sign-in bridge", () => {
       redirectTo: `${window.location.origin}?next=%2Fcomplete-profile`, scopes: "name email",
     } }));
     expect(mocks.idToken).not.toHaveBeenCalled();
+  });
+
+  it("uses the native iOS plugin, never web OAuth, inside the iOS app", async () => {
+    native.isIOS.mockReturnValue(true);
+    native.signIn.mockResolvedValue({});
+    render(<AppleSignInButton />);
+    fireEvent.click(screen.getByRole("button"));
+    await waitFor(() => expect(native.signIn).toHaveBeenCalledTimes(1));
+    expect(mocks.oauth).not.toHaveBeenCalled();
+    native.isIOS.mockReturnValue(false);
   });
 
   it("registers the callback before posting a random raw nonce and reuses it for token sign-in", async () => {
