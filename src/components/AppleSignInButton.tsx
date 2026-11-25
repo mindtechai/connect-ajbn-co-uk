@@ -4,7 +4,7 @@ import { toast } from "@/hooks/use-toast";
 import { useState } from "react";
 import { Loader2 } from "lucide-react";
 import { markOAuthPending } from "@/lib/post-signin";
-import { isNativeIOS, signInWithAppleNative } from "@/lib/native-apple-signin";
+import { isInsideNativeWrapper, isNativeIOS, signInWithAppleNative } from "@/lib/native-apple-signin";
 
 type AppleResult = {
   error?: unknown;
@@ -93,6 +93,16 @@ export function AppleSignInButton({ next }: { next?: string }) {
       } finally {
         setLoading(false);
       }
+      return;
+    }
+    if (isInsideNativeWrapper()) {
+      // Inside the iPhone/iPad app: never fall back to the appleid.apple.com web page.
+      setLoading(false);
+      toast({
+        title: "Apple sign-in unavailable",
+        description: "Please update the AJBN Connect app and try again.",
+        variant: "destructive",
+      });
       return;
     }
     const redirectTo = `${window.location.origin}${next ? `?next=${encodeURIComponent(next)}` : ""}`;

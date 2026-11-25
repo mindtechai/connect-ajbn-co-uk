@@ -3,8 +3,36 @@
 import { Capacitor, registerPlugin } from "@capacitor/core";
 import { supabase } from "@/integrations/supabase/client";
 
+type WebkitWindow = Window & { webkit?: { messageHandlers?: Record<string, unknown> } };
+
+/** iPadOS reports a Mac desktop user agent ("MacIntel") in WKWebView/Safari; touch points reveal the iPad. */
+export function isIPad() {
+  if (typeof navigator === "undefined") return false;
+  return /iPad/.test(navigator.userAgent) || (navigator.platform === "MacIntel" && navigator.maxTouchPoints > 1);
+}
+
+/** True when the native app exposes the WKWebView appleSignIn message handler. */
+export function hasAppleMessageHandler() {
+  if (typeof window === "undefined") return false;
+  return !!(window as WebkitWindow).webkit?.messageHandlers?.["appleSignIn"];
+}
+
+/**
+ * True inside the AJBN iPhone/iPad app (Capacitor or WKWebView wrapper).
+ * Safari and other browsers never expose window.webkit.messageHandlers, so iPad Safari stays on web OAuth.
+ */
+export function isInsideNativeWrapper() {
+  if (typeof window === "undefined") return false;
+  try { if (Capacitor.isNativePlatform()) return true; } catch { /* not native */ }
+  return !!(window as WebkitWindow).webkit?.messageHandlers;
+}
+
 export function isNativeIOS() {
-  try { return Capacitor.isNativePlatform() && Capacitor.getPlatform() === "ios"; } catch { return false; }
+  try {
+    if (!Capacitor.isNativePlatform()) return false;
+    // iPad in desktop content mode may not look like iOS; treat native + iPad as iOS too.
+    return Capacitor.getPlatform() === "ios" || isIPad();
+  } catch { return false; }
 }
 
 async function sha256Hex(input: string) {
