@@ -23,8 +23,8 @@ export function hasAppleMessageHandler() {
  */
 export function isInsideNativeWrapper() {
   if (typeof window === "undefined") return false;
-  try { if (Capacitor.isNativePlatform()) return true; } catch { /* not native */ }
-  return !!(window as WebkitWindow).webkit?.messageHandlers;
+  // Only the AJBN iOS/iPadOS app: Android and other in-app browsers keep web OAuth.
+  return hasAppleMessageHandler() || isNativeIOS();
 }
 
 export function isNativeIOS() {

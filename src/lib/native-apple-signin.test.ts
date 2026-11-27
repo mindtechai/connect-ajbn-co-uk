@@ -22,4 +22,8 @@ describe("iPad / native wrapper detection", () => {
     setNav("MacIntel", 5);
     expect(isInsideNativeWrapper()).toBe(false);
   });
+  it("other WKWebViews without the appleSignIn handler are not the native wrapper", () => {
+    w.webkit = { messageHandlers: { other: {} } };
+    expect(isInsideNativeWrapper()).toBe(false);
+  });
 });
